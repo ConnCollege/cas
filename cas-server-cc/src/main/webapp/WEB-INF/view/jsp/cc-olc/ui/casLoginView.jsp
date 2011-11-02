@@ -103,7 +103,7 @@
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><a href="http://www.alumniconnections.com/olc/pub/CTC/forgot/forgot.cgi">Forgot</a> your user ID or password? </td>
+					<td><a href="http://www.conncoll.edu/camelweb/public/alumni_login_help.cfm?var1=forgotPwd">Forgot</a> your user ID or password? </td>
 
 				</tr>
 
@@ -113,7 +113,7 @@
 				</form:form>
 
 				<p>
-				<strong>Not yet registered for the community?</strong><br>Take advantage of all the community has to offer! Click here to <a href="https://www.alumniconnections.com/olc/pub/CTC/register/register.cgi" target="_top">register now</a>!
+				<strong>Not yet registered for the community?</strong><br>Take advantage of all the community has to offer! Click here to <a href="http://www.conncoll.edu/camelweb/public/alumni_login_help.cfm" target="_top">register now</a>!
 				</p>
 
 				<p>
