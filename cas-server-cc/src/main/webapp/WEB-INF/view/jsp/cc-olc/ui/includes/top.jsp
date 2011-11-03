@@ -187,8 +187,8 @@
 
 					<li><a href="https://www.alumniconnections.com/olc/membersonly/CTC/mypage.jsp">My Profile</a></li>
 					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/hsearch/showSearch.jsp">Keyword Search</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/ccservices.html">Career Center</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12056.htm">Networking</a></li>
+					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/ccservices.html">Mentoring Services</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/12056.htm">Networking & Careers</a></li>
 					<li><a href="http://www.conncoll.edu/alumni/12158.htm">Volunteer</a></li>
 					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/geventcal/showListView.jsp">Alumni Calendar</a></li>
 
