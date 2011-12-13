@@ -93,7 +93,7 @@ public class jdbcCamel {
     private String mainPassword;
 	
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
