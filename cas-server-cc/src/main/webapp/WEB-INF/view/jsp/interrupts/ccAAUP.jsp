@@ -37,11 +37,11 @@ p.tblheader3{margin:0 0 0 15px; padding:0}
 #content ul li{margin: 0 0 1.3em 0; padding: 0; list-style: none outside;}
 #content ul.bul li{list-style: disc; margin: 0 0 0.5em 0;}
 
-->
+-->
 </style>
 <strong>Please read through the terms and conditions and click accept at the bottom of the page to continue.</strong><br />
 <h1>Connecticut College Alumni Online Community Appropriate Use Policy</h1>
-<iframe height="200" width="100%" src="https://www.conncoll.edu/cw40/c/journal/view_article_content?groupId=10143&articleId=1192440"></iframe>
+<iframe height="400" width="100%" src="https://www.conncoll.edu/cw40/c/journal/view_article_content?groupId=10143&articleId=1192440"></iframe>
 <form:form commandName="${commandName}" htmlEscape="true" method="post">
 <div align="center"><input type="checkbox" onclick="flipSubmit()" id="Accept" value="1" /> I Accept Appropriate Use Policy &amp; Terms of Service<br />
 	<input type="hidden" name="lt" value="${loginTicket}" />
