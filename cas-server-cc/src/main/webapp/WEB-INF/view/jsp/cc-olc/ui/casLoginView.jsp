@@ -49,7 +49,7 @@
 				</p>
 				<h1>Sign In</h1>
 				<p>
-				Please enter your User ID and Password to access members-only features.
+				Please enter your Log-In Name and Password to access members-only features.
 				</p>
 <!-- these are the possible error messages, which are customizable -->
 <!--			<p>
@@ -70,7 +70,7 @@
 				</tr>
 
 				<tr>
-					<td><label for="User ID">User ID: </label></td>
+					<td><label for="User ID">Log-In Name: </label></td>
 					<td>
                     <c:if test="${not empty sessionScope.openIdLocalId}">
 						<strong>${sessionScope.openIdLocalId}</strong>
