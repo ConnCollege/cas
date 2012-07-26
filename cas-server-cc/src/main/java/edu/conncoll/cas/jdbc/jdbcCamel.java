@@ -92,8 +92,9 @@ public class jdbcCamel {
 	@NotNull
     private String mainPassword;
 	
+	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -223,6 +224,12 @@ public class jdbcCamel {
 					context.getFlowScope().put("ValidEmr", 0);
 					log.warn("Invalid connect-ed data for " + userName);
 				}
+			break;
+			
+			/* briley 7/20/12 - Added User Name to the scope so its available on form */
+			case PIF:
+				context.getFlowScope().put("cwUserName", userName);
+				
 			break;
 		}
 	}
