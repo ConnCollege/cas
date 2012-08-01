@@ -30,7 +30,7 @@
 			<list>
 				<value>default_views</value>
 				<value>protocol_views</value>
-				<value>cctheme_views</value>
+				<value>template</value>
 			</list>
 		</property>
 	</bean>
