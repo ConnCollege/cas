@@ -28,9 +28,8 @@
 		p:order="0">
 		<property name="basenames">
 			<list>
-				<value>default_views</value>
+				<value>${cas.viewResolver.basename}</value>
 				<value>protocol_views</value>
-				<value>template</value>
 			</list>
 		</property>
 	</bean>
