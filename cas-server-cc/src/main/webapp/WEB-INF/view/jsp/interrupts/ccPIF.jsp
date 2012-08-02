@@ -1,4 +1,5 @@
 <jsp:directive.include file="includes/Top.jsp" />
+<c:set var="hasForm" value="1" scope="page" />
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
@@ -19,7 +20,7 @@
 			success: function(data) {
 				jQuery("#pif").append(data);
 			},
-            error: function(xhr, status) {
+                        error: function(xhr, status) {
 				jQuery("#pifLoadFailure").fadeIn(2000);
 			}
 		});
@@ -28,37 +29,61 @@
 </script>
 
 <style type="text/css">
-	/* Override the default position: absolute for the logo */
+    #instructions {
+        color: #6F1C31;
+        font-weight: bold;
+    }
+
+    /* Override the default position: absolute for the logo */
     #banner h1.logo {
     	position: relative;
     }
+
+    /* Override jquery-ui elements since they're not rendering properly through the ajax call */
+    .ui-widget button {
+        font-family: Verdana,'Arial Narrow',helvetica,sans-serif;
+        font-size: 1em;
+    }
+
+    #tabs .ui-state-default a {    
+        background: none;
+        background-color: #FEFEFE;
+    }
+    
+    #tabs li:not(.ui-state-active) a {
+        border-bottom: solid 1pt #A5C7E0;
+    }
 </style>
 
-<div class="info" style="height: 900px; background-color: white;" >
-	<h1>Personal Information Form</h1>
+<div>
+    <div>
+        <h2>Personal Information Form</h2>
+        <span id="instructions">Once you have finished verifing your information below, please click 'Changes Complete' below to continue with the login process.</span>        
+    </div>
 
-	<form:form commandName="${commandName}" htmlEscape="true" method="post">
-    	<form:errors path="*" cssClass="errors" id="status" element="div" />
+    <div id="spinner" style="display: none; position: absolute; top: 250px; left: 400px; height: 100px;">
+        <h2>Your information is loading ...</h2>
+        <img style="display: inline;" src="../../PersonalInformationForm/images/fedora-spinner.gif" />
+    </div>
+        
+    <div id="pifLoadFailure" style="display: none;">
+        <h2 style="color: red;">
+            Unable to load your information from Banner!
+            Please contact the helpdesk for assistance logging in.</h2>
+    </div>
 
-        <div id="spinner" style="display: none; position: absolute; top: 250px; left: 400px; height: 100px;">
-            <h2>Your information is loading ...</h2>
-            <img style="display: inline;" src="../../PersonalInformationForm/images/fedora-spinner.gif" />
-        </div>
-        <div id="pifLoadFailure" style="display: none;">
-            <h2 style="color: red;">
-                Unable to load your information from Banner!
-                Please contact the helpdesk for assistance logging in.</h2>
-        </div>
-
+    <div id="pifWrapper" style="overflow: hidden;">
         <div id="pif"></div>
+    </div>
 
-        <input type="hidden" name="lt" value="${loginTicket}" />
-        <input type="hidden" name="execution" value="${flowExecutionKey}" />
-        <input type="hidden" name="_eventId" value="submit" />
-
-	</form:form>
-
+    <div id="casContinue" align="center" style="margin-left: 35%;">
+        <form:form commandName="${commandName}" htmlEscape="true" method="post">
+            <input type="hidden" name="lt" value="${loginTicket}" />
+            <input type="hidden" name="execution" value="${flowExecutionKey}" />
+            <input type="hidden" name="_eventId" value="submit" />
+            <input type="submit" value="Changes Complete" id="btnSubmit" /><br /><br />
+        </form:form>
+    </div>
 </div>
 
-<div>Once you have verified your information above, please click 'Continue' to login to the system.</div>
 <jsp:directive.include file="includes/Bottom.jsp" />
