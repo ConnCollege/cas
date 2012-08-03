@@ -26,6 +26,7 @@ import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import javax.servlet.http.HttpServletRequest;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -56,11 +57,10 @@ import com.google.gdata.data.appsforyourdomain.Login;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.jasig.cas.adaptors.ldap.remote.RemoteAddressCredentials;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
-import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
+import org.jasig.cas.web.support.WebUtils;
 
 
 public class jdbcCamel {
@@ -100,9 +100,8 @@ public class jdbcCamel {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public void readFlow (final String flag, final RequestContext context, final Credentials credentials) throws Exception {
-		final UsernamePasswordCredentials upcredentials = (UsernamePasswordCredentials) credentials;
-		String userName = upcredentials.getUsername();
+	public void readFlow (final String flag, final RequestContext context, final UsernamePasswordCredentials credentials) throws Exception {
+		String userName = credentials.getUsername();
 		
 		String SQL = "";
 		
@@ -227,9 +226,8 @@ public class jdbcCamel {
 			break;
 			
 			case CNS:
-				final RemoteAddressCredentials c = (RemoteAddressCredentials) credentials;
-				final InetAddress inetAddress = InetAddress.getByName(c.getRemoteAddress().trim());
-				context.getFlowScope().put("userAddr", inetAddress.getHostAddress());
+				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
+				context.getFlowScope().put("userAddr", httpRequest.getRemoteAddr());
 			break;
 			default:
 				
