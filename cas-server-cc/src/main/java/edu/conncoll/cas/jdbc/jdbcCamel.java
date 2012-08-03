@@ -1,8 +1,7 @@
 package edu.conncoll.cas.jdbc;
 
-
+import java.net.InetAddress;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -16,23 +15,17 @@ import java.sql.SQLException;
 
 import java.util.HashMap;
 
-import javax.activation.*;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.AddressException;
-
 import javax.naming.InitialContext;
 import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-import javax.naming.NamingException;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -46,11 +39,9 @@ import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.jdbc.core.RowMapper;
 
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.filter.EqualsFilter;
 
 import org.springframework.webflow.execution.RequestContext;
 
@@ -65,7 +56,9 @@ import com.google.gdata.data.appsforyourdomain.Login;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.jasig.cas.adaptors.ldap.remote.RemoteAddressCredentials;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
 
@@ -94,7 +87,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -107,8 +100,9 @@ public class jdbcCamel {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public void readFlow (final String flag, final RequestContext context, final UsernamePasswordCredentials credentials) throws Exception {
-		String userName = credentials.getUsername();
+	public void readFlow (final String flag, final RequestContext context, final Credentials credentials) throws Exception {
+		final UsernamePasswordCredentials upcredentials = (UsernamePasswordCredentials) credentials;
+		String userName = upcredentials.getUsername();
 		
 		String SQL = "";
 		
@@ -229,6 +223,15 @@ public class jdbcCamel {
 			/* briley 7/20/12 - Added User Name to the scope so its available on form */
 			case PIF:
 				context.getFlowScope().put("cwUserName", userName);
+				
+			break;
+			
+			case CNS:
+				final RemoteAddressCredentials c = (RemoteAddressCredentials) credentials;
+				final InetAddress inetAddress = InetAddress.getByName(c.getRemoteAddress().trim());
+				context.getFlowScope().put("userAddr", inetAddress.getHostAddress());
+			break;
+			default:
 				
 			break;
 		}
