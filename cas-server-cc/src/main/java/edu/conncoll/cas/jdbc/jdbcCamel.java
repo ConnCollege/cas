@@ -240,9 +240,9 @@ public class jdbcCamel {
 				String ipStatus;
 				log.info("IP address is " + httpRequest.getRemoteAddr());
 				log.info("Split IP address is " + ipNets[0] + "." + ipNets[1]+ "." + ipNets[2]+ "." + ipNets[3]);
-				if (ipNets[0] == "136" && ipNets[1]=="244") {
+				if (ipNets[0].equals("136") && ipNets[1].equals("244")) {
 					ipStatus="on Campus";
-					if (ipNets[2] == "248" || ipNets[2] == "192") {
+					if (ipNets[2].equals("248") || ipNets[2].equals("192")) {
 						ipStatus="on VPN";
 					} else {
 						//Find Term Code
