@@ -1,6 +1,7 @@
 package edu.conncoll.cas.jdbc;
 
-import java.net.InetAddress;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Date;
 import java.util.List;
@@ -66,9 +67,14 @@ import org.jasig.cas.web.support.WebUtils;
 public class jdbcCamel {
 	@NotNull
     private SimpleJdbcTemplate jdbcTemplate;
+	
+	@NotNull
+    private SimpleJdbcTemplate jdbcCensus;
     
     @NotNull
     private DataSource dataSource;
+    @NotNull
+    private DataSource censusSource;
 	
 	@NotNull
 	private LdapTemplate ldapTemplate;
@@ -84,6 +90,9 @@ public class jdbcCamel {
 	
 	@NotNull
     private String mainPassword;
+	
+	@NotNull
+    private String nuVisionPath;
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
@@ -227,7 +236,53 @@ public class jdbcCamel {
 			
 			case CNS:
 				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
-				context.getFlowScope().put("userAddr", httpRequest.getRemoteAddr());
+				String[] ipNets = httpRequest.getRemoteAddr().split(".");
+				String ipStatus;
+				if (ipNets[0] == "136" && ipNets[1]=="244") {
+					ipStatus="on Campus";
+					if (ipNets[2] == "248" || ipNets[2] == "192") {
+						ipStatus="on VPN";
+					} else {
+						//Find Term Code
+						SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
+						Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
+						// term code termData.get("param_value").toString()
+						// get banner id from ldap
+						String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+						
+						List DN = this.ldapTemplate.search(
+							this.searchBase, searchFilter, 
+							new AbstractContextMapper(){
+								protected Object doMapFromContext(DirContextOperations ctx) {
+									return ctx.getNameInNamespace();
+								}
+							}
+						);
+						
+						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+						
+						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+						SQL = "insert census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE)' ";
+						Map insertParameters = new HashMap();
+						insertParameters.put("userName", userName);
+						insertParameters.put("bannerId", Attrib.toString());
+						insertParameters.put("termCode", termData.get("param_value").toString());
+						int check = jdbcTemplate.update(SQL,insertParameters);
+						try {
+							FileWriter writer = new FileWriter(nuVisionPath);
+							writer.append(Attrib.toString());
+						    writer.append(";;;;;;;;;;;;;;;;;;;;;;;");
+						    writer.flush();
+						    writer.close();
+						} catch(IOException e) {
+							log.error("unable to update nuvision file for id " + Attrib.toString());
+						} 
+					}
+				}else{
+					ipStatus="off Campus";
+				}
+				
+				context.getFlowScope().put("userAddr", ipStatus);
 			break;
 			default:
 				
@@ -388,6 +443,11 @@ public class jdbcCamel {
         this.jdbcTemplate = new SimpleJdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
+
+    public final void setCensusSource(final DataSource dataSource) {
+        this.jdbcCensus = new SimpleJdbcTemplate(dataSource);
+        this.censusSource = dataSource;
+    }
     
     protected final SimpleJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
@@ -396,6 +456,11 @@ public class jdbcCamel {
     protected final DataSource getDataSource() {
         return this.dataSource;
     }
+    
+    protected final DataSource getCensusSource() {
+        return this.censusSource;
+    }
+	
 		
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;
@@ -407,6 +472,10 @@ public class jdbcCamel {
 		
 	public void setMainPassword (final String mainPassword) {
 		this.mainPassword = mainPassword;
+	}
+	
+	public void setNuVisionPath (final String nuVisionPath) {
+		this.nuVisionPath = nuVisionPath;
 	}
 	
 	public void setldapTemplate(final LdapTemplate ldapTemplate){
