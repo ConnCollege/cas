@@ -279,7 +279,7 @@ public class jdbcCamel {
 						try {
 							FileWriter writer = new FileWriter(nuVisionPath);
 							writer.append(Attrib.toString());
-						    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\n");
+						    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\r\n");
 						    writer.flush();
 						    writer.close();
 						} catch(IOException e) {
