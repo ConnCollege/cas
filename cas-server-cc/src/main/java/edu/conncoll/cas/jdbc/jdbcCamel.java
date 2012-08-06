@@ -239,7 +239,6 @@ public class jdbcCamel {
 				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
 				String ipStatus;
 				log.info("IP address is " + httpRequest.getRemoteAddr());
-				log.info("Split IP address is " + ipNets[0] + "." + ipNets[1]+ "." + ipNets[2]+ "." + ipNets[3]);
 				if (ipNets[0].equals("136") && ipNets[1].equals("244")) {
 					ipStatus="on Campus";
 					if (ipNets[2].equals("248") || ipNets[2].equals("192")) {
@@ -264,12 +263,12 @@ public class jdbcCamel {
 						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 						
 						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
-						SQL = "insert census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE)' ";
+						SQL = "insert census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE) ";
 						Map insertParameters = new HashMap();
 						insertParameters.put("userName", userName);
 						insertParameters.put("bannerId", Attrib.toString());
 						insertParameters.put("termCode", termData.get("param_value").toString());
-						int check = jdbcTemplate.update(SQL,insertParameters);
+						int check = jdbcCensus.update(SQL,insertParameters);
 						try {
 							FileWriter writer = new FileWriter(nuVisionPath);
 							writer.append(Attrib.toString());
