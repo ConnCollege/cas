@@ -22,7 +22,7 @@
 		p:filter="sAMAccountName=%u"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:searchBase="dc=conncoll,dc=edu"
-		p:nuVisionPath="/nv_import/NVimport.txt"
+		p:nuVisionPath="/home/tomcat/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
 		p:mainPassword="${main.gmail.password}" />
 </beans>
