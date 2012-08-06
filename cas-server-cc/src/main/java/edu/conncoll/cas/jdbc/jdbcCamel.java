@@ -264,17 +264,9 @@ public class jdbcCamel {
 						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 						
 						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
-						SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE) ";
+						SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ('?','?','?',SYSDATE) ";
 						log.debug("SQL for insert" + SQL);
-						Map insertParameters = new HashMap();
-						insertParameters.put("userName", userName);
-						insertParameters.put("bannerId", Attrib.toString());
-						insertParameters.put("termCode", termData.get("param_value").toString());
-						log.debug("SQL for insert" + SQL);
-						log.debug("user" + userName);
-						log.debug("banner id" + Attrib.toString());
-						log.debug("Term Code" + termData.get("param_value").toString());
-						int check = jdbcCensus.update(SQL,insertParameters);
+						int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
 						log.debug("insert rerutn" + Integer.toString(check));
 						try {
 							FileWriter writer = new FileWriter(nuVisionPath);
