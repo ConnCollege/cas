@@ -263,7 +263,7 @@ public class jdbcCamel {
 						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 						
 						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
-						SQL = "insert census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE) ";
+						SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE) ";
 						Map insertParameters = new HashMap();
 						insertParameters.put("userName", userName);
 						insertParameters.put("bannerId", Attrib.toString());
