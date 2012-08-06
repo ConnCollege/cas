@@ -247,6 +247,7 @@ public class jdbcCamel {
 						//Find Term Code
 						SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
 						Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
+						log.debug("Termcode returned by query " + termData.get("param_value").toString());
 						// term code termData.get("param_value").toString()
 						// get banner id from ldap
 						String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
@@ -264,11 +265,17 @@ public class jdbcCamel {
 						
 						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
 						SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values (':userName',':bannerId',':termCode',SYSDATE) ";
+						log.debug("SQL for insert" + SQL);
 						Map insertParameters = new HashMap();
 						insertParameters.put("userName", userName);
 						insertParameters.put("bannerId", Attrib.toString());
 						insertParameters.put("termCode", termData.get("param_value").toString());
+						log.debug("SQL for insert" + SQL);
+						log.debug("user" + userName);
+						log.debug("banner id" + Attrib.toString());
+						log.debug("Term Code" + termData.get("param_value").toString());
 						int check = jdbcCensus.update(SQL,insertParameters);
+						log.debug("insert rerutn" + Integer.toString(check));
 						try {
 							FileWriter writer = new FileWriter(nuVisionPath);
 							writer.append(Attrib.toString());

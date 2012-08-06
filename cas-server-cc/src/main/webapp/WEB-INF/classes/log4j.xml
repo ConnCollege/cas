@@ -92,7 +92,7 @@
     </logger>
 	
     <logger name="edu.conncoll" additivity="true">
-        <level value="INFO" />
+        <level value="DEBUG" />
         <appender-ref ref="cas" />
     </logger>
 
