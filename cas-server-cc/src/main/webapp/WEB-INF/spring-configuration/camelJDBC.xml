@@ -10,10 +10,11 @@
 		p:password="${datasource.password}"
 		p:user="${datasource.username}" />
 		
-	 <bean id="dataSourceCensus" class="oracle.jdbc.OracleDriver"
-		p:URL="${census.db.url}"
-		p:password="${census.db.password}"
-		p:user="${census.db.username}" />
+	<bean id="dataSourceCAS"  class="org.apache.commons.dbcp.BasicDataSource"
+        p:driverClassName="oracle.jdbc.OracleDriver"
+        p:url="${census.db.url}"
+        p:password="${census.db.password}"
+        p:username="${census.db.username}" />
 	
 	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
 		p:dataSource-ref="dataSourceCamel"
