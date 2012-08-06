@@ -15,15 +15,13 @@
 <body>
 <form:form method="post" id="fm1" cssClass="fm-v clearfix" htmlEscape="true">
 
-remote address: ${userAddr}<br />
-
 <input type="hidden" name="lt" value="${loginTicket}" />
 <input type="hidden" name="execution" value="${flowExecutionKey}" />
 <input type="hidden" name="_eventId" value="submit" />
 <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>
 </form:form>
 <script  type="text/javascript">
-	//document.getElementById('fm1').submit();
+	document.getElementById('fm1').submit();
 </script>
 </body>
 </html>

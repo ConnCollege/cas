@@ -238,6 +238,8 @@ public class jdbcCamel {
 				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
 				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
 				String ipStatus;
+				log.info("IP address is " + httpRequest.getRemoteAddr());
+				log.info("Split IP address is " + ipNets[0] + "." + ipNets[1]+ "." + ipNets[2]+ "." + ipNets[3]);
 				if (ipNets[0] == "136" && ipNets[1]=="244") {
 					ipStatus="on Campus";
 					if (ipNets[2] == "248" || ipNets[2] == "192") {
@@ -281,8 +283,7 @@ public class jdbcCamel {
 				}else{
 					ipStatus="off Campus";
 				}
-				
-				context.getFlowScope().put("userAddr", ipStatus);
+				log.info("Ip address is " + ipStatus );
 			break;
 			default:
 				
