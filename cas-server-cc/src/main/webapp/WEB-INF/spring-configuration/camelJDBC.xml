@@ -10,7 +10,7 @@
 		p:password="${datasource.password}"
 		p:user="${datasource.username}" />
 		
-	<bean id="dataSourceCAS"  class="org.apache.commons.dbcp.BasicDataSource"
+	<bean id="dataSourceCensus"  class="org.apache.commons.dbcp.BasicDataSource"
         p:driverClassName="oracle.jdbc.OracleDriver"
         p:url="${census.db.url}"
         p:password="${census.db.password}"

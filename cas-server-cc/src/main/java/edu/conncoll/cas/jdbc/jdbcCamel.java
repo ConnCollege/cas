@@ -236,7 +236,7 @@ public class jdbcCamel {
 			
 			case CNS:
 				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
-				String[] ipNets = httpRequest.getRemoteAddr().split(".");
+				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
 				String ipStatus;
 				if (ipNets[0] == "136" && ipNets[1]=="244") {
 					ipStatus="on Campus";
