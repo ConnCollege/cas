@@ -9,12 +9,20 @@
 		p:URL="jdbc:sqlserver://sumac.conncoll.edu:1433;SelectMethod=cursor;databaseName=camel2"
 		p:password="${datasource.password}"
 		p:user="${datasource.username}" />
+		
+	<bean id="dataSourceCensus"  class="org.apache.commons.dbcp.BasicDataSource"
+        p:driverClassName="oracle.jdbc.OracleDriver"
+        p:url="${census.db.url}"
+        p:password="${census.db.password}"
+        p:username="${census.db.username}" />
 	
 	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
 		p:dataSource-ref="dataSourceCamel"
+		p:censusSource-ref="dataSourceCensus"
 		p:filter="sAMAccountName=%u"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:searchBase="dc=conncoll,dc=edu"
+		p:nuVisionPath="/nv_import/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
 		p:mainPassword="${main.gmail.password}" />
 </beans>

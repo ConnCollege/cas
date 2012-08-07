@@ -1,8 +1,8 @@
 package edu.conncoll.cas.jdbc;
 
-
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -16,27 +16,23 @@ import java.sql.SQLException;
 
 import java.util.HashMap;
 
-import javax.activation.*;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.AddressException;
-
 import javax.naming.InitialContext;
 import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,11 +42,9 @@ import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.jdbc.core.RowMapper;
 
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.filter.EqualsFilter;
 
 import org.springframework.webflow.execution.RequestContext;
 
@@ -68,14 +62,20 @@ import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
+import org.jasig.cas.web.support.WebUtils;
 
 
 public class jdbcCamel {
 	@NotNull
     private SimpleJdbcTemplate jdbcTemplate;
+	
+	@NotNull
+    private SimpleJdbcTemplate jdbcCensus;
     
     @NotNull
     private DataSource dataSource;
+    @NotNull
+    private DataSource censusSource;
 	
 	@NotNull
 	private LdapTemplate ldapTemplate;
@@ -92,9 +92,12 @@ public class jdbcCamel {
 	@NotNull
     private String mainPassword;
 	
+	@NotNull
+    private String nuVisionPath;
+	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -114,7 +117,7 @@ public class jdbcCamel {
 		
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");	
 		
-		log.debug("readFlow Preparing data for " + flag);
+		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
 		switch (Interrupts.toInt(flag)) {
 			case AUP:
@@ -164,7 +167,7 @@ public class jdbcCamel {
 			break;
 			case QNA:				
 				SQL = "select question qChoice from cc_user_questions";				
-				List QNAData = jdbcTemplate.queryForList(SQL);	
+				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL);	
 				log.debug("readFlow sending questions");
 				context.getFlowScope().put("questionList", QNAData);
 			break;
@@ -206,7 +209,7 @@ public class jdbcCamel {
 				try {
 					Map<String,Object> CWData = jdbcTemplate.queryForMap(SQL,namedParameters);
 					EMRRead emrRead = new EMRRead(this.dataSource);
-					Map readData = emrRead.execute(CWData.get("ccId").toString(),CWData.get("Id"),0);
+					Map<String,Object> readData = emrRead.execute(CWData.get("ccId").toString(),CWData.get("Id"),0);
 					log.debug("proc size" + readData.size());
 					log.debug("proc retun" + readData.toString());
 					ArrayList temp = (ArrayList) readData.get("emrData");
@@ -231,6 +234,71 @@ public class jdbcCamel {
 				context.getFlowScope().put("cwUserName", userName);
 				
 			break;
+			
+			case CNS:
+				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
+				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
+				String ipStatus;
+				log.info("IP address is " + httpRequest.getRemoteAddr());
+				if (ipNets[0].equals("136") && ipNets[1].equals("244")) {
+					ipStatus="on Campus";
+					if (ipNets[2].equals("248") || ipNets[2].equals("192")) {
+						ipStatus="on VPN";
+					} else {
+						//Find Term Code
+						SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
+						Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
+						log.debug("Termcode returned by query " + termData.get("param_value").toString());
+						// term code termData.get("param_value").toString()
+						// get banner id from ldap
+						String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+						
+						List DN = this.ldapTemplate.search(
+							this.searchBase, searchFilter, 
+							new AbstractContextMapper(){
+								protected Object doMapFromContext(DirContextOperations ctx) {
+									return ctx.getNameInNamespace();
+								}
+							}
+						);
+						
+						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+						
+						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+						try {
+							SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
+							log.debug("SQL for insert" + SQL);
+							Map<String, Object> insertParameters = new HashMap<String, Object>();
+							insertParameters.put("userName", userName);
+							insertParameters.put("bannerId", Attrib.toString());
+							insertParameters.put("termCode", termData.get("param_value").toString());
+							log.debug("SQL for insert " + SQL);
+							log.debug("user " + userName);
+							log.debug("banner id " + Attrib.toString());
+							log.debug("Term Code " + termData.get("param_value").toString());
+							int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
+							log.debug("insert rerutn" + Integer.toString(check));
+						} catch (DataAccessException e){
+							log.warn("SQL for Census insert failed " + e.getMessage());
+						}
+						try {
+							FileWriter writer = new FileWriter(nuVisionPath);
+							writer.append(Attrib.toString());
+						    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\r\n");
+						    writer.flush();
+						    writer.close();
+						} catch(IOException e) {
+							log.error("unable to update nuvision file for id " + Attrib.toString());
+						} 
+					}
+				}else{
+					ipStatus="off Campus";
+				}
+				log.info("Ip address is " + ipStatus );
+			break;
+			default:
+				
+			break;
 		}
 	}
 	
@@ -238,7 +306,7 @@ public class jdbcCamel {
 		throws Exception {
 		String userName = credentials.getUsername();
 		String SQL = "";
-		Map namedParameters = new HashMap();
+		Map<String,Object> namedParameters = new HashMap<String,Object>();
 		namedParameters.put("user", userName + "@conncoll.edu");
 		
 		log.info("writeFlow Saving data for " + flag);
@@ -252,6 +320,7 @@ public class jdbcCamel {
 			namedParameters.put("question", intData.getField(1));
 			namedParameters.put("answer", intData.getField(2));
 			int check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Update result" + check);
 		}
 		
 		if (flag.equals("PWD")) {
@@ -304,6 +373,7 @@ public class jdbcCamel {
 			}		
 			SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
 			int check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert result " + check);
 			credentials.setPassword(intData.getField(1));
 		}
 		if (flag.equals("EMR")) {
@@ -316,6 +386,7 @@ public class jdbcCamel {
 				SQL = "delete emr_main where bannerid = :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));				
 				int check = jdbcTemplate.update(SQL,namedParameters);
+				log.debug("Delete result " + check);
 				SQL = "Update CC_user set EMR=2 where ccID= :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));
 				check = jdbcTemplate.update(SQL,namedParameters);
@@ -336,7 +407,7 @@ public class jdbcCamel {
 				if (intData.getField(11).length() <7) {
 					smsVend=null;
 				}
-				Map readData = formSave.execute(CWData.get("ccId").toString(),Integer.parseInt(CWData.get("Id").toString()),intData.getField(39),
+				Map<String,Object> readData = formSave.execute(CWData.get("ccId").toString(),Integer.parseInt(CWData.get("Id").toString()),intData.getField(39),
 					 intData.getField(42), intData.getField(40), intData.getField(36), smsVend, 
 					 intData.getField(38).toCharArray()[0]
 					 );
@@ -374,6 +445,7 @@ public class jdbcCamel {
 				SQL = "Update CC_user set EMR=1 where ccID= :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));
 				int check = jdbcTemplate.update(SQL,namedParameters);
+				log.debug("Update result " + check);
 			}
 		}
 		return "Saved";
@@ -387,6 +459,11 @@ public class jdbcCamel {
         this.jdbcTemplate = new SimpleJdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
+
+    public final void setCensusSource(final DataSource dataSource) {
+        this.jdbcCensus = new SimpleJdbcTemplate(dataSource);
+        this.censusSource = dataSource;
+    }
     
     protected final SimpleJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
@@ -395,6 +472,11 @@ public class jdbcCamel {
     protected final DataSource getDataSource() {
         return this.dataSource;
     }
+    
+    protected final DataSource getCensusSource() {
+        return this.censusSource;
+    }
+	
 		
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;
@@ -406,6 +488,10 @@ public class jdbcCamel {
 		
 	public void setMainPassword (final String mainPassword) {
 		this.mainPassword = mainPassword;
+	}
+	
+	public void setNuVisionPath (final String nuVisionPath) {
+		this.nuVisionPath = nuVisionPath;
 	}
 	
 	public void setldapTemplate(final LdapTemplate ldapTemplate){
@@ -423,8 +509,8 @@ public class jdbcCamel {
 			declareParameter(new SqlParameter("CCUserID", Types.INTEGER ));
 			declareParameter(new SqlOutParameter("Admin", Types.BIT));
 			declareParameter(new SqlReturnResultSet("emrData", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map emrData = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> emrData = new HashMap<String,Object>();
 					emrData.put("EmrId",rs.getInt(1));
 					emrData.put("ContactType",rs.getString(2));
 					emrData.put("toEmail",rs.getString(3));
@@ -437,8 +523,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("ccData", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map ccData = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> ccData = new HashMap<String,Object>();
 					ccData.put("FirstName",rs.getString(1));
 					ccData.put("LastName",rs.getString(2));
 					ccData.put("CollegePhone",rs.getString(3));
@@ -449,8 +535,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("Phones", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map Phones = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> Phones = new HashMap<String,Object>();
 					Phones.put("PhoneCode",rs.getString(1));
 					Phones.put("AreaCode",rs.getInt(2));
 					Phones.put("PhoneNum",rs.getString(3));
@@ -462,8 +548,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("Relations", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map Relations = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> Relations = new HashMap<String,Object>();
 					Relations.put("ContactRelation",rs.getInt(1));
 					Relations.put("Relationship",rs.getString(2));
 					// add more mappings here
@@ -472,7 +558,7 @@ public class jdbcCamel {
 			}));
         	declareParameter(new SqlReturnResultSet("SMSVendors", new RowMapper() {
 				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map SMSVendors = new HashMap();
+					Map<String,Object> SMSVendors = new HashMap<String,Object>();
 					SMSVendors.put("SMSVendor",rs.getInt(1));
 					SMSVendors.put("VendorName",rs.getString(2));
 					// add more mappings here
@@ -481,7 +567,7 @@ public class jdbcCamel {
 			}));
         	declareParameter(new SqlReturnResultSet("ListAddresses", new RowMapper() {
 				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map ListAddresses = new HashMap();
+					Map <String,Object>ListAddresses = new HashMap<String,Object>();
 					ListAddresses.put("emailnum",rs.getInt(1));
 					ListAddresses.put("emailaddress",rs.getString(2));
 					// add more mappings here
@@ -490,8 +576,8 @@ public class jdbcCamel {
 			}));
 			compile();
 		}
-		public Map execute(String bannerId, int ccUserId, int admin) {        
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(String bannerId, int ccUserId, int admin) {        
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("BannerID", bannerId);
         	inputs.put("CCUserID", ccUserId);
         	inputs.put("Admin", admin);
@@ -513,8 +599,8 @@ public class jdbcCamel {
 			declareParameter(new SqlOutParameter("EMRID", Types.INTEGER));
 			compile();
 		}
-		public Map execute(String bannerId, int ccUserId, String AltEmail, String OEMail, String ContactType, String Language, Integer SMSVendor, char TTY) {
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(String bannerId, int ccUserId, String AltEmail, String OEMail, String ContactType, String Language, Integer SMSVendor, char TTY) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("BannerID", bannerId);
         	inputs.put("CCUserID", ccUserId);
         	inputs.put("AltEmail", AltEmail);
@@ -540,8 +626,8 @@ public class jdbcCamel {
 			declareParameter(new SqlParameter("ContactRelation", Types.INTEGER ));
 			compile();
 		}
-		public Map execute(int EMRID, char PID, int AreaCode, String Phone, char pType, String Name, int Rela) {
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(int EMRID, char PID, int AreaCode, String Phone, char pType, String Name, int Rela) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("EMRID", EMRID);
         	inputs.put("PhoneCode", PID);
         	inputs.put("AreaCode", AreaCode);
