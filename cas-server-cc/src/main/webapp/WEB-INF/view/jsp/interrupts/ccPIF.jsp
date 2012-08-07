@@ -34,14 +34,14 @@
 </script>
 
 <style type="text/css">
+    /* Override to prevent background from scrolling */
+    body {
+        position: relative;
+    }
+    
     #instructions {
         color: #6F1C31;
         font-weight: bold;
-    }
-
-    /* Override the default position: absolute for the logo */
-    #banner h1.logo {
-    	position: relative;
     }
 
     /* Override jquery-ui elements since they're not rendering properly through the ajax call */
