@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -166,7 +167,7 @@ public class jdbcCamel {
 			break;
 			case QNA:				
 				SQL = "select question qChoice from cc_user_questions";				
-				List QNAData = jdbcTemplate.queryForList(SQL);	
+				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL);	
 				log.debug("readFlow sending questions");
 				context.getFlowScope().put("questionList", QNAData);
 			break;
@@ -208,7 +209,7 @@ public class jdbcCamel {
 				try {
 					Map<String,Object> CWData = jdbcTemplate.queryForMap(SQL,namedParameters);
 					EMRRead emrRead = new EMRRead(this.dataSource);
-					Map readData = emrRead.execute(CWData.get("ccId").toString(),CWData.get("Id"),0);
+					Map<String,Object> readData = emrRead.execute(CWData.get("ccId").toString(),CWData.get("Id"),0);
 					log.debug("proc size" + readData.size());
 					log.debug("proc retun" + readData.toString());
 					ArrayList temp = (ArrayList) readData.get("emrData");
@@ -264,18 +265,22 @@ public class jdbcCamel {
 						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 						
 						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
-						SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
-						log.debug("SQL for insert" + SQL);
-						Map<String, Object> insertParameters = new HashMap<String, Object>();
-						insertParameters.put("userName", userName);
-						insertParameters.put("bannerId", Attrib.toString());
-						insertParameters.put("termCode", termData.get("param_value").toString());
-						log.debug("SQL for insert " + SQL);
-						log.debug("user " + userName);
-						log.debug("banner id " + Attrib.toString());
-						log.debug("Term Code " + termData.get("param_value").toString());
-						int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
-						log.debug("insert rerutn" + Integer.toString(check));
+						try {
+							SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
+							log.debug("SQL for insert" + SQL);
+							Map<String, Object> insertParameters = new HashMap<String, Object>();
+							insertParameters.put("userName", userName);
+							insertParameters.put("bannerId", Attrib.toString());
+							insertParameters.put("termCode", termData.get("param_value").toString());
+							log.debug("SQL for insert " + SQL);
+							log.debug("user " + userName);
+							log.debug("banner id " + Attrib.toString());
+							log.debug("Term Code " + termData.get("param_value").toString());
+							int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
+							log.debug("insert rerutn" + Integer.toString(check));
+						} catch (DataAccessException e){
+							log.warn("SQL for Census insert failed " + e.getMessage());
+						}
 						try {
 							FileWriter writer = new FileWriter(nuVisionPath);
 							writer.append(Attrib.toString());
@@ -301,7 +306,7 @@ public class jdbcCamel {
 		throws Exception {
 		String userName = credentials.getUsername();
 		String SQL = "";
-		Map namedParameters = new HashMap();
+		Map<String,Object> namedParameters = new HashMap<String,Object>();
 		namedParameters.put("user", userName + "@conncoll.edu");
 		
 		log.info("writeFlow Saving data for " + flag);
@@ -315,6 +320,7 @@ public class jdbcCamel {
 			namedParameters.put("question", intData.getField(1));
 			namedParameters.put("answer", intData.getField(2));
 			int check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Update result" + check);
 		}
 		
 		if (flag.equals("PWD")) {
@@ -367,6 +373,7 @@ public class jdbcCamel {
 			}		
 			SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
 			int check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert result " + check);
 			credentials.setPassword(intData.getField(1));
 		}
 		if (flag.equals("EMR")) {
@@ -379,6 +386,7 @@ public class jdbcCamel {
 				SQL = "delete emr_main where bannerid = :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));				
 				int check = jdbcTemplate.update(SQL,namedParameters);
+				log.debug("Delete result " + check);
 				SQL = "Update CC_user set EMR=2 where ccID= :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));
 				check = jdbcTemplate.update(SQL,namedParameters);
@@ -399,7 +407,7 @@ public class jdbcCamel {
 				if (intData.getField(11).length() <7) {
 					smsVend=null;
 				}
-				Map readData = formSave.execute(CWData.get("ccId").toString(),Integer.parseInt(CWData.get("Id").toString()),intData.getField(39),
+				Map<String,Object> readData = formSave.execute(CWData.get("ccId").toString(),Integer.parseInt(CWData.get("Id").toString()),intData.getField(39),
 					 intData.getField(42), intData.getField(40), intData.getField(36), smsVend, 
 					 intData.getField(38).toCharArray()[0]
 					 );
@@ -437,6 +445,7 @@ public class jdbcCamel {
 				SQL = "Update CC_user set EMR=1 where ccID= :bannerId ";
 				namedParameters.put("bannerId", CWData.get("ccId"));
 				int check = jdbcTemplate.update(SQL,namedParameters);
+				log.debug("Update result " + check);
 			}
 		}
 		return "Saved";
@@ -500,8 +509,8 @@ public class jdbcCamel {
 			declareParameter(new SqlParameter("CCUserID", Types.INTEGER ));
 			declareParameter(new SqlOutParameter("Admin", Types.BIT));
 			declareParameter(new SqlReturnResultSet("emrData", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map emrData = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> emrData = new HashMap<String,Object>();
 					emrData.put("EmrId",rs.getInt(1));
 					emrData.put("ContactType",rs.getString(2));
 					emrData.put("toEmail",rs.getString(3));
@@ -514,8 +523,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("ccData", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map ccData = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> ccData = new HashMap<String,Object>();
 					ccData.put("FirstName",rs.getString(1));
 					ccData.put("LastName",rs.getString(2));
 					ccData.put("CollegePhone",rs.getString(3));
@@ -526,8 +535,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("Phones", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map Phones = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> Phones = new HashMap<String,Object>();
 					Phones.put("PhoneCode",rs.getString(1));
 					Phones.put("AreaCode",rs.getInt(2));
 					Phones.put("PhoneNum",rs.getString(3));
@@ -539,8 +548,8 @@ public class jdbcCamel {
 				}
 			}));
         	declareParameter(new SqlReturnResultSet("Relations", new RowMapper() {
-				public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map Relations = new HashMap();
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> Relations = new HashMap<String,Object>();
 					Relations.put("ContactRelation",rs.getInt(1));
 					Relations.put("Relationship",rs.getString(2));
 					// add more mappings here
@@ -549,7 +558,7 @@ public class jdbcCamel {
 			}));
         	declareParameter(new SqlReturnResultSet("SMSVendors", new RowMapper() {
 				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map SMSVendors = new HashMap();
+					Map<String,Object> SMSVendors = new HashMap<String,Object>();
 					SMSVendors.put("SMSVendor",rs.getInt(1));
 					SMSVendors.put("VendorName",rs.getString(2));
 					// add more mappings here
@@ -558,7 +567,7 @@ public class jdbcCamel {
 			}));
         	declareParameter(new SqlReturnResultSet("ListAddresses", new RowMapper() {
 				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-					Map ListAddresses = new HashMap();
+					Map <String,Object>ListAddresses = new HashMap<String,Object>();
 					ListAddresses.put("emailnum",rs.getInt(1));
 					ListAddresses.put("emailaddress",rs.getString(2));
 					// add more mappings here
@@ -567,8 +576,8 @@ public class jdbcCamel {
 			}));
 			compile();
 		}
-		public Map execute(String bannerId, int ccUserId, int admin) {        
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(String bannerId, int ccUserId, int admin) {        
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("BannerID", bannerId);
         	inputs.put("CCUserID", ccUserId);
         	inputs.put("Admin", admin);
@@ -590,8 +599,8 @@ public class jdbcCamel {
 			declareParameter(new SqlOutParameter("EMRID", Types.INTEGER));
 			compile();
 		}
-		public Map execute(String bannerId, int ccUserId, String AltEmail, String OEMail, String ContactType, String Language, Integer SMSVendor, char TTY) {
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(String bannerId, int ccUserId, String AltEmail, String OEMail, String ContactType, String Language, Integer SMSVendor, char TTY) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("BannerID", bannerId);
         	inputs.put("CCUserID", ccUserId);
         	inputs.put("AltEmail", AltEmail);
@@ -617,8 +626,8 @@ public class jdbcCamel {
 			declareParameter(new SqlParameter("ContactRelation", Types.INTEGER ));
 			compile();
 		}
-		public Map execute(int EMRID, char PID, int AreaCode, String Phone, char pType, String Name, int Rela) {
-			Map inputs = new HashMap();
+		public Map<String,Object> execute(int EMRID, char PID, int AreaCode, String Phone, char pType, String Name, int Rela) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
         	inputs.put("EMRID", EMRID);
         	inputs.put("PhoneCode", PID);
         	inputs.put("AreaCode", AreaCode);
