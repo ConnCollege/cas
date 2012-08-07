@@ -117,7 +117,7 @@ public class jdbcCamel {
 		
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");	
 		
-		log.debug("readFlow Preparing data for " + flag);
+		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
 		switch (Interrupts.toInt(flag)) {
 			case AUP:
