@@ -10,8 +10,11 @@
 			type: "POST",
 			data: {username: "${cwUserName}"},
 			success: function(data) {
-                                showPIF(data);
+                                jQuery("#pif").append(data);
 			},
+                        complete: function() {
+                                showPIF();
+                        },
                         error: function(xhr, status) {
 				jQuery("#pifLoadFailure").fadeIn(2000);
 			}
@@ -25,8 +28,7 @@
             jQuery("#spinner").show();
         }
 
-        function showPIF(html){
-            jQuery("#pif").append(html);
+        function showPIF(){
             jQuery("#spinner").hide();
             jQuery("#pif").show();
             jQuery("#casContinue").show();
@@ -38,8 +40,8 @@
     body {
         position: relative;
     }
-    
-    #instructions {
+
+    #instructions, #casContinue input {
         color: #6F1C31;
         font-weight: bold;
     }
@@ -63,7 +65,7 @@
 <div id="pifInterrupt">
     <div>
         <h2>Personal Information Form</h2>
-        <span id="instructions">Once you have finished verifing your information below, please click 'Changes Complete' below to continue with the login process.</span>        
+        <span id="instructions">Once you have finished verifing your information on each tab, please click 'Verification Complete' below to continue with the login process.</span>        
     </div>
 
     <div id="spinner" style="margin: 0 auto;" >
@@ -86,7 +88,7 @@
             <input type="hidden" name="lt" value="${loginTicket}" />
             <input type="hidden" name="execution" value="${flowExecutionKey}" />
             <input type="hidden" name="_eventId" value="submit" />
-            <input type="submit" value="Changes Complete" id="btnSubmit" /><br /><br />
+            <input type="submit" value="Verification Complete" id="btnSubmit" /><br /><br />
         </form:form>
     </div>
 </div>
