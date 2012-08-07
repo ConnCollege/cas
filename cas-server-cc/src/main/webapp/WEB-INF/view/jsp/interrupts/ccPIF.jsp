@@ -3,22 +3,14 @@
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
-
-		jQuery.ajaxSetup({
-			beforeSend: function() {
-				jQuery("#spinner").fadeIn(2000);
-			},
-            complete: function() {
-            	jQuery("#spinner").fadeOut(2000);
-            }
-		});
+                hidePIF();
 
 		jQuery.ajax({
 			url: '../../PersonalInformationForm/form/cas',
 			type: "POST",
 			data: {username: "${cwUserName}"},
 			success: function(data) {
-				jQuery("#pif").append(data);
+                                showPIF(data);
 			},
                         error: function(xhr, status) {
 				jQuery("#pifLoadFailure").fadeIn(2000);
@@ -26,6 +18,19 @@
 		});
 
 	});
+
+        function hidePIF(){
+            jQuery("#pif").hide();
+            jQuery("#casContinue").hide();
+            jQuery("#spinner").show();
+        }
+
+        function showPIF(html){
+            jQuery("#pif").append(html);
+            jQuery("#spinner").hide();
+            jQuery("#pif").show();
+            jQuery("#casContinue").show();
+        }
 </script>
 
 <style type="text/css">
@@ -55,13 +60,13 @@
     }
 </style>
 
-<div>
+<div id="pifInterrupt">
     <div>
         <h2>Personal Information Form</h2>
         <span id="instructions">Once you have finished verifing your information below, please click 'Changes Complete' below to continue with the login process.</span>        
     </div>
 
-    <div id="spinner" style="display: none; position: absolute; top: 250px; left: 400px; height: 100px;">
+    <div id="spinner" style="margin: 0 auto;" >
         <h2>Your information is loading ...</h2>
         <img style="display: inline;" src="../../PersonalInformationForm/images/fedora-spinner.gif" />
     </div>
