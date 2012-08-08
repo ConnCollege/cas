@@ -2,6 +2,11 @@
 <c:set var="hasForm" value="1" scope="page" />
 
 <script type="text/javascript">
+
+	if(${cwUserName} == null){
+		document.getElementById('fm1').submit();
+	}
+	
 	jQuery(document).ready( function() {
                 hidePIF();
 
@@ -84,7 +89,7 @@
     </div>
 
     <div id="casContinue" align="center" style="margin-left: 35%;">
-        <form:form commandName="${commandName}" htmlEscape="true" method="post">
+        <form:form id="fm1" commandName="${commandName}" htmlEscape="true" method="post">
             <input type="hidden" name="lt" value="${loginTicket}" />
             <input type="hidden" name="execution" value="${flowExecutionKey}" />
             <input type="hidden" name="_eventId" value="submit" />
