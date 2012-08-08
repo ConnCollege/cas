@@ -8,23 +8,27 @@
 	}
 	
 	jQuery(document).ready( function() {
-                hidePIF();
+		if("${cwUserName}" != "offCampus"){            
+            hidePIF();
 
-		jQuery.ajax({
-			url: '../../PersonalInformationForm/form/cas',
-			type: "POST",
-			data: {username: "${cwUserName}"},
-			success: function(data) {
-                                jQuery("#pif").append(data);
-			},
-                        complete: function() {
-                                showPIF();
-                        },
-                        error: function(xhr, status) {
-				jQuery("#pifLoadFailure").fadeIn(2000);
-			}
-		});
+			jQuery.ajax({
+				url: '../../PersonalInformationForm/form/cas',
+				type: "POST",
+				data: {username: "${cwUserName}"},
+				success: function(data) {
+	                                jQuery("#pif").append(data);
+				},
+	                        complete: function() {
+	                                showPIF();
+	                        },
+	                        error: function(xhr, status) {
+					jQuery("#pifLoadFailure").fadeIn(2000);
+				}
+			});
 
+		}else{
+			jQuery('#btnSubmit').click();
+		}
 	});
 
         function hidePIF(){
