@@ -231,21 +231,21 @@ public class jdbcCamel {
 			
 			/* briley 7/20/12 - Added User Name to the scope so its available on form */
 			case PIF:
-				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
-				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
-				String ipStatus;
-				log.info("IP address is " + httpRequest.getRemoteAddr());
-				if (ipNets[0].equals("136") && ipNets[1].equals("244")) {
-					ipStatus="on Campus";
-					if (ipNets[2].equals("248") || ipNets[2].equals("192")) {
-						ipStatus="on VPN";
+				HttpServletRequest httpRequestPIF = WebUtils.getHttpServletRequest(context);
+				String[] ipNetsPIF = httpRequestPIF.getRemoteAddr().split("\\.");
+				String ipPIFStatus;
+				log.info("IP address is " + httpRequestPIF.getRemoteAddr());
+				if (ipNetsPIF[0].equals("136") && ipNetsPIF[1].equals("244")) {
+					ipPIFStatus="on Campus";
+					if (ipNetsPIF[2].equals("248") || ipNetsPIF[2].equals("192")) {
+						ipPIFStatus="on VPN";
 					} else {
 						context.getFlowScope().put("cwUserName", userName);
 					}
 				}else{
-					ipStatus="off Campus";
+					ipPIFStatus="off Campus";
 				}
-				log.info("Ip address is " + ipStatus );
+				log.info("Ip address is " + ipPIFStatus );
 				
 			break;
 			
