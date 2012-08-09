@@ -278,13 +278,13 @@
     	<property name="searchBase" value="dc=conncoll,dc=edu" />
     	<property name="localIpRanges">
             <list>
-            	<value>136.244.0.1/16</value>
+            	<value>136.244.0.0/16</value>
             </list>
         </property>
     	<property name="vpnIpRanges">
             <list>
-            	<value>136.244.192.1/24</value>
-            	<value>136.244.248.1/24</value>
+            	<value>136.244.196.0/24</value>
+            	<value>136.244.248.0/24</value>
             </list>
         </property>
          <property name="localOnly">

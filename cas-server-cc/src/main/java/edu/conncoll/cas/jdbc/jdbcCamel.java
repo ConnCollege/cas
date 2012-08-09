@@ -236,65 +236,51 @@ public class jdbcCamel {
 			break;
 			
 			case CNS:
-				HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
-				String[] ipNets = httpRequest.getRemoteAddr().split("\\.");
-				String ipStatus;
-				log.info("IP address is " + httpRequest.getRemoteAddr());
-				if (ipNets[0].equals("136") && ipNets[1].equals("244")) {
-					ipStatus="on Campus";
-					if (ipNets[2].equals("248") || ipNets[2].equals("192")) {
-						ipStatus="on VPN";
-					} else {
-						//Find Term Code
-						SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
-						Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
-						log.debug("Termcode returned by query " + termData.get("param_value").toString());
-						// term code termData.get("param_value").toString()
-						// get banner id from ldap
-						String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
-						
-						List DN = this.ldapTemplate.search(
-							this.searchBase, searchFilter, 
-							new AbstractContextMapper(){
-								protected Object doMapFromContext(DirContextOperations ctx) {
-									return ctx.getNameInNamespace();
-								}
-							}
-						);
-						
-						DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
-						
-						String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
-						try {
-							SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
-							log.debug("SQL for insert" + SQL);
-							Map<String, Object> insertParameters = new HashMap<String, Object>();
-							insertParameters.put("userName", userName);
-							insertParameters.put("bannerId", Attrib.toString());
-							insertParameters.put("termCode", termData.get("param_value").toString());
-							log.debug("SQL for insert " + SQL);
-							log.debug("user " + userName);
-							log.debug("banner id " + Attrib.toString());
-							log.debug("Term Code " + termData.get("param_value").toString());
-							int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
-							log.debug("insert rerutn" + Integer.toString(check));
-						} catch (DataAccessException e){
-							log.warn("SQL for Census insert failed " + e.getMessage());
+				//Find Term Code
+				SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
+				Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
+				log.debug("Termcode returned by query " + termData.get("param_value").toString());
+				// term code termData.get("param_value").toString()
+				// get banner id from ldap
+				String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+				
+				List DN = this.ldapTemplate.search(
+					this.searchBase, searchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
 						}
-						try {
-							FileWriter writer = new FileWriter(nuVisionPath);
-							writer.append(Attrib.toString());
-						    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\r\n");
-						    writer.flush();
-						    writer.close();
-						} catch(IOException e) {
-							log.error("unable to update nuvision file for id " + Attrib.toString());
-						} 
 					}
-				}else{
-					ipStatus="off Campus";
+				);
+				
+				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				
+				String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+				try {
+					SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
+					log.debug("SQL for insert" + SQL);
+					Map<String, Object> insertParameters = new HashMap<String, Object>();
+					insertParameters.put("userName", userName);
+					insertParameters.put("bannerId", Attrib.toString());
+					insertParameters.put("termCode", termData.get("param_value").toString());
+					log.debug("SQL for insert " + SQL);
+					log.debug("user " + userName);
+					log.debug("banner id " + Attrib.toString());
+					log.debug("Term Code " + termData.get("param_value").toString());
+					int check = jdbcCensus.update(SQL, userName, Attrib.toString(), termData.get("param_value").toString());
+					log.debug("insert rerutn" + Integer.toString(check));
+				} catch (DataAccessException e){
+					log.warn("SQL for Census insert failed " + e.getMessage());
 				}
-				log.info("Ip address is " + ipStatus );
+				try {
+					FileWriter writer = new FileWriter(nuVisionPath);
+					writer.append(Attrib.toString());
+				    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\r\n");
+				    writer.flush();
+				    writer.close();
+				} catch(IOException e) {
+					log.error("unable to update nuvision file for id " + Attrib.toString());
+				} 
 			break;
 			default:
 				
