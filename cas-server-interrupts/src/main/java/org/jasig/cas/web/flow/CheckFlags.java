@@ -170,6 +170,7 @@ public final class CheckFlags {
 	public void setLocalIpRanges(final List<String> localIpRanges) {
 	        this.localIpRanges = localIpRanges;
 	        for(String subNet :  this.localIpRanges) {
+	        	log.debug("CheckFlags adding local ip range " + subNet);
 	        	this.localSubNets.add( new SubnetUtils(subNet));
 	        }
 	}
@@ -177,6 +178,7 @@ public final class CheckFlags {
 	public void setVpnIpRanges(final List<String> vpnIpRanges) {
 	        this.vpnIpRanges = vpnIpRanges;
 	        for(String subNet :  this.localIpRanges) {
+	        	log.debug("CheckFlags adding VPN ip range " + subNet);
 	        	this.vpnSubNets.add( new SubnetUtils(subNet));
 	        }
 	}
