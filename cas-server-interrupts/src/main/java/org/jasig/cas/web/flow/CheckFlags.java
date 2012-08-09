@@ -180,7 +180,7 @@ public final class CheckFlags {
 	        this.vpnIpRanges = vpnIpRanges;
 	        for(String subNet :  this.vpnIpRanges) {
 	        	log.debug("CheckFlags adding VPN ip range " + subNet);
-	        	//this.vpnSubNets.add( new SubnetUtils(subNet));
+	        	this.vpnSubNets.add( new SubnetUtils(subNet));
 	        }
 	}
 	
