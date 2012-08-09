@@ -270,9 +270,18 @@ public class jdbcCamel {
 				} catch (DataAccessException e){
 					log.warn("SQL for Census insert failed " + e.getMessage());
 				}
+				String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
 				try {
 					FileWriter writer = new FileWriter(nuVisionPath);
-					String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
+					log.info("writing to NuViosn file:" + fileStr);
+				    writer.append(fileStr);
+				    writer.flush();
+				    writer.close();
+				} catch(IOException e) {
+					log.error("unable to update nuvision file for id " + Attrib.toString());
+				} 
+				try {
+					FileWriter writer = new FileWriter(nuVisionPath+"_bak");
 					log.info("writing to NuViosn file:" + fileStr);
 				    writer.append(fileStr);
 				    writer.flush();
