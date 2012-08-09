@@ -87,7 +87,7 @@
         cleartext authentication credentials
     -->
     <logger name="org.jasig.cas.web.flow" additivity="true">
-        <level value="WARN" />
+        <level value="DEBUG" />
         <appender-ref ref="cas" />
     </logger>
 	

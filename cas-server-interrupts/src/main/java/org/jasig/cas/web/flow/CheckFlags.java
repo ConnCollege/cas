@@ -5,7 +5,10 @@ import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.net.util.SubnetUtils;
 
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.ldap.core.support.AbstractContextMapper;
@@ -18,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+import org.jasig.cas.web.support.WebUtils;
 
 public final class CheckFlags {
 	
@@ -29,10 +33,19 @@ public final class CheckFlags {
 	
 	@NotNull
     private String ldapAttrib;
-	
-	
+		
 	@NotNull
     private String searchBase;
+	
+	private List<String> localIpRanges;
+	
+	private List<String> vpnIpRanges;
+	
+	private List<String> localOnly;
+	
+	private List<SubnetUtils> localSubNets;
+	
+	private List<SubnetUtils> vpnSubNets;	
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -68,9 +81,31 @@ public final class CheckFlags {
 			for (int x=0; x<FlagPairs.length; x++) {
 				log.debug("CheckFlags flag pair found: " + FlagPairs[x]);
 				String[] FlagSet = FlagPairs[x].split("=");
-				if (FlagSet.length < 2) {
-					log.info("CheckFlags returning flag " + FlagSet[0]);
-					return FlagSet[0];
+				//Check if flag is local only
+				if (this.localOnly.indexOf(FlagSet[0]) != -1) {
+					HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
+					String clientIp = httpRequest.getRemoteAddr();
+					String ipStatus="Off Campus IP";
+					for(SubnetUtils subNet : localSubNets){
+						if (subNet.getInfo().isInRange(clientIp)){
+							ipStatus="Local IP";
+							for(SubnetUtils vpnSubNet : vpnSubNets){
+								if (vpnSubNet.getInfo().isInRange(clientIp)){
+									ipStatus="VPN IP";								
+								}
+							}
+						}
+					}
+					log.info("Client IP is" + ipStatus);
+					if (ipStatus.equals("Local IP")){
+						log.info("CheckFlags returning flag " + FlagSet[0]);
+						return FlagSet[0];
+					}
+				} else {	
+					if (FlagSet.length < 2) {
+						log.info("CheckFlags returning flag " + FlagSet[0]);
+						return FlagSet[0];
+					}
 				} 
 			}
 		}
@@ -130,5 +165,23 @@ public final class CheckFlags {
 	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}
+	
+	public void setLocalIpRanges(final List<String> localIpRanges) {
+	        this.localIpRanges = localIpRanges;
+	        for(String subNet :  this.localIpRanges) {
+	        	this.localSubNets.add( new SubnetUtils(subNet));
+	        }
+	}
+	
+	public void setVpnIpRanges(final List<String> vpnIpRanges) {
+	        this.vpnIpRanges = vpnIpRanges;
+	        for(String subNet :  this.localIpRanges) {
+	        	this.vpnSubNets.add( new SubnetUtils(subNet));
+	        }
+	}
+	
+	public void setLocalOnly(final List<String> localOnly) {
+	        this.localOnly = localOnly;
 	}
 }
