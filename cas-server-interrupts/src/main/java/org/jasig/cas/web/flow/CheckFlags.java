@@ -167,7 +167,7 @@ public final class CheckFlags {
 		this.filter = filter;
 	}
 	
-	public void setLocalIpRanges(final List<String> localIpRanges) {
+	public final void setlocalIpRanges(final List<String> localIpRanges) {
 	        this.localIpRanges = localIpRanges;
 	        for(String subNet :  this.localIpRanges) {
 	        	log.debug("CheckFlags adding local ip range " + subNet);
@@ -175,7 +175,7 @@ public final class CheckFlags {
 	        }
 	}
 	
-	public void setVpnIpRanges(final List<String> vpnIpRanges) {
+	public final void setvpnIpRanges(final List<String> vpnIpRanges) {
 	        this.vpnIpRanges = vpnIpRanges;
 	        for(String subNet :  this.localIpRanges) {
 	        	log.debug("CheckFlags adding VPN ip range " + subNet);
