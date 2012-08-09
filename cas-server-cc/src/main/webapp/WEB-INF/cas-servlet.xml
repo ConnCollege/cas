@@ -271,9 +271,27 @@
         p:suffix=".jsp"
         p:order="1"/>
         
-    <bean id="CheckFlags" class="org.jasig.cas.web.flow.CheckFlags" 
-		p:filter="sAMAccountName=%u"
-		p:ldapTemplate-ref="ldapTemplate"
-		p:ldapAttrib="extensionAttribute8"
-		p:searchBase="dc=conncoll,dc=edu" />
+    <bean id="CheckFlags" class="org.jasig.cas.web.flow.CheckFlags">
+    	<property name="filter" value="sAMAccountName=%u" />
+    	<property name="ldapTemplate" ref="ldapTemplate" />
+    	<property name="ldapAttrib" value="extensionAttribute8" />
+    	<property name="searchBase" value="dc=conncoll,dc=edu" />
+    	<property name="localIpRanges">
+            <list>
+            	<value>136.244.0.1/16</value>
+            </list>
+        </property>
+    	<property name="vpnIpRanges">
+            <list>
+            	<value>136.244.192.1/24</value>
+            	<value>136.244.248.1/24</value>
+            </list>
+        </property>
+         <property name="localOnly">
+         	<list>
+         		<value>CNS</value>
+         		<value>PIF</value>
+         	</list>
+         </property>   
+    </bean>
 </beans>
