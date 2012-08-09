@@ -240,13 +240,13 @@ public class jdbcCamel {
 					ipPIFStatus="on Campus";
 					if (ipNetsPIF[2].equals("248") || ipNetsPIF[2].equals("192")) {
 						ipPIFStatus="on VPN";
-						context.getFlowScope().put("cwUserName", "offCampus");
+						//context.getFlowScope().put("cwUserName", "offCampus");
 					} else {
 						context.getFlowScope().put("cwUserName", userName);
 					}
 				}else{
 					ipPIFStatus="off Campus";
-					context.getFlowScope().put("cwUserName", "offCampus");
+					//context.getFlowScope().put("cwUserName", "offCampus");
 				}
 				log.info("Ip address is " + ipPIFStatus );
 				
