@@ -1,5 +1,6 @@
 package org.jasig.cas.web.flow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.text.DateFormat;
@@ -43,9 +44,9 @@ public final class CheckFlags {
 	
 	private List<String> localOnly;
 	
-	private List<SubnetUtils> localSubNets;
+	private List<SubnetUtils> localSubNets = new ArrayList<SubnetUtils>();
 	
-	private List<SubnetUtils> vpnSubNets;	
+	private List<SubnetUtils> vpnSubNets = new ArrayList<SubnetUtils>();	
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -171,7 +172,7 @@ public final class CheckFlags {
 	        this.localIpRanges = localIpRanges;
 	        for(String subNet :  this.localIpRanges) {
 	        	log.debug("CheckFlags adding local ip range " + subNet);
-	        	this.localSubNets.add( new SubnetUtils(subNet));
+	        	this.localSubNets.add(new SubnetUtils(subNet));
 	        }
 	}
 	
@@ -179,7 +180,7 @@ public final class CheckFlags {
 	        this.vpnIpRanges = vpnIpRanges;
 	        for(String subNet :  this.vpnIpRanges) {
 	        	log.debug("CheckFlags adding VPN ip range " + subNet);
-	        	this.vpnSubNets.add( new SubnetUtils(subNet));
+	        	//this.vpnSubNets.add( new SubnetUtils(subNet));
 	        }
 	}
 	
