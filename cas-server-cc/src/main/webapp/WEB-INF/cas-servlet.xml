@@ -277,17 +277,17 @@
     	<property name="ldapAttrib" value="extensionAttribute8" />
     	<property name="searchBase" value="dc=conncoll,dc=edu" />
     	<property name="localIpRanges">
-            <list>
+            <list value-type="java.lang.String">
             	<value>136.244.0.0/16</value>
             </list>
         </property>
     	<property name="vpnIpRanges">
-            <list>
+            <list value-type="java.lang.String">
             	<value>136.244.192.0/24</value>
             	<value>136.244.248.0/24</value>
             </list>
         </property>
-         <property name="localOnly" >
+         <property name="localOnly">
          	<list>
          		<value>CNS</value>
          		<value>PIF</value>
