@@ -90,8 +90,6 @@
             }
         </style>
 
-User is: '${cwUserName}'
-
         <div id="pifInterrupt">
             <div>
                 <h2>Personal Information Form</h2>
