@@ -27,7 +27,6 @@ import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-import javax.servlet.http.HttpServletRequest;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -62,7 +61,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
-import org.jasig.cas.web.support.WebUtils;
 
 
 public class jdbcCamel {
@@ -274,8 +272,9 @@ public class jdbcCamel {
 				}
 				try {
 					FileWriter writer = new FileWriter(nuVisionPath);
-					writer.append(Attrib.toString());
-				    writer.append(";;;;;;;;;;;;;;;;;;;;;;;\r\n");
+					String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
+					log.info("writing to NuViosn file:" + fileStr);
+				    writer.append(fileStr);
 				    writer.flush();
 				    writer.close();
 				} catch(IOException e) {
