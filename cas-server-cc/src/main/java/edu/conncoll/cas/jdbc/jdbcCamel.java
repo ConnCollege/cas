@@ -235,20 +235,23 @@ public class jdbcCamel {
 				String[] ipNetsPIF = httpRequestPIF.getRemoteAddr().split("\\.");
 				String ipPIFStatus;
 				
+				String usr = "", str = "";
+				
 				log.info("IP address is " + httpRequestPIF.getRemoteAddr());
 				if (ipNetsPIF[0].equals("136") && ipNetsPIF[1].equals("244")) {
 					ipPIFStatus="on Campus";
 					if (ipNetsPIF[2].equals("248") || ipNetsPIF[2].equals("192")) {
 						ipPIFStatus="on VPN";
-						//context.getFlowScope().put("cwUserName", "offCampus");
 					} else {
-						context.getFlowScope().put("cwUserName", userName);
+						usr = userName;
 					}
 				}else{
 					ipPIFStatus="off Campus";
-					//context.getFlowScope().put("cwUserName", "offCampus");
 				}
 				log.info("Ip address is " + ipPIFStatus );
+				
+				context.getFlowScope().put("cwUserName", usr);
+				context.getFlowScope().put("cwEmptyString", str);
 				
 			break;
 			
