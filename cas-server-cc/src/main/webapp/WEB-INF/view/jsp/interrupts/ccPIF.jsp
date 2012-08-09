@@ -7,27 +7,23 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:choose>
-    <c:when test="${'${cwUserName}' == 'offCampus'}">
-	<script type="text/javascript">
-            <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
-                <head>	
-                    <title>Connecticut College Intranet Login</title>
-                    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-                    <link rel="Shortcut Icon" href="https://www.conncoll.edu/cw40/html/themes/classic/images/favicon.ico" />
-                </head>
-                <body>
-                    <form:form method="post" id="fm1" cssClass="fm-v clearfix" htmlEscape="true">
-
-                        <input type="hidden" name="lt" value="${loginTicket}" />
-                        <input type="hidden" name="execution" value="${flowExecutionKey}" />
-                        <input type="hidden" name="_eventId" value="submit" />
-                    </form:form>
-                    <script  type="text/javascript">
-	                document.getElementById('fm1').submit();
-                    </script>
-                </body>
-             </html>
-        </script>
+    <c:when test="${(empty cwUserName)}">
+        <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
+            <head>    
+                <title>Connecticut College Intranet Login</title>
+                <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+                <link rel="Shortcut Icon" href="https://www.conncoll.edu/cw40/html/themes/classic/images/favicon.ico" />
+            </head>
+            <body>
+                <form:form method="post" id="fm1" cssClass="fm-v clearfix" htmlEscape="true">
+                    <input type="hidden" name="lt" value="${loginTicket}" />                                              <input type="hidden" name="execution" value="${flowExecutionKey}" />
+                    <input type="hidden" name="_eventId" value="submit" />
+                </form:form>
+                <script  type="text/javascript">
+                    document.getElementById('fm1').submit();
+                </script>
+            </body>
+         </html>
     </c:when>
     <c:otherwise>
         <jsp:directive.include file="includes/Top.jsp" />
