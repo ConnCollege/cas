@@ -82,32 +82,32 @@ public final class CheckFlags {
 			for (int x=0; x<FlagPairs.length; x++) {
 				log.debug("CheckFlags flag pair found: " + FlagPairs[x]);
 				String[] FlagSet = FlagPairs[x].split("=");
-				//Check if flag is local only
-				if (this.localOnly.indexOf(FlagSet[0]) != -1) {
-					HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
-					String clientIp = httpRequest.getRemoteAddr();
-					String ipStatus="Off Campus IP";
-					for(SubnetUtils subNet : localSubNets){
-						if (subNet.getInfo().isInRange(clientIp)){
-							ipStatus="Local IP";
-							for(SubnetUtils vpnSubNet : vpnSubNets){
-								if (vpnSubNet.getInfo().isInRange(clientIp)){
-									ipStatus="VPN IP";								
+				if (FlagSet.length < 2) {
+					//Check if flag is local only
+					if (this.localOnly.indexOf(FlagSet[0]) != -1) {
+						HttpServletRequest httpRequest = WebUtils.getHttpServletRequest(context);
+						String clientIp = httpRequest.getRemoteAddr();
+						String ipStatus="Off Campus IP";
+						for(SubnetUtils subNet : localSubNets){
+							if (subNet.getInfo().isInRange(clientIp)){
+								ipStatus="Local IP";
+								for(SubnetUtils vpnSubNet : vpnSubNets){
+									if (vpnSubNet.getInfo().isInRange(clientIp)){
+										ipStatus="VPN IP";								
+									}
 								}
 							}
 						}
-					}
-					log.info("Client IP is" + ipStatus);
-					if (ipStatus.equals("Local IP")){
+						log.info("Client IP is" + ipStatus);
+						if (ipStatus.equals("Local IP")){
+							log.info("CheckFlags returning flag " + FlagSet[0]);
+							return FlagSet[0];
+						}
+					} else {	
 						log.info("CheckFlags returning flag " + FlagSet[0]);
 						return FlagSet[0];
-					}
-				} else {	
-					if (FlagSet.length < 2) {
-						log.info("CheckFlags returning flag " + FlagSet[0]);
-						return FlagSet[0];
-					}
-				} 
+					} 
+				}
 			}
 		}
 		return "noFlag";
