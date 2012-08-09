@@ -15,6 +15,7 @@ import org.springframework.webflow.execution.RequestContext;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
 
 import org.jasig.cas.util.LdapUtils;
 
