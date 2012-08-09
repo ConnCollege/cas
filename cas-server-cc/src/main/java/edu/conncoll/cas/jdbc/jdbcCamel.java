@@ -231,27 +231,7 @@ public class jdbcCamel {
 			
 			/* briley 7/20/12 - Added User Name to the scope so its available on form */
 			case PIF:
-				HttpServletRequest httpRequestPIF = WebUtils.getHttpServletRequest(context);
-				String[] ipNetsPIF = httpRequestPIF.getRemoteAddr().split("\\.");
-				String ipPIFStatus;
-				
-				String usr = "", str = "";
-				
-				log.info("IP address is " + httpRequestPIF.getRemoteAddr());
-				if (ipNetsPIF[0].equals("136") && ipNetsPIF[1].equals("244")) {
-					ipPIFStatus="on Campus";
-					if (ipNetsPIF[2].equals("248") || ipNetsPIF[2].equals("192")) {
-						ipPIFStatus="on VPN";
-					} else {
-						usr = userName;
-					}
-				}else{
-					ipPIFStatus="off Campus";
-				}
-				log.info("Ip address is " + ipPIFStatus );
-				
-				context.getFlowScope().put("cwUserName", usr);
-				context.getFlowScope().put("cwEmptyString", str);
+				context.getFlowScope().put("cwUserName", userName);
 				
 			break;
 			
