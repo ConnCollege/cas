@@ -101,6 +101,7 @@
 				<entry value="mailState" key="extensionAttribute14" />
 				<entry value="mail" key="userPrincipalName" />
 				<entry value="interrupts" key="extensionAttribute8" />
+				<entry value="udcIdentifier" key="extensionAttribute10" />
 			</map>
 		</property>	
 	</bean>
