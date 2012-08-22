@@ -282,9 +282,10 @@ public class jdbcCamel {
 				} 
 				try {
 					FileWriter writer = new FileWriter(nuVisionPath+"_bak",true);
-					log.info("writing to NuViosn file:" + fileStr);
 					Date now = new Date();
-				    writer.append(fileStr+now.toString());
+					fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;"+now.toString()+"\r\n";
+					log.info("writing to NuViosn file:" + fileStr);
+				    writer.append(fileStr);
 				    writer.flush();
 				    writer.close();
 				} catch(IOException e) {
