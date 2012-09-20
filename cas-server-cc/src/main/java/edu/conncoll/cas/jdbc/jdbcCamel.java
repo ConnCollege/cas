@@ -272,7 +272,7 @@ public class jdbcCamel {
 				}
 				String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
 				try {
-					FileWriter writer = new FileWriter(nuVisionPath);
+					FileWriter writer = new FileWriter(nuVisionPath,true);
 					log.info("writing to NuViosn file:" + fileStr);
 				    writer.append(fileStr);
 				    writer.flush();
@@ -281,7 +281,9 @@ public class jdbcCamel {
 					log.error("unable to update nuvision file for id " + Attrib.toString());
 				} 
 				try {
-					FileWriter writer = new FileWriter(nuVisionPath+"_bak");
+					FileWriter writer = new FileWriter(nuVisionPath+"_bak",true);
+					Date now = new Date();
+					fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;"+now.toString()+"\r\n";
 					log.info("writing to NuViosn file:" + fileStr);
 				    writer.append(fileStr);
 				    writer.flush();
