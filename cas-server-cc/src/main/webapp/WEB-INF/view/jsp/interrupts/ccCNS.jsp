@@ -13,13 +13,12 @@
 </head>
 <body>
 <form:form method="post" id="fm1" cssClass="fm-v clearfix" htmlEscape="true">
+<h1>You have successfully logged in to the College’s network to notify us that you are here and activated your meal card if you are on a meal plan.</h1>
 
+<input type="submit" value="Continue" />
 <input type="hidden" name="lt" value="${loginTicket}" />
 <input type="hidden" name="execution" value="${flowExecutionKey}" />
 <input type="hidden" name="_eventId" value="submit" />
 </form:form>
-<script  type="text/javascript">
-	document.getElementById('fm1').submit();
-</script>
 </body>
 </html>

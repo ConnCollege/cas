@@ -290,7 +290,6 @@
          <property name="localOnly">
          	<list>
          		<value>CNS</value>
-         		<value>PIF</value>
          	</list>
          </property>   
     </bean>
