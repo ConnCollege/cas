@@ -4,7 +4,7 @@
 <c:choose>
  		<c:when test='${ValidEmr == 0}'>
 			There is a problem with your  CamelWeb account or emergency contact information preventing you from logging in.<br />
-			To correct the problem, please contact the IT Service Desk  at email: <a href="mailto:help@conncoll.edu">help@conncoll.edu</a> or phone: 860) 439-HELP (4357)
+			To correct the problem, please contact the IT Service Desk  at phone: 860) 439-HELP (4357)
 		</c:when>
 		<c:otherwise>
 <form:form commandName="${commandName}" htmlEscape="true" method="post">
