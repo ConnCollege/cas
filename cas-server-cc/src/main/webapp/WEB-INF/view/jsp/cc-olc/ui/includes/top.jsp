@@ -97,20 +97,18 @@
 
 			<div class="selectBox" onmouseover="ResourcesHide(1);" onmouseout="ResourcesHide(0);" style="width: 170px;"> <a id="adSelectBox" href="#">Resources For</a>
 				<ul style="display: none;" id="selectResources">
-					<li class="first"><a href="http://www.conncoll.edu/students/students.htm">Students</a></li>
+					<li class="first"><a href="http://www.conncoll.edu/students/">Students</a></li>
 					<li><a href="http://www.conncoll.edu/admission">Prospective Students</a></li>
-					<li><a href="http://www.conncoll.edu/facstaff/index.htm">Faculty &amp; Staff</a></li>
-
+					<li><a href="http://www.conncoll.edu//faculty-staff-resources/">Faculty &amp; Staff</a></li>
 					<li><a href="http://www.conncoll.edu/alumni/index.htm">Alumni</a></li>
-					<li><a href="http://www.conncoll.edu/parents/index.htm">Parents &amp; Families</a></li>
-					<li><a href="http://www.conncoll.edu/community/243.htm">Community &amp; Visitors</a></li>
-				</ul>
+					<li><a href="http://www.conncoll.edu//parents-families/">Parents &amp; Families</a></li>
+					<li><a href="http://www.conncoll.edu/community-visitors/">Community &amp; Visitors</a></li>				</ul>
 			</div>
 
 			<ul class="utilityLinks">
-				<li><a href="http://www.conncoll.edu/employment/1195.htm">Employment</a></li>
-				<li><a href="http://www.conncoll.edu/is/index.htm">Libraries/Technology</a></li>
-				<li><a href="http://www.conncoll.edu/admission/11163.htm">Visiting Campus</a></li>
+				<li><a href="http://www.conncoll.edu/employment/">Employment</a></li>
+				<li><a href="http://www.conncoll.edu/libraries-and-technology/">Libraries/Technology</a></li>
+				<li><a href="http://www.conncoll.edu/admission/visiting-campus/">Visiting Campus</a></li>
 				<li><a href="http://www.conncoll.edu/events">Events</a></li>
 				<li><a href="http://www.conncoll.edu/news/index.htm">News</a></li>
 
@@ -159,14 +157,12 @@
 			</fieldset>
 		</form>
 		<ul class="adTopNav">
-			<li class="first"><a href="http://www.conncoll.edu/about/index.htm">At a Glance</a></li>
-
+			<li class="first"><a href="http://www.conncoll.edu/at-a-glance/">At a Glance</a></li>
 			<li><a href="http://www.conncoll.edu/academics/index.htm">Academics</a></li>
 			<li><a href="http://www.conncoll.edu/admission/index.htm">Admission</a></li>
-			<li><a href="http://www.conncoll.edu/campuslife/index.htm">Campus Life</a></li>
-			<li><a href="http://www.conncoll.edu/centers/index.htm">Academic Centers</a></li>
-			<li><a href="http://www.conncoll.edu/artsculture/index.htm">Arts &amp; Culture</a></li>
-
+			<li><a href="http://www.conncoll.edu/campus-life/">Campus Life</a></li>
+			<li><a href="http://www.conncoll.edu/academic-centers/">Academic Centers</a></li>
+			<li><a href="http://www.conncoll.edu/arts-culture/">Arts &amp; Culture</a></li>
 			<li><a href="http://www.conncoll.edu/sciences/index.htm">Sciences</a></li>
 			<li><a href="http://www.conncoll.edu/athletics/">Athletics</a></li>
 			<li><a href="http://makeagift.conncoll.edu/">Make A Gift</a></li>
@@ -184,19 +180,17 @@
 				<ul>
 					<li><a href="http://www.conncoll.edu/alumni ">Alumni Home</a></li>
 					<li><a href="https://www.alumniconnections.com/olc/membersonly/CTC/old/directory.cgi?FNC=basicsearch">Find Alumni</a></li>
-
 					<li><a href="https://www.alumniconnections.com/olc/membersonly/CTC/mypage.jsp">My Profile</a></li>
 					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/hsearch/showSearch.jsp">Keyword Search</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/ccservices.html">Mentoring Services</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12056.htm">Networking & Careers</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12158.htm">Volunteer</a></li>
+					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/mentor/mentor.cgi">Mentoring Services</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/networking-careers/">Networking & Careers</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/volunteer/">Volunteer</a></li>
 					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/geventcal/showListView.jsp">Alumni Calendar</a></li>
-
-					<li><a href="http://www.conncoll.edu/alumni/12057.htm ">Programs &amp; Events</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/programs-events/">Programs &amp; Events</a></li>
 					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/classnotes/classnotes.cgi">Class Notes</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12059.htm">Alumni Association</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12450.htm">Online Community Help</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/12052.htm">Support the College</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/alumni-association/">Alumni Association</a></li>
+					<li><a href="http://www.conncoll.edu//alumni/online-community-help/">Online Community Help</a></li>
+					<li><a href="http://www.conncoll.edu/alumni/support-the-college/">Support the College</a></li>
 
 				</ul>
 				<!--*****END CONTEXTUAL NAVIATION*****-->

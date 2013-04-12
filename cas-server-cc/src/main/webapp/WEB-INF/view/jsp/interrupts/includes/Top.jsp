@@ -11,7 +11,7 @@
 <head>	<title>Connecticut College Intranet Login</title>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 <link rel="Shortcut Icon" href="https://www.conncoll.edu/cw40/html/themes/classic/images/favicon.ico" />
-<link href="https://www.conncoll.educw40/html/portal/css.jsp?browserId=firefox&amp;themeId=classic&amp;colorSchemeId=01&amp;minifierType=css&amp;t=1269884596000" rel="stylesheet" type="text/css" />
+<link href="https://www.conncoll.edu/cw40/html/portal/css.jsp?browserId=firefox&amp;themeId=classic&amp;colorSchemeId=01&amp;minifierType=css&amp;t=1269884596000" rel="stylesheet" type="text/css" />
 <link href="https://www.conncoll.edu/cw40/html/themes/classic/css/main.css?browserId=firefox&amp;minifierType=css&amp;t=1269884596000" rel="stylesheet" type="text/css" />
 <style type="text/css">#banner .logo a{background:url(https://www.conncoll.edu/cw40/image/company_logo?img_id=10162&amp;t=1273150327445) no-repeat;display:block;font-size:0;height:80px;text-indent:-9999em;width:274px;}</style>
 <script src="https://www.conncoll.edu/cw40/html/js/jquery/jquery.js" type="text/javascript"></script>

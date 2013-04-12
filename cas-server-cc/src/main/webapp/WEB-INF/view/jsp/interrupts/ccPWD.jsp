@@ -11,7 +11,7 @@
 English lower case characters (a through z)<br />
 Numbers (0 through 9)<br />
 Non-alphabetic characters (for example, ! $,#, %).</p>
-<p>If you are unable to log in to your email account after changing your password, contact the computer Help Desk at x4357 </p>
+<p>If you are unable to log in to your email account after changing your password, contact the computer IT Service Desk at x4357 </p>
 <p>Below are some examples of passwords that would follow the necessary criteria:<br />
 &amp;Ez2do Suce$$ful 2S!ncere Etc&amp;etc Came12oo4</p>
 

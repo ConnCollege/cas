@@ -91,7 +91,7 @@
         <appender-ref ref="cas" />
     </logger>
 	
-    <logger name="org.jasig.cas.services" additivity="true">
+    <logger name="edu.conncoll" additivity="true">
         <level value="WARN" />
         <appender-ref ref="cas" />
     </logger>
