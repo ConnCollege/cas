@@ -53,7 +53,7 @@ and (min-width : 1824px) {
 	  z-index: 0;
 	}
 	.slidesplash:after {
-	  background: transparent url(http://www.conncoll.edu/media/website-media/login/pattern.png) repeat top left;
+	  background: transparent url(https://www.conncoll.edu/media/website-media/login/pattern.png) repeat top left;
 	  content: '';
 	}
 	.slidesplash li span {
@@ -97,10 +97,10 @@ and (min-width : 1824px) {
 		line-height: 200px; 
 	}
 	.slidesplash li:nth-child(1) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/1.jpg) 
+		background-image: url(https://www.conncoll.edu/media/website-media/login/1.jpg) 
 	}
 	.slidesplash li:nth-child(2) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/2.jpg);
+		background-image: url(https://www.conncoll.edu/media/website-media/login/2.jpg);
 		-webkit-animation-delay: 8s;
 		-moz-animation-delay: 8s;
 		-o-animation-delay: 8s;
@@ -108,7 +108,7 @@ and (min-width : 1824px) {
 		animation-delay: 8s; 
 	}
 	.slidesplash li:nth-child(3) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/3.jpg);
+		background-image: url(https://www.conncoll.edu/media/website-media/login/3.jpg);
 		-webkit-animation-delay: 16s;
 		-moz-animation-delay: 16s;
 		-o-animation-delay: 16s;
@@ -116,7 +116,7 @@ and (min-width : 1824px) {
 		animation-delay: 16s; 
 	}
 	.slidesplash li:nth-child(4) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/4.jpg);
+		background-image: url(https://www.conncoll.edu/media/website-media/login/4.jpg);
 		-webkit-animation-delay: 24s;
 		-moz-animation-delay: 24s;
 		-o-animation-delay: 24s;
@@ -124,7 +124,7 @@ and (min-width : 1824px) {
 		animation-delay: 24s; 
 	}
 	.slidesplash li:nth-child(5) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/5.jpg);
+		background-image: url(https://www.conncoll.edu/media/website-media/login/5.jpg);
 		-webkit-animation-delay: 32s;
 		-moz-animation-delay: 32s;
 		-o-animation-delay: 32s;
@@ -132,7 +132,7 @@ and (min-width : 1824px) {
 		animation-delay: 32s; 
 	}
 	.slidesplash li:nth-child(6) span { 
-		background-image: url(http://www.conncoll.edu/media/website-media/login/6.jpg);
+		background-image: url(https://www.conncoll.edu/media/website-media/login/6.jpg);
 		-webkit-animation-delay: 40s;
 		-moz-animation-delay: 40s;
 		-o-animation-delay: 40s;
