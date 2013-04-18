@@ -21,6 +21,7 @@
         <br />
         <form:password cssClass="required" cssErrorClass="error" id="password" size="25" tabindex="2" path="password"  accesskey="${passwordAccessKey}" htmlEscape="true" autocomplete="off" />
         <br />
+        <input type="submit" value="Log In" />
         <input type="hidden" name="lt" value="${loginTicket}" />
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />
