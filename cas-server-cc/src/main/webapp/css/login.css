@@ -150,7 +150,7 @@ form input[type="submit"]{
 @media only screen 
 and (max-width : 320px){
 	.box{
-		margin-top:-250px;
+		margin-top:-240px;
 	}
 }
 
