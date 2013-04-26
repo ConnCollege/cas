@@ -146,6 +146,11 @@ form input[type="submit"]{
 	}
 
 }
+/* Smartphone in landscape mode */
+@media only screen 
+and (max-width : 320px){
+	margin-top:-200px;
+}
 
 
 
