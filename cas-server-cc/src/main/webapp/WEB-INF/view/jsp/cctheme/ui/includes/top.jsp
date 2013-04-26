@@ -20,7 +20,7 @@
 	    <!--[if lt IE 9]><script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	    <title>Connecticut College Login</title>
 	    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	    <script>window.jQuery || document.write('<script src="//www.conncoll.edu/scripts/jquery/jquery.js"><\/script>'
+	    <script>window.jQuery || document.write('<script src="//www.conncoll.edu/scripts/jquery/jquery.js"><\/script>'</script>
 	    <script type="text/javascript">
 			jQuery(document).ready(function() {		
 				jQuery('.errors').hide();
