@@ -112,7 +112,7 @@ header img{
 .box{
 	background-color: #fff;
 	box-shadow: 0 0 10px #222;
-	margin-top: -150px;
+	margin-top: -130px;
 	margin-left: -175px;
 	padding: 10px 10px 0 10px;
 	position: absolute;
@@ -146,10 +146,10 @@ form input[type="submit"]{
 	}
 
 }
-/* Smartphone in landscape mode */
+/* Smartphone in portrait mode */
 @media only screen 
 and (max-width : 320px){
-	margin-top:-200px;
+	margin-top:-250px;
 }
 
 
