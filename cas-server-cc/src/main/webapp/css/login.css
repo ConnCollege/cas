@@ -106,12 +106,13 @@ only screen and (min-device-pixel-ratio : 1.5) {
 
 header img{
 	height:30px;	
+	width:310px;
 }
 .box{
 	background-color: #fff;
 	box-shadow: 0 0 10px #222;
 	margin-top: -130px;
-	margin-left: -175px;
+	margin-left: -185px;
 	padding: 10px 10px 0 10px;
 	position: absolute;
 	left: 50%;
@@ -148,17 +149,18 @@ form input[type="submit"]{
 @media only screen 
 and (max-width : 320px){
 header img{
-	height:30px;	
+	height:30px;
+	width:280px;
 }
 .box{
 	background-color: #fff;
 	box-shadow: 0 0 10px #222;
 	margin-top: -130px;
-	margin-left: -175px;
+	margin-left: -163px;
 	padding: 10px 10px 0 10px;
 	position: absolute;
 	left: 50%;
-	width:320px;	
+	width:300px;	
 }
 form input{
 	width:280px;	
