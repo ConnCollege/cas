@@ -1,49 +1,4 @@
-@media screen and (max-width: 1140px) { 
-    .slidesplash li div h3 { font-size: 140px }
-}
-@media screen and (max-width: 600px) { 
-    .slidesplash li div h3 { font-size: 80px }
-}
-
-/* media queries custom */
-/* Smartphones (portrait and landscape) ----------- */
-/* Smartphones (portrait and landscape) ----------- */
-@media only screen 
-and (max-device-width : 480px),
-only screen 
-and (max-width : 320px), 
-only screen 
-and (max-width : 380px), 
-only screen and (-webkit-min-device-pixel-ratio : 1.5),
-only screen and (min-device-pixel-ratio : 1.5) {
-
-.slidesplash li:nth-child(1),li:nth-child(2),li:nth-child(3),li:nth-child(4),li:nth-child(5) span{
-	display:none;	
-}
-
-}
-
-/* iPads (portrait and landscape),
-iPads landscape,
-iPads portrait,
-desktops and laptops,
-large screens */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px),
-only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : landscape),
-only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : portrait),
-only screen 
-and (min-width : 1224px),
-only screen 
-and (min-width : 1824px) {
-	.slidesplash,
+.slidesplash,
 	.slidesplash:after {
 	  height: 100%;
 	  position: fixed;
@@ -260,5 +215,34 @@ and (min-width : 1824px) {
 	.no-cssanimations .slidesplash li span{
 		opacity: 1;
 	}
+
+
+@media screen and (max-width: 1140px) { 
+    .slidesplash li div h3 { font-size: 140px }
 }
+@media screen and (max-width: 600px) { 
+    .slidesplash li div h3 { font-size: 80px }
+}
+
+/* media queries custom */
+/* Smartphones (portrait and landscape) ----------- */
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (max-device-width : 480px),
+only screen
+and (max-width : 480px),
+only screen 
+and (max-width : 320px), 
+only screen 
+and (max-width : 380px), 
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+
+.slidesplash li:nth-child(1),li:nth-child(2),li:nth-child(3),li:nth-child(4),li:nth-child(5) span{
+	display:none;	
+}
+
+}
+
+
 
