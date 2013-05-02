@@ -12,6 +12,7 @@
     <header>
         <img src="https://www.conncoll.edu/media/website-media/login/logo.png" />
     </header>
+    <p>&nbsp;</p>
 		<div id="msg" class="success">
 			<h2><spring:message code="screen.logout.header" /></h2>
 
@@ -29,5 +30,6 @@
 			</p>
 			</c:if>
 		</div>
+	<p>&nbsp;</p>
 </div>  
 <jsp:directive.include file="includes/bottom.jsp" />
