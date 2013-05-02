@@ -1,5 +1,17 @@
 <jsp:directive.include file="includes/top.jsp" />
 
+<ul class="slidesplash">
+    <li><span>Image 01</span></li>
+    <li><span>Image 02</span></li>
+    <li><span>Image 03</span></li>
+    <li><span>Image 04</span></li>
+    <li><span>Image 05</span></li>
+    <li><span>Image 06</span></li>
+</ul> 
+<div class="box noselect">
+    <header>
+        <img src="https://www.conncoll.edu/media/website-media/login/logo.png" />
+    </header>
 		<div id="msg" class="success">
 			<h2><spring:message code="screen.logout.header" /></h2>
 
@@ -17,4 +29,5 @@
 			</p>
 			</c:if>
 		</div>
+</div>  
 <jsp:directive.include file="includes/bottom.jsp" />
