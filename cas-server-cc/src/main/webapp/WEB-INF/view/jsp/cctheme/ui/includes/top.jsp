@@ -21,6 +21,7 @@
 	    <title>Connecticut College Login</title>
 	    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	    <script>window.jQuery || document.write('<script src="//www.conncoll.edu/scripts/jquery/jquery.js"><\/script>'</script>
+	    <script src="http://www.conncoll.edu/scripts/jquery/placeholder/Placeholders.min.js"></script>
 	    <script type="text/javascript">
 			jQuery(document).ready(function() {		
 				jQuery('.errors').hide();
@@ -29,6 +30,10 @@
 	    		});
 				//to avoid the address bar on mobile
 				window.addEventListener("load", setTimeout( function(){ window.scrollTo(0, 1) }, 0));
+				//init placeholders (for non html5 browsers to display placeholders within fields)
+				Placeholders.init({
+    				live: true
+				});
 			});
 		</script>
     
