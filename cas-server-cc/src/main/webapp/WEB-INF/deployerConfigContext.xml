@@ -102,8 +102,8 @@
 				<entry value="mail" key="userPrincipalName" />
 				<entry value="interrupts" key="extensionAttribute8" />
 				<entry value="UDC_IDENTIFIER" key="extensionAttribute10" />
-				<entry value="givenName" key="givenName" />
-				<entry value="sn" key="sn" />
+				<entry value="givenName" key="givenName" /> 
+				<entry value="sn" key="sn" /> 
 				<entry value="departmentName" key="departmentName" />
 			</map>
 		</property>	
