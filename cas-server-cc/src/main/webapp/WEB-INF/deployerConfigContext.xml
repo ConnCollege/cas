@@ -104,7 +104,7 @@
 				<entry value="UDC_IDENTIFIER" key="extensionAttribute10" />
 				<entry value="givenName" key="givenName" /> 
 				<entry value="sn" key="sn" /> 
-				<entry value="departmentName" key="departmentName" />
+				<entry value="departmentName" key="department" />
 			</map>
 		</property>	
 	</bean>
