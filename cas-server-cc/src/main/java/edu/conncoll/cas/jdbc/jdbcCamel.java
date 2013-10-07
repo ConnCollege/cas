@@ -433,7 +433,7 @@ public class jdbcCamel {
 					}else {
 						AreaCode = 860;
 					}
-					if ((intData.getField(PhonePos[x]+1).length() == 7) && (intData.getField(PhonePos[x]+1).replaceAll("\\d+","").length() > 0)){	
+					if ((intData.getField(PhonePos[x]+1).length() == 7) && (intData.getField(PhonePos[x]+1).replaceAll("\\d+","").length() == 0)){	
 						Phone = Integer.parseInt(intData.getField(PhonePos[x]+1).replace("-",""));		
 						log.debug("Executing Phone save with: " + EMRID + "," + PID + "," + AreaCode + "," + Phone + "," + 
 							intData.getField(PhonePos[x]+2).toCharArray()[0] + "," + intData.getField(PhonePos[x]+3) + "," + 
@@ -443,7 +443,12 @@ public class jdbcCamel {
 							Integer.parseInt(intData.getField(PhonePos[x]+4)));
 						
 					}else{
-						log.debug ("Phone number " + x + " not saved as number is not valid");						
+						log.debug ("Phone number " + x + " not saved as number is not valid");	
+						if (x==0){
+							log.warn("Invalid Primary Phone number");
+							context.getFlowScope().put("ErrorMsg", "Primary phone is not a valid phone number, please correct and submit again");
+							return "Failed";
+						}					
 					}
 				}
 				SQL = "Update CC_user set EMR=1 where ccID= :bannerId ";

@@ -39,7 +39,15 @@
         </tr>
     </c:otherwise>
 </c:choose>
-
+<c:choose>
+	<c:when test='${fn:length(ErrorMsg)>3}'>
+		<tr>
+			<td colspan="4" bgcolor="#F00">
+				There is a problem with your form, please review all fields and submit again.
+			</td>
+		</tr>	
+	</c:when>
+</c:choose>
 <tr>
     <td colspan="4" align="center">
         <span class="btext4">Connecticut College ${emrData.ContactType} Emergency Contact Form </span>
