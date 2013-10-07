@@ -433,8 +433,9 @@ public class jdbcCamel {
 					}else {
 						AreaCode = 860;
 					}
-					if ((intData.getField(PhonePos[x]+1).length() == 7) && (intData.getField(PhonePos[x]+1).replaceAll("\\d+","").length() == 0)){	
-						Phone = Integer.parseInt(intData.getField(PhonePos[x]+1).replace("-",""));		
+					String sPhone = intData.getField(PhonePos[x]+1).replace("-","");
+					if ((sPhone.length() == 7) && (sPhone.replaceAll("\\d+","").length() == 0)){		
+						Phone = Integer.parseInt(sPhone);
 						log.debug("Executing Phone save with: " + EMRID + "," + PID + "," + AreaCode + "," + Phone + "," + 
 							intData.getField(PhonePos[x]+2).toCharArray()[0] + "," + intData.getField(PhonePos[x]+3) + "," + 
 							Integer.parseInt(intData.getField(PhonePos[x]+4)));
