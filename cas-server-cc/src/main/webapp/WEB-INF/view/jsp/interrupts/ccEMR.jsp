@@ -50,7 +50,7 @@
 </c:choose>
 <tr>
     <td colspan="4" align="center">
-        <span class="btext4">Connecticut College ${emrData.ContactType} Emergency Contact Form </span>
+        <span class="btext4"><strong>Connecticut College ${emrData.ContactType} Emergency Contact Form</strong></span>
     </td> 
 </tr>
 <tr>
