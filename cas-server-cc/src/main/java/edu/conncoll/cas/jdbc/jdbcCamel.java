@@ -396,6 +396,8 @@ public class jdbcCamel {
 						log.warn("Invalid Primary Phone number");
 						context.getFlowScope().put("ErrorMsg", "Primary phone is not a valid phone number, please correct and submit again");
 						return "Failed";
+					}else{
+						log.debug("Primary Phone number appears valid");
 					}
 				}
 				FormSave formSave = new FormSave(this.dataSource);
@@ -403,11 +405,15 @@ public class jdbcCamel {
 				if (intData.getField(11).length() <7) {
 					smsVend=null;
 				}
+				log.debug("Writing primary connected record formSave banner id: " + CWData.get("ccId").toString() + " CCUser Id: " + CWData.get("Id").toString() );
+				log.debug(" alt email: " + intData.getField(39) + " outside email: "+ intData.getField(42) + " Contact Type: " + intData.getField(40));
+				log.debug(" Language: " + intData.getField(36) + " SMS Vendor: " + smsVend + " TTY: " + intData.getField(38).toCharArray()[0]);
 				Map<String,Object> readData = formSave.execute(CWData.get("ccId").toString(),Integer.parseInt(CWData.get("Id").toString()),intData.getField(39),
 					 intData.getField(42), intData.getField(40), intData.getField(36), smsVend, 
 					 intData.getField(38).toCharArray()[0]
 					 );
 				int EMRID = Integer.parseInt(readData.get("EMRID").toString());
+				log.info("EMR ID for user " + userName + " is " + EMRID );
 				log.debug("starting phone save");
 				PhoneSave phoneSave = new PhoneSave(this.dataSource);
 				int[] PhonePos = {5,10,15,20,25,30};
@@ -436,6 +442,8 @@ public class jdbcCamel {
 							intData.getField(PhonePos[x]+2).toCharArray()[0], intData.getField(PhonePos[x]+3), 
 							Integer.parseInt(intData.getField(PhonePos[x]+4)));
 						
+					}else{
+						log.debug ("Phone number " + x + " not saved as number is not valid");						
 					}
 				}
 				SQL = "Update CC_user set EMR=1 where ccID= :bannerId ";
