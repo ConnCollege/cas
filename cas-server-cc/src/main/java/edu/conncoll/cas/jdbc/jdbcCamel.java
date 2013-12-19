@@ -69,12 +69,17 @@ public class jdbcCamel {
 	
 	@NotNull
     private SimpleJdbcTemplate jdbcCensus;
+	
+	@NotNull
+    private SimpleJdbcTemplate jdbcBlackB;
     
     @NotNull
     private DataSource dataSource;
     @NotNull
     private DataSource censusSource;
-	
+    @NotNull
+    private DataSource BlackBSource;
+    
 	@NotNull
 	private LdapTemplate ldapTemplate;
 	
@@ -254,14 +259,10 @@ public class jdbcCamel {
 				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 				
 				String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+				//Write to Census Table
 				try {
 					SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
 					log.debug("SQL for insert" + SQL);
-					Map<String, Object> insertParameters = new HashMap<String, Object>();
-					insertParameters.put("userName", userName);
-					insertParameters.put("bannerId", Attrib.toString());
-					insertParameters.put("termCode", termData.get("param_value").toString());
-					log.debug("SQL for insert " + SQL);
 					log.debug("user " + userName);
 					log.debug("banner id " + Attrib.toString());
 					log.debug("Term Code " + termData.get("param_value").toString());
@@ -270,6 +271,17 @@ public class jdbcCamel {
 				} catch (DataAccessException e){
 					log.warn("SQL for Census insert failed " + e.getMessage());
 				}
+				//Write to Black Board Clone Table
+				try {
+					SQL = "update clone.clone_card set customfield8 = 'Y' , customfield12 = SYSDATE where person_number = ':bannerId'";
+					log.debug("SQL for update " + SQL);
+					log.debug("banner id " + Attrib.toString());
+					int check = jdbcBlackB.update(SQL, Attrib.toString());
+					log.debug("insert rerutn" + Integer.toString(check));
+				} catch (DataAccessException e){
+					log.warn("SQL for Clone Table update failed " + e.getMessage());
+				}
+				/* Write to NuVision file no longer valid
 				String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
 				try {
 					FileWriter writer = new FileWriter(nuVisionPath,true);
@@ -291,6 +303,7 @@ public class jdbcCamel {
 				} catch(IOException e) {
 					log.error("unable to update nuvision file for id " + Attrib.toString());
 				} 
+				*/
 			break;
 			default:
 				
@@ -474,6 +487,11 @@ public class jdbcCamel {
         this.jdbcCensus = new SimpleJdbcTemplate(dataSource);
         this.censusSource = dataSource;
     }
+
+    public final void setBlackBSource(final DataSource dataSource) {
+        this.jdbcBlackB = new SimpleJdbcTemplate(dataSource);
+        this.BlackBSource = dataSource;
+    }
     
     protected final SimpleJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
@@ -486,7 +504,10 @@ public class jdbcCamel {
     protected final DataSource getCensusSource() {
         return this.censusSource;
     }
-	
+    
+    protected final DataSource getBlackBSource() {
+        return this.BlackBSource;
+    }	
 		
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;

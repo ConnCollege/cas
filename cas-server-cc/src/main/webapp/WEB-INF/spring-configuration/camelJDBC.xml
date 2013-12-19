@@ -15,10 +15,17 @@
         p:url="${census.db.url}"
         p:password="${census.db.password}"
         p:username="${census.db.username}" />
+        
+    <bean id="dataSourceBlackB"  class="org.apache.commons.dbcp.BasicDataSource"
+        p:driverClassName="oracle.jdbc.OracleDriver"
+        p:url="${blackb.db.url}"
+        p:password="${blackb.db.password}"
+        p:username="${blackb.db.username}" />
 	
 	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
 		p:dataSource-ref="dataSourceCamel"
 		p:censusSource-ref="dataSourceCensus"
+		p:blackBSource-ref="dataSourceBlackB"
 		p:filter="sAMAccountName=%u"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:searchBase="dc=conncoll,dc=edu"
