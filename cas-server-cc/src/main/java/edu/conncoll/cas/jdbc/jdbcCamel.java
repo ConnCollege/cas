@@ -273,7 +273,7 @@ public class jdbcCamel {
 				}
 				//Write to Black Board Clone Table
 				try {
-					SQL = "update clone.clone_card set customfield8 = 'Y' , customfield12 = SYSDATE where person_number = ':bannerId'";
+					SQL = "update clone.clone_card set customfield8 = 'Y' , customfield12 = SYSDATE where person_number = :bannerId";
 					log.debug("SQL for update " + SQL);
 					log.debug("banner id " + Attrib.toString());
 					int check = jdbcBlackB.update(SQL, Attrib.toString());
