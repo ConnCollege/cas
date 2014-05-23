@@ -135,6 +135,7 @@ public class jdbcCamel {
 				try {
 					Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
 					if (OEMData.get("oemail").toString().length() > 0){
+						log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
 						Context initCtx = new InitialContext();
 						Session session = (Session) initCtx.lookup("java:comp/env/mail/Session");
 						
@@ -160,10 +161,12 @@ public class jdbcCamel {
 						message.setContent(actMsg.toString(), "text/plain");
 						Transport.send(message);
 						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
+						log.debug("readFlow  email sent");
 					} else {
 						context.getFlowScope().put("oemail", "");
 					}
 				} catch (Exception e) {
+					log.warn("readFlow failed sending outside mail for " + userName );
 					// No OEM email in cc_user		
 					context.getFlowScope().put("oemail", "");	 
 				}	
