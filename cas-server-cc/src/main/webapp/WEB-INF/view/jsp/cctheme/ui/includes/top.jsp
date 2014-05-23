@@ -28,8 +28,6 @@
 				jQuery('.errors').fadeIn(300).delay(4000).animate({opacity:0,height:0}, 'slow', function() {
 	        		jQuery(this).remove();
 	    		});
-				//to avoid the address bar on mobile
-				window.addEventListener("load", setTimeout( function(){ window.scrollTo(0, 1) }, 0));
 				//init placeholders (for non html5 browsers to display placeholders within fields)
 				Placeholders.init({
     				live: true
