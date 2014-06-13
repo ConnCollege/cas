@@ -22,7 +22,7 @@
 		   
 	<bean id="LdapAuthHandler" class="org.jasig.cas.adaptors.ldap.BindLdapAuthenticationHandler" >
 	    <property name="filter" value="sAMAccountName=%u" />
-		<property name="searchBase" value="dc=conncoll,dc=edu" />
+		<property name="searchBase" value="${ldap.domain}" />
 	    <property name="contextSource" ref="contextSource" />
 	    <property name="ignorePartialResultException" value="yes" />
 		<property name="lDAPErrorDefs">
@@ -61,14 +61,14 @@
 		</property>
 		<property name="filter" value="(sAMAccountName=%u)" />
 		<property name="principalAttributeName" value="sAMAccountName" />
-		<property name="searchBase" value="dc=conncoll,dc=edu" />
+		<property name="searchBase" value="${ldap.domain}" />
 		<property name="contextSource" ref="contextSource" />
 		<property name="attributeRepository" ref="attributeRepository" />
 	</bean>
    
 	<bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
 	  <property name="pooled" value="false"/>
-	  <property name="url" value="ldaps://fir.conncoll.edu" />
+	  <property name="url" value="${ldap.server}" />
 	  <property name="userDn" value="${ldap.username}"/>
 	  <property name="password" value="${ldap.password}"/>
 	  <property name="baseEnvironmentProperties">
@@ -87,7 +87,7 @@
    
 	<bean id="attributeRepository" class="org.jasig.services.persondir.support.ldap.LdapPersonAttributeDao">
 		<property name="ldapTemplate" ref="ldapTemplate" />
-		<property name="baseDN" value="dc=conncoll,dc=edu" />
+		<property name="baseDN" value="${ldap.domain}" />
 		<property name="requireAllQueryAttributes" value="false" />
 		<property name="queryAttributeMapping">
 			<map>

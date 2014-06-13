@@ -132,13 +132,13 @@ public class jdbcCamel {
 			case OEM:
 				SQL = "select oemail, firstname from cc_user where email = :user and active=1";
 		
-				try {
+				//try {
 					Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
 					if (OEMData.get("oemail").toString().length() > 0){
 						log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
 						Context initCtx = new InitialContext();
 						Session session = (Session) initCtx.lookup("java:comp/env/mail/Session");
-						
+						log.debug("readFlow connected to email.");
 						StringBuilder actMsg = new StringBuilder();
 						
 						actMsg.append("Welcome " + OEMData.get("firstname").toString() + ",\n\n");
@@ -165,11 +165,13 @@ public class jdbcCamel {
 					} else {
 						context.getFlowScope().put("oemail", "");
 					}
+				/*	
 				} catch (Exception e) {
 					log.warn("readFlow failed sending outside mail for " + userName );
 					// No OEM email in cc_user		
 					context.getFlowScope().put("oemail", "");	 
-				}	
+				}
+				*/	
 			break;
 			case QNA:				
 				SQL = "select question qChoice from cc_user_questions";				

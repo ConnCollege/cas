@@ -275,7 +275,7 @@
     	<property name="filter" value="sAMAccountName=%u" />
     	<property name="ldapTemplate" ref="ldapTemplate" />
     	<property name="ldapAttrib" value="extensionAttribute8" />
-    	<property name="searchBase" value="dc=conncoll,dc=edu" />
+    	<property name="searchBase" value="${ldap.domain}" />
     	<property name="localIpRanges">
             <list>
             	<value>136.244.0.0/16</value>
