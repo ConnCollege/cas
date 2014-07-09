@@ -57,7 +57,7 @@ p.tblheader3{margin:0 0 0 15px; padding:0}
  		<c:otherwise>
 <strong>You must accept both agreements to continue</strong><br />
 <h1>Connecticut College Appropriate Use Policy</h1>
-<iframe height="200" width="100%" src="https://www.conncoll.edu/cw40/c/journal/view_article_content?groupId=10143&articleId=14869"></iframe>
+<iframe height="200" width="100%" src="https://www.conncoll.edu/camelweb-cms/appropriate-use-policy/"></iframe>
 <h1>Google Terms of Service</h1>
 <div id="googleterms">
 <p class="b">Google Terms of Service</p> 
