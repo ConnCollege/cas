@@ -15,7 +15,7 @@
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type" /> <meta http-equiv="X-UA-Compatible" content="IE=edge;" /> 
 	<link href="https://camelweb.conncoll.edu/LP5-ellucian-theme/images/favicon.ico" rel="Shortcut Icon" /> 
 	<link class="lfr-css-file" href="https://camelweb.conncoll.edu/LP5-ellucian-theme/css/main.css" rel="stylesheet" type="text/css" /> 
-	<script type="text/javascript" src="https://camelweb.conncoll.edu/html/js/jquery/jquery-1.8.3.min.js"></script> 
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 	<script type="text/javascript" src="https://camelweb.conncoll.edu/LP5-ellucian-theme/js/tooltip/js/tooltip.js"></script>
 	<link href="https://camelweb.conncoll.edu/LP5-ellucian-theme/js/tooltip/css/tooltip.css" rel="stylesheet"> 
