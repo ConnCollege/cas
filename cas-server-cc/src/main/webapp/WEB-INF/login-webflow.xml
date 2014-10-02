@@ -58,6 +58,9 @@
 		<transition on="submit" bind="true" validate="true" to="realSubmit">
             <evaluate expression="authenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
+        <!-- password change -->
+        <transition on="changePassword" validate="false" to="changePassword">
+        </transition>
 	</view-state>
 	<!--
 	<action-state id="realSubmit">
@@ -86,6 +89,11 @@
 		<transition on="showAccountLockedView" to="showAccountLockedView" />
 		<transition on="showAccountDisabledView" to="showAccountDisabledView" />
 	</action-state>	
+	
+	<decision-state id="changePassword">
+        <if test="credentials != null and credentials.username != null" then="showMustChangePassView"
+            else="changePasswordView"/>
+    </decision-state>
 	
 	<!--
         The "showExpiredPass" action state is sets the interrupt flag for password change and fires interrupt
