@@ -2,7 +2,7 @@
 <c:set var="hasForm" value="1" scope="page" />
 <div class="info">
 <h1>How to change your password</h1> 
-<strong>Your current password is no longer valid and must be change before you can access Connecticut College resources.</strong>
+<strong>Your current password is no longer valid and must be changed before you can access Connecticut College resources.</strong>
 
 <div style="display: none; background: #f00;" id="MainErrorHead"><strong>There was an error with your form. Please fix all fields as noted below in pink.</strong> </div>
 <p>The password cannot contain all or part of your user account name and it must be <b>at least</b> eight characters in length. The password also <b>may not contain any part of your login id</b>. In addition it needs to contain characters from three of the following categories:</p>

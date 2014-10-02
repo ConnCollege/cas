@@ -6,13 +6,27 @@
 <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>
 </form:form>
 </c:if>
-</div></div></div></div></div></div><div id="footer">
-<div id="footerContent" style="width:97%;text-align:center;padding:2px;margin-right:auto;margin-left:auto;">	<span class="text1">This page maintained by </span><a href="mailto:camelweb@conncoll.edu?subject=Question_regarding_CamelWeb">
-    <span class="textbl1">The CC Web Team</span></a><span class="text1">&nbsp;|&nbsp;Fill out the </span><a href="http://aspen.conncoll.edu/camelweb/index.cfm?fuseaction=survey&circuit=camelweb"><span class="textbl1">CamelWeb Feedback Survey</span> </a>
 
-    &nbsp;|&nbsp;View the <a href="#">Site Map</a>	<br />
-    <span class="text1">Use of computer and information resources is governed by the </span><a href="http://www.conncoll.edu/is/policy.html" target="_blank"><span class="textbl1">Connecticut College Appropriate Use Policy</span></a>&nbsp;|&nbsp;
-    <a href="http://www.conncoll.edu/is/copyright.html" target="_blank"><span class="textbl2">Copyright &copy; 2010</span></a>
-</div><p><!-- camel2.conncoll.edu --></p>
+</section>
+						</div><!-- //close .portlet-body -->
+					</div><!-- //close .portlet-boundary -->
+				</div><!-- //close .portlet-dropzone -->
+			</div><!-- //close .portlet-column -->
+		</div><!-- //close .portlet-layout -->
+	</div><!-- //close .columns-1 -->
+ 	
+</div><!-- //close #content -->
 
-<p>&nbsp;</p>	</div></div></body></html>
+<footer id="footer" role="contentinfo"> 
+	<p class="ellucian-copyright"> CamelWeb is maintained by <a href="mailto:webteam@conncoll.edu?subject=Question%20Regarding%20CamelWeb" data-position="left" data-intro="Email webteam@conncoll.edu with any comments, suggestions or feedback" data-step="10">The CC Web Team</span></a>
+	<br>
+	Use of computer and information resources is governed by the <a href="http://www.conncoll.edu/information-services/technology-services/it-service-desk/policies/general/appropriate-use-policy/" target="_blank">Connecticut College Appropriate Use Policy</a>
+	&nbsp;|&nbsp;
+	<a href="http://www.conncoll.edu/information-services/libraries/research-services/for-faculty/copyright-resources/" target="_blank">Copyright &copy; <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %></a>
+	<br> 
+	&copy; 2000 - <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %> Ellucian. All rights reserved<br> </p> 
+</footer>
+
+</div>
+
+</body></html>
