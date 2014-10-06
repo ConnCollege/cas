@@ -1,7 +1,20 @@
 /*
- * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
- * distributed with this file and available online at
- * http://www.ja-sig.org/products/cas/overview/license/
+ * Licensed to Jasig under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work
+ * for additional information regarding copyright ownership.
+ * Jasig licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License.  You may obtain a
+ * copy of the License at the following location:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jasig.cas.web;
 
@@ -40,7 +53,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Revision$ $Date$
  * @since 3.0
  */
-public class ServiceValidateController extends AbstractController {
+public class ServiceValidateController extends DelegateController {
 
     /** View if Service Ticket Validation Fails. */
     private static final String DEFAULT_SERVICE_FAILURE_VIEW_NAME = "casServiceFailureView";
@@ -86,8 +99,7 @@ public class ServiceValidateController extends AbstractController {
      * @return the credentials or null if there was an error or no credentials
      * provided.
      */
-    protected Credentials getServiceCredentialsFromRequest(
-        final HttpServletRequest request) {
+    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
         if (StringUtils.hasText(pgtUrl)) {
             try {
@@ -100,8 +112,7 @@ public class ServiceValidateController extends AbstractController {
         return null;
     }
 
-    protected void initBinder(final HttpServletRequest request,
-        final ServletRequestDataBinder binder) {
+    protected void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) {
         binder.setRequiredFields("renew");
     }
 
@@ -146,6 +157,8 @@ public class ServiceValidateController extends AbstractController {
                 return generateErrorView("INVALID_TICKET", "INVALID_TICKET_SPEC", null);
             }
 
+            onSuccessfulValidation(serviceTicketId, assertion);
+
             final ModelAndView success = new ModelAndView(this.successView);
             success.addObject(MODEL_ASSERTION, assertion);
 
@@ -169,6 +182,10 @@ public class ServiceValidateController extends AbstractController {
         }
     }
 
+    protected void onSuccessfulValidation(final String serviceTicketId, final Assertion assertion) {
+        // template method with nothing to do.
+    }
+
     private ModelAndView generateErrorView(final String code, final String description, final Object[] args) {
         final ModelAndView modelAndView = new ModelAndView(this.failureView);
         final String convertedDescription = getMessageSourceAccessor().getMessage(description, args, description);
@@ -185,18 +202,24 @@ public class ServiceValidateController extends AbstractController {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canHandle(HttpServletRequest request, HttpServletResponse response) {
+        return true;
+    }
     
     /**
      * @param centralAuthenticationService The centralAuthenticationService to
      * set.
      */
-    public void setCentralAuthenticationService(
-        final CentralAuthenticationService centralAuthenticationService) {
+    public final void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
         this.centralAuthenticationService = centralAuthenticationService;
     }
 
-    public void setArgumentExtractor(
-        final ArgumentExtractor argumentExtractor) {
+    public final void setArgumentExtractor(final ArgumentExtractor argumentExtractor) {
         this.argumentExtractor = argumentExtractor;
     }
 
@@ -204,29 +227,29 @@ public class ServiceValidateController extends AbstractController {
      * @param validationSpecificationClass The authenticationSpecificationClass
      * to set.
      */
-    public void setValidationSpecificationClass(
-        final Class<?> validationSpecificationClass) {
+    public final void setValidationSpecificationClass(final Class<?> validationSpecificationClass) {
         this.validationSpecificationClass = validationSpecificationClass;
     }
 
     /**
      * @param failureView The failureView to set.
      */
-    public void setFailureView(final String failureView) {
+    public final void setFailureView(final String failureView) {
         this.failureView = failureView;
     }
 
     /**
      * @param successView The successView to set.
      */
-    public void setSuccessView(final String successView) {
+    public final void setSuccessView(final String successView) {
         this.successView = successView;
     }
 
     /**
      * @param proxyHandler The proxyHandler to set.
      */
-    public void setProxyHandler(final ProxyHandler proxyHandler) {
+    public final void setProxyHandler(final ProxyHandler proxyHandler) {
         this.proxyHandler = proxyHandler;
     }
+
 }

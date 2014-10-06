@@ -1,13 +1,27 @@
 /*
- * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
- * distributed with this file and available online at
- * http://www.ja-sig.org/products/cas/overview/license/
+ * Licensed to Jasig under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work
+ * for additional information regarding copyright ownership.
+ * Jasig licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License.  You may obtain a
+ * copy of the License at the following location:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jasig.cas.adaptors.ldap;
 
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
+import org.springframework.ldap.NamingSecurityException;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.NameClassPairCallbackHandler;
@@ -39,8 +53,7 @@ import java.util.List;
  * @version $Revision$ $Date$
  * @since 3.0.3
  */
-public class BindLdapAuthenticationHandler extends
-    AbstractLdapUsernamePasswordAuthenticationHandler {
+public class BindLdapAuthenticationHandler extends AbstractLdapUsernamePasswordAuthenticationHandler {
 
     /** The default maximum number of results to return. */
     private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 1000;
@@ -65,9 +78,7 @@ public class BindLdapAuthenticationHandler extends
     /** Boolean of whether multiple accounts are allowed. */
     private boolean allowMultipleAccounts;
 
-    protected final boolean authenticateUsernamePasswordInternal(
-        final UsernamePasswordCredentials credentials)
-        throws AuthenticationException {
+    protected final boolean authenticateUsernamePasswordInternal(final UsernamePasswordCredentials credentials) throws AuthenticationException {
 
         final List<String> cns = new ArrayList<String>();
         
@@ -98,7 +109,7 @@ public class BindLdapAuthenticationHandler extends
             log.warn("Search for " + filter + " returned multiple results, which is not allowed.");
             return false;
         }
-        
+
         for (final String dn : cns) {
             DirContext test = null;
             String finalDn = composeCompleteDnToCheck(dn, credentials);
@@ -106,19 +117,17 @@ public class BindLdapAuthenticationHandler extends
                 this.log.debug("Performing LDAP bind with credential: " + dn);
                 test = this.getContextSource().getContext(
                     finalDn,
-                    credentials.getPassword());
+                    getPasswordEncoder().encode(credentials.getPassword()));
 
                 if (test != null) {
                     return true;
                 }
+            } catch (final NamingSecurityException e) {
+                log.info("Failed to authenticate user {} with error {}", credentials.getUsername(), e.getMessage());
+                throw handleLdapError(e);
             } catch (final Exception e) {
-                // see if we can match to a more specific exception and then throw that instead
-                // i.e. AccountLockedException, AccountDisabledException, ExpiredPasswordException,...
-                final String details = e.getMessage();
-                log.debug("LDAP server returned exception message: " + details);
-                handleLDAPError(details);
-
-                // otherwise, just try the next cn
+                this.log.error(e.getMessage(), e);
+                throw handleLdapError(e);
             } finally {
                 LdapUtils.closeContext(test);
             }
@@ -219,7 +228,7 @@ public class BindLdapAuthenticationHandler extends
      * support use cases like the following:
      * <ul>
      * <li>Pooling of LDAP connections used for searching (e.g. via instance
-     * of {@link PoolingContextSource}).</li>
+     * of {@link org.springframework.ldap.pool.factory.PoolingContextSource}).</li>
      * <li>Searching with client certificate credentials.</li>
      * </ul>
      * <p>
