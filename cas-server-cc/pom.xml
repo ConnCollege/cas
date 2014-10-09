@@ -193,7 +193,7 @@
 		<google.version>1.0</google.version>
 		<jasypt.version>1.6</jasypt.version>
     	<servlet.api.version>2.5</servlet.api.version>
-		<spring.version>3.0.4.RELEASE</spring.version>
+		<spring.version>3.0.6.RELEASE</spring.version>
         <spring.webflow.version>2.2.1.RELEASE</spring.webflow.version>  
     	<hibernate.core.version>3.6.0.Final</hibernate.core.version>
     </properties>

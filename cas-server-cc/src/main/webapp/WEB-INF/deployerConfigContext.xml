@@ -26,7 +26,7 @@
 		</property>
 		<property name="filter" value="(sAMAccountName=%u)" />
 		<property name="principalAttributeName" value="sAMAccountName" />
-		<property name="searchBase" value="${ldap.domain}" />
+		<property name="searchBase" value="${ldap.authentication.basedn}" />
 		<property name="contextSource" ref="contextSource" />
 		<property name="attributeRepository" ref="attributeRepository" />
 	</bean>
@@ -38,7 +38,7 @@
     
 	<bean id="attributeRepository" class="org.jasig.services.persondir.support.ldap.LdapPersonAttributeDao">
 		<property name="ldapTemplate" ref="ldapTemplate" />
-		<property name="baseDN" value="${ldap.domain}" />
+		<property name="baseDN" value="${ldap.authentication.basedn}" />
 		<property name="requireAllQueryAttributes" value="false" />
 		<property name="queryAttributeMapping">
 			<map>
