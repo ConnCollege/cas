@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-cas-client</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring.security.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
@@ -43,7 +43,20 @@
 	        <version>3.1</version>
       	</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>mvn-public</id>
+			<name>MVNRepository</name>
+			<url>http://mvnrepository.com</url>
+		</repository>
+	    <repository>
+		      <id>jasig-repository</id>
+		      <name>Jasig Maven2 Repository</name>
+	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
+	     </repository>
+	</repositories>
 	<properties>
 		<spring.version>3.1.1.RELEASE</spring.version>
+		<spring.security.version>3.0.8.RELEASE</spring.security.version>
     </properties>
 </project>
