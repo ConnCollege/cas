@@ -8,7 +8,7 @@
 	    <property name="filter" value="sAMAccountName=%u" />
 		<property name="searchBase" value="${ldap.authentication.basedn}" />
 	    <property name="contextSource" ref="contextSource" />
-	    <property name="p:searchContextSource" ref="pooledContextSource"/>
+	    <property name="searchContextSource" ref="pooledContextSource"/>
 	    <property name="ignorePartialResultException" value="yes" />
 		<property name="ldapErrorDefinitions">
 			<list>
