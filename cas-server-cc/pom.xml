@@ -189,19 +189,19 @@
     </dependencies>
  
     <properties>
-		<ehcache.version>2.4.5</ehcache.version>
+		<ehcache.version>2.6.0</ehcache.version>
 		<google.version>1.0</google.version>
 		<jasypt.version>1.6</jasypt.version>
     	<servlet.api.version>2.5</servlet.api.version>
-		<spring.version>3.0.6.RELEASE</spring.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
         <spring.webflow.version>2.2.1.RELEASE</spring.webflow.version>  
-    	<hibernate.core.version>3.6.0.Final</hibernate.core.version>
+    	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
     </properties>
  
-        <repositories>
-             <repository>
-                  <id>ja-sig</id>
-                  <url>http://oss.sonatype.org/content/repositories/releases/ </url>
-             </repository>
-        </repositories>
+	<repositories>
+	     <repository>
+	          <id>ja-sig</id>
+	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
+	     </repository>
+	</repositories>
 </project>
