@@ -11,11 +11,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cas-server-interrupts</artifactId>
 	<packaging>jar</packaging>
-	<name>JA-SIG CAS LDAP acceptable use</name>
+	<name>JA-SIG CAS LDAP Interrupts</name>
     <dependencies>
 		<dependency>
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-server-support-ldap</artifactId>
 			<version>${project.version}</version>
 		</dependency>		
 		<dependency>
