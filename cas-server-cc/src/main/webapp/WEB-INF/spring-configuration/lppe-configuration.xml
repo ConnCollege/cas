@@ -8,7 +8,7 @@
 	    <property name="filter" value="sAMAccountName=%u" />
 		<property name="searchBase" value="${ldap.authentication.basedn}" />
 	    <property name="contextSource" ref="contextSource" />
-	    <property name="searchContextSource" ref="pooledContextSource"/>
+	    <property name="searchContextSource" ref="contextSource"/>
 	    <property name="ignorePartialResultException" value="yes" />
 		<property name="ldapErrorDefinitions">
 			<list>
@@ -70,7 +70,7 @@
 			</bean>
 		</property>
 	</bean>   
-	
+	<!-- 
 	<bean id="pooledContextSource"
 		class="org.springframework.ldap.pool.factory.PoolingContextSource"
 		p:minIdle="${ldap.authentication.pool.minIdle}"
@@ -88,7 +88,7 @@
 	  	<property name="passwordPolicyEnforcer" ref="ldapPasswordPolicyEnforcer" />
 	  	<property name="passwordPolicyUrl" value="${ldap.authentication.lppe.password.url}" />
 	</bean>
-
+ -->
 	<!--
 		This bean defines the current implementation of the password policy enforcer for ldap.
 		The properties defined below would possibly exist inside the local 'cas.properties' file
