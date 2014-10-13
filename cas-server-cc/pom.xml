@@ -61,6 +61,7 @@
 			<groupId>net.unicon</groupId>
 			<artifactId>cas-password-manager</artifactId>
 			<version>1.1</version>
+			<type>war</type>
 		</dependency>	
 		<!-- LDAP handler -->
 		<dependency>
@@ -115,7 +116,8 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver.jdbc</groupId>
 			<artifactId>sqljdbc</artifactId>
-			<version>2.0</version>
+			<version>4.0</version>
+			<scope>provided</scope>
     	</dependency> 	
 		<!-- MySQL JDBC -->
 		<dependency>
