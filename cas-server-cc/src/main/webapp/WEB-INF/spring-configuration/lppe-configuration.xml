@@ -83,12 +83,12 @@
 		p:testWhileIdle="${ldap.authentication.pool.testWhileIdle}"
 		p:dirContextValidator-ref="dirContextValidator"
 		p:contextSource-ref="contextSource" />
-	    	       
+ -->	    	       
 	<bean id="passwordPolicyAction" class="org.jasig.cas.web.flow.PasswordPolicyEnforcementAction">
 	  	<property name="passwordPolicyEnforcer" ref="ldapPasswordPolicyEnforcer" />
 	  	<property name="passwordPolicyUrl" value="${ldap.authentication.lppe.password.url}" />
 	</bean>
- -->
+
 	<!--
 		This bean defines the current implementation of the password policy enforcer for ldap.
 		The properties defined below would possibly exist inside the local 'cas.properties' file
