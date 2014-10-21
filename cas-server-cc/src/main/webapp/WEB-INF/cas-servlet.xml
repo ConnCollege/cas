@@ -120,7 +120,6 @@
 
     <webflow:flow-registry id="flowRegistry" flow-builder-services="builder">
         <webflow:flow-location path="/WEB-INF/login-webflow.xml" id="login" />
-	    <webflow:flow-location path="/WEB-INF/interrupts-webflow.xml" id="interrupts" />
     </webflow:flow-registry>
 
     <webflow:flow-builder-services id="builder" view-factory-creator="viewFactoryCreator" 
@@ -182,7 +181,6 @@
 		p:ticketGrantingTicketCookieGenerator-ref="ticketGrantingTicketCookieGenerator"
 		p:servicesManager-ref="servicesManager"
 	    p:followServiceRedirects="${cas.logout.followServiceRedirects:false}"/>
-		p:followServiceRedirects="true" />
 
 	<bean id="healthCheckController" class="org.jasig.cas.web.HealthCheckController"
 	    p:healthCheckMonitor-ref="healthCheckMonitor"/>

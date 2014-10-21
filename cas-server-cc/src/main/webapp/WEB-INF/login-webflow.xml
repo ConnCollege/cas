@@ -136,7 +136,7 @@
             <set name="flowScope.Flag" value="'INIT'"/>
         </transition>
         <transition on="changePassword" to="showInterrupt" validate="false">
-            <set name="flowScope.Flag" value="'VPWD'"/>
+            <set name="flowScope.Flag" value="'CHANGE'"/>
         </transition>
 	</view-state>
 

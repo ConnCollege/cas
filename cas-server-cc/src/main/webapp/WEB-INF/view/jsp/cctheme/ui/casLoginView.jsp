@@ -25,6 +25,7 @@
         <input type="hidden" name="lt" value="${loginTicket}" />
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />
+        <input class="btn-reset" name="changePassword" value="<spring:message code="screen.welcome.button.changePassword" />" tabindex="6" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=changePassword'; return false;" />
     </form:form>
     <p><a href="http://www.conncoll.edu">Connecticut College Homepage</a></p>
 </div>               

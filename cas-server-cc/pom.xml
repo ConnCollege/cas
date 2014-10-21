@@ -55,20 +55,19 @@
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-interrupts</artifactId>
 			<version>${project.version}</version>
-		</dependency>		
-		<!-- Unicon Password Manager -->	
-		<dependency>
-			<groupId>net.unicon</groupId>
-			<artifactId>cas-password-manager</artifactId>
-			<version>1.1</version>
-			<type>war</type>
-		</dependency>	
+		</dependency>			
 		<!-- LDAP handler -->
 		<dependency>
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-support-ldap</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
+		<!-- Chaptcha Support -->
+        <dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.8</version>
+        </dependency>
 		<!-- Google Provisioning -->
 		<dependency>
 		  <groupId>google</groupId>
