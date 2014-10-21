@@ -4,22 +4,18 @@
 	<groupId>net.unicon</groupId>
 	<artifactId>cas-password-manager</artifactId>
 	<version>1.1</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<build>
 		<plugins>
 			<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-war-plugin</artifactId>
-		        <version>2.4</version>
+				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<warName>cas</warName>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
 			     <configuration>
                      <source>1.6</source>
                      <target>1.6</target>  
@@ -57,10 +53,10 @@
         </dependency>
 		
         <dependency>
-			<groupId>net.tanesha.recaptcha4j</groupId>
-			<artifactId>recaptcha4j</artifactId>
-			<version>0.0.8</version>
-		</dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.8</version>
+        </dependency>
         
         <dependency>
             <groupId>javax.servlet</groupId>

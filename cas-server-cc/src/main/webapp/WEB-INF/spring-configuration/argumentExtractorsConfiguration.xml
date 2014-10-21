@@ -11,11 +11,14 @@
 		Argument Extractors are what are used to translate HTTP requests into requests of the appropriate protocol (i.e. CAS, SAML, SAML2,
 		OpenId, etc.).  By default CAS and SAML are enabled.
 	</description>
- 	<bean id="casArgumentExtractor" class="org.jasig.cas.web.support.CasArgumentExtractor"
-		p:httpClient-ref="httpClient" />
+ 	<bean id="casArgumentExtractor"
+ 		class="org.jasig.cas.web.support.CasArgumentExtractor"
+         p:httpClient-ref="noRedirectHttpClient"
+         p:disableSingleSignOut="${slo.callbacks.disabled:false}" />
 
- 	<bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor" 
-        p:httpClient-ref="httpClient" />
+ 	<bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
+             p:httpClient-ref="noRedirectHttpClient"
+             p:disableSingleSignOut="${slo.callbacks.disabled:false}" />
  	
  	<bean name="googleAccountsArgumentExtractor" class="org.jasig.cas.web.support.GoogleAccountsArgumentExtractor" 
         p:httpClient-ref="httpClient"

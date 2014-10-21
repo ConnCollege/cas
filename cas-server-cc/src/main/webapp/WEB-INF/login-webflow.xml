@@ -128,12 +128,15 @@
             <evaluate expression="authenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
         
-        <!-- CAS Password Manager Transitions -->
-        <transition on="forgotPassword" to="passwordManager" validate="false">
-            <set name="flashScope.pmTask" value="'forgotPassword'"/>
+        <!-- Conncoll interrupt Transitions -->
+        <transition on="forgotPassword" to="showInterrupt" validate="false">
+            <set name="flowScope.Flag" value="'RESET'"/>
         </transition>
-        <transition on="changePassword" to="passwordManager" validate="false">
-            <set name="flashScope.pmTask" value="'changePassword'"/>
+        <transition on="initalize" to="showInterrupt" validate="false">
+            <set name="flowScope.Flag" value="'INIT'"/>
+        </transition>
+        <transition on="changePassword" to="showInterrupt" validate="false">
+            <set name="flowScope.Flag" value="'VPWD'"/>
         </transition>
 	</view-state>
 
@@ -151,34 +154,20 @@
 	      To enable LPPE on the 'success' replace the below transition with:
 	      <transition on="success" to="passwordPolicyCheck" />
 	    -->
-		<transition on="success" to="passwordPolicyCheck" />
+		<transition on="success" to="CheckFlags" />
 		<transition on="error" to="generateLoginTicket" />
 		<transition on="accountDisabled" to="casAccountDisabledView" />
+	    <transition on="mustChangePassword" to="casMustChangePassView" />
 	    <transition on="accountLocked" to="casAccountLockedView" />
 	    <transition on="badHours" to="casBadHoursView" />
 	    <transition on="badWorkstation" to="casBadWorkstationView" />
-	    <transition on="mustChangePassword" to="passwordManager">
-            <set name="flashScope.pmTask" value="'forceChangePassword'"/>           
-        </transition>
-	    <transition on="passwordExpired" to="passwordManager">
-            <!-- <set name="flashScope.credentials" value="flowScope.credentials" /> -->
-            <set name="flashScope.pmTask" value="'forceChangePassword'"/>
-        </transition>
+	    <transition on="passwordExpired" to="casExpiredPassView" />
 	</action-state>
 	
 	<action-state id="sendTicketGrantingTicket">
         <evaluate expression="sendTicketGrantingTicketAction" />
-		<transition to="lookupSecurityQuestion" />
+		<transition to="serviceCheck" />
 	</action-state>
-	
-	<!-- Users are required to create security question(s) -->
-    <action-state id="lookupSecurityQuestion">
-        <evaluate expression="lookupSecurityQuestionAction" />
-        <transition on="success" to="serviceCheck" />
-        <transition on="error" to="passwordManager">
-            <set name="flashScope.pmTask" value="'setupSecurityQuestion'"/>
-        </transition>
-    </action-state>
 
 	<decision-state id="serviceCheck">
 		<if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
@@ -200,25 +189,94 @@
         <evaluate expression="flowScope.service.getResponse(requestScope.serviceTicketId)" result-type="org.jasig.cas.authentication.principal.Response" result="requestScope.response" />
         <transition to="postRedirectDecision" />
     </action-state>
+    
+    <action-state id="CheckFlags">
+		<evaluate expression="CheckFlags.check(flowRequestContext, flowScope.credentials)" result="flowScope.Flag" result-type="java.lang.String" />
+		<transition on="noFlag" to="sendTicketGrantingTicket" />
+		<transition to="showInterrupt" />
+	</action-state>
+	
+	<!-- Show custom view that interupts the login flow -->
+	<view-state id="showInterrupt" view="${flowScope.Flag}" model="IntData">
+		<var name="IntData" class="org.jasig.cas.web.support.IntData" />
+		<binder>
+            <binding property="fields[1]" />
+            <binding property="fields[2]" />
+            <binding property="fields[3]" />
+            <binding property="fields[4]" />
+            <binding property="fields[5]" />
+            <binding property="fields[6]" />
+            <binding property="fields[7]" />
+            <binding property="fields[8]" />
+            <binding property="fields[9]" />
+            <binding property="fields[10]" />
+            <binding property="fields[11]" />
+            <binding property="fields[12]" />
+            <binding property="fields[13]" />
+            <binding property="fields[14]" />
+            <binding property="fields[15]" />
+            <binding property="fields[16]" />
+            <binding property="fields[17]" />
+            <binding property="fields[18]" />
+            <binding property="fields[19]" />
+            <binding property="fields[20]" />
+            <binding property="fields[21]" />
+            <binding property="fields[22]" />
+            <binding property="fields[23]" />
+            <binding property="fields[24]" />
+            <binding property="fields[25]" />
+            <binding property="fields[26]" />
+            <binding property="fields[27]" />
+            <binding property="fields[28]" />
+            <binding property="fields[29]" />
+            <binding property="fields[30]" />
+            <binding property="fields[31]" />
+            <binding property="fields[32]" />
+            <binding property="fields[33]" />
+            <binding property="fields[34]" />
+            <binding property="fields[35]" />
+            <binding property="fields[36]" />
+            <binding property="fields[37]" />
+            <binding property="fields[38]" />
+            <binding property="fields[39]" />
+            <binding property="fields[40]" />
+            <binding property="fields[41]" />
+            <binding property="fields[42]" />
+            <binding property="fields[43]" />
+            <binding property="fields[44]" />
+            <binding property="fields[45]" />
+            <binding property="fields[46]" />
+            <binding property="fields[47]" />
+            <binding property="fields[48]" />
+            <binding property="fields[49]" />
+            <binding property="fields[50]" />
+        </binder>
+        <on-entry>
+            <set name="viewScope.commandName" value="'IntData'" />
+        </on-entry>
+		<on-render>
+			<evaluate expression="jdbcCamel.readFlow(flowScope.Flag,flowRequestContext,flowScope.credentials)" />
+		</on-render>
+		<transition on="submit" to="SaveInterrupt" bind="true">
+			<set name="flowScope.IntData" value="IntData" />
+		</transition>
+	</view-state>
+	
+	<action-state id="SaveInterrupt">
+		<evaluate expression="jdbcCamel.writeFlow(flowScope.Flag,flowRequestContext,flowScope.credentials,flowScope.IntData)" />
+		<transition on="Saved" to="SetFlag" />
+		<transition on="Failed" to="showInterrupt" />
+	</action-state>
+	
+	<action-state id="SetFlag">
+		<evaluate expression="CheckFlags.update(flowRequestContext, flowScope.credentials, flowScope.Flag)" />
+		<transition to="realSubmit" />
+	</action-state>
 
     <decision-state id="postRedirectDecision">
         <if test="requestScope.response.responseType.name() == 'POST'" then="postView" else="redirectView" />
     </decision-state>
-    
-	<!-- Password Manager sub-flow -->
-    <subflow-state id="passwordManager" subflow="passwordManager">
-        <input name="credentials" value="flowScope.credentials" type="org.jasig.cas.authentication.principal.Credentials"/>
-        <input name="service" value="flowScope.service" type="java.lang.String"/>
-        <input name="pmTask" value="flashScope.pmTask" type="java.lang.String"/>
-        <input name="expireDays" value="flowScope.expireDays" type="java.lang.Integer"/>
-        <transition on="pmExit" to="redirectToLogin"/>
-        <transition on="passwordSet" to="passwordSet"/>
-        <transition on="helpDeskView" to="helpDeskView"/>
-    </subflow-state>
-    
-    <end-state id="passwordSet" view="casPmChangedPassword" />
-    
-    <end-state id="helpDeskView" view="casPmHelpDesk" />
+
 	<!-- 
 		the "viewGenericLogin" is the end state for when a user attempts to login without coming directly from a service.
 		They have only initialized their single-sign on session.
@@ -247,13 +305,6 @@
 	<end-state id="viewServiceErrorView" view="viewServiceErrorView" />
     
     <end-state id="viewServiceSsoErrorView" view="viewServiceSsoErrorView" />
-    
-    <decision-state id="redirectToLogin">
-        <if test="flowScope.service != null" then="redirectToLoginWithService" else="redirectToLoginNoService" />
-    </decision-state>
-    
-    <end-state id="redirectToLoginWithService" view="externalRedirect:login?service=${flowScope.service}" />
-    <end-state id="redirectToLoginNoService" view="externalRedirect:login" />
 
 	<global-transitions>
         <!-- CAS-1023 This one is simple - redirects to a login page (same as renew) when 'ssoEnabled' flag is unchecked
@@ -261,5 +312,5 @@
         <transition to="viewLoginForm" on-exception="org.jasig.cas.services.UnauthorizedSsoServiceException"/>
         <transition to="viewServiceErrorView" on-exception="org.springframework.webflow.execution.repository.NoSuchFlowExecutionException" />
 		<transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
-	</global-transitions>
+	</global-transitions>	
 </flow>

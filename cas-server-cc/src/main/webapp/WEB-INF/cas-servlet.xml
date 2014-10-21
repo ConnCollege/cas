@@ -34,6 +34,10 @@
 		</property>
 	</bean>
 	
+	<bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver" 
+		p:order="1"
+		p:location="/WEB-INF/view/views.xml" />
+	
 	<!-- Locale Resolver -->
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" />
 		
@@ -109,15 +113,21 @@
 			<webflow:always-redirect-on-pause value="false"/>
 			<webflow:redirect-in-same-state value="false" />
 	    </webflow:flow-execution-attributes>
+	    <webflow:flow-execution-listeners>
+			<webflow:listener ref="terminateWebSessionListener" />
+		</webflow:flow-execution-listeners>
   	</webflow:flow-executor>
 
     <webflow:flow-registry id="flowRegistry" flow-builder-services="builder">
         <webflow:flow-location path="/WEB-INF/login-webflow.xml" id="login" />
-	    <webflow:flow-location path="/WEB-INF/interrupts-webflow.xml" id="interupts" />
-	    <webflow:flow-location path="/WEB-INF/passwordManager-webflow.xml" id="passwordManager" />
+	    <webflow:flow-location path="/WEB-INF/interrupts-webflow.xml" id="interrupts" />
     </webflow:flow-registry>
 
-    <webflow:flow-builder-services id="builder" view-factory-creator="viewFactoryCreator" expression-parser="expressionParser" />
+    <webflow:flow-builder-services id="builder" view-factory-creator="viewFactoryCreator" 
+    	expression-parser="expressionParser" />
+    
+    <bean id="terminateWebSessionListener" class="org.jasig.cas.web.flow.TerminateWebSessionListener"  
+    	p:serviceManagerUrl="${cas.securityContext.serviceProperties.service}" />
 
     <bean id="expressionParser" class="org.springframework.webflow.expression.WebFlowOgnlExpressionParser" />
 
@@ -170,6 +180,8 @@
 		p:logoutView="casLogoutView"
 		p:warnCookieGenerator-ref="warnCookieGenerator"
 		p:ticketGrantingTicketCookieGenerator-ref="ticketGrantingTicketCookieGenerator"
+		p:servicesManager-ref="servicesManager"
+	    p:followServiceRedirects="${cas.logout.followServiceRedirects:false}"/>
 		p:followServiceRedirects="true" />
 
 	<bean id="healthCheckController" class="org.jasig.cas.web.HealthCheckController"
@@ -223,7 +235,8 @@
 	</bean>
 	
 	<bean id="registeredServiceValidator" class="org.jasig.cas.services.web.support.RegisteredServiceValidator"
-		p:servicesManager-ref="servicesManager" />
+		p:servicesManager-ref="servicesManager" 
+		p:personAttributeDao-ref="attributeRepository" />
 	
 	<bean id="manageRegisteredServicesMultiActionController" class="org.jasig.cas.services.web.ManageRegisteredServicesMultiActionController">
 		<constructor-arg index="0" ref="servicesManager" />
