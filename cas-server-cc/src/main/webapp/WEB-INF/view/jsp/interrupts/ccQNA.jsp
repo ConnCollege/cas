@@ -7,11 +7,41 @@
 		        <strong>Pick a Question:</strong><br />
 		        <select name="fields[1]">
 		        	<c:forEach items="${questionList}" var="choice">
-		            	<option>${choice.qChoice}</option>
+		        		<c:choose>
+		        			<c:when test="${(choice.quesNum == 1) || (choice.active == 1)}">
+		        				<c:choose>
+		        					<c:when test="${choice.quesNum == 1}">
+		            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
+		            					<c:set var="default"  value="${choice.answer}" scope="page" />
+		            				</c:when>
+		            				<c:otherwise>
+		            					<option value="${choice.id}">${choice.qChoice}</option>
+		            				</c:otherwise>
+		            		</c:when>	
+		            	</c:choose>
 		            </c:forEach>
 		        </select><br /><br />
 		        <strong>Security Answer</strong><br />
-		        <input size="25" name="fields[2]" value="" />
+		        <input size="25" name="fields[2]" value="${default}" />
+		        <strong>Pick a Question:</strong><br />
+		        <select name="fields[3]">
+		        	<c:forEach items="${questionList}" var="choice">
+		        		<c:choose>
+		        			<c:when test="${(choice.quesNum == 2) || (choice.active == 1)}">
+		        				<c:choose>
+		        					<c:when test="${choice.quesNum == 2}">
+		            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
+		            					<c:set var="default"  value="${choice.answer}" scope="page" />
+		            				</c:when>
+		            				<c:otherwise>
+		            					<option value="${choice.id}">${choice.qChoice}</option>
+		            				</c:otherwise>
+		            		</c:when>	
+		            	</c:choose>
+		            </c:forEach>
+		        </select><br /><br />
+		        <strong>Security Answer</strong><br />
+		        <input size="25" name="fields[4]" value="${default}" />
 				<input type="hidden" name="lt" value="${loginTicket}" />
 				<input type="hidden" name="execution" value="${flowExecutionKey}" />
 				<input type="hidden" name="_eventId" value="submit" />

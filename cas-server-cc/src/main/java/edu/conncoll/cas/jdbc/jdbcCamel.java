@@ -1,7 +1,5 @@
 package edu.conncoll.cas.jdbc;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +30,7 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.SqlReturnResultSet;
@@ -65,13 +63,13 @@ import org.jasig.cas.web.support.IntData;
 
 public class jdbcCamel {
 	@NotNull
-    private SimpleJdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 	
 	@NotNull
-    private SimpleJdbcTemplate jdbcCensus;
+    private JdbcTemplate jdbcCensus;
 	
 	@NotNull
-    private SimpleJdbcTemplate jdbcBlackB;
+    private JdbcTemplate jdbcBlackB;
     
     @NotNull
     private DataSource dataSource;
@@ -100,7 +98,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -119,6 +117,7 @@ public class jdbcCamel {
 		String SQL = "";
 		
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");	
+		namedParameters.put("username",userName);
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
@@ -172,7 +171,7 @@ public class jdbcCamel {
 				}
 			break;
 			case QNA:				
-				SQL = "select question qChoice from cc_user_questions";				
+				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId=:username order by QuestNum";				
 				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL);	
 				log.debug("readFlow sending questions");
 				context.getFlowScope().put("questionList", QNAData);
@@ -326,13 +325,25 @@ public class jdbcCamel {
 		context.getFlowScope().put("ErrorMsg", " ");
 		
 		if (flag.equals("QNA")) {
-			SQL = "update cc_user set password_question=:question, password_answer=:answer where email = :user and active=1";
-			log.debug("QNA question: " + intData.getField(1));
-			log.debug("QNA answer: " + intData.getField(2));
-			namedParameters.put("question", intData.getField(1));
-			namedParameters.put("answer", intData.getField(2));
+			//Clear QNAPairs for this user
+			SQL="Delete from cc_user_qnaPairs where UId = :username";
 			int check = jdbcTemplate.update(SQL,namedParameters);
-			log.debug("Update result" + check);
+			log.debug("Delete result " + check);
+			SQL="insert cc_user_qnaPairs (UId, QuestNum, QuestionId, Answer) values(:username)";
+			log.debug("QNA question #1: " + intData.getField(1));
+			log.debug("QNA answer #1: " + intData.getField(2));
+			namedParameters.put("questnum", 1);
+			namedParameters.put("questionId", intData.getField(1));
+			namedParameters.put("answer", intData.getField(2));
+			check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert #1 result " + check);
+			log.debug("QNA question #2: " + intData.getField(3));
+			log.debug("QNA answer #2: " + intData.getField(4));
+			namedParameters.put("questnum", 2);
+			namedParameters.put("questionId", intData.getField(3));
+			namedParameters.put("answer", intData.getField(4));
+			check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert #2 result " + check);
 		}
 		
 		if (flag.equals("PWD")) {

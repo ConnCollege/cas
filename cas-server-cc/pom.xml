@@ -138,18 +138,15 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<!-- Spring Modifications -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-webflow</artifactId>
-			<version>${spring.webflow.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -169,7 +166,7 @@
 		<dependency>
 	        <groupId>org.hibernate</groupId>
 	        <artifactId>hibernate-entitymanager</artifactId>
-	        <version>${hibernate.core.version}</version>
+	        <version>${hibernate.core.version}</version><!--$NO-MVN-MAN-VER$-->
 	        <type>jar</type>
       	</dependency>
 		<!-- Mail support -->
@@ -187,7 +184,7 @@
 		<jasypt.version>1.6</jasypt.version>
     	<servlet.api.version>2.5</servlet.api.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
-        <spring.webflow.version>2.2.1.RELEASE</spring.webflow.version>  
+        <spring.webflow.version>2.3.0.RELEASE</spring.webflow.version>
     	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
     </properties>
  
