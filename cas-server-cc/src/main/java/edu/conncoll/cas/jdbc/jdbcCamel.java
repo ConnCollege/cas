@@ -116,8 +116,9 @@ public class jdbcCamel {
 		
 		String SQL = "";
 		
-		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");	
-		namedParameters.put("username",userName);
+		Map<String,Object> namedParameters = new HashMap<String,Object>();
+		namedParameters.put("user", userName + "@conncoll.edu");
+		namedParameters.put("username", userName );
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
@@ -319,6 +320,7 @@ public class jdbcCamel {
 		String SQL = "";
 		Map<String,Object> namedParameters = new HashMap<String,Object>();
 		namedParameters.put("user", userName + "@conncoll.edu");
+		namedParameters.put("username", userName );
 		
 		log.info("writeFlow Saving data for " + flag);
 		log.debug("writeFlow got data " +intData.getFields().toString());
