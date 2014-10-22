@@ -493,21 +493,21 @@ public class jdbcCamel {
 	}
 
     public final void setDataSource(final DataSource dataSource) {
-        this.jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
 
     public final void setCensusSource(final DataSource dataSource) {
-        this.jdbcCensus = new SimpleJdbcTemplate(dataSource);
+        this.jdbcCensus = new JdbcTemplate(dataSource);
         this.censusSource = dataSource;
     }
 
     public final void setBlackBSource(final DataSource dataSource) {
-        this.jdbcBlackB = new SimpleJdbcTemplate(dataSource);
+        this.jdbcBlackB = new JdbcTemplate(dataSource);
         this.BlackBSource = dataSource;
     }
     
-    protected final SimpleJdbcTemplate getJdbcTemplate() {
+    protected final JdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
     }
     
