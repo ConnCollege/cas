@@ -172,8 +172,8 @@ public class jdbcCamel {
 				}
 			break;
 			case QNA:				
-				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId=:username order by QuestNum";				
-				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL);	
+				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
+				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 				log.debug("readFlow sending questions");
 				context.getFlowScope().put("questionList", QNAData);
 			break;
