@@ -117,7 +117,6 @@ public class jdbcCamel {
 		String SQL = "";
 		
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
-		namedParameters.addValue(new MapSqlParameterSource("username", userName));
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
@@ -171,6 +170,7 @@ public class jdbcCamel {
 				}
 			break;
 			case QNA:				
+				namedParameters = new MapSqlParameterSource("username", userName);
 				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
 				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 				log.debug("readFlow sending questions");
