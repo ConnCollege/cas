@@ -6,9 +6,9 @@
 	   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">					   
 						   
    	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
-		p:URL="jdbc:sqlserver://sumac.conncoll.edu:1433;SelectMethod=cursor;databaseName=camel2"
-		p:password="${datasource.password}"
-		p:user="${datasource.username}" />
+		p:URL="${camel.db.url}"
+		p:password="${camel.db.password}"
+		p:user="${camel.db.username}" />
 		
 	<bean id="dataSourceCensus"  class="org.apache.commons.dbcp.BasicDataSource"
         p:driverClassName="oracle.jdbc.OracleDriver"
