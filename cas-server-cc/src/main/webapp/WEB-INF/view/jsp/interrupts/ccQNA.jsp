@@ -7,37 +7,36 @@
 		        <strong>Pick a Question:</strong><br />
 		        <select name="fields[1]">
 		        	<c:forEach items="${questionList}" var="choice">
-		        		<c:choose>
-		        			<c:when test="${(choice.quesNum == 1) || (choice.active == 1)}">
-		        				<c:choose>
-		        					<c:when test="${choice.quesNum == 1}">
-		            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
-		            					<c:set var="default"  value="${choice.answer}" scope="page" />
-		            				</c:when>
-		            				<c:otherwise>
-		            					<option value="${choice.id}">${choice.qChoice}</option>
-		            				</c:otherwise>
-		            		</c:when>	
-		            	</c:choose>
+		        		<c:if test="${(choice.QuestNum == 1) || (choice.active == true)}">
+	        				<c:choose>
+	        					<c:when test="${choice.QuestNum == 1}">
+	            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
+	            					<c:set var="default"  value="${choice.answer}" scope="page" />
+	            				</c:when>
+	            				<c:otherwise>
+	            					<option value="${choice.id}">${choice.qChoice}</option>
+	            				</c:otherwise>
+	            			</c:choose>	
+	            		</c:if>	
 		            </c:forEach>
 		        </select><br /><br />
 		        <strong>Security Answer</strong><br />
-		        <input size="25" name="fields[2]" value="${default}" />
+		        <input size="25" name="fields[2]" value="${default}" /><br /><br /><br /><br />
+		        <c:set var="default"  value="" scope="page" />
 		        <strong>Pick a Question:</strong><br />
 		        <select name="fields[3]">
 		        	<c:forEach items="${questionList}" var="choice">
-		        		<c:choose>
-		        			<c:when test="${(choice.quesNum == 2) || (choice.active == 1)}">
-		        				<c:choose>
-		        					<c:when test="${choice.quesNum == 2}">
-		            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
-		            					<c:set var="default"  value="${choice.answer}" scope="page" />
-		            				</c:when>
-		            				<c:otherwise>
-		            					<option value="${choice.id}">${choice.qChoice}</option>
-		            				</c:otherwise>
-		            		</c:when>	
-		            	</c:choose>
+		        		<c:if test="${(choice.QuestNum == 2) || (choice.active == true)}">
+	        				<c:choose>
+	        					<c:when test="${choice.QuestNum == 2}">
+	            					<option value="${choice.id}" selected="selected">${choice.qChoice}</option>
+	            					<c:set var="default"  value="${choice.answer}" scope="page" />
+	            				</c:when>
+	            				<c:otherwise>
+	            					<option value="${choice.id}">${choice.qChoice}</option>
+	            				</c:otherwise>
+	            			</c:choose>
+	            		</c:if>
 		            </c:forEach>
 		        </select><br /><br />
 		        <strong>Security Answer</strong><br />
