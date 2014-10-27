@@ -30,6 +30,7 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -63,7 +64,7 @@ import org.jasig.cas.web.support.IntData;
 
 public class jdbcCamel {
 	@NotNull
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 	
 	@NotNull
     private JdbcTemplate jdbcCensus;
@@ -116,7 +117,7 @@ public class jdbcCamel {
 		
 		String SQL = "";
 		
-		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu",java.sql.Types.VARCHAR);
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("user", userName + "@conncoll.edu",java.sql.Types.VARCHAR);
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
@@ -494,7 +495,7 @@ public class jdbcCamel {
 	}
 
     public final void setDataSource(final DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
 
@@ -508,7 +509,7 @@ public class jdbcCamel {
         this.BlackBSource = dataSource;
     }
     
-    protected final JdbcTemplate getJdbcTemplate() {
+    protected final NamedParameterJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
     }
     
