@@ -32,7 +32,7 @@ ccHTMLFoot = '</strong>';
 function InLineValid(){ 
 	bvalid = true; 
 	var p1 = document.getElementById("field01"); 
-	var p2 = document.getElementById("field01"); 
+	var p2 = document.getElementById("field02"); 
 	var pe = document.getElementById("field01Error"); 
 	if (p1.value != p2.value) { 
 		bvalid = false; 
@@ -101,7 +101,6 @@ select {
     Changing your password on this page will change the password you use to log in to the college network and your email account. Mac users will need to change the password stored on their computer for email, wireless access to the college network, VPN, and address book.  
 	</strong>
 </form:form>
-<script src="https://aspen.conncoll.edu/scripts/ccValidator.js"></script
-><p></p>
+<script src="https://www.conncoll.edu/scripts/ccValidator.js"></script><p></p>
 </div>
 <jsp:directive.include file="includes/Bottom.jsp" />

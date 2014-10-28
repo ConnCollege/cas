@@ -331,7 +331,7 @@ public class jdbcCamel {
 			SQL="Delete from cc_user_qnaPair where UId = :username";
 			int check = jdbcTemplate.update(SQL,namedParameters);
 			log.debug("Delete result " + check);
-			SQL="insert cc_user_qnaPair (UId, QuestNum, QuestionId, Answer) values(:username)";
+			SQL="insert cc_user_qnaPair (UId, QuestNum, QuestionId, Answer) values(:username, :questnum, :questionId, :answer)";
 			log.debug("QNA question #1: " + intData.getField(1));
 			log.debug("QNA answer #1: " + intData.getField(2));
 			namedParameters.put("questnum", 1);
