@@ -26,8 +26,8 @@
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />
         <input class="btn-reset" name="changePassword" value="<spring:message code="screen.welcome.button.changePassword" />" tabindex="6" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=changePassword'; return false;" />
-        <input class="btn-reset" name="changePassword" value="<spring:message code="screen.welcome.button.forgotPassword" />" tabindex="" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=forgotPassword'; return false;" />
-        <input class="btn-reset" name="changePassword" value="<spring:message code="screen.welcome.button.initPassword" />" tabindex="8" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=initalzie'; return false;" />
+        <input class="btn-reset" name="forgotPassword" value="<spring:message code="screen.welcome.button.forgotPassword" />" tabindex="" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=forgotPassword'; return false;" />
+        <input class="btn-reset" name="initialize" value="<spring:message code="screen.welcome.button.initPassword" />" tabindex="8" type="button" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=initialize'; return false;" />
     </form:form>
     <p><a href="http://www.conncoll.edu">Connecticut College Homepage</a></p>
 </div>               

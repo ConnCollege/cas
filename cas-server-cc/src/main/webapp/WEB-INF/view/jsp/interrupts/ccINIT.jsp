@@ -3,7 +3,7 @@
 <script type="text/javascript"> 
  
 if (document.location.protocol != "https:") { 
-	document.location.href = "https://"+document.domain +location.pathname; 
+	document.location.href = "https://"+document.domain +location.patdname; 
 } 
 var ccPopUp=0; 
 var ccPassMin=8;
@@ -34,37 +34,37 @@ function InLineValid(){
 				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
 			</div>
         	<div id="field01Error" style="display:none;background:#FFDAD9"></div> 
-		    <form:form commandName="${commandName}" htmlEscape="true" method="post">
+		    <form:form commandName="${commandName}" htmlEscape="true" metdod="post">
 		    	<div align="center">
 				<table>
 					<tr>
-						<th>
+						<td align="right">
 							Assigned Camel Username:
-						</th>
+						</td>
 						<td>
 		        			<input size="25" name="fields[1]" value="" ccreq="true" title="Camel Username" />
 		        		</td>
 		        	</tr>
 					<tr>
-						<th>
-							Assigned Camel Id:
-						</th>
+						<td align="right">
+							Your Birth Date:
+						</td>
 						<td>
-		        			<input size="25" name="fields[2]" value="" ccreq="true" title="Camel Id" />
-		        		</td>
-		        	</tr>
-		        	<tr>
-		        		<td colspan="2">
-		        			Your eight-digit ID is on the address label of most mailings we send you. The ID is circled on the sample below<br>
-		        			<img src="https://www.conncoll.edu/camelwebSSL/images/alumni/login/label.jpg">
+		        			<input size="25" name="fields[2]" value="mm/dd/yyyy" ccreq="true" title="Birtd Date" />
 		        		</td>
 		        	</tr>
 					<tr>
-						<th>
-							Your Birth Date:
-						</th>
+						<td align="right">
+							Assigned Camel Id:
+						</td>
 						<td>
-		        			<input size="25" name="fields[3]" value="mm/dd/yyyy" ccreq="true" title="Birth Date" />
+		        			<input size="25" name="fields[3]" value="" ccreq="true" title="Camel Id" />
+		        		</td>
+		        	</tr>
+		        	<tr>
+		        		<td colspan="2" align="center">
+		        			Your eight-digit ID is on the address label of most mailings we send you. The ID is circled on the sample below<br>
+		        			<img src="https://www.conncoll.edu/camelwebSSL/images/alumni/login/label.jpg">
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -84,17 +84,17 @@ function InLineValid(){
 						</td>
 					</tr>
 		        	<tr>
-		        		<th>
+		        		<td align="right">
 		        			Choose a password:
-		        		</th>
+		        		</td>
 		        		<td>
 		        			<input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[4]" ccvalid="password"  />
 		        		</td>
 		        	</tr>
 		        	<tr>
-		        		<th>
+		        		<td align="right">
 		        			Re-enter your password:
-		        		</th>
+		        		</td>
 		        		<td>
 		        			 <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[2]" ccvalid="password"  />
 		        		</td>

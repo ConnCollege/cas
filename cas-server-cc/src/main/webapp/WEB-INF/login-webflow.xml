@@ -132,7 +132,7 @@
         <transition on="forgotPassword" to="showInterrupt" validate="false">
             <set name="flowScope.Flag" value="'RESET'"/>
         </transition>
-        <transition on="initalize" to="showInterrupt" validate="false">
+        <transition on="initialize" to="showInterrupt" validate="false">
             <set name="flowScope.Flag" value="'INIT'"/>
         </transition>
         <transition on="changePassword" to="showInterrupt" validate="false">
