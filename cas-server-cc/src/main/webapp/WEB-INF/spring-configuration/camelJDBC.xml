@@ -31,5 +31,7 @@
 		p:searchBase="dc=conncoll,dc=edu"
 		p:nuVisionPath="/nv_import/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
-		p:mainPassword="${main.gmail.password}" />
+		p:mainPassword="${main.gmail.password}"
+		p:recaptchaPublic="${recaptcha.key.public}"
+		p:recaptchaPrivate="${recaptcha.key.private}" />
 </beans>

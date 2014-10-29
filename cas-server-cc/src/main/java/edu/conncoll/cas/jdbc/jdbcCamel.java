@@ -89,6 +89,12 @@ public class jdbcCamel {
     private String searchBase;
 	
 	@NotNull
+    private String recaptchaPublic;
+	
+	@NotNull
+    private String recaptchaPrivate;
+	
+	@NotNull
     private String mainUsername;
 	
 	@NotNull
@@ -126,8 +132,8 @@ public class jdbcCamel {
 				namedParameters = new MapSqlParameterSource("username", userName );
 				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
 				List<Map<String,Object>> UserQNA = jdbcTemplate.queryForList(SQL,namedParameters);
-				
-				context.getFlowScope().put("UserQNA", UserQNA);
+				context.getFlowScope().put("recaptchaPublicKey", recaptchaPublic);
+				context.getFlowScope().put("recaptchaPrivateKey", recaptchaPrivate);
 				break;
 			case AUP:
 				SQL = "select count(*) ct from cc_user where email = :user and active=1";
@@ -534,6 +540,14 @@ public class jdbcCamel {
 		
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;
+	}
+	
+	public void setrecaptchaPublic (final String recaptchaPublic) {
+		this.recaptchaPublic = recaptchaPublic;
+	}
+	
+	public void setrecaptchaPrivate (final String recaptchaPrivate) {
+	this.recaptchaPrivate = recaptchaPrivate	;
 	}
 		
 	public void setMainUsername (final String mainUsername) {
