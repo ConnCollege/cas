@@ -125,7 +125,7 @@ public class jdbcCamel {
 			case RESET:
 				namedParameters = new MapSqlParameterSource("username", userName );
 				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
-				Map<String,Object> UserQNA = jdbcTemplate.queryForMap(SQL,namedParameters);
+				List<Map<String,Object>> UserQNA = jdbcTemplate.queryForList(SQL,namedParameters);
 				
 				context.getFlowScope().put("UserQNA", UserQNA);
 				break;

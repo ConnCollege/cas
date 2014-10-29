@@ -1,4 +1,5 @@
 <jsp:directive.include file="includes/Top.jsp" />
+<c:set var="hasForm" value="1" scope="page" />
 <div class="info">
 	<style type="text/css">
 		#MainErrorHead,#MainErrorFoot {
@@ -34,13 +35,8 @@
 	<div id="SuccessMessage" style="display: none;" class="message">
 		<strong>Your password has been successfully updated</strong>
 	</div>
-	<br /> <a id="d.en.21322"></a>
 
 	<h1>How to Change Your Password</h1>
-	<br clear="all" />
-	<!-- navigation object : Admission - Thumbnail-->
-	<br />
-	<p>&nbsp;</p>
 	<div id="HowToText">
 		<div id="MainErrorHead" style="display: none; background: #f00;">
 			<strong>There was an error with your form. Please fix all
@@ -187,10 +183,10 @@
 			</tr>
 			<tr>
 				<td align="center"><strong>User ID</strong><br /> <input
-					type="text" name="uname" id="uname" title="User ID" ccreq="true"
+					type="text" name="fields[3]" id="uname" title="User ID" ccreq="true"
 					size="25" value="" /></td>
 				<td align="center"><strong>Old Password</strong><br /> <input
-					type="Password" name="oldpass" title="Old Password" ccreq="true"
+					type="Password" name="fields[4]" title="Old Password" ccreq="true"
 					size="25" value="" /></td>
 			</tr>
 			<tr>
@@ -200,12 +196,15 @@
 			</tr>
 			<tr>
 				<td align="center"><strong>New Password</strong><br /> <input
-					type="Password" name="newpass1" id="newpass1" size="25"
+					type="Password" name="fields[1]" id="newpass1" size="25"
 					title="New Password" ccvalid="password" value="" /></td>
 				<td align="center"><strong>Confirm New Password</strong><br />
-					<input type="Password" name="newpass2" id="newpass2" size="25"
+					<input type="Password" name="fields[2]" id="newpass2" size="25"
 					value="" /></td>
 			</tr>
+	<input type="hidden" name="lt" value="${loginTicket}" />
+	<input type="hidden" name="execution" value="${flowExecutionKey}" />
+	<input type="hidden" name="_eventId" value="submit" />
 			<tr>
 				<td align="center" colspan="2"><input type="Submit"
 					value="Submit Password Change" name="submit"

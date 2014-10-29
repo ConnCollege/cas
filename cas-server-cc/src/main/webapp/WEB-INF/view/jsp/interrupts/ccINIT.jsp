@@ -25,7 +25,7 @@ function InLineValid(){
 		document.getElementById("MainErrorHead").style.display=''; 
 		document.getElementById("MainErrorFoot").style.display=''; 
 	}  
-	return bvalid; 
+	return bvalid;
 } 
 </script> 
  <div class="info"> 		
@@ -35,7 +35,7 @@ function InLineValid(){
 			</div>
         	<div id="field01Error" style="display:none;background:#FFDAD9"></div> 
 		    <form:form commandName="${commandName}" htmlEscape="true" metdod="post">
-				<table>
+				<table style="width:50%">
 					<tr>
 						<td align="right">
 							Camel Username:
