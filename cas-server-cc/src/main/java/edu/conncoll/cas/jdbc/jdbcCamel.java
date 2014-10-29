@@ -117,7 +117,7 @@ public class jdbcCamel {
 		
 		String SQL = "";
 		
-		sqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
+		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
