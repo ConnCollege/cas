@@ -35,11 +35,10 @@ function InLineValid(){
 			</div>
         	<div id="field01Error" style="display:none;background:#FFDAD9"></div> 
 		    <form:form commandName="${commandName}" htmlEscape="true" metdod="post">
-		    	<div align="center">
 				<table>
 					<tr>
 						<td align="right">
-							Assigned Camel Username:
+							Camel Username:
 						</td>
 						<td>
 		        			<input size="25" name="fields[1]" value="" ccreq="true" title="Camel Username" />
@@ -47,7 +46,7 @@ function InLineValid(){
 		        	</tr>
 					<tr>
 						<td align="right">
-							Your Birth Date:
+							Birth Date:
 						</td>
 						<td>
 		        			<input size="25" name="fields[2]" value="mm/dd/yyyy" ccreq="true" title="Birtd Date" />
@@ -55,7 +54,7 @@ function InLineValid(){
 		        	</tr>
 					<tr>
 						<td align="right">
-							Assigned Camel Id:
+							Camel Number:
 						</td>
 						<td>
 		        			<input size="25" name="fields[3]" value="" ccreq="true" title="Camel Id" />
@@ -63,8 +62,7 @@ function InLineValid(){
 		        	</tr>
 		        	<tr>
 		        		<td colspan="2" align="center">
-		        			Your eight-digit ID is on the address label of most mailings we send you. The ID is circled on the sample below<br>
-		        			<img src="https://www.conncoll.edu/camelwebSSL/images/alumni/login/label.jpg">
+		        			Your eight-digit Camel Number appears on your offer/acceptance letter.<br>
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -103,12 +101,11 @@ function InLineValid(){
 				<input type="hidden" name="lt" value="${loginTicket}" />
 				<input type="hidden" name="execution" value="${flowExecutionKey}" />
 				<input type="hidden" name="_eventId" value="submit" />
-		        <input type="submit" value="Continue" id="btnSubmit" />
+		        <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>
 		        <div id="MainErrorFoot" style="display:none;background:#F00"> 
 					<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
 				</div>
 	        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>
-		        </div>
 		    </form:form>
 		
 </div>
