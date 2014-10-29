@@ -132,6 +132,7 @@ public class jdbcCamel {
 				namedParameters = new MapSqlParameterSource("username", userName );
 				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
 				List<Map<String,Object>> UserQNA = jdbcTemplate.queryForList(SQL,namedParameters);
+				context.getFlowScope().put("UserQNA", UserQNA);
 				context.getFlowScope().put("recaptchaPublicKey", recaptchaPublic);
 				context.getFlowScope().put("recaptchaPrivateKey", recaptchaPrivate);
 				break;
