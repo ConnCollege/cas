@@ -118,10 +118,17 @@ public class jdbcCamel {
 		String SQL = "";
 		
 		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("user", userName + "@conncoll.edu",java.sql.Types.VARCHAR);
+		namedParameters.addvalue("username", userName);
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
 		switch (Interrupts.toInt(flag)) {
+			case RESET:
+				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
+				Map<String,Object> UserQNA = jdbcTemplate.queryForMap(SQL,namedParameters);
+				
+				context.getFlowScope().put("UserQNA", UserQNA);
+				break;
 			case AUP:
 				SQL = "select count(*) ct from cc_user where email = :user and active=1";
 				Map<String,Object> ChkUser = jdbcTemplate.queryForMap(SQL,namedParameters);
@@ -171,7 +178,6 @@ public class jdbcCamel {
 				}
 			break;
 			case QNA:				
-				namedParameters = new MapSqlParameterSource("username", userName);
 				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
 				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 				log.debug("readFlow sending questions");
