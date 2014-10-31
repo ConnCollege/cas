@@ -413,15 +413,17 @@ public class jdbcCamel {
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
-			if (!setPassword ( userName,  intData.getField(1), true)){
+			if (!setPassword ( context, userName,  intData.getField(1), true)){
 				return "Failed";
 			}
+			credentials.setPassword(intData.getField(1));
 		}
 		
 		if (flag.equals("PWD")) {
-			if (!setPassword ( userName,  intData.getField(1), true)){
+			if (!setPassword ( context, userName,  intData.getField(1), true)){
 				return "Failed";
 			}
+			credentials.setPassword(intData.getField(1));
 		}
 		if (flag.equals("EMR")) {
 			log.debug("Opt Out Answer is: " + intData.getField(2));
@@ -512,8 +514,9 @@ public class jdbcCamel {
 		return "Saved";
 	}
 	
-	boolean setPassword (String userName, String newPass, boolean setAD){
+	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD){
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 		
 		List DN = this.ldapTemplate.search(
 			this.searchBase, searchFilter, 
@@ -587,10 +590,13 @@ public class jdbcCamel {
 			log.info("Password reset failed at google");
 			// No Google account					 
 		}		
-		SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
+
+		
+		String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
 		int check = jdbcTemplate.update(SQL,namedParameters);
 		log.debug("Insert result " + check);
-		credentials.setPassword(intData.getField(1));
 		
 		return true;
 	}
