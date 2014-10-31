@@ -94,7 +94,7 @@ function InLineValid(){
 		        			Re-enter your password:
 		        		</td>
 		        		<td>
-		        			 <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[2]" ccvalid="password"  />
+		        			 <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[5" ccvalid="password"  />
 		        		</td>
 		        	</tr>
 		        </table>

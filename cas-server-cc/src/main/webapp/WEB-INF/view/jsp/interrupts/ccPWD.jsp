@@ -77,7 +77,7 @@ select {
     </c:choose> 
     <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[1]" ccvalid="password"  /><br /><br />
     <strong>Re-enter your password:</strong><br />
-    <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[2]" ccvalid="password"  /><br /><br />				
+    <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[2]" ccvalid="password"  /><br /><br />				
     <c:choose>
     	<c:when test='${fn:length(ErrorMsg)>3}'>
         	<div id="MainErrorFoot" style="background:#F00"> 

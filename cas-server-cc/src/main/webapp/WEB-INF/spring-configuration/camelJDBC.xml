@@ -42,7 +42,7 @@
 	    </property>
 	</bean>  
 	
-	<bean id="vaultemplate" class="org.springframework.ldap.core.LdapTemplate">
+	<bean id="vaultTemplate" class="org.springframework.ldap.core.LdapTemplate">
         <constructor-arg ref="VaultSource" />
         <property name="ignorePartialResultException" value="true" />
     </bean>    
@@ -52,7 +52,7 @@
 		p:censusSource-ref="dataSourceCensus"
 		p:blackBSource-ref="dataSourceBlackB"
 		p:filter="sAMAccountName=%u"
-		p:vualtFilter="UId=%u"
+		p:vaultFilter="UId=%u"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:vaultTemplate-ref="vaultTemplate"
 		p:searchBase="${ldap.authentication.basedn}"

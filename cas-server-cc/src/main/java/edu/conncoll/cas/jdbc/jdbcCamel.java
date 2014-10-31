@@ -374,6 +374,7 @@ public class jdbcCamel {
 		}
 		
 		if (flag.equals("INIT")){
+			username = intData.getField(1);
 			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
@@ -416,7 +417,21 @@ public class jdbcCamel {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
 				return "Failed";
 			}
-			credentials.setPassword(intData.getField(1));
+			
+			ModificationItem[] mods = new ModificationItem[1];
+			
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("UserAccountControl", "512"));
+			
+			try {
+				ldaptTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+			}catch( Exception e){
+				log.warn("Acount enable failed in AD");
+				context.getFlowScope().put("ErrorMsg", "Account enable rejected by server, please contact the IT service desk.");
+				return "Failed";
+			}
+			
+			credentials.setUsername(intData.getField(1));
+			credentials.setPassword(intData.getField(4));
 		}
 		
 		if (flag.equals("PWD")) {
@@ -567,8 +582,8 @@ public class jdbcCamel {
 
 		ModificationItem[] mods = new ModificationItem[1];
 		
-
-			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
+		mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
+		
 		try {
 			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
 		}catch( Exception e){
