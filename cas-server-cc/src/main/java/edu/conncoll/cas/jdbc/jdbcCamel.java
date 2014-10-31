@@ -514,7 +514,8 @@ public class jdbcCamel {
 		return "Saved";
 	}
 	
-	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD){
+	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
+		throws Exception{
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 		
@@ -566,8 +567,6 @@ public class jdbcCamel {
 
 		ModificationItem[] mods = new ModificationItem[1];
 		
-		String newQuotedPassword = "\"" + newPass + "\"";
-		byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
 
 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
 		try {
