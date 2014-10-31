@@ -374,7 +374,7 @@ public class jdbcCamel {
 		}
 		
 		if (flag.equals("INIT")){
-			username = intData.getField(1);
+			userName = intData.getField(1);
 			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
@@ -423,7 +423,7 @@ public class jdbcCamel {
 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("UserAccountControl", "512"));
 			
 			try {
-				ldaptTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+				this.ldapTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
 			}catch( Exception e){
 				log.warn("Acount enable failed in AD");
 				context.getFlowScope().put("ErrorMsg", "Account enable rejected by server, please contact the IT service desk.");
