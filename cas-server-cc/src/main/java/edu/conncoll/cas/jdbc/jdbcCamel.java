@@ -74,19 +74,30 @@ public class jdbcCamel {
     
     @NotNull
     private DataSource dataSource;
+    
     @NotNull
     private DataSource censusSource;
+    
     @NotNull
     private DataSource BlackBSource;
     
 	@NotNull
 	private LdapTemplate ldapTemplate;
+    
+	@NotNull
+	private LdapTemplate vaultTemplate;
 	
 	@NotNull
     private String filter;	
 	
 	@NotNull
+    private String vaultFilter;	
+	
+	@NotNull
     private String searchBase;
+	
+	@NotNull
+    private String vaultSearchBase;
 	
 	@NotNull
     private String recaptchaPublic;
@@ -362,8 +373,9 @@ public class jdbcCamel {
 			log.debug("Insert #2 result " + check);
 		}
 		
-		if (flag.equals("PWD")) {
-       		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+		if (flag.equals("INIT")){
+			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
 			List DN = this.ldapTemplate.search(
 				this.searchBase, searchFilter, 
@@ -374,46 +386,42 @@ public class jdbcCamel {
 				}
 			);
 			
+			List vaultDN = this.vaultTemplate.search(
+				this.vaultSearchBase, vaultSearchFilter, 
+				new AbstractContextMapper(){
+					protected Object doMapFromContext(DirContextOperations ctx) {
+						return ctx.getNameInNamespace();
+					}
+				}
+			);
+			
 			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+			DirContextOperations vaultcontext = ldapTemplate.lookupContext(vaultDN.get(0).toString());
 			
-			String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
-			String domain;
-			if (Attrib.equals("alumni")) {
-				domain = "alumni.conncoll.edu";
-			} else {
-				domain  = "conncoll.edu";
-			} 
-												
-			ModificationItem[] mods = new ModificationItem[1];
-			
-			String newQuotedPassword = "\"" + intData.getField(1) + "\"";
-			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
- 
- 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
-			try {
-				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
-			}catch( Exception e){
-				log.warn("Password reset failed at AD");
-				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
+			if (Attrib.equals("512")){
+				context.getFlowScope().put("ErrorMsg", "Account has already been created, you can not set your password with this process.");
 				return "Failed";
 			}
-			
-			AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
-			try {
-				UserEntry userEntry = googleCTX.retrieveUser(userName);
-				Login userLogin = userEntry.getLogin();
-				userLogin.setAgreedToTerms(true);
-				userLogin.setChangePasswordAtNextLogin(false);
-				userLogin.setPassword(intData.getField(1));
-				googleCTX.updateUser(userName,userEntry);
-			} catch (Exception e) {
-				log.info("Password reset failed at google");
-				// No Google account					 
-			}		
-			SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
-			int check = jdbcTemplate.update(SQL,namedParameters);
-			log.debug("Insert result " + check);
-			credentials.setPassword(intData.getField(1));
+			Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+			if (!Attrib.equals(intData.getField(3))){
+				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				return "Failed";
+			}
+			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
+			if (!Attrib.equals(intData.getField(3))){
+				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				return "Failed";
+			}
+			if (!setPassword ( userName,  intData.getField(1), true)){
+				return "Failed";
+			}
+		}
+		
+		if (flag.equals("PWD")) {
+			if (!setPassword ( userName,  intData.getField(1), true)){
+				return "Failed";
+			}
 		}
 		if (flag.equals("EMR")) {
 			log.debug("Opt Out Answer is: " + intData.getField(2));
@@ -504,6 +512,89 @@ public class jdbcCamel {
 		return "Saved";
 	}
 	
+	boolean setPassword (String userName, String newPass, boolean setAD){
+		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+		
+		List DN = this.ldapTemplate.search(
+			this.searchBase, searchFilter, 
+			new AbstractContextMapper(){
+				protected Object doMapFromContext(DirContextOperations ctx) {
+					return ctx.getNameInNamespace();
+				}
+			}
+		);
+		
+		List vaultDN = this.vaultTemplate.search(
+			this.vaultSearchBase, vaultSearchFilter, 
+			new AbstractContextMapper(){
+				protected Object doMapFromContext(DirContextOperations ctx) {
+					return ctx.getNameInNamespace();
+				}
+			}
+		);
+			
+		DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+		DirContextOperations vaultcontext = ldapTemplate.lookupContext(vaultDN.get(0).toString());
+		
+		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
+		String domain;
+		if (Attrib.equals("alumni")) {
+			domain = "alumni.conncoll.edu";
+		} else {
+			domain  = "conncoll.edu";
+		} 
+		
+		if (setAD){
+			ModificationItem[] mods = new ModificationItem[1];
+			
+			String newQuotedPassword = "\"" + newPass + "\"";
+			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+	
+				mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
+			try {
+				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
+			}catch( Exception e){
+				log.warn("Password reset failed at AD");
+				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+				return false;
+			}
+		}
+		
+
+		ModificationItem[] mods = new ModificationItem[1];
+		
+		String newQuotedPassword = "\"" + newPass + "\"";
+		byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
+		try {
+			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+		}catch( Exception e){
+			log.warn("Password reset failed at Vault");
+			context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			return false;
+		}
+		
+		AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
+		try {
+			UserEntry userEntry = googleCTX.retrieveUser(userName);
+			Login userLogin = userEntry.getLogin();
+			userLogin.setAgreedToTerms(true);
+			userLogin.setChangePasswordAtNextLogin(false);
+			userLogin.setPassword(newPass);
+			googleCTX.updateUser(userName,userEntry);
+		} catch (Exception e) {
+			log.info("Password reset failed at google");
+			// No Google account					 
+		}		
+		SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
+		int check = jdbcTemplate.update(SQL,namedParameters);
+		log.debug("Insert result " + check);
+		credentials.setPassword(intData.getField(1));
+		
+		return true;
+	}
+	
 	public final String setPWD(){
 		return "PWD";
 	}
@@ -543,12 +634,16 @@ public class jdbcCamel {
 		this.searchBase = searchBase;
 	}
 	
+	public void setVaultSearchBase (final String vaultSearchBase) {
+		this.vaultSearchBase = vaultSearchBase;
+	}
+	
 	public void setrecaptchaPublic (final String recaptchaPublic) {
 		this.recaptchaPublic = recaptchaPublic;
 	}
 	
 	public void setrecaptchaPrivate (final String recaptchaPrivate) {
-	this.recaptchaPrivate = recaptchaPrivate	;
+		this.recaptchaPrivate = recaptchaPrivate	;
 	}
 		
 	public void setMainUsername (final String mainUsername) {
@@ -567,8 +662,16 @@ public class jdbcCamel {
 		this.ldapTemplate=ldapTemplate;	
 	}
 	
+	public void setVaultTemplate(final LdapTemplate vaultTemplate){
+		this.vaultTemplate=vaultTemplate;	
+	}
+	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}
+	
+	public void setVaultFilter (final String vaultFilter) {
+		this.vaultFilter = vaultFilter;
 	}
 	
 	private class EMRRead extends StoredProcedure{
