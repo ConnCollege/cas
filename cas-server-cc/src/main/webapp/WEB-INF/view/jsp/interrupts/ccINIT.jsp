@@ -24,16 +24,29 @@ function InLineValid(){
 		p2.style.backgroundColor=ErrorColor; 
 		document.getElementById("MainErrorHead").style.display=''; 
 		document.getElementById("MainErrorFoot").style.display=''; 
+		document.getElementById("field01Error").style.display=''; 
 	}  
 	return bvalid;
 } 
 </script> 
  <div class="info"> 		
 		 	<h2>Please confirm your identity and choose your first password.</h2>
-		 	<div id="MainErrorHead" style="display:none;background:#F00"> 
-				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
-			</div>
-        	<div id="field01Error" style="display:none;background:#FFDAD9"></div> 
+		 	<c:choose>
+		    	<c:when test='${fn:length(ErrorMsg)>3}'>
+		        	<div id="MainErrorHead" style="background:#F00"> 
+						<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+					</div>
+		        	<div id="field01Error" style="background:#FFDAD9">
+		            	${ErrorMsg}
+		            </div>
+		        </c:when>
+		        <c:otherwise>
+		        	<div id="MainErrorHead" style="display:none;background:#F00"> 
+						<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+					</div>
+		        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>        
+		        </c:otherwise>
+		    </c:choose> 
 		    <form:form commandName="${commandName}" htmlEscape="true" metdod="post">
 				<table style="width:50%">
 					<tr>
@@ -102,10 +115,19 @@ function InLineValid(){
 				<input type="hidden" name="execution" value="${flowExecutionKey}" />
 				<input type="hidden" name="_eventId" value="submit" />
 		        <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>
-		        <div id="MainErrorFoot" style="display:none;background:#F00"> 
-					<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
-				</div>
-	        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>
+		         <c:choose>
+			    	<c:when test='${fn:length(ErrorMsg)>3}'>
+			        	<div id="MainErrorFoot" style="background:#F00"> 
+							<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+						</div>
+			        </c:when>
+			        <c:otherwise>
+			        	<div id="MainErrorFoot" style="display:none;background:#F00"> 
+							<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+						</div>
+			        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>        
+			        </c:otherwise>
+			    </c:choose>    
 		    </form:form>
 		
 </div>
