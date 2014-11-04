@@ -402,19 +402,24 @@ public class jdbcCamel {
 			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
 			if (Attrib.equals("512")){
 				context.getFlowScope().put("ErrorMsg", "Account has already been created, you can not set your password with this process.");
+				log.info("Returning Account has already been created, you can not set your password with this process.");
 				return "Failed";
 			}
 			Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
 			if (!Attrib.equals(intData.getField(3))){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
 			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
 			if (!Attrib.equals(intData.getField(3))){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
+				context.getFlowScope().put("ErrorMsg", "Password was rejected by the serer, please try again later.");
+				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
 			
@@ -427,6 +432,7 @@ public class jdbcCamel {
 			}catch( Exception e){
 				log.warn("Acount enable failed in AD");
 				context.getFlowScope().put("ErrorMsg", "Account enable rejected by server, please contact the IT service desk.");
+				log.error("Returning Account enable failed.");
 				return "Failed";
 			}
 			
@@ -436,6 +442,8 @@ public class jdbcCamel {
 		
 		if (flag.equals("PWD")) {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
+				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the serer, please try again later.");
+				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
 			credentials.setPassword(intData.getField(1));
@@ -534,6 +542,7 @@ public class jdbcCamel {
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 		
+		log.debug("Finding user in AD");
 		List DN = this.ldapTemplate.search(
 			this.searchBase, searchFilter, 
 			new AbstractContextMapper(){
@@ -542,7 +551,9 @@ public class jdbcCamel {
 				}
 			}
 		);
-		
+		DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+
+		log.debug("Finding user in Vault");
 		List vaultDN = this.vaultTemplate.search(
 			this.vaultSearchBase, vaultSearchFilter, 
 			new AbstractContextMapper(){
@@ -551,9 +562,6 @@ public class jdbcCamel {
 				}
 			}
 		);
-			
-		DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
-		DirContextOperations vaultcontext = ldapTemplate.lookupContext(vaultDN.get(0).toString());
 		
 		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
 		String domain;
@@ -564,6 +572,7 @@ public class jdbcCamel {
 		} 
 		
 		if (setAD){
+			log.debug("Setting AD Password");
 			ModificationItem[] mods = new ModificationItem[1];
 			
 			String newQuotedPassword = "\"" + newPass + "\"";
@@ -583,7 +592,8 @@ public class jdbcCamel {
 		ModificationItem[] mods = new ModificationItem[1];
 		
 		mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
-		
+
+		log.debug("Setting Vault Password");
 		try {
 			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
 		}catch( Exception e){
@@ -591,7 +601,8 @@ public class jdbcCamel {
 			context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
 			return false;
 		}
-		
+
+		log.debug("Setting gMail Password");
 		AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
 		try {
 			UserEntry userEntry = googleCTX.retrieveUser(userName);
@@ -605,7 +616,7 @@ public class jdbcCamel {
 			// No Google account					 
 		}		
 
-		
+		log.debug("Saving Aduit trail");
 		String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
 
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
