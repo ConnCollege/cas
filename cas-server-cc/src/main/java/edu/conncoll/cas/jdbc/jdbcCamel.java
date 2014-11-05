@@ -420,7 +420,7 @@ public class jdbcCamel {
 			
 			log.debug("Checking Birthdate");
 			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
-			if (!Attrib.equals(intData.getField(3))){
+			if (!Attrib.equals(intData.getField(2))){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
@@ -613,6 +613,7 @@ public class jdbcCamel {
 		}
 
 		log.debug("Setting gMail Password");
+		log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
 		AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
 		try {
 			UserEntry userEntry = googleCTX.retrieveUser(userName);
