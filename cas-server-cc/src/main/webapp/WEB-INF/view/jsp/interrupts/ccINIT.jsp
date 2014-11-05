@@ -43,9 +43,9 @@ function InLineValid(){
 		        </c:when>
 		    </c:choose> 
 		    <form:form action="/cas/login" commandName="${commandName}" htmlEscape="true" metdod="post">
-				<table style="width:320px">
+				<table style="width:auto">
 					<tr>
-						<td>
+						<td colspan="2">
 		 					<strong>Enter the following information:</strong>
 		 				</td>
 		 			</tr>
@@ -95,7 +95,10 @@ function InLineValid(){
 								</ul>
 							</ul>	
 
-							<p>Please select a password that can be easily remembered so that you do not need to write it down. Here are some examples of valid, easy to remember passwords: Succe$$ful 2S!ncere Came12oo4 (please do not use these examples verbatim).</p>
+							<p>Please select a password that can be easily remembered so that you do not need to write it down.<br />
+							 Here are some examples of valid, easy to remember passwords: <br />
+							 &nbsp; &nbsp;Succe$$ful&nbsp; &nbsp;2S!ncere&nbsp; &nbsp;Came12oo4  <br/>
+							 (please do not use these examples verbatim).</p>
 							
 						</td>
 					</tr>

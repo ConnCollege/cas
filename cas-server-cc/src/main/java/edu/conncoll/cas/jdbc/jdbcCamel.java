@@ -378,6 +378,8 @@ public class jdbcCamel {
 			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
+			
+			log.debug("Finding user in AD");
 			List DN = this.ldapTemplate.search(
 				this.searchBase, searchFilter, 
 				new AbstractContextMapper(){
@@ -386,7 +388,9 @@ public class jdbcCamel {
 					}
 				}
 			);
+			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 			
+			log.debug("Looking up user in vault");
 			List vaultDN = this.vaultTemplate.search(
 				this.vaultSearchBase, vaultSearchFilter, 
 				new AbstractContextMapper(){
@@ -395,9 +399,7 @@ public class jdbcCamel {
 					}
 				}
 			);
-			
-			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
-			DirContextOperations vaultcontext = ldapTemplate.lookupContext(vaultDN.get(0).toString());
+			DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
 			
 			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
 			if (Attrib.equals("512")){
