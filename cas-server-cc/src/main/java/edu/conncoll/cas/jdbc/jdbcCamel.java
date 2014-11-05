@@ -375,6 +375,7 @@ public class jdbcCamel {
 		
 		if (flag.equals("INIT")){
 			userName = intData.getField(1);
+			log.info("Init Saving data for " + userName);
 			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
@@ -401,25 +402,32 @@ public class jdbcCamel {
 			);
 			DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
 			
+			log.debug("Checking that the account isn't already enabled");
 			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
 			if (Attrib.equals("512")){
 				context.getFlowScope().put("ErrorMsg", "Account has already been created, you can not set your password with this process.");
 				log.info("Returning Account has already been created, you can not set your password with this process.");
 				return "Failed";
 			}
-			Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+
+			log.debug("Checking Banner Id");
+			Attrib = vaultcontext.getStringAttribute("employeeNumber");
 			if (!Attrib.equals(intData.getField(3))){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
+			
+			log.debug("Checking Birthdate");
 			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
 			if (!Attrib.equals(intData.getField(3))){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
-			if (!setPassword ( context, userName,  intData.getField(1), true)){
+
+			log.debug("Updating Password");
+			if (!setPassword ( context, userName,  intData.getField(4), true)){
 				context.getFlowScope().put("ErrorMsg", "Password was rejected by the serer, please try again later.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
