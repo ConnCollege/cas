@@ -8,9 +8,7 @@ if (document.location.protocol != "https:") {
 var ccPopUp=1; 
 var ccPassMin=8;
 var ErrorColor = "#FFDAD9"; 
-var ccFuncOnInvalid = true; 
-ccHTMLHead = '<strong>'; 
-ccHTMLFoot = '</strong>'; 
+var ccFuncOnInvalid = true;  
 function InLineValid(){ 
 	bvalid = true; 
 	var p1 = document.getElementById("field04"); 
@@ -18,13 +16,9 @@ function InLineValid(){
 	//var pe = document.getElementById("field01Error"); 
 	if (p1.value != p2.value) { 
 		bvalid = false; 
-		pe.innerHTML = pe.innerHTML + '<strong> New password and confirm new password must match.</strong>'; 
-		//pe.style.display=''; 
+		alert('The fields for password and verify password must match. ');
 		p1.style.backgroundColor=ErrorColor; 
 		p2.style.backgroundColor=ErrorColor; 
-		//document.getElementById("MainErrorHead").style.display=''; 
-		//document.getElementById("MainErrorFoot").style.display=''; 
-		//document.getElementById("field01Error").style.display=''; 
 	}  
 	return bvalid;
 } 
