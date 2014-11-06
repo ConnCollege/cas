@@ -70,7 +70,7 @@ function InLineValid(){
 		        	<tr>
 		        		<td colspan="2" align="center">
 		        			Your Camel Username has been emailed to you.<br />
-							Your eight-digit Camel Number appears on your admission letter.
+							Your eight-digit Camel Number appears on your decision letter.
 		        		</td>
 		        	</tr>
 		        	<tr>

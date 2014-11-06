@@ -395,7 +395,7 @@ public class jdbcCamel {
 				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 			} catch (Exception e){
 				log.warn("Account doesn't exisit in AD");
-				context.getFlowScope().put("ErrorMsg", "Account doesn't exist please check the camel username and try again.");
+				context.getFlowScope().put("ErrorMsg", "Account doesn't exist. Please check the camel username and try again.");
 				log.error("Account doesn't exist please check the camel username and try again.");
 				return "Failed";
 			}
@@ -414,7 +414,7 @@ public class jdbcCamel {
 			log.debug("Checking that the account isn't already enabled");
 			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
 			if (!Attrib.equals("514")){
-				context.getFlowScope().put("ErrorMsg", "Account has already been created, you can not set your password with this process.");
+				context.getFlowScope().put("ErrorMsg", "Account already exists. For assistance please contact the IT Service Desk (860) 439-4357.");
 				log.info("Returning Account has already been created, you can not set your password with this process.");
 				return "Failed";
 			}
