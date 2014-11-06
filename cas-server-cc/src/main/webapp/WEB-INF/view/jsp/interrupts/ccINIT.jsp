@@ -42,7 +42,7 @@ function InLineValid(){
 		            </div>
 		        </c:when>
 		    </c:choose> 
-		    <form:form action="/cas/login" commandName="${commandName}" htmlEscape="true" metdod="post">
+		    <form:form action="/cas/login" commandName="${commandName}" htmlEscape="true" metdod="post" onSubmit="return InLineValid();">
 				<table style="width:auto">
 					<tr>
 						<td colspan="2">
