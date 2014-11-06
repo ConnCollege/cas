@@ -379,10 +379,12 @@ public class jdbcCamel {
 			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
+			List DN;
+			DirContextOperations ldapcontext;
 			
 			log.debug("Finding user in AD");
 			try {
-				List DN = this.ldapTemplate.search(
+				 DN = this.ldapTemplate.search(
 					this.searchBase, searchFilter, 
 					new AbstractContextMapper(){
 						protected Object doMapFromContext(DirContextOperations ctx) {
@@ -390,7 +392,7 @@ public class jdbcCamel {
 						}
 					}
 				);
-				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 			} catch (Exception e){
 				log.warn("Account doesn't exisit in AD");
 				context.getFlowScope().put("ErrorMsg", ".");
