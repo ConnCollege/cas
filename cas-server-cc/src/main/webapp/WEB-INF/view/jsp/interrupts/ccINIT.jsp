@@ -13,8 +13,8 @@ ccHTMLHead = '<strong>';
 ccHTMLFoot = '</strong>'; 
 function InLineValid(){ 
 	bvalid = true; 
-	var p1 = document.getElementById("field01"); 
-	var p2 = document.getElementById("field02"); 
+	var p1 = document.getElementById("field04"); 
+	var p2 = document.getElementById("field05"); 
 	//var pe = document.getElementById("field01Error"); 
 	if (p1.value != p2.value) { 
 		bvalid = false; 
@@ -62,7 +62,7 @@ function InLineValid(){
 							Birth Date:
 						</td>
 						<td>
-		        			<input size="25" id="birthdate" name="fields[2]" value="mm/dd/yyyy"  title="Birth Date" />
+		        			<input size="25" id="birthdate" name="fields[2]" placeholder="mm/dd/yyyy"  title="Birth Date" ccregex="(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20\d\d)" />
 		        		</td>
 		        	</tr>
 					<tr>
@@ -76,7 +76,7 @@ function InLineValid(){
 		        	<tr>
 		        		<td colspan="2" align="center">
 		        			Your Camel Username has been emailed to you.<br />
-							Your eight-digit Camel Number appears on your admission or offer letter.
+							Your eight-digit Camel Number appears on your admission letter.
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -107,7 +107,7 @@ function InLineValid(){
 		        			Choose a password:
 		        		</td>
 		        		<td>
-		        			<input type="password" Class="required" size="25" id="field01" name="fields[4]" ccvalid="password" title="passwrord" />
+		        			<input type="password" Class="required" size="25" id="field04" name="fields[4]" ccvalid="password" title="password" />
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -115,7 +115,7 @@ function InLineValid(){
 		        			Re-enter your password:
 		        		</td>
 		        		<td>
-		        			 <input type="password" Class="required" size="25" id="field02" name="fields[5]" />
+		        			 <input type="password" Class="required" size="25" id="field05" name="fields[5]" />
 		        		</td>
 		        	</tr>
 		        </table>

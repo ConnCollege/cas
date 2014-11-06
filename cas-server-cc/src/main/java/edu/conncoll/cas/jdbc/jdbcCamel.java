@@ -381,15 +381,22 @@ public class jdbcCamel {
 			
 			
 			log.debug("Finding user in AD");
-			List DN = this.ldapTemplate.search(
-				this.searchBase, searchFilter, 
-				new AbstractContextMapper(){
-					protected Object doMapFromContext(DirContextOperations ctx) {
-						return ctx.getNameInNamespace();
+			try {
+				List DN = this.ldapTemplate.search(
+					this.searchBase, searchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
+						}
 					}
-				}
-			);
-			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				);
+				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+			} catch (Exception e){
+				log.warn("Account doesn't exisit in AD");
+				context.getFlowScope().put("ErrorMsg", ".");
+				log.error("Account doesn't exist please check the camel username and try again.");
+				return "Failed";
+			}
 			
 			log.debug("Looking up user in vault");
 			List vaultDN = this.vaultTemplate.search(
@@ -404,7 +411,7 @@ public class jdbcCamel {
 			
 			log.debug("Checking that the account isn't already enabled");
 			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
-			if (Attrib.equals("512")){
+			if (!Attrib.equals("514")){
 				context.getFlowScope().put("ErrorMsg", "Account has already been created, you can not set your password with this process.");
 				log.info("Returning Account has already been created, you can not set your password with this process.");
 				return "Failed";
@@ -435,10 +442,10 @@ public class jdbcCamel {
 			
 			ModificationItem[] mods = new ModificationItem[1];
 			
-			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("UserAccountControl", "512"));
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userAccountControl", "512"));
 			
 			try {
-				this.ldapTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+				this.ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
 			}catch( Exception e){
 				log.warn("Acount enable failed in AD");
 				context.getFlowScope().put("ErrorMsg", "Account enable rejected by server, please contact the IT service desk.");
