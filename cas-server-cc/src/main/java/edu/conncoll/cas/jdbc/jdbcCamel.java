@@ -395,7 +395,7 @@ public class jdbcCamel {
 				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 			} catch (Exception e){
 				log.warn("Account doesn't exisit in AD");
-				context.getFlowScope().put("ErrorMsg", "Account doesn't exist. Please check the camel username and try again.");
+				context.getFlowScope().put("ErrorMsg", "Account doesn't exist. Please check the Camel Username and try again.");
 				log.error("Account doesn't exist please check the camel username and try again.");
 				return "Failed";
 			}
