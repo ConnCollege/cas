@@ -1,7 +1,5 @@
 package edu.conncoll.cas.jdbc;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +30,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.SqlReturnResultSet;
@@ -65,29 +64,46 @@ import org.jasig.cas.web.support.IntData;
 
 public class jdbcCamel {
 	@NotNull
-    private SimpleJdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 	
 	@NotNull
-    private SimpleJdbcTemplate jdbcCensus;
+    private JdbcTemplate jdbcCensus;
 	
 	@NotNull
-    private SimpleJdbcTemplate jdbcBlackB;
+    private JdbcTemplate jdbcBlackB;
     
     @NotNull
     private DataSource dataSource;
+    
     @NotNull
     private DataSource censusSource;
+    
     @NotNull
     private DataSource BlackBSource;
     
 	@NotNull
 	private LdapTemplate ldapTemplate;
+    
+	@NotNull
+	private LdapTemplate vaultTemplate;
 	
 	@NotNull
     private String filter;	
 	
 	@NotNull
+    private String vaultFilter;	
+	
+	@NotNull
     private String searchBase;
+	
+	@NotNull
+    private String vaultSearchBase;
+	
+	@NotNull
+    private String recaptchaPublic;
+	
+	@NotNull
+    private String recaptchaPrivate;
 	
 	@NotNull
     private String mainUsername;
@@ -100,7 +116,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -118,11 +134,19 @@ public class jdbcCamel {
 		
 		String SQL = "";
 		
-		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");	
+		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
 		switch (Interrupts.toInt(flag)) {
+			case RESET:
+				namedParameters = new MapSqlParameterSource("username", userName );
+				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
+				List<Map<String,Object>> UserQNA = jdbcTemplate.queryForList(SQL,namedParameters);
+				context.getFlowScope().put("UserQNA", UserQNA);
+				context.getFlowScope().put("recaptchaPublicKey", recaptchaPublic);
+				context.getFlowScope().put("recaptchaPrivateKey", recaptchaPrivate);
+				break;
 			case AUP:
 				SQL = "select count(*) ct from cc_user where email = :user and active=1";
 				Map<String,Object> ChkUser = jdbcTemplate.queryForMap(SQL,namedParameters);
@@ -172,8 +196,9 @@ public class jdbcCamel {
 				}
 			break;
 			case QNA:				
-				SQL = "select question qChoice from cc_user_questions";				
-				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL);	
+				namedParameters = new MapSqlParameterSource("username", userName );
+				SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
+				List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 				log.debug("readFlow sending questions");
 				context.getFlowScope().put("questionList", QNAData);
 			break;
@@ -320,72 +345,126 @@ public class jdbcCamel {
 		String SQL = "";
 		Map<String,Object> namedParameters = new HashMap<String,Object>();
 		namedParameters.put("user", userName + "@conncoll.edu");
+		namedParameters.put("username", userName );
 		
 		log.info("writeFlow Saving data for " + flag);
 		log.debug("writeFlow got data " +intData.getFields().toString());
 		context.getFlowScope().put("ErrorMsg", " ");
 		
 		if (flag.equals("QNA")) {
-			SQL = "update cc_user set password_question=:question, password_answer=:answer where email = :user and active=1";
-			log.debug("QNA question: " + intData.getField(1));
-			log.debug("QNA answer: " + intData.getField(2));
-			namedParameters.put("question", intData.getField(1));
-			namedParameters.put("answer", intData.getField(2));
+			//Clear QNAPairs for this user
+			SQL="Delete from cc_user_qnaPair where UId = :username";
 			int check = jdbcTemplate.update(SQL,namedParameters);
-			log.debug("Update result" + check);
+			log.debug("Delete result " + check);
+			SQL="insert cc_user_qnaPair (UId, QuestNum, QuestionId, Answer) values(:username, :questnum, :questionId, :answer)";
+			log.debug("QNA question #1: " + intData.getField(1));
+			log.debug("QNA answer #1: " + intData.getField(2));
+			namedParameters.put("questnum", 1);
+			namedParameters.put("questionId", intData.getField(1));
+			namedParameters.put("answer", intData.getField(2));
+			check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert #1 result " + check);
+			log.debug("QNA question #2: " + intData.getField(3));
+			log.debug("QNA answer #2: " + intData.getField(4));
+			namedParameters.put("questnum", 2);
+			namedParameters.put("questionId", intData.getField(3));
+			namedParameters.put("answer", intData.getField(4));
+			check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert #2 result " + check);
 		}
 		
-		if (flag.equals("PWD")) {
-       		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+		if (flag.equals("INIT")){
+			userName = intData.getField(1);
+			log.info("Init Saving data for " + userName);
+			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 			
-			List DN = this.ldapTemplate.search(
-				this.searchBase, searchFilter, 
+			List DN;
+			DirContextOperations ldapcontext;
+			
+			log.debug("Finding user in AD");
+			try {
+				 DN = this.ldapTemplate.search(
+					this.searchBase, searchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
+						}
+					}
+				);
+				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+			} catch (Exception e){
+				log.warn("Account doesn't exisit in AD");
+				context.getFlowScope().put("ErrorMsg", "Account doesn't exist. Please check the Camel Username and try again.");
+				log.error("Account doesn't exist please check the camel username and try again.");
+				return "Failed";
+			}
+			
+			log.debug("Looking up user in vault");
+			List vaultDN = this.vaultTemplate.search(
+				this.vaultSearchBase, vaultSearchFilter, 
 				new AbstractContextMapper(){
 					protected Object doMapFromContext(DirContextOperations ctx) {
 						return ctx.getNameInNamespace();
 					}
 				}
 			);
+			DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
 			
-			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
-			
-			String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
-			String domain;
-			if (Attrib.equals("alumni")) {
-				domain = "alumni.conncoll.edu";
-			} else {
-				domain  = "conncoll.edu";
-			} 
-												
-			ModificationItem[] mods = new ModificationItem[1];
-			
-			String newQuotedPassword = "\"" + intData.getField(1) + "\"";
-			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
- 
- 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
-			try {
-				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
-			}catch( Exception e){
-				log.warn("Password reset failed at AD");
-				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			log.debug("Checking that the account isn't already enabled");
+			String Attrib = ldapcontext.getStringAttribute("UserAccountControl");
+			if (!Attrib.equals("514")){
+				context.getFlowScope().put("ErrorMsg", "Account already exists. For assistance please contact the IT Service Desk (860) 439-4357.");
+				log.info("Returning Account has already been created, you can not set your password with this process.");
+				return "Failed";
+			}
+
+			log.debug("Checking Banner Id");
+			Attrib = vaultcontext.getStringAttribute("employeeNumber");
+			if (!Attrib.equals(intData.getField(3))){
+				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
 			}
 			
-			AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
+			log.debug("Checking Birthdate");
+			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
+			if (!Attrib.equals(intData.getField(2))){
+				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
+				log.info("Returning Verification of information failed please check the data you entered.");
+				return "Failed";
+			}
+
+			log.debug("Updating Password");
+			if (!setPassword ( context, userName,  intData.getField(4), true)){
+				context.getFlowScope().put("ErrorMsg", "Password was rejected by the serer, please try again later.");
+				log.error("Returning Password Set failed.");
+				return "Failed";
+			}
+			
+			ModificationItem[] mods = new ModificationItem[1];
+			
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userAccountControl", "512"));
+			
 			try {
-				UserEntry userEntry = googleCTX.retrieveUser(userName);
-				Login userLogin = userEntry.getLogin();
-				userLogin.setAgreedToTerms(true);
-				userLogin.setChangePasswordAtNextLogin(false);
-				userLogin.setPassword(intData.getField(1));
-				googleCTX.updateUser(userName,userEntry);
-			} catch (Exception e) {
-				log.info("Password reset failed at google");
-				// No Google account					 
-			}		
-			SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
-			int check = jdbcTemplate.update(SQL,namedParameters);
-			log.debug("Insert result " + check);
+				this.ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
+			}catch( Exception e){
+				log.warn("Acount enable failed in AD");
+				context.getFlowScope().put("ErrorMsg", "Account enable rejected by server, please contact the IT service desk.");
+				log.error("Returning Account enable failed.");
+				return "Failed";
+			}
+			
+			credentials.setUsername(intData.getField(1));
+			credentials.setPassword(intData.getField(4));
+		}
+		
+		if (flag.equals("PWD")) {
+			if (!setPassword ( context, userName,  intData.getField(1), true)){
+				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the serer, please try again later.");
+				log.error("Returning Password Set failed.");
+				return "Failed";
+			}
 			credentials.setPassword(intData.getField(1));
 		}
 		if (flag.equals("EMR")) {
@@ -477,26 +556,116 @@ public class jdbcCamel {
 		return "Saved";
 	}
 	
+	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
+		throws Exception{
+		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
+		
+		log.debug("Finding user in AD");
+		List DN = this.ldapTemplate.search(
+			this.searchBase, searchFilter, 
+			new AbstractContextMapper(){
+				protected Object doMapFromContext(DirContextOperations ctx) {
+					return ctx.getNameInNamespace();
+				}
+			}
+		);
+		DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+
+		log.debug("Finding user in Vault");
+		List vaultDN = this.vaultTemplate.search(
+			this.vaultSearchBase, vaultSearchFilter, 
+			new AbstractContextMapper(){
+				protected Object doMapFromContext(DirContextOperations ctx) {
+					return ctx.getNameInNamespace();
+				}
+			}
+		);
+		
+		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
+		String domain;
+		if (Attrib.equals("alumni")) {
+			domain = "alumni.conncoll.edu";
+		} else {
+			domain  = "conncoll.edu";
+		} 
+		
+		if (setAD){
+			log.debug("Setting AD Password");
+			ModificationItem[] mods = new ModificationItem[1];
+			
+			String newQuotedPassword = "\"" + newPass + "\"";
+			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+	
+				mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
+			try {
+				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
+			}catch( Exception e){
+				log.warn("Password reset failed at AD");
+				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+				return false;
+			}
+		}
+		
+
+		ModificationItem[] mods = new ModificationItem[1];
+		
+		mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
+
+		log.debug("Setting Vault Password");
+		try {
+			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+		}catch( Exception e){
+			log.warn("Password reset failed at Vault");
+			context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			return false;
+		}
+
+		log.debug("Setting gMail Password");
+		log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
+		AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
+		try {
+			UserEntry userEntry = googleCTX.retrieveUser(userName);
+			Login userLogin = userEntry.getLogin();
+			userLogin.setAgreedToTerms(true);
+			userLogin.setChangePasswordAtNextLogin(false);
+			userLogin.setPassword(newPass);
+			googleCTX.updateUser(userName,userEntry);
+		} catch (Exception e) {
+			log.info("Password reset failed at google");
+			// No Google account					 
+		}		
+
+		log.debug("Saving Aduit trail");
+		String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
+		int check = jdbcTemplate.update(SQL,namedParameters);
+		log.debug("Insert result " + check);
+		
+		return true;
+	}
+	
 	public final String setPWD(){
 		return "PWD";
 	}
 
     public final void setDataSource(final DataSource dataSource) {
-        this.jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
 
     public final void setCensusSource(final DataSource dataSource) {
-        this.jdbcCensus = new SimpleJdbcTemplate(dataSource);
+        this.jdbcCensus = new JdbcTemplate(dataSource);
         this.censusSource = dataSource;
     }
 
     public final void setBlackBSource(final DataSource dataSource) {
-        this.jdbcBlackB = new SimpleJdbcTemplate(dataSource);
+        this.jdbcBlackB = new JdbcTemplate(dataSource);
         this.BlackBSource = dataSource;
     }
     
-    protected final SimpleJdbcTemplate getJdbcTemplate() {
+    protected final NamedParameterJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
     }
     
@@ -515,6 +684,18 @@ public class jdbcCamel {
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;
 	}
+	
+	public void setVaultSearchBase (final String vaultSearchBase) {
+		this.vaultSearchBase = vaultSearchBase;
+	}
+	
+	public void setrecaptchaPublic (final String recaptchaPublic) {
+		this.recaptchaPublic = recaptchaPublic;
+	}
+	
+	public void setrecaptchaPrivate (final String recaptchaPrivate) {
+		this.recaptchaPrivate = recaptchaPrivate	;
+	}
 		
 	public void setMainUsername (final String mainUsername) {
 		this.mainUsername = mainUsername;
@@ -532,8 +713,16 @@ public class jdbcCamel {
 		this.ldapTemplate=ldapTemplate;	
 	}
 	
+	public void setVaultTemplate(final LdapTemplate vaultTemplate){
+		this.vaultTemplate=vaultTemplate;	
+	}
+	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}
+	
+	public void setVaultFilter (final String vaultFilter) {
+		this.vaultFilter = vaultFilter;
 	}
 	
 	private class EMRRead extends StoredProcedure{

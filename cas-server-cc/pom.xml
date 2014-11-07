@@ -5,7 +5,7 @@
     <parent>
     	<groupId>org.jasig.cas</groupId>
     	<artifactId>cas-server</artifactId>
-    	<version>3.4.10</version>
+    	<version>3.5.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.conncoll.cas</groupId>
@@ -55,75 +55,68 @@
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-interrupts</artifactId>
 			<version>${project.version}</version>
-		</dependency>		
+		</dependency>			
 		<!-- LDAP handler -->
 		<dependency>
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-support-ldap</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
+		<!-- Chaptcha Support -->
+        <dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.8</version>
+        </dependency>
 		<!-- Google Provisioning -->
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>gdata-core</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
 		</dependency>				 
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>gdata-client</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
 		</dependency>
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>gdata-client-meta</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
 		</dependency>
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>gdata-appsforyourdomain</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
 		</dependency>
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>gdata-appsforyourdomain-meta</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
-		</dependency>
-		<dependency>
-		  <groupId>google</groupId>
-		  <artifactId>gdata-client-meta</artifactId>
-		  <version>${google.version}</version>
-		  <type>jar</type>
-		  <scope>compile</scope>
-		</dependency>	 
+		</dependency> 
 		<dependency>
 		  <groupId>google</groupId>
 		  <artifactId>collect</artifactId>
 		  <version>${google.version}</version>
 		  <type>jar</type>
-		  <scope>compile</scope>
 		</dependency>
 		<!-- Encryption -->
 		<dependency>
 		  <groupId>org.jasypt</groupId>
 		  <artifactId>jasypt</artifactId>
             <version>${jasypt.version}</version>
-		  <scope>compile</scope>
 		</dependency>
 		<!-- MS SQL JDBC -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver.jdbc</groupId>
 			<artifactId>sqljdbc</artifactId>
-			<version>2.0</version>
+			<version>4.0</version>
+			<scope>provided</scope>
     	</dependency> 	
 		<!-- MySQL JDBC -->
 		<dependency>
@@ -145,18 +138,15 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<!-- Spring Modifications -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-webflow</artifactId>
-			<version>${spring.webflow.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -176,7 +166,7 @@
 		<dependency>
 	        <groupId>org.hibernate</groupId>
 	        <artifactId>hibernate-entitymanager</artifactId>
-	        <version>${hibernate.core.version}</version>
+	        <version>${hibernate.core.version}</version><!--$NO-MVN-MAN-VER$-->
 	        <type>jar</type>
       	</dependency>
 		<!-- Mail support -->
@@ -189,19 +179,25 @@
     </dependencies>
  
     <properties>
-		<ehcache.version>2.4.5</ehcache.version>
+		<ehcache.version>2.6.0</ehcache.version>
 		<google.version>1.0</google.version>
 		<jasypt.version>1.6</jasypt.version>
     	<servlet.api.version>2.5</servlet.api.version>
-		<spring.version>3.0.4.RELEASE</spring.version>
-        <spring.webflow.version>2.2.1.RELEASE</spring.webflow.version>  
-    	<hibernate.core.version>3.6.0.Final</hibernate.core.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
+        <spring.webflow.version>2.3.0.RELEASE</spring.webflow.version>
+    	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
     </properties>
  
-        <repositories>
-             <repository>
-                  <id>ja-sig</id>
-                  <url>http://oss.sonatype.org/content/repositories/releases/ </url>
-             </repository>
-        </repositories>
+	<repositories>
+		<repository>
+			<id>mvn-public</id>
+			<name>MVNRepository</name>
+			<url>http://mvnrepository.com</url>
+		</repository>
+	    <repository>
+		      <id>jasig-repository</id>
+		      <name>Jasig Maven2 Repository</name>
+	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
+	     </repository>
+	</repositories>
 </project>
