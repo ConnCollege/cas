@@ -79,6 +79,7 @@
 					<div class="logo">
 						<a href="/web/home-community/"><span style="font-family: serif;"><strong>Camel</strong>Web</span></a>
 					</div>
+					
 				</div>
 				<h2 class="page-title">
 					<span tabindex="0">My Students</span>
