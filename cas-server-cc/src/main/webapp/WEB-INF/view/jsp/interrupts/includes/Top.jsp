@@ -79,22 +79,7 @@
 					<div class="logo">
 						<a href="/web/home-community/"><span style="font-family: serif;"><strong>Camel</strong>Web</span></a>
 					</div>
-					<a href="http://mail.conncoll.edu" rel="tooltip" title="Email"><img
-						class="icon"
-						src="https://www.conncoll.edu/camelweb/camelweb5/images/mail.png" /></a>
-					<a href="http://moodle.conncoll.edu" rel="tooltip" title="Moodle"><img
-						class="icon"
-						src="https://www.conncoll.edu/camelweb/camelweb5/images/moodle.png" /></a>
-					<a href="http://camelweb.conncoll.edu/web/home-community/eportfolio" rel="tooltip"
-						title="ePortfolio"><img class="icon"
-						src="https://www.conncoll.edu/camelweb/camelweb5/images/eportfolio.png" /></a>
-					<a href="http://connquest.conncoll.edu" rel="tooltip"
-						title="ConnQuest"><img class="icon"
-						src="https://www.conncoll.edu/camelweb/camelweb5/images/connquest.png" /></a>
-					<a href="http://testssb.conncoll.edu" rel="tooltip"
-						title="Self Service"><img class="icon"
-						src="https://www.conncoll.edu/camelweb/camelweb5/images/selfservice.png" /></a>
-					</form>
+					
 				</div>
 				<h2 class="page-title">
 					<span tabindex="0">My Students</span>
