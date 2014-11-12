@@ -437,7 +437,7 @@ public class jdbcCamel {
 
 			log.debug("Updating Password");
 			if (!setPassword ( context, userName,  intData.getField(4), true)){
-				context.getFlowScope().put("ErrorMsg", "Password was rejected by the serer, please try again later.");
+				//context.getFlowScope().put("ErrorMsg", "Password was rejected by the server, please try again later.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
@@ -461,7 +461,7 @@ public class jdbcCamel {
 		
 		if (flag.equals("PWD")) {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
-				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the serer, please try again later.");
+				//context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please try again later.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
