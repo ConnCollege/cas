@@ -12,6 +12,10 @@ import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+
 import java.util.HashMap;
 
 import javax.mail.Address;
@@ -429,7 +433,11 @@ public class jdbcCamel {
 			
 			log.debug("Checking Birthdate");
 			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
-			if (!Attrib.equals(intData.getField(2))){
+			DateFormat df = new SimpleDateFormat("MM-dd-yyyy:kk:mm:ss");
+            Date vaultDate =  df.parse(Attrib);
+            df = new SimpleDateFormat("MM/dd/yyyy");
+            Date formDate = df.parse(intData.getField(2));
+			if (!vaultDate.equals(formDate)){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				log.info("Returning Verification of information failed please check the data you entered.");
 				return "Failed";
