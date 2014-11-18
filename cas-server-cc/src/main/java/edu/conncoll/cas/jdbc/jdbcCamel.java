@@ -12,7 +12,6 @@ import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 
@@ -433,7 +432,7 @@ public class jdbcCamel {
 			
 			log.debug("Checking Birthdate");
 			Attrib = vaultcontext.getStringAttribute("ccBirthDate");
-			DateFormat df = new SimpleDateFormat("MM-dd-yyyy:kk:mm:ss");
+			DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
             Date vaultDate =  df.parse(Attrib);
             df = new SimpleDateFormat("MM/dd/yyyy");
             Date formDate = df.parse(intData.getField(2));
