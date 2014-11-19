@@ -595,11 +595,15 @@ public class jdbcCamel {
 		
 		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
 		String domain;
-		if (Attrib.equals("alumni")) {
-			domain = "alumni.conncoll.edu";
-		} else {
+		if (Attrib.size() > 0){
+			if (Attrib.equals("alumni")) {
+				domain = "alumni.conncoll.edu";
+			} else {
+				domain  = "conncoll.edu";
+			} 
+		}else{
 			domain  = "conncoll.edu";
-		} 
+		}
 		
 		if (setAD){
 			log.debug("Setting AD Password");
