@@ -105,14 +105,12 @@
 	
 	<end-state id="pwdWarningPostView" view="casWarnPassView" parent="#pwdWarningAbstractView" />
 	<action-state id="casExpiredPassView">
-		<transition to="showInterrupt">
-            <set name="flowScope.Flag" value="'PWD'"/>
-        </transition>
+		<evaluate expression="jdbcCamel.setPWD()" result="flowScope.Flag" result-type="java.lang.String" />	
+		<transition to="showInterrupt" />
 	</action-state>
 	<action-state id="casMustChangePassView">
-		<transition to="showInterrupt">
-            <set name="flowScope.Flag" value="'PWD'"/>
-        </transition>
+		<evaluate expression="jdbcCamel.setPWD()" result="flowScope.Flag" result-type="java.lang.String" />	
+		<transition to="showInterrupt" />
 	</action-state>
 	<end-state id="casAccountDisabledView" view="casAccountDisabledView" />
 	<end-state id="casAccountLockedView" view="casAccountLockedView" />
