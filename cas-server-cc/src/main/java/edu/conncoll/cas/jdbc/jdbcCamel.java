@@ -159,10 +159,12 @@ public class jdbcCamel {
 			case OEM:
 				SQL = "select oemail, firstname from cc_user where email = :user and active=1";
 		
-				try {
-					Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
-					if (OEMData.get("oemail").toString().length() > 0){
+				
+				Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
+				if (OEMData.size() > 0 ){
+					try {
 						log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
+						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
 						Context initCtx = new InitialContext();
 						Session session = (Session) initCtx.lookup("java:comp/env/mail/Session");
 						log.debug("readFlow connected to email.");
@@ -171,7 +173,7 @@ public class jdbcCamel {
 						actMsg.append("Welcome " + OEMData.get("firstname").toString() + ",\n\n");
 						actMsg.append("This email is to alert you that your Connecticut College CamelWeb account has been activated.\n\n");
 						actMsg.append("If you did not activate your account or believe you have otherwise received this email in error");
-						actMsg.append(" please contact the Connecticut College Help Desk @ (860) 439 - HELP (4357).\n\n");
+						actMsg.append(" please contact the Connecticut College IT Service Desk @ (860) 439 - HELP (4357).\n\n");
 						actMsg.append("We are committed to delivering you quality service that is reliable and highly secure.");
 						actMsg.append("  This email is one of many components designed to ensure your information is safeguarded at all times.\n\n"); 
 						actMsg.append("Thank you,\nConnecticut College Information Services Staff");
@@ -187,15 +189,16 @@ public class jdbcCamel {
 						message.setSubject("CamelWeb Account Activation");
 						message.setContent(actMsg.toString(), "text/plain");
 						Transport.send(message);
+						context.getFlowScope().put("status", "sent");
 						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
-						log.debug("readFlow  email sent");
-					} else {
-						context.getFlowScope().put("oemail", "");
-					}
-				} catch (Exception e) {
-					log.warn("readFlow failed sending outside mail for " + userName );
+						log.debug("readFlow  email sent");						
+					} catch (Exception e){
+						context.getFlowScope().put("status", "failed");
+					}					
+				} else {
+					log.warn("readFlow: No outside mail for " + userName );
 					// No OEM email in cc_user		
-					context.getFlowScope().put("oemail", "");	 
+					context.getFlowScope().put("status", "no email");	 
 				}
 			break;
 			case QNA:				
@@ -272,7 +275,7 @@ public class jdbcCamel {
 			case CNS:
 				//Find Term Code
 				SQL = "select param_value from cc_gen_census_settings where param_name = 'CURRENT TERM CODE' ";
-				Map<String,Object> termData = jdbcCensus.queryForMap(SQL,namedParameters);
+				Map<String,Object> termData = jdbcCensus.queryForMap(SQL);
 				log.debug("Termcode returned by query " + termData.get("param_value").toString());
 				// term code termData.get("param_value").toString()
 				// get banner id from ldap
@@ -436,6 +439,7 @@ public class jdbcCamel {
             Date vaultDate =  df.parse(Attrib);
             df = new SimpleDateFormat("MM/dd/yyyy");
             Date formDate = df.parse(intData.getField(2));
+            log.debug ("comparing dates: " + vaultDate.toString() + " to " + formDate.toString());
 			if (!vaultDate.equals(formDate)){
 				context.getFlowScope().put("ErrorMsg", "Verification of information failed please check the data you entered.");
 				log.info("Returning Verification of information failed please check the data you entered.");
