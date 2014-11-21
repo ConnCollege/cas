@@ -200,7 +200,7 @@
     
     <action-state id="CheckFlags">
 		<evaluate expression="CheckFlags.check(flowRequestContext, flowScope.credentials)" result="flowScope.Flag" result-type="java.lang.String" />
-		<transition on="noFlag" to="sendTicketGrantingTicket" />
+		<transition on="noFlag" to="passwordPolicyCheck" />
 		<transition to="showInterrupt" />
 	</action-state>
 	
