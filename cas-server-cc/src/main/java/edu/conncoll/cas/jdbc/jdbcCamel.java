@@ -161,45 +161,51 @@ public class jdbcCamel {
 		
 				
 				Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
-				if (OEMData.get("oemail").toString().length() <3 ){
-					try {
-						log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
-						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
-						Context initCtx = new InitialContext();
-						Session session = (Session) initCtx.lookup("java:comp/env/mail/Session");
-						log.debug("readFlow connected to email.");
-						StringBuilder actMsg = new StringBuilder();
-						
-						actMsg.append("Welcome " + OEMData.get("firstname").toString() + ",\n\n");
-						actMsg.append("This email is to alert you that your Connecticut College CamelWeb account has been activated.\n\n");
-						actMsg.append("If you did not activate your account or believe you have otherwise received this email in error");
-						actMsg.append(" please contact the Connecticut College IT Service Desk @ (860) 439 - HELP (4357).\n\n");
-						actMsg.append("We are committed to delivering you quality service that is reliable and highly secure.");
-						actMsg.append("  This email is one of many components designed to ensure your information is safeguarded at all times.\n\n"); 
-						actMsg.append("Thank you,\nConnecticut College Information Services Staff");
-						
-						log.debug("readFlow sending email to " + OEMData.get("oemail").toString());
-						
-						Message message = new MimeMessage(session);
-						Address address = new InternetAddress("help@conncoll.edu", "Connecticut College Helpdesk");
-						Address toAddress = new InternetAddress(OEMData.get("oemail").toString());
-						message.setSentDate(new Date());
-						message.setFrom(address);
-						message.addRecipient(Message.RecipientType.TO, toAddress);
-						message.setSubject("CamelWeb Account Activation");
-						message.setContent(actMsg.toString(), "text/plain");
-						Transport.send(message);
-						context.getFlowScope().put("status", "sent");
-						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
-						log.debug("readFlow  email sent");						
-					} catch (Exception e){
-						context.getFlowScope().put("status", "failed");
-					}					
-				} else {
+				if (OEMData.get("oemail")==null){
 					log.warn("readFlow: No outside mail for " + userName );
 					// No OEM email in cc_user		
-					context.getFlowScope().put("status", "no email");	 
+					context.getFlowScope().put("status", "no email");
+					return;
 				}
+				if (OEMData.get("oemail").toString().length()<3){
+					log.warn("readFlow: No outside mail for " + userName );
+					// No OEM email in cc_user		
+					context.getFlowScope().put("status", "no email");
+					return;
+				}
+				try {
+					log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
+					context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
+					Context initCtx = new InitialContext();
+					Session session = (Session) initCtx.lookup("java:comp/env/mail/Session");
+					log.debug("readFlow connected to email.");
+					StringBuilder actMsg = new StringBuilder();
+					
+					actMsg.append("Welcome " + OEMData.get("firstname").toString() + ",\n\n");
+					actMsg.append("This email is to alert you that your Connecticut College CamelWeb account has been activated.\n\n");
+					actMsg.append("If you did not activate your account or believe you have otherwise received this email in error");
+					actMsg.append(" please contact the Connecticut College IT Service Desk @ (860) 439 - HELP (4357).\n\n");
+					actMsg.append("We are committed to delivering you quality service that is reliable and highly secure.");
+					actMsg.append("  This email is one of many components designed to ensure your information is safeguarded at all times.\n\n"); 
+					actMsg.append("Thank you,\nConnecticut College Information Services Staff");
+					
+					log.debug("readFlow sending email to " + OEMData.get("oemail").toString());
+					
+					Message message = new MimeMessage(session);
+					Address address = new InternetAddress("help@conncoll.edu", "Connecticut College Helpdesk");
+					Address toAddress = new InternetAddress(OEMData.get("oemail").toString());
+					message.setSentDate(new Date());
+					message.setFrom(address);
+					message.addRecipient(Message.RecipientType.TO, toAddress);
+					message.setSubject("CamelWeb Account Activation");
+					message.setContent(actMsg.toString(), "text/plain");
+					Transport.send(message);
+					context.getFlowScope().put("status", "sent");
+					context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
+					log.debug("readFlow  email sent");						
+				} catch (Exception e){
+					context.getFlowScope().put("status", "failed");
+				}		
 			break;
 			case QNA:				
 				namedParameters = new MapSqlParameterSource("username", userName );
