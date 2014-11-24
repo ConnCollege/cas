@@ -595,7 +595,7 @@ public class jdbcCamel {
 		
 		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
 		String domain;
-		if (Attrib.size() > 0){
+		if (Attrib.length() > 0 ){
 			if (Attrib.equals("alumni")) {
 				domain = "alumni.conncoll.edu";
 			} else {
