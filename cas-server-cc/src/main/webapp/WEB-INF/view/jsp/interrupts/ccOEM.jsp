@@ -8,6 +8,7 @@
 	<c:when test='${status) = "failed"}'>
         We attempted to send a  confirmation email to your <b>${oemail}</b> email account but the email failed..<br />
         Please provide the IT Service desk with your correct email address.
+    </c:when>    
     <c:otherwise>
     	Your account was flagged to receive an email notification when activated, however you have no off-campus email stored in our system.<br />
     </c:otherwise>
