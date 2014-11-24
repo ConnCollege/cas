@@ -1,11 +1,11 @@
 <jsp:directive.include file="includes/Top.jsp" />
 <h2>Account Activation Notice</h2>
 <c:choose>
-	<c:when test='${status) = "sent"}'>
+	<c:when test='${status = "sent"}'>
         A confirmation email has been sent to your <b>${oemail}</b> email account.<br />
         This email is for your records and you will not need to respond to it.
     </c:when>
-	<c:when test='${status) = "failed"}'>
+	<c:when test='${status = "failed"}'>
         We attempted to send a  confirmation email to your <b>${oemail}</b> email account but the email failed..<br />
         Please provide the IT Service desk with your correct email address.
     </c:when>    
