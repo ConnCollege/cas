@@ -161,7 +161,7 @@ public class jdbcCamel {
 		
 				
 				Map<String,Object> OEMData = jdbcTemplate.queryForMap(SQL,namedParameters);
-				if (OEMData.size() > 0 ){
+				if (OEMData.get("oemail").toString().length() <3 ){
 					try {
 						log.debug("readFlow connecting to email for " + OEMData.get("oemail").toString());
 						context.getFlowScope().put("oemail", OEMData.get("oemail").toString());
