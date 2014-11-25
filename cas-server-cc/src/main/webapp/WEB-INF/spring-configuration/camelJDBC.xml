@@ -54,6 +54,7 @@
 		p:ldapTemplate-ref="ldapTemplate"
 		p:vaultTemplate-ref="vaultTemplate"
 		p:searchBase="dc=conncoll,dc=edu"
+		p:vaultSearchBase="${vault.authentication.basedn}"
 		p:nuVisionPath="/nv_import/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
 		p:mainPassword="${main.gmail.password}" 
