@@ -21,15 +21,42 @@
         p:url="${blackb.db.url}"
         p:password="${blackb.db.password}"
         p:username="${blackb.db.username}" />
+        
+    <bean id="VaultSource" class="org.springframework.ldap.core.support.LdapContextSource">
+	    <property name="pooled" value="false"/>
+	    <property name="urls">
+			<bean class="org.springframework.util.StringUtils" factory-method="commaDelimitedListToSet">
+				<constructor-arg type="java.lang.String" value="${vault.authentication.server.urls}"/>
+			</bean>
+	  	</property>
+	    <property name="userDn" value="${vault.authentication.manager.userdn}"/>
+	    <property name="password" value="${vault.authentication.manager.password}"/>
+	    <property name="baseEnvironmentProperties">
+			<map>
+				<entry key="com.sun.jndi.ldap.connect.timeout" value="3000" />
+				<entry key="com.sun.jndi.ldap.read.timeout" value="3000" />
+				<entry key="java.naming.security.authentication" value="simple" />
+			</map>
+	    </property>
+	</bean>  
+	
+	<bean id="vaultTemplate" class="org.springframework.ldap.core.LdapTemplate">
+        <constructor-arg ref="VaultSource" />
+        <property name="ignorePartialResultException" value="true" />
+    </bean> 
 	
 	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
 		p:dataSource-ref="dataSourceCamel"
 		p:censusSource-ref="dataSourceCensus"
 		p:blackBSource-ref="dataSourceBlackB"
 		p:filter="sAMAccountName=%u"
+		p:vaultFilter="UId=%u"
 		p:ldapTemplate-ref="ldapTemplate"
+		p:vaultTemplate-ref="vaultTemplate"
 		p:searchBase="dc=conncoll,dc=edu"
 		p:nuVisionPath="/nv_import/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
-		p:mainPassword="${main.gmail.password}" />
+		p:mainPassword="${main.gmail.password}" 
+		p:recaptchaPublic="${recaptcha.key.public}"
+		p:recaptchaPrivate="${recaptcha.key.private}" />
 </beans>
