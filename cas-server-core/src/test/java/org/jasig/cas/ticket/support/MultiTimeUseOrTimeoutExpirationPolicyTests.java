@@ -1,20 +1,7 @@
 /*
- * Licensed to Jasig under one or more contributor license
- * agreements. See the NOTICE file distributed with this work
- * for additional information regarding copyright ownership.
- * Jasig licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License.  You may obtain a
- * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
+ * distributed with this file and available online at
+ * http://www.ja-sig.org/products/cas/overview/license/
  */
 package org.jasig.cas.ticket.support;
 
@@ -25,8 +12,6 @@ import org.jasig.cas.ticket.TicketGrantingTicketImpl;
 
 import junit.framework.TestCase;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Scott Battaglia
  * @version $Revision$ $Date$
@@ -34,9 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MultiTimeUseOrTimeoutExpirationPolicyTests extends TestCase {
 
-    private static final long TIMEOUT_SECONDS = 5L;
-
-    private static final long TIMEOUT_MILLISECONDS = 5000L;
+    private static final long TIMEOUT = 5000;
 
     private static final int NUMBER_OF_USES = 5;
     
@@ -48,7 +31,7 @@ public class MultiTimeUseOrTimeoutExpirationPolicyTests extends TestCase {
 
     protected void setUp() throws Exception {
         this.expirationPolicy = new MultiTimeUseOrTimeoutExpirationPolicy(
-            NUMBER_OF_USES, TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            NUMBER_OF_USES, TIMEOUT);
 
         this.ticket = new TicketGrantingTicketImpl("test", TestUtils
             .getAuthentication(), this.expirationPolicy);
@@ -66,7 +49,7 @@ public class MultiTimeUseOrTimeoutExpirationPolicyTests extends TestCase {
 
     public void testTicketIsExpiredByTime() {
         try {
-            Thread.sleep(TIMEOUT_MILLISECONDS + TIMEOUT_BUFFER);
+            Thread.sleep(TIMEOUT + TIMEOUT_BUFFER);
             assertTrue(this.ticket.isExpired());
         } catch (InterruptedException e) {
             fail(e.getMessage());

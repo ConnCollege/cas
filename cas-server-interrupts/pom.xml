@@ -6,27 +6,21 @@
     <parent>
        	<groupId>org.jasig.cas</groupId>
        	<artifactId>cas-server</artifactId>
-       	<version>3.5.2.1</version>
+       	<version>3.4.10</version>
     </parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cas-server-interrupts</artifactId>
 	<packaging>jar</packaging>
-	<name>JA-SIG CAS LDAP Interrupts</name>
+	<name>JA-SIG CAS LDAP acceptable use</name>
     <dependencies>
 		<dependency>
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-core</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jasig.cas</groupId>
-			<artifactId>cas-server-support-ldap</artifactId>
-			<version>${project.version}</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-cas-client</artifactId>
-			<version>${spring.security.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
@@ -43,20 +37,4 @@
 	        <version>3.1</version>
       	</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>mvn-public</id>
-			<name>MVNRepository</name>
-			<url>http://mvnrepository.com</url>
-		</repository>
-	    <repository>
-		      <id>jasig-repository</id>
-		      <name>Jasig Maven2 Repository</name>
-	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
-	     </repository>
-	</repositories>
-	<properties>
-		<spring.version>3.1.1.RELEASE</spring.version>
-		<spring.security.version>3.0.8.RELEASE</spring.security.version>
-    </properties>
 </project>

@@ -1,20 +1,7 @@
 /*
- * Licensed to Jasig under one or more contributor license
- * agreements. See the NOTICE file distributed with this work
- * for additional information regarding copyright ownership.
- * Jasig licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License.  You may obtain a
- * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
+ * distributed with this file and available online at
+ * http://www.uportal.org/license.html
  */
 package org.jasig.cas.ticket.registry;
 
@@ -26,6 +13,8 @@ import org.jasig.cas.ticket.ExpirationPolicy;
 import org.jasig.cas.ticket.ServiceTicket;
 import org.jasig.cas.ticket.Ticket;
 import org.jasig.cas.ticket.TicketGrantingTicket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Implementation that handles some of the commonalities between
@@ -37,6 +26,8 @@ import org.jasig.cas.ticket.TicketGrantingTicket;
  */
 public abstract class AbstractDistributedTicketRegistry extends AbstractTicketRegistry {
     
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
     protected abstract void updateTicket(final Ticket ticket);
 
     protected abstract boolean needsCallback();
@@ -54,8 +45,6 @@ public abstract class AbstractDistributedTicketRegistry extends AbstractTicketRe
     }
 
     private static class TicketDelegator<T extends Ticket> implements Ticket {
-
-        private static final long serialVersionUID = 1780193477774123440L;
 
         private final AbstractDistributedTicketRegistry ticketRegistry;
 
@@ -122,8 +111,6 @@ public abstract class AbstractDistributedTicketRegistry extends AbstractTicketRe
 
     private static final class ServiceTicketDelegator extends TicketDelegator<ServiceTicket> implements ServiceTicket {
 
-        private static final long serialVersionUID = 8160636219307822967L;
-
         protected ServiceTicketDelegator(final AbstractDistributedTicketRegistry ticketRegistry, final ServiceTicket serviceTicket, final boolean callback) {
             super(ticketRegistry, serviceTicket, callback);
         }
@@ -151,8 +138,6 @@ public abstract class AbstractDistributedTicketRegistry extends AbstractTicketRe
     }
 
     private static final class TicketGrantingTicketDelegator extends TicketDelegator<TicketGrantingTicket> implements TicketGrantingTicket {
-
-        private static final long serialVersionUID = 3946038899057626741L;
 
         protected TicketGrantingTicketDelegator(final AbstractDistributedTicketRegistry ticketRegistry, final TicketGrantingTicket ticketGrantingTicket, final boolean callback) {
             super(ticketRegistry, ticketGrantingTicket, callback);

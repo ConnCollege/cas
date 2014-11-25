@@ -1,26 +1,11 @@
 /*
- * Licensed to Jasig under one or more contributor license
- * agreements. See the NOTICE file distributed with this work
- * for additional information regarding copyright ownership.
- * Jasig licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License.  You may obtain a
- * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
+ * distributed with this file and available online at
+ * http://www.uportal.org/license.html
  */
 package org.jasig.cas.authentication;
 
 import java.util.Map;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.handler.AuthenticationHandler;
@@ -29,6 +14,9 @@ import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.CredentialsToPrincipalResolver;
 import org.jasig.cas.authentication.principal.Principal;
 import org.springframework.util.Assert;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Authentication Manager that provides a direct mapping between credentials
@@ -55,20 +43,9 @@ public final class DirectMappingAuthenticationManagerImpl extends AbstractAuthen
 
         Assert.notNull(d, "no mapping found for: " + credentialsClass.getName());
 
-        final String handlerName = d.getAuthenticationHandler().getClass().getSimpleName();
-        boolean authenticated = false;
-
-        try {
-            authenticated = d.getAuthenticationHandler().authenticate(credentials);
-        } catch (final Exception e) {
-            handleError(handlerName, credentials, e);
+        if (!d.getAuthenticationHandler().authenticate(credentials)) {
+            throw new BadCredentialsAuthenticationException();
         }
-
-        if (!authenticated) {
-            log.info("{} failed to authenticate {}", handlerName, credentials);
-            throw BadCredentialsAuthenticationException.ERROR;
-        }
-        log.info("{} successfully authenticated {}", handlerName, credentials);
 
         final Principal p = d.getCredentialsToPrincipalResolver().resolvePrincipal(credentials);
 
@@ -79,7 +56,7 @@ public final class DirectMappingAuthenticationManagerImpl extends AbstractAuthen
         final Map<Class< ? extends Credentials>, DirectAuthenticationHandlerMappingHolder> credentialsMapping) {
         this.credentialsMapping = credentialsMapping;
     }
-    
+
     public static final class DirectAuthenticationHandlerMappingHolder {
 
         private AuthenticationHandler authenticationHandler;

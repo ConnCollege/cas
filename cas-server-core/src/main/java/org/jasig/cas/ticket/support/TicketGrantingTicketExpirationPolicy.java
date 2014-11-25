@@ -1,20 +1,7 @@
 /*
- * Licensed to Jasig under one or more contributor license
- * agreements. See the NOTICE file distributed with this work
- * for additional information regarding copyright ownership.
- * Jasig licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License.  You may obtain a
- * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
+ * distributed with this file and available online at
+ * http://www.ja-sig.org/products/cas/overview/license/
  */
 package org.jasig.cas.ticket.support;
 
@@ -24,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Provides the Ticket Granting Ticket expiration policy.  Ticket Granting Tickets
@@ -56,25 +41,22 @@ public final class TicketGrantingTicketExpirationPolicy implements ExpirationPol
         this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
     }
 
-    /** Convenient virtual property setter to set time in seconds */
-    public void setMaxTimeToLiveInSeconds(final long maxTimeToLiveInSeconds){
-        if(this.maxTimeToLiveInMilliSeconds == 0L) {
-            this.maxTimeToLiveInMilliSeconds = TimeUnit.SECONDS.toMillis(maxTimeToLiveInSeconds);
-        }
-    }
-
-    /** Convenient virtual property setter to set time in seconds */
-    public void setTimeToKillInSeconds(final long timeToKillInSeconds) {
-        if(this.timeToKillInMilliSeconds == 0L) {
-            this.timeToKillInMilliSeconds = TimeUnit.SECONDS.toMillis(timeToKillInSeconds);
-        }
-    }
-
     public void afterPropertiesSet() throws Exception {
         Assert.isTrue((maxTimeToLiveInMilliSeconds >= timeToKillInMilliSeconds), "maxTimeToLiveInMilliSeconds must be greater than or equal to timeToKillInMilliSeconds.");
     }
 
     public boolean isExpired(final TicketState ticketState) {
+
+        // Ticket hasn't been used yet, check expiration timeout
+        if (ticketState.getCountOfUses() == 0) {
+            if ((System.currentTimeMillis() - ticketState.getCreationTime() < timeToKillInMilliSeconds)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Ticket is not expired due to a uses count of zero and the time since creation being within timeToKillInMilliseconds");
+                }
+                return false;
+            }
+        }
+
         // Ticket has been used, check maxTimeToLive (hard window)
         if ((System.currentTimeMillis() - ticketState.getCreationTime() >= maxTimeToLiveInMilliSeconds)) {
             if (log.isDebugEnabled()) {

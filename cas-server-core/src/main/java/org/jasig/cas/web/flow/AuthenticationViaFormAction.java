@@ -1,20 +1,7 @@
 /*
- * Licensed to Jasig under one or more contributor license
- * agreements. See the NOTICE file distributed with this work
- * for additional information regarding copyright ownership.
- * Jasig licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License.  You may obtain a
- * copy of the License at the following location:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
+ * distributed with this file and available online at
+ * http://www.ja-sig.org/products/cas/overview/license/
  */
 package org.jasig.cas.web.flow;
 
@@ -93,11 +80,10 @@ public class AuthenticationViaFormAction {
                 putWarnCookieIfRequestParameterPresent(context);
                 return "warn";
             } catch (final TicketException e) {
-                if (isCauseAuthenticationException(e)) {
+                if (e.getCause() != null && AuthenticationException.class.isAssignableFrom(e.getCause().getClass())) {
                     populateErrorsInstance(e, messageContext);
-                    return getAuthenticationExceptionEventId(e);
+                    return "error";
                 }
-                
                 this.centralAuthenticationService.destroyTicketGrantingTicket(ticketGrantingTicketId);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Attempted to generate a ServiceTicket using renew=true with different credentials", e);
@@ -111,8 +97,6 @@ public class AuthenticationViaFormAction {
             return "success";
         } catch (final TicketException e) {
             populateErrorsInstance(e, messageContext);
-            if (isCauseAuthenticationException(e))
-                return getAuthenticationExceptionEventId(e);
             return "error";
         }
     }
@@ -135,23 +119,6 @@ public class AuthenticationViaFormAction {
         } else {
             this.warnCookieGenerator.removeCookie(response);
         }
-    }
-    
-    private AuthenticationException getAuthenticationExceptionAsCause(final TicketException e) {
-        return (AuthenticationException) e.getCause();
-    }
-
-    private String getAuthenticationExceptionEventId(final TicketException e) {
-        final AuthenticationException authEx = getAuthenticationExceptionAsCause(e);
-
-        if (this.logger.isDebugEnabled())
-            this.logger.debug("An authentication error has occurred. Returning the event id " + authEx.getType());
-
-        return authEx.getType();
-    }
-
-    private boolean isCauseAuthenticationException(final TicketException e) {
-        return e.getCause() != null && AuthenticationException.class.isAssignableFrom(e.getCause().getClass());
     }
 
     public final void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
