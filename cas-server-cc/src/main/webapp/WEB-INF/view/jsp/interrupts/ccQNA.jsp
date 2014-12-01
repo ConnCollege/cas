@@ -28,8 +28,8 @@ function InLineValid(){
 } 
 </script> 
  <div class="info"> 		
-		 	<h2>Please choose a security question and answer.</h2>
-		    The following security question and answer will be used for handling lost and forgotten passwords.<br />In order to reset your password, you will be required to answer the question you choose.<br />
+		 	<h2>IMPORTANT - In order to reset your password, please choose two security questions/answers.</h2>
+		    The following security questions and answers will be used for handling lost and forgotten passwords.<br />In order to reset your password, you will be required to answer the questions you choose.<br />
 		 	<form:form commandName="${commandName}" htmlEscape="true" method="post">
 			 	<div id="MainErrorHead" style="display:none;background:#F00"> 
 					<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
