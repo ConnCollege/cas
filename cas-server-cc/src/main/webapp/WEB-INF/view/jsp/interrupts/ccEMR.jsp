@@ -24,7 +24,7 @@
         <tr>
             <td colspan="4" bgcolor="#FFFF33">
             	<span class="btext3">
-                	In case of a campus emergency, the College will send messages to your campus voice mail and e-mail address. Please fill out the information below to help us reach you. Questions about the alert system? A link FAQ is at the bottom of the page.
+                	In case of a campus emergency, the College will send messages to your campus voice mail and email address. Please fill out the information below to help us reach you. Questions about the alert system? A link FAQ is at the bottom of the page.
                 </span>
             </td>
         </tr>
@@ -60,7 +60,7 @@
 </tr>
 <tr>
 	<td colspan="4" bgcolor="#BBD4F9"><span class="btext3">
-    	In case of a campus emergency, the College will send messages to your campus voice mail and e-mail address. </span>
+    	In case of a campus emergency, the College will send messages to your campus voice mail and email address. </span>
     </td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@
     <td align="left" nowrap>
 		<input name="BannerID" type="Text" value="${ccData.CcId}" size="20" readonly="true"/>
     </td> 
-	<td align="right"><span class="btext1">Campus e-mail </span></td> 
+	<td align="right"><span class="btext1">Campus email </span></td> 
     <td align="left">
 		<input type="Text" value="${ccData.Email}" size="20" readonly="true" />
     </td> 
@@ -98,7 +98,7 @@
 </tr>
 <tr>
 	<td colspan="4" align="left" bgcolor="#BBD4F9"><span class="btext3">
-We may also send recorded emergency messages to your personal phone, such as a cell phone, and your non-college e-mail.</span></td>
+We may also send recorded emergency messages to your personal phone, such as a cell phone, and your non-College email.</span></td>
 </tr>
 <tr>
 	<td colspan="4" align="left" bgcolor="#F3F3F3"><span class="btext3">Choice to Opt Out</span></td> 
@@ -106,7 +106,7 @@ We may also send recorded emergency messages to your personal phone, such as a c
 </tr>
 <tr>
 	<td colspan="4" align="left">
-  		<span class="text1"> We strongly recommend that you provide these contacts so that we have as many ways as possible to contact you in an emergency. However, if you do not wish to receive emergency notifications beyond those to your campus e-mail and voice mail, check this box:</span> 
+  		<span class="text1"> We strongly recommend that you provide these contacts so that we have as many ways as possible to contact you in an emergency. However, if you do not wish to receive emergency notifications beyond those to your campus email and voice mail, check this box:</span> 
 	</td> 
 </tr>
 
@@ -192,10 +192,10 @@ We may also send recorded emergency messages to your personal phone, such as a c
     </td>
 </tr>
 <tr>
-	<td colspan="4" align="left" bgcolor="#F3F3F3"><span class="btext3">Non-College e-mail</span></td> 
+	<td colspan="4" align="left" bgcolor="#F3F3F3"><span class="btext3">Non-College email</span></td> 
 </tr>
 <tr>
-	<td align="right"><span class="btext1">Personal e-mail</span></td>
+	<td align="right"><span class="btext1">Personal email</span></td>
     <td align="left">
 		<input name="fields[42]" type="text" value="${emrData.toEmail}" size="20" ccvalid="email" title="Off Campus Email" />
     </td>
@@ -329,7 +329,7 @@ We may also send recorded emergency messages to your personal phone, such as a c
 <tr>
 	<td bgcolor="#D7E5F9" colspan="4" align="center">
     	<input type="Submit" value="Submit"><br />
-        <a href="http://www.conncoll.edu/camelweb/digitalAsset/?id1=824864813">Connect ED FAQ</a>
+        <a href="https://camelweb.conncoll.edu/documents/10354/239016/Emergency+Communications+Frequently+Asked+Questions/a628406f-21bc-4a37-9a80-ba648c406f5f">Emergency Contact FAQ</a>
     </td>
 </tr>
 </table>
