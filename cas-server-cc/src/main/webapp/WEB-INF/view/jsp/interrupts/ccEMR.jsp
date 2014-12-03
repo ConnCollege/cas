@@ -329,7 +329,7 @@ We may also send recorded emergency messages to your personal phone, such as a c
 <tr>
 	<td bgcolor="#D7E5F9" colspan="4" align="center">
     	<input type="Submit" value="Submit"><br />
-        <a href="https://camelweb.conncoll.edu/documents/10354/239016/Emergency+Communications+Frequently+Asked+Questions/a628406f-21bc-4a37-9a80-ba648c406f5f">Emergency Contact FAQ</a>
+        <a href="http://www.conncoll.edu/media/interrupts/Emergency-Communications-Frequently-Asked-Questions.pdf">Emergency Contact FAQ</a>
     </td>
 </tr>
 </table>
