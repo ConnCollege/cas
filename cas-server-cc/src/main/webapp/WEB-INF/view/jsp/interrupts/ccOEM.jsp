@@ -6,7 +6,7 @@
         This email is for your records and you will not need to respond to it.
     </c:when>
 	<c:when test='${status == "failed"}'>
-        We attempted to send a  confirmation email to your <b>${oemail}</b> email account but the email failed..<br />
+        Attempt to send a confirmation email to <b>${oemail}</b> failed.<br />
         Please provide the IT Service desk with your correct email address.
     </c:when>    
     <c:otherwise>
