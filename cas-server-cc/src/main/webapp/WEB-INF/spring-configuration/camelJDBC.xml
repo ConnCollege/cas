@@ -21,9 +21,7 @@
         p:url="${blackb.db.url}"
         p:password="${blackb.db.password}"
         p:username="${blackb.db.username}" />
-        
-     
-    
+
 	<bean id="VaultSource" class="org.springframework.ldap.core.support.LdapContextSource">
 	    <property name="pooled" value="false"/>
 	    <property name="urls">
@@ -35,9 +33,9 @@
 	    <property name="password" value="${vault.authentication.manager.password}"/>
 	    <property name="baseEnvironmentProperties">
 			<map>
-				<entry key="com.sun.jndi.ldap.connect.timeout" value="${ldap.authentication.jndi.connect.timeout}" />
-				<entry key="com.sun.jndi.ldap.read.timeout" value="${ldap.authentication.jndi.read.timeout}" />
-				<entry key="java.naming.security.authentication" value="${ldap.authentication.jndi.security.level}" />
+				<entry key="com.sun.jndi.ldap.connect.timeout" value="3000" />
+				<entry key="com.sun.jndi.ldap.read.timeout" value="3000" />
+				<entry key="java.naming.security.authentication" value="simple" />
 			</map>
 	    </property>
 	</bean>  
