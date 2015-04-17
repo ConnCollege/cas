@@ -128,7 +128,7 @@
 		</div>
 		<!-- End of HeaderTop -->
 		<a href="http://www.conncoll.edu/index.htm"><img src="https://www.alumniconnections.com/olc/images/CTC/ccLogo.png" alt="Connecticut College Logo" class="logo"></a>
-		<form name="seek1" method="GET" class="ccSearchForm" action="http://www.conncoll.edu:8765/query.html">
+		<form name="seek1" method="get" class="ccSearchForm" action="http://www.conncoll.edu:8765/query.html">
 
 			<fieldset>
 			<input type=hidden name=seek1SetCols value="true">
