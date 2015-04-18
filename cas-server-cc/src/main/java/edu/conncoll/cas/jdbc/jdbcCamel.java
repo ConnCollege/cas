@@ -643,14 +643,13 @@ public class jdbcCamel {
 		
 		httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 		
-		String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
 		
 		// service account credential
 		GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
 			.setJsonFactory(JSON_FACTORY)
 			.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
 			.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
-			.setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
+			.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
 			.setServiceAccountUser( "atilling@conncoll.edu" )
 			.build();
 		
@@ -669,7 +668,7 @@ public class jdbcCamel {
 			user = user.setAgreedToTerms(true);
 			user = user.setChangePasswordAtNextLogin(false);
 			user = user.setPassword(newPass);
-			directory.users().update(user.getId(),user);
+			directory.users().update(user.getId(),user).execute();
 		} catch (Exception e) {
 			log.info("Password reset failed at google");
 			// No Google account					 
