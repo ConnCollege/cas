@@ -33,7 +33,7 @@
 </c:if>
 -->
 
-<div class="bodyCopy">
+<main class="min-full mobile-full tablet-full desktop-8" role="main">
 <!-- From headerinfo.html:  END -->
 <!-- ========================================== OLC Middle: Start  -->				
 <!-- From contentarea120.html:  START -->
@@ -98,7 +98,6 @@
 					<input type="hidden" name="execution" value="${flowExecutionKey}" />
 					<input type="hidden" name="_eventId" value="submit" />
                     <input class="btn-submit" name="submit" accesskey="l" value="<spring:message code="screen.welcome.button.login" />" tabindex="4" type="submit" />
-                    <input class="btn-reset" name="reset" accesskey="c" value="<spring:message code="screen.welcome.button.clear" />" tabindex="5" type="reset" />
                     <!--<INPUT class="olc-formButton" TYPE="SUBMIT" VALUE=" Sign In ">--></td>
 				</tr>
 				<tr>
@@ -130,7 +129,7 @@
 
 <!-- ========================================== OLC Middle: End   -->
 <!-- From footerinfo.html:  START -->
-					</div>
+					</main>
 
 
 

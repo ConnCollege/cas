@@ -1,8 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
+<!-- saved from url=(0048)http://dev.fastspot.com/clients/conn/dev/alumni/ -->
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<HEAD>
-    <%@ page session="true" %>
+<html lang="en" class="js flexbox flexboxlegacy no-touch history rgba multiplebgs backgroundsize cssanimations csscolumns cssgradients csstransforms csstransforms3d csstransitions generatedcontent video audio svg pointerevents wf-chaparralpro-n4-active wf-chaparralpro-n7-active wf-chaparralpro-i4-active wf-chaparralpro-i7-active wf-active" data-useragent="Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36" data-platform="Win32">
+	<script src="chrome-extension://hehijbfgiekmjfkfjpbkbammjbdenadd/js/ietabapi_wp.js"></script>
+<!-- From contentarea100.html:  Start-End -->
+<!-- For all pages -->
+<!-- Related updates: 100, 101, 115 -->
+
+<!-- File: 	loginform.html -->
+<!-- NTV:	1.0 				-->
+
+<%@ page session="true" %>
 <%@ page pageEncoding="UTF-8" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -10,241 +18,251 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <spring:theme code="mobile.custom.css.file" var="mobileCss" text="" />
+
+<HEAD>
 	<TITLE>Connecticut College Online Community - Login/Logout</TITLE>
-        <c:choose>
-           <c:when test="${not empty requestScope['isMobile'] and not empty mobileCss}">
-                <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-                <link type="text/css" rel="stylesheet" media="screen" href="<c:url value="/css/fss-framework-1.1.2.css" />" />
-                <link type="text/css" rel="stylesheet" href="<c:url value="/css/fss-mobile-${requestScope['browserType']}-layout.css" />" />
-                <link type="text/css" rel="stylesheet" href="${mobileCss}" />
-           </c:when>
-           <c:otherwise>
-                <spring:theme code="standard.custom.css.file" var="customCssFile" />
-                <link type="text/css" rel="stylesheet" href="<c:url value="${customCssFile}" />" />
-           </c:otherwise>
-        </c:choose>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	    <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/x-icon" />
-        
-        <meta name="keywords" content="Connecticut College, connecticut college,biological sciences,liberal arts and sciences,premed program,pre-health advising,medical school advising,science center at connecticut college,sciences and the liberal arts,student-faculty research,undergraduates science research" />
-        <meta name="description" content="Connecticut College: Within the context of a premier liberal arts curriculum, science majors at Connecticut College acquire a powerful formula for success as they enter graduate or medical degree programs or careers in science. " />
-    
-        <meta http-equiv="x-ua-compatible" content="IE=EmulateIE7"/>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        
-        <link type="text/css" href="https://www.alumniconnections.com/olc/styles/CTC/gcssreset.css" rel="StyleSheet" />
-        <link type="text/css" href="https://www.alumniconnections.com/olc/styles/CTC/gcssbase.css" rel="StyleSheet" />
-        <link type="text/css" href="https://www.alumniconnections.com/olc/styles/CTC/gcss.css" rel="StyleSheet" />
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11136.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11135.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11134.js"></script>
-    
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/slider.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/lightbox.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11133.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11132.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11131.js"></script>
-        <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11130.js"></script>
-    
-        <!--[if IE 6]>
-            <script type="text/javascript" src="https://www.alumniconnections.com/olc/scripts/CTC/11137.js"></script>
-        <![endif]-->
-        <script src="https://www.alumniconnections.com/olc/scripts/CTC/urchin.js" type="text/javascript"></script>
-        <script type="text/javascript">
-            urchinTracker();
-        </script>
-        <script language="javascript" type="text/javascript">
-            var hasCookie;
-            
-            hasCookie = Get_Cookie( "SA_USER_OLC" );
-            
-            function Get_Cookie( name )
-            {
-                var start = document.cookie.indexOf( name + "=" );
-                var len = start + name.length + 1;
-                if ( ( !start ) &&
-                    ( name != document.cookie.substring( 0, name.length ) ) )
-                {
-                    return false;
-                }
-                if ( start == -1 )
-                {
-                    return false;
-                }
-                return( true );
-            }
-        </script>
-    
-    <!-- OLC Global Stylesheet -->
-    <link rel="stylesheet" href="https://www.alumniconnections.com/olc/styles/CTC/olc_global_styles.css">
-    <!-- From contentarea102.html:  END -->              
-        
-	</head>
-    
-    <body id="cas" class="olc" onload="">
-    
+	
+<!-- From contentarea102.html:  START -->
+<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+
+		<!-- Page Attributes -->
+		<title>Alumni (event photos) · Connecticut College</title>
+		<meta name="description" content="">
+
+		<!-- Favions / Touch Icons -->
+		<link rel="apple-touch-icon" sizes="57x57" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="https://alumniconnections.com/olc/images/LV3/apple-touch-icon-180x180.png">
+		<link rel="icon" type="image/png" href="https://alumniconnections.com/olc/images/LV3/favicon-192x192.png" sizes="192x192">
+		<link rel="icon" type="image/png" href="https://alumniconnections.com/olc/images/LV3/favicon-160x160.png" sizes="160x160">
+		<link rel="icon" type="image/png" href="https://alumniconnections.com/olc/images/LV3/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="https://alumniconnections.com/olc/images/LV3/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="https://alumniconnections.com/olc/images/LV3/favicon-32x32.png" sizes="32x32">
+		<meta name="msapplication-TileColor" content="#00254d">
+		<meta name="msapplication-TileImage" content="https://alumniconnections.com/olc/images/mstile-144x144.png">
+
+		<!-- G+ & Facebook -->
+		<meta property="og:title" content="Connecticut College">
+		<meta property="og:url" content="http://www.conncoll.edu">
+		<meta property="og:type" content="website">
+		<meta property="og:image" content="//www.conncoll.edu/images/favicon/social.png">
+		<meta property="og:description" content="Connecticut College educates students to put the liberal arts into action as citizens in a global society.">
+		<meta property="og:site_name" content="Connecticut College">
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@conncollege">
+		<meta name="twitter:creator" content="@conncollege">
+		<meta name="twitter:url" content="http://www.conncoll.edu">
+		<meta name="twitter:title" content="Connecticut College">
+		<meta name="twitter:description" content="Connecticut College educates students to put the liberal arts into action as citizens in a global society.">
+		<meta name="twitter:image" content="http://www.conncoll.edu/images/favicon/social.png">
+
+		<!-- Modernizer -->
+		<script src="https://alumniconnections.com/olc/scripts/LV3/modernizr.custom.js"></script>
+
+		<!-- Compiled CSS -->
+		<!--[if gt IE 8]><!--><link rel="stylesheet" href="https://alumniconnections.com/olc/styles/LV3/site.css"><!--<![endif]-->
+
+		<!--[if IE 8]>
+			<script>var IE8 = true;</script>
+			<script src="https://alumniconnections.com/olc/scripts/LV3/site-ie8.js"></script>
+			<link rel="stylesheet" href="https://alumniconnections.com/olc/styles/LV3/ssite-ie8.css">
+		<![endif]-->
+		<!--[if IE 9]>
+			<script>var IE9 = true;</script>
+			<script src="https://alumniconnections.com/olc/scripts/LV3/ssite-ie9.js"></script>
+			<link rel="stylesheet" href="https://alumniconnections.com/olc/styles/LV3/ssite-ie9.css">
+		<![endif]--><style type="text/css">.tk-chaparral-pro{font-family:"chaparral-pro",sans-serif;}</style>
+		<link rel="stylesheet" href="http://use.typekit.net/c/75f4df/1w;chaparral-pro,2,XXw:P:i4,XXn:P:i7,XY8:P:n4,XXk:P:n7/d?3bb2a6e53c9684ffdc9a9aff1d5b2a62de246c40fc2071e052ac61e333cceab3ecb7d24b91a4e781584b52c72264729ce43df1cf638a91700725b3204a6b4b127f98bddab448f6a970bb378e3f2c49dd7f39b88a959776399dc7c116e400bcc0cf">
+
+<!-- OLC Global Stylesheet -->
+<LINK REL="stylesheet" HREF="https://alumniconnections.com/olc/styles/LV3/olc_global_styles.css">
+<!-- From contentarea102.html:  END -->
+
+
+<style type="text/css">
+	.errors{
+		color: red;
+	}
+	.btn-submit {
+	    border: 1px solid #ccc;
+	}
+</style>
+	
+	
+
+</head>
+
+
+<!-- From contentarea104.html:  START -->
+<!-- Basic Body -->
+<body class="gridlock  wallpaper-inititalized" onload="
+">
 <!-- Basic Body -->
 <!-- From contentarea105.html: END -->
 
 
 
-<!-- From headernfo.html:  START -->
-<div id="header">
-	<div class="wrapper">
-		<div class="headerTop">
-
-			<div class="selectBox" onmouseover="ResourcesHide(1);" onmouseout="ResourcesHide(0);" style="width: 170px;"> <a id="adSelectBox" href="#">Resources For</a>
-				<ul style="display: none;" id="selectResources">
-					<li class="first"><a href="http://www.conncoll.edu/students/">Students</a></li>
-					<li><a href="http://www.conncoll.edu/admission">Prospective Students</a></li>
-					<li><a href="http://www.conncoll.edu//faculty-staff-resources/">Faculty &amp; Staff</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/index.htm">Alumni</a></li>
-					<li><a href="http://www.conncoll.edu//parents-families/">Parents &amp; Families</a></li>
-					<li><a href="http://www.conncoll.edu/community-visitors/">Community &amp; Visitors</a></li>				</ul>
+		<header class="site_header" id="header" role="banner">
+			<div class="row">
+				<div class="all-full branding">
+					<!-- <div class="site_toggles">
+						<button class="button color_white text_shadow no_margin site_toggle navigation_toggle takeover_toggle">Navigation</button>
+						<button class="button color_white text_shadow no_margin site_toggle search_toggle">Search</button>
+						<div class="search">
+							<form action="http://www.conncoll.edu/search" method="get" class="search_form">
+								<fieldset class="search_fields">
+									<input type="text" class="text search_query" name="q" placeholder="" autocomplete="off">
+									<input type="submit" class="submit search_submit" value="Search">
+								</fieldset>
+								</form>
+						</div>
+					</div> -->
+					<a href="" class="logo">
+						<span class="logo_text visually_hidden">Connecticut College</span>
+					</a>
+				</div>
 			</div>
+		</header>
+		<div class="takeover_panel">
+			<button class="button_close takeover_toggle">Close</button>
+			<div class="row">
+					<div class="mobile-full tablet-3 desktop-5 nav_primary_container">
+											<div class="takeover_primary">
+												<nav class="nav_primary" aria-label="site navigation">
+										          	<ul class="plain_list">
+										           		<li><a href="http://www.conncoll.edu/academics/">Academics</a></li>
+										                <li><a href="http://www.conncoll.edu/campus-life/">Student Experience</a></li>
+										                <li><a href="http://www.conncoll.edu/career/">Career Preparation</a></li>
+										                <li><a href="http://www.conncoll.edu/admission/">Admission &amp; Financial Aid</a></li>
+										                <li><a href="http://www.conncoll.edu/at-a-glance/">About Connecticut College</a></li>
+										                <li><a href="http://www.conncoll.edu/community-visitors/">Campus &amp; Community</a></li>
+										                <li><a href="http://www.conncoll.edu/alumni/">Alumni &amp; Life After Conn</a></li>
+										                <li><a href="http://www.conncoll.edu/athletics/">Athletics</a></li>
+										            </ul>
 
-			<ul class="utilityLinks">
-				<li><a href="http://www.conncoll.edu/employment/">Employment</a></li>
-				<li><a href="http://www.conncoll.edu/libraries-and-technology/">Libraries/Technology</a></li>
-				<li><a href="http://www.conncoll.edu/admission/visiting-campus/">Visiting Campus</a></li>
-				<li><a href="http://www.conncoll.edu/events">Events</a></li>
-				<li><a href="http://www.conncoll.edu/news/index.htm">News</a></li>
+												</nav>
 
-			</ul>
-			<div class="login">
-				<script language="javascript" type="text/javascript">
-					if( hasCookie == true )
-					{
-						document.write('<a style="background:url(https://www.alumniconnections.com/olc/images/CTC/ccLogout.png)" onmouseover="this.style.backgroundImage=\'url(https://www.alumniconnections.com/olc/images/CTC/ccLogoutHover.png)\';" onmouseout="this.style.backgroundImage=\'url(https://www.alumniconnections.com/olc/images/CTC/ccLogout.png)\';" href="https://cas.conncoll.edu/cas/logout/?service=http://www.conncoll.edu/alumni/"></a>');
-					}
-					else
-					{
-						document.write('<a href="https://cas.conncoll.edu/cas/login?service=https://www.alumniconnections.com/olc/membersonly/CTC/mypage.jsp"></a>');
-					}
-				</script>
+												<div style="float:right;">
+										            <a class="button button_small button_border button_icon icon_right icon_right_white_sm button_gift" href="http://www.conncoll.edu/giving/">Make a gift</a>
+										            <a style="clear:both;" class="button button_small button_border button_icon icon_right icon_right_white_sm button_gift" href="http://camelweb.conncoll.edu/">CamelWeb</a>
+
+												</div>
+
+												<nav class="nav_utility nav_utility_header" aria-label="utility navigation">
+													<ul class="plain_list">
+														<li><a href="http://www.conncoll.edu/events/">Calendar</a></li>
+														<li><a href="http://www.conncoll.edu/news/">News</a></li>
+														<li><a href="http://www.conncoll.edu/directories/">Directory</a></li>
+														<li><a href="http://www.conncoll.edu/information-services/libraries/">Libraries</a></li>
+														<li><a href="http://www.conncoll.edu/employment/">Employment</a></li>
+														<li><a href="http://www.conncoll.edu/social-hub/">Social Media</a></li>
+													</ul>
+										       </nav>
+
+
+											</div>
+</div>
+				<div class="mobile-full tablet-3 desktop-6 desktop-push-1 nav_role_container">
+					<div class="takeover_secondary">
+						<p class="label color_blue_6">Specialized Resources</p>
+						<form action="#" method="GET">
+													<select name="selecter_resources" id="selecter_resources" class="js-select selecter_resources" data-selecter-options="{&quot;customClass&quot;:&quot;resource_handle&quot;}">
+
+														<option value="parent">Resources for alumni</option>
+													</select>
+												</form>
+												<div class="nav_roles">
+													<nav class="nav_role nav_role_student js-active" aria-label="student navigation">
+													<ul class="plain_list">
+													<li><a href="http://alumniconnections.com/olc/pub/LV3/oldintro/oldintro.cgi">Alumni Directory</a></li>
+													<li><a href="http://alumniconnections.com/olc/pub/LV3/geventcal/showListView.jsp">Alumni Events</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/alumni-association/">Alumni Association</a></li>
+													<li><a href="http://www.conncoll.edu/at-a-glance/connecticut-college-bookshop/">Bookshop</a></li>
+													<li><a href="http://www.conncoll.edu/map/">Campus Map</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/ccnow/">CC:Now Newsetter</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/conn-in-a-box/">Conn in a Box</a></li>
+													<li><a href="http://www.conncoll.edu/at-a-glance/directions-to-the-college/">Directions</a></li>
+													<li><a href="http://www.conncoll.edu/equity-inclusion/">Equity and Inclusion</a></li>
+													<li><a href="http://www.conncoll.edu/fall-weekend/">Fall Weekend</a></li>
+													<li><a href="http://alumniconnections.com/olc/membersonly/LV3/library.html">Library Databases</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/alumni-association/notable-alumni/">Notable Alumni</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/online-community-help/alumni-login-help/">Password Help</a></li>
+													<li><a href="http://www.conncoll.edu/reunion/">Reunion</a></li>
+													<li><a href="http://www.conncoll.edu/giving/">Support the College</a></li>
+													<li><a href="http://www.conncoll.edu/title-ix/">Title IX: Sexual Respect</a></li>
+													<li><a href="http://alumniconnections.com/olc/membersonly/LV3/memberupdate/memberupdate.cgi">Update Your Info</a></li>
+													<li><a href="http://www.conncoll.edu/alumni/volunteer/">Volunteer</a></li>
+
+														</ul>
+
+													</nav>
+													<nav class="nav_role nav_role_parent" aria-label="parent navigation">
+
+
+
+							</nav>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-		<!-- End of HeaderTop -->
-		<a href="http://www.conncoll.edu/index.htm"><img src="https://www.alumniconnections.com/olc/images/CTC/ccLogo.png" alt="Connecticut College Logo" class="logo"></a>
-		<form name="seek1" method="GET" class="ccSearchForm" action="http://www.conncoll.edu:8765/query.html">
-
-			<fieldset>
-			<input type=hidden name=seek1SetCols value="true">
-			<input type=hidden name=col value="public">
-			<input type=hidden name=ht value="0">
-			<input type=hidden name=qp value="">
-			<input type=hidden name=qs value="">
-			<input type=hidden name=qc value="">
-			<input type=hidden name=pw value="100%">
-			<input type=hidden name=ws value="0">
-
-			<input type=hidden name=la value="">
-			<input type=hidden name=qm value="0">
-			<input type=hidden name=st value="1">
-			<input type=hidden name=nh value="10">
-			<input type=hidden name=lk value="1">
-			<input type=hidden name=rf value="0">
-			<input type=hidden name=oq value="">
-			<input type=hidden name=rq value="0">
-			<input type=hidden name=si value="1">
-
-			<div class="ccSearchBox">
-				<input type="text" name="qt" class="adSearch" value="Search connecticutcollege.edu" onfocus="if(this.value == 'Search connecticutcollege.edu'){this.value = '';}" />
+		<div class="mobile_search">
+			<button class="button_close mobile_search_toggle">Close</button>
+			<div class="row">
+				<form action="http://www.conncoll.edu/search" method="get" class="mobile_search_form">
+					<fieldset class="mobile_search_fields">
+						<input type="text" class="text mobile_search_query mobile-2" name="q" placeholder="" autocomplete="off">
+						<input type="submit" class="submit mobile_search_submit mobile-1" value="Search">
+					</fieldset>
+				</form>
 			</div>
-			<input type="submit" class="adSubmit" value="" />
-			</fieldset>
-		</form>
-		<ul class="adTopNav">
-			<li class="first"><a href="http://www.conncoll.edu/at-a-glance/">At a Glance</a></li>
-			<li><a href="http://www.conncoll.edu/academics/index.htm">Academics</a></li>
-			<li><a href="http://www.conncoll.edu/admission/index.htm">Admission</a></li>
-			<li><a href="http://www.conncoll.edu/campus-life/">Campus Life</a></li>
-			<li><a href="http://www.conncoll.edu/academic-centers/">Academic Centers</a></li>
-			<li><a href="http://www.conncoll.edu/arts-culture/">Arts &amp; Culture</a></li>
-			<li><a href="http://www.conncoll.edu/sciences/index.htm">Sciences</a></li>
-			<li><a href="http://www.conncoll.edu/athletics/">Athletics</a></li>
-			<li><a href="http://makeagift.conncoll.edu/">Make A Gift</a></li>
-		</ul>
+		</div>
+		<div class="page" id="page">
+<header class="page_header bg_color  margined_bottom_medium">
+	<div class="row">
+		<!-- Breadcrumbs -->
+		<div class="all-full breadcrumbs no_margin">
+			<ul>
+				<li class="first_child"><a href="http://www.conncoll.edu" class="home-btn">Home</a><span class="separator">&nbsp;</span></li>
+				<li class="last_child"><a href="http://www.conncoll.edu/alumni">Alumni &amp; Life After Conn</a></li>
+			</ul>
+		</div>
+		<!-- END: Breadcrumbs -->
 	</div>
-</div>
-<div id="content">
-	<div class="wrapper">
+	<div class="row">
 
-		<!--*****BEGIN MAIN CONTENT*****-->
-		<div class="mainContent">
-			<!--*****BEGIN LEFT COLUMN*****-->
-			<div class="ccLeftNav">
-				<!--*****BEGIN COTEXTUAL NAVIGATION*****-->
-				<ul>
-					<li><a href="http://www.conncoll.edu/alumni ">Alumni Home</a></li>
-					<li><a href="https://www.alumniconnections.com/olc/membersonly/CTC/old/directory.cgi?FNC=basicsearch">Find Alumni</a></li>
-					<li><a href="https://www.alumniconnections.com/olc/membersonly/CTC/mypage.jsp">My Profile</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/hsearch/showSearch.jsp">Keyword Search</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/mentor/mentor.cgi">Mentoring Services</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/networking-careers/">Networking & Careers</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/volunteer/">Volunteer</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/pub/CTC/geventcal/showListView.jsp">Alumni Calendar</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/programs-events/">Programs &amp; Events</a></li>
-					<li><a href="http://www.alumniconnections.com/olc/membersonly/CTC/classnotes/classnotes.cgi">Class Notes</a></li>
-					<li><a href="http://www.conncoll.edu/alumni/alumni-association/">Alumni Association</a></li>
-					<li><a href="http://www.conncoll.edu//alumni/online-community-help/">Online Community Help</a></li>
+	</div>
+
+</header>
+<div class="row margined_bottom_large">
+	<div class="min-full mobile-full tablet-full desktop-3 right">
+		<!-- Subnavigation -->
+		<nav class="subnavigation margined naver"><span class="naver-handle">Additional Navigation</span><div class=""><div class="naver-container">
+			<ul>
+				<li><a href="http://www.conncoll.edu/alumni ">Alumni Home</a></li>
+									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/old/directory.cgi?FNC=basicsearch">Find Alumni</a></li>
+									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/mypage.jsp">My Profile</https://alumniconnections.com/olc/i>
+									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/hsearch/showSearch.jsp">Keyword Search</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/networking-careers/">Networking & Careers</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/volunteer/">Volunteer</a></li>
+									<li><a href="http://alumniconnections.com/olc/pub/LV3/geventcal/showListView.jsp">Alumni Calendar</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/programs-events/">Programs &amp; Events</a></li>
+									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/library.html">Library Databases</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/alumni-association/">Alumni Association</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/online-community-help/">Online Community Help</a></li>
 					<li><a href="http://www.conncoll.edu/alumni/support-the-college/">Support the College</a></li>
-
-				</ul>
-				<!--*****END CONTEXTUAL NAVIATION*****-->
-			</div>
-			<!--*****END LEFT COLUMN*****-->
-			<!--*****BEGIN MAIN COLUMN*****-->
-			<div class="ccMain">
-				<!--*****BEGIN EXPLICIT/RANDOM BANNER*****-->
-				<img class="banner" alt="" src="https://www.alumniconnections.com/olc/images/CTC/Science_bannerConstructionUpdates.jpg" id="mainBanner" style="display:none;" />
-				<script language="javascript" type="text/javascript">
-					var objBanner = document.getElementById("mainBanner");
-					var arrImages = ["https://www.alumniconnections.com/olc/images/CTC/Science_bannerConstructionUpdates.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerObservatories.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerFacilities.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerStats.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating3.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating10.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_BannerCompSci.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating6.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerBioLabs.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerZimmer.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating7.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerNews.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerFacultyChemistry.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerEnv.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerPhysicsGeoAsto.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerNLHall.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_banner42.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerGrossel.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerScienceStudents.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerBioBotEnvSci.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerGreenhouse.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerOlin.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerChemLabs.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating14.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerHammond.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerSiver.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating11.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerRotating12.jpg",
-													 "https://www.alumniconnections.com/olc/images/CTC/Science_bannerMonce.jpg"];
-					var intCount = arrImages.length;
-					var randomnumber=Math.floor(Math.random()*intCount);
-					objBanner.src = arrImages[randomnumber];
-				</script>
-
-				<!--*****END RANDOM BANNER*****-->
-				<!--*****BEGIN MAIN COLUMN - LEFT*****-->
-				<div class="ccMainLeft">
-					<!--*****BEGIN NARROW RANDOM BANNER****-->
-					<!--*****END NARROW RANDOM BANNER*****-->
-					<!--*****BEGIN BREADCRUMBS*****
-					<ul class="breadcrumb" >
-						<li class="last"><a href="http://www.conncoll.edu/sciences/index.htm">Sciences</a></li>
-					</ul>
-					*****END BREADCRUMBS*****-->
-
+			</ul>
+		</div></div></nav>
+		<!-- END: Subnavigation -->
+	</div>
