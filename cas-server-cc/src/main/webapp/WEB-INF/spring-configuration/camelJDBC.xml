@@ -7,8 +7,8 @@
 						   
    	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
 		p:URL="${datasource.url}"
-		p:password="${datasource.password}"
-		p:user="${datasource.username}" />
+		p:password="${camel.db.password}"
+		p:user="${camel.db.username}" />
 		
 	<bean id="dataSourceCensus"  class="org.apache.commons.dbcp.BasicDataSource"
         p:driverClassName="oracle.jdbc.OracleDriver"
@@ -21,8 +21,13 @@
         p:url="${blackb.db.url}"
         p:password="${blackb.db.password}"
         p:username="${blackb.db.username}" />
+<<<<<<< HEAD
         
     <bean id="VaultSource" class="org.springframework.ldap.core.support.LdapContextSource">
+=======
+
+	<bean id="VaultSource" class="org.springframework.ldap.core.support.LdapContextSource">
+>>>>>>> origin/conncoll_3.5.2.1
 	    <property name="pooled" value="false"/>
 	    <property name="urls">
 			<bean class="org.springframework.util.StringUtils" factory-method="commaDelimitedListToSet">
