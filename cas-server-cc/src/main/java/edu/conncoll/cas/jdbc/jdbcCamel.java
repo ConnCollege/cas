@@ -667,6 +667,11 @@ public class jdbcCamel {
 		return true;
 	}
 	
+	public Map<String,Object> getUUID( String uuid ) {
+		UUIDRead uuidRead  = new UUIDRead(this.dataSource);
+		return uuidRead.execute(uuid);
+	}
+	
 	public final String setPWD(){
 		return "PWD";
 	}
@@ -881,5 +886,13 @@ public class jdbcCamel {
         	inputs.put("ContactRelation", Rela);
             return super.execute(inputs);
         }
+	}
+	
+	private class UUIDRead extends StoredProcedure {
+		public UUIDRead( DataSource dataSource ) {
+			super(dataSource, "CAS_UUIDRead");
+			declareParameter(new SqlParameter("uid", Types.VARCHAR) );
+			compile();
+		}
 	}
 }
