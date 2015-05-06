@@ -6,7 +6,7 @@
 	   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">					   
 						   
    	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
-		p:URL="${datasource.url}"
+		p:URL="${camel.db.url}"
 		p:password="${camel.db.password}"
 		p:user="${camel.db.username}" />
 		
@@ -53,7 +53,7 @@
 		p:vaultFilter="UId=%u"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:vaultTemplate-ref="vaultTemplate"
-		p:searchBase="${ldap.domain}"
+		p:searchBase="${ldap.authentication.basedn}"
 		p:vaultSearchBase="${vault.authentication.basedn}"
 		p:nuVisionPath="/nv_import/NVimport.txt"
 		p:mainUsername="${main.gmail.username}"
