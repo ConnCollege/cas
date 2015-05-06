@@ -573,7 +573,7 @@ public class jdbcCamel {
 		return "Saved";
 	}
 	
-	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
+	public boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
 		throws Exception{
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
