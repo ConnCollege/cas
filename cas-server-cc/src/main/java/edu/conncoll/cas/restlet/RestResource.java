@@ -8,9 +8,11 @@ import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.servlet.ServletAdapter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
+import org.springframework.webflow.execution.RequestContext;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
@@ -78,7 +80,8 @@ public class RestResource extends ServerResource
 			String uid = uuidResponse.get("ResetUID").toString();
 			
 			//reset password
-			boolean resetSuccess = true;//jdbc.setPassword(null, uname, password, false);//propose boolean for rest calls
+			RequestContext context = null;
+			boolean resetSuccess = jdbc.setPassword(context, uname, password, false);//propose boolean for rest calls
 			
 			//process the result of the password change
 			if ( resetSuccess ) {
