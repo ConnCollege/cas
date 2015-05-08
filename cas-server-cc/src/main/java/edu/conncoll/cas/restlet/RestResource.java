@@ -8,16 +8,15 @@ import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.servlet.ServletAdapter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.springframework.webflow.execution.RequestContext;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
 public class RestResource extends ServerResource 
 {
+	
 	@Post
 	public JsonRepresentation resetPassword( Representation resetEntity ) throws Exception {
 		
@@ -78,10 +77,10 @@ public class RestResource extends ServerResource
 			}
 			
 			String uid = uuidResponse.get("ResetUID").toString();
+			Map<String,Object> uuidRemoved = jdbc.removeUUID(uid);
 			
 			//reset password
-			RequestContext context = null;
-			boolean resetSuccess = jdbc.setPassword(context, uname, password, false);//propose boolean for rest calls
+			boolean resetSuccess = jdbc.setPassword( uname, password, false);
 			
 			//process the result of the password change
 			if ( resetSuccess ) {
@@ -89,7 +88,7 @@ public class RestResource extends ServerResource
 				jsonResponse.put("message", "password for " + uname + " has been successfully changed.");
 			} else {
 				jsonResponse.put("result", "error");
-				jsonResponse.put("message", "there was an error changing the password for " + uname + ".");//would be nice to get a useful error message here.
+				jsonResponse.put("message", jdbc.getRestfulResponse().getErrMessage());
 			}
 			
 			//return the results
