@@ -3,6 +3,8 @@ package edu.conncoll.cas.restlet;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
@@ -16,6 +18,8 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
 
 public class RestResource extends ServerResource 
 {
+	
+	private Log log = LogFactory.getLog(this.getClass());
 	
 	@Post
 	public JsonRepresentation resetPassword( Representation resetEntity ) throws Exception {
@@ -73,11 +77,20 @@ public class RestResource extends ServerResource
 			if ( uuidResponse.isEmpty() ) {
 				jsonResponse.put("result", "error");
 				jsonResponse.put("message", "Invalid security token");
+				log.debug("Invalid security token ( uid: " + sec + " )");
 				return new JsonRepresentation(jsonResponse);
 			}
 			
 			String uid = uuidResponse.get("ResetUID").toString();
+			log.debug("Security token retrieved successfully ( uid: " + uid + " )");
+			
+			//remove used security token from db
 			Map<String,Object> uuidRemoved = jdbc.removeUUID(uid);
+			if ( uuidRemoved.size() < 1 ) {
+				log.debug("Failed to remove security token from db");
+			} else {
+				log.debug("Security token removed from db successfully ( uid: " + uid + " )");
+			}
 			
 			//reset password
 			boolean resetSuccess = jdbc.setPassword( uname, password, false);
@@ -86,9 +99,12 @@ public class RestResource extends ServerResource
 			if ( resetSuccess ) {
 				jsonResponse.put("result", "success");
 				jsonResponse.put("message", "password for " + uname + " has been successfully changed.");
+				log.debug("Password changed successfully for " + uname + "( uname: " + uname + " )");
 			} else {
 				jsonResponse.put("result", "error");
 				jsonResponse.put("message", jdbc.getRestfulResponse().getErrMessage());
+				log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
+				log.debug("  Failure reason: " + jdbc.getRestfulResponse().getErrMessage() );
 			}
 			
 			//return the results
