@@ -4,17 +4,13 @@ import java.util.Map;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-
 import java.lang.Character;
 import java.lang.Integer;
-
 import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-
 import java.util.HashMap;
 
 import javax.mail.Address;
@@ -28,7 +24,6 @@ import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
@@ -42,11 +37,9 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.jdbc.core.RowMapper;
-
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.DirContextOperations;
-
 import org.springframework.webflow.execution.RequestContext;
 
 import sample.appsforyourdomain.AppsForYourDomainClient;
@@ -59,7 +52,6 @@ import com.google.gdata.data.appsforyourdomain.Login;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
@@ -129,6 +121,8 @@ public class jdbcCamel {
 			}
 		}
 	}
+	
+	private RestfulResponse restfulResponse;
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -623,7 +617,11 @@ public class jdbcCamel {
 				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
 			}catch( Exception e){
 				log.warn("Password reset failed at AD");
-				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+				if ( context != null) {
+					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+				} else {
+					this.setRestfulResponse("Password rejected by server, please ensure your password meets all the listed criteria.");
+				}
 				return false;
 			}
 		}
@@ -638,7 +636,11 @@ public class jdbcCamel {
 			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
 		}catch( Exception e){
 			log.warn("Password reset failed at Vault");
-			context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			if ( context != null) {
+				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+			} else {
+				this.setRestfulResponse("Password rejected by server, please ensure your password meets all the listed criteria.");
+			}
 			return false;
 		}
 
@@ -667,9 +669,18 @@ public class jdbcCamel {
 		return true;
 	}
 	
+	public boolean setPassword( String userName, String newPass, boolean setAD ) throws Exception {
+		return this.setPassword(null, userName, newPass, setAD);
+	}
+	
 	public Map<String,Object> getUUID( String uuid ) {
 		UUIDRead uuidRead  = new UUIDRead(this.dataSource);
 		return uuidRead.execute(uuid);
+	}
+	
+	public Map<String,Object> removeUUID( String uuid ) {
+		UUIDRemove uuidRemove = new UUIDRemove(this.dataSource);
+		return uuidRemove.execute(uuid);
 	}
 	
 	public final String setPWD(){
@@ -749,6 +760,30 @@ public class jdbcCamel {
 	
 	public void setVaultFilter (final String vaultFilter) {
 		this.vaultFilter = vaultFilter;
+	}
+	
+	/**
+	 * added to handle password reset error messages outside of a webflow
+	 * @author mmatovic
+	 */
+	public class RestfulResponse {
+		private String ErrMessage;
+		
+		protected RestfulResponse(String ErrMessage) {
+			this.ErrMessage = ErrMessage;
+		}
+		
+		public String getErrMessage() {
+			return this.ErrMessage;
+		}
+	}
+	
+	private void setRestfulResponse( String ErrMessage ) {
+		this.restfulResponse = new RestfulResponse(ErrMessage);
+	}
+	
+	public RestfulResponse getRestfulResponse() {
+		return this.restfulResponse;
 	}
 	
 	private class EMRRead extends StoredProcedure{
@@ -893,6 +928,24 @@ public class jdbcCamel {
 			super(dataSource, "CAS_UUIDRead");
 			declareParameter(new SqlParameter("uid", Types.VARCHAR) );
 			compile();
+		}
+		public Map<String,Object> execute(String uuid) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
+			inputs.put("uid", uuid);
+			return super.execute(inputs);
+		}
+	}
+	
+	private class UUIDRemove extends StoredProcedure {
+		public UUIDRemove( DataSource dataSource ) {
+			super(dataSource, "CAS_UUIDRemove");
+			declareParameter(new SqlParameter("uid", Types.VARCHAR));
+			compile();
+		}
+		public Map<String,Object> execute(String uuid) {
+			Map<String,Object> inputs = new HashMap<String,Object>();
+			inputs.put("uid", uuid);
+			return super.execute(inputs);
 		}
 	}
 }
