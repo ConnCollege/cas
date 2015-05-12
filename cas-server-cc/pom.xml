@@ -198,6 +198,6 @@
 		      <id>jasig-repository</id>
 		      <name>Jasig Maven2 Repository</name>
 	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
-	     </repository>
+	    </repository>
 	</repositories>
 </project>
