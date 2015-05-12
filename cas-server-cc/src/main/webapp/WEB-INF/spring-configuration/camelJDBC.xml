@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">					   
+						   
+   	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
+		p:URL="${datasource.url}"
+		p:password="${camel.db.password}"
+		p:user="${camel.db.username}" />
+		
+	<bean id="dataSourceCensus"  class="org.apache.commons.dbcp.BasicDataSource"
+        p:driverClassName="oracle.jdbc.OracleDriver"
+        p:url="${census.db.url}"
+        p:password="${census.db.password}"
+        p:username="${census.db.username}" />
+        
+    <bean id="dataSourceBlackB"  class="org.apache.commons.dbcp.BasicDataSource"
+        p:driverClassName="oracle.jdbc.OracleDriver"
+        p:url="${blackb.db.url}"
+        p:password="${blackb.db.password}"
+        p:username="${blackb.db.username}" />
+
+	<bean id="VaultSource" class="org.springframework.ldap.core.support.LdapContextSource">
+	    <property name="pooled" value="false"/>
+	    <property name="urls">
+			<bean class="org.springframework.util.StringUtils" factory-method="commaDelimitedListToSet">
+				<constructor-arg type="java.lang.String" value="${vault.authentication.server.urls}"/>
+			</bean>
+	  	</property>
+	    <property name="userDn" value="${vault.authentication.manager.userdn}"/>
+	    <property name="password" value="${vault.authentication.manager.password}"/>
+	    <property name="baseEnvironmentProperties">
+			<map>
+				<entry key="com.sun.jndi.ldap.connect.timeout" value="3000" />
+				<entry key="com.sun.jndi.ldap.read.timeout" value="3000" />
+				<entry key="java.naming.security.authentication" value="simple" />
+			</map>
+	    </property>
+	</bean>  
+	
+	<bean id="vaultTemplate" class="org.springframework.ldap.core.LdapTemplate">
+        <constructor-arg ref="VaultSource" />
+        <property name="ignorePartialResultException" value="true" />
+    </bean>    
+	
+	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
+		p:dataSource-ref="dataSourceCamel"
+		p:censusSource-ref="dataSourceCensus"
+		p:blackBSource-ref="dataSourceBlackB"
+		p:filter="sAMAccountName=%u"
+		p:vaultFilter="UId=%u"
+		p:ldapTemplate-ref="ldapTemplate"
+		p:vaultTemplate-ref="vaultTemplate"
+		p:searchBase="${ldap.authentication.basedn}"
+		p:vaultSearchBase="${vault.authentication.basedn}"
+		p:nuVisionPath="/nv_import/NVimport.txt"
+		p:mainUsername="${main.gmail.username}"
+		p:mainPassword="${main.gmail.password}"
+		p:recaptchaPublic="${recaptcha.key.public}"
+		p:recaptchaPrivate="${recaptcha.key.private}" />
+</beans>
