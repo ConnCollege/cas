@@ -176,6 +176,27 @@
 			<version>1.4.4</version>
 		  	<scope>provided</scope>
 		</dependency>
+		<!-- Restlet support -->
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>2.2-RC4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet.ext.spring</artifactId>
+			<version>2.2-RC4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet.ext.servlet</artifactId>
+			<version>2.2-RC4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet.ext.json</artifactId>
+			<version>2.2-RC4</version>
+		</dependency>
     </dependencies>
  
     <properties>
@@ -199,5 +220,11 @@
 		      <name>Jasig Maven2 Repository</name>
 	          <url>http://oss.sonatype.org/content/repositories/releases/ </url>
 	    </repository>
+	    <!-- Restlet Repository -->
+		<repository>
+			<id>maven-restlet</id>
+			<name>Public online Restlet repository</name>
+			<url>http://maven.restlet.com</url>
+		</repository>
 	</repositories>
 </project>
