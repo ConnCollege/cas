@@ -229,6 +229,7 @@
   <servlet>
     <servlet-name>ccrest</servlet-name>
     <servlet-class>org.restlet.ext.servlet.SpringServerServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet-mapping>
