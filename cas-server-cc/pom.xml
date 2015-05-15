@@ -202,6 +202,11 @@
 			<artifactId>com.db4o</artifactId>
 			<version>7.7.67</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springmodules</groupId>
+			<artifactId>spring-modules-db4o</artifactId>
+			<version>0.8a</version>
+		</dependency>
 		<!-- JSTL -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>
