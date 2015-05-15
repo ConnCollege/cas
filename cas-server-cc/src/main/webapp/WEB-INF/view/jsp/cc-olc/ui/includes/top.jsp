@@ -252,9 +252,9 @@
 			<ul>
 				<li><a href="http://www.conncoll.edu/alumni ">Alumni Home</a></li>
 									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/old/directory.cgi?FNC=basicsearch">Find Alumni</a></li>
-									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/mypage.jsp">My Profile</https://alumniconnections.com/olc/i>
+									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/mypage.jsp">My Profile</a></li>
 									<li><a href="http://alumniconnections.com/olc/membersonly/LV3/hsearch/showSearch.jsp">Keyword Search</a></li>
-									<li><a href="http://www.conncoll.edu/alumni/networking-careers/">Networking & Careers</a></li>
+									<li><a href="http://www.conncoll.edu/alumni/networking-careers/">Networking &amp; Careers</a></li>
 									<li><a href="http://www.conncoll.edu/alumni/volunteer/">Volunteer</a></li>
 									<li><a href="http://alumniconnections.com/olc/pub/LV3/geventcal/showListView.jsp">Alumni Calendar</a></li>
 									<li><a href="http://www.conncoll.edu/alumni/programs-events/">Programs &amp; Events</a></li>
