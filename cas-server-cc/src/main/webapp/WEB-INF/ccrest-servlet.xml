@@ -9,7 +9,7 @@
 		<property name="defaultTarget" ref="restletApplication" />
 	</bean>
 	
-	<bean id="restletApplication" class="edu.conncoll.cas.restlet.RestApplication">
+	<bean id="restletApplication" class="edu.conncoll.cas.restlet.RestletApplication">
 		<property name="root" ref="router" />
 	</bean>
 
