@@ -37,6 +37,15 @@
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>client</param-value>
   </context-param>
+  
+  <context-param>
+  	<param-name>org.restlet.component</param-name>
+  	<param-value>baseComponent</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>contextConfigLocation</param-name>
+  	<param-value>WEB-INF/restletContext.xml</param-value>
+  </context-param>
 	
 	<resource-ref>
 		<res-ref-name>
@@ -235,7 +244,7 @@
   
   <servlet-mapping>
     <servlet-name>ccrest</servlet-name>
-    <url-pattern>/v1/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
   <session-config>
