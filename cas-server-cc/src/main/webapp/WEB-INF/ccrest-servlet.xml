@@ -13,17 +13,7 @@
 		<property name="root" ref="router" />
 	</bean>
 
-	<bean id="router" class="org.restlet.ext.spring.SpringRouter">
-		<property name="attachments">
-			<map>
-				<entry key="/reset">
-					<bean class="org.restlet.ext.spring.SpringFinder">
-						<lookup-method name="create" bean="restResource" />
-					</bean>
-				</entry>
-			</map>
-		</property>
-	</bean>
+	<bean name="router" class="org.restlet.ext.spring.SpringBeanRouter" />
 	
-	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
+	<bean name="/reset" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" autowire="byName" />
 </beans>
