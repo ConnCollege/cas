@@ -5,6 +5,14 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
 	   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+	<bean id="baseComponent" class="org.restlet.ext.spring.SpringComponent">
+		<property name="defaultTarget" ref="restletApplication" />
+	</bean>
+	
+	<bean id="restletApplication" class="edu.conncoll.cas.restlet.RestApplication">
+		<property name="root" ref="router" />
+	</bean>
+
 	<bean id="router" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
