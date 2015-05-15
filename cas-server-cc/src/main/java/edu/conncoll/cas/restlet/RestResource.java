@@ -7,6 +7,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -14,10 +17,33 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+import com.db4o.ObjectContainer;
+
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
 public class RestResource extends ServerResource 
 {
+	
+	private ObjectContainer container;
+	
+	public RestResource() { }
+	
+	@Override
+	public void init( Context context, Request request, Response response ) {
+		super.init(context, request, response);
+	}
+	
+	public RestResource( Context context, Request request, Response response ) {
+		init(context, request, response);
+	}
+	
+	public ObjectContainer getContainer() {
+		return container;
+	}
+	
+	public void setContainer(ObjectContainer container) {
+		this.container = container;
+	}
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
