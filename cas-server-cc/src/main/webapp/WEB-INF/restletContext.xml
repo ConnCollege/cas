@@ -10,7 +10,7 @@
 		<property name="defaultTarget" ref="default"></property>
 	</bean>
 
-	<bean name="default" class="org.restlet.ext.spring.SpringBeanRouter">
+	<bean name="default" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
 				<entry key="/v1" value-ref="root" />
