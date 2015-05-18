@@ -27,6 +27,10 @@
   <display-name>Central Authentication System (CAS) ${project.version}</display-name>
 
   <context-param>
+    <param-name>org.restlet.component</param-name>
+    <param-value>baseComponent</param-value>
+  </context-param>
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
       /WEB-INF/spring-configuration/*.xml
