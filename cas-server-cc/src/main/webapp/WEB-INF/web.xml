@@ -37,15 +37,6 @@
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>client</param-value>
   </context-param>
-  <!--
-  <context-param>
-  	<param-name>org.restlet.component</param-name>
-  	<param-value>baseComponent</param-value>
-  </context-param>
-  <context-param>
-  	<param-name>contextConfigLocation</param-name>
-  	<param-value>/WEB-INF/restletContext.xml</param-value>
-  </context-param>-->
 	
 	<resource-ref>
 		<res-ref-name>
@@ -239,13 +230,8 @@
     <url-pattern>/403.html</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-  	<servlet-name>cas</servlet-name>
-  	<url-pattern>/cas-rest-api</url-pattern>
-  </servlet-mapping>
-
   <!-- Rest API -->
-  <!--<servlet>
+  <servlet>
     <servlet-name>ccrest</servlet-name>
     <servlet-class>org.restlet.ext.servlet.SpringServerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
@@ -254,7 +240,7 @@
   <servlet-mapping>
     <servlet-name>ccrest</servlet-name>
     <url-pattern>/cas-rest-api/*</url-pattern>
-  </servlet-mapping>-->
+  </servlet-mapping>
 
   <session-config>
     <!-- Default to 5 minute session timeouts -->
