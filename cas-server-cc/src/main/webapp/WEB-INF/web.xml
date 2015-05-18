@@ -71,10 +71,6 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/services/*</url-pattern>
   </filter-mapping>
-  <filter-mapping>
-  	<filter-name>springSecurityFilterChain</filter-name>
-  	<url-pattern>/cas-rest-api/*</url-pattern>
-  </filter-mapping>
 
   <filter>
     <filter-name>characterEncodingFilter</filter-name>
