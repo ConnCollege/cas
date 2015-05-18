@@ -207,6 +207,11 @@
 			<artifactId>spring-modules-db4o</artifactId>
 			<version>0.9a</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-server-integration-restlet</artifactId>
+			<version>3.5.3</version>
+		</dependency>
 		<!-- JSTL -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>

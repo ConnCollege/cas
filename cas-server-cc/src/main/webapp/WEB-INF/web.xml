@@ -50,14 +50,14 @@
 		</res-auth>
 	</resource-ref>
 
-  <filter>
+  <!--<filter>
     <filter-name>CAS Client Info Logging Filter</filter-name>
     <filter-class>com.github.inspektr.common.web.ClientInfoThreadLocalFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>CAS Client Info Logging Filter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping>-->
 
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
@@ -72,14 +72,14 @@
     <url-pattern>/services/*</url-pattern>
   </filter-mapping>
 
-  <filter>
+  <!--<filter>
     <filter-name>characterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>characterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping>-->
 
   <!--
     - Loads the CAS ApplicationContext.
