@@ -71,7 +71,7 @@
 		        <prop key="/authorizationFailure.html">passThroughController</prop>
 		        <prop key="/403.html">passThroughController</prop>
 		        <prop key="/status">healthCheckController</prop>
-		        <prop key="/cas-rest-api">baseComponent</prop>
+		        <prop key="/cas-rest-api/*">baseComponent</prop>
 		     </props>
 		</property>
 		<property name="alwaysUseFullPath" value="true" />
