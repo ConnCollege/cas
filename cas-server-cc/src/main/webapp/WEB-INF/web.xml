@@ -236,7 +236,7 @@
   </servlet-mapping>
 
   <!-- Rest API -->
-  <servlet>
+  <!--<servlet>
     <servlet-name>ccrest</servlet-name>
     <servlet-class>org.restlet.ext.servlet.SpringServerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
@@ -245,7 +245,7 @@
   <servlet-mapping>
     <servlet-name>ccrest</servlet-name>
     <url-pattern>/cas-rest-api/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping>-->
 
   <session-config>
     <!-- Default to 5 minute session timeouts -->
