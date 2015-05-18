@@ -31,12 +31,21 @@
     <param-value>
       /WEB-INF/spring-configuration/*.xml
       /WEB-INF/deployerConfigContext.xml
+      /WEB-INF/restletContext.xml
     </param-value>
   </context-param>
   <context-param>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>client</param-value>
   </context-param>
+  <!--<context-param>
+  	<param-name>org.restlet.component</param-name>
+  	<param-value>baseComponent</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>contextConfigLocation</param-name>
+  	<param-value>/WEB-INF/restletContext.xml</param-value>
+  </context-param>-->
 	
 	<resource-ref>
 		<res-ref-name>
@@ -80,15 +89,6 @@
     <filter-name>characterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
-  <context-param>
-  	<param-name>org.restlet.component</param-name>
-  	<param-value>baseComponent</param-value>
-  </context-param>
-  <context-param>
-  	<param-name>contextConfigLocation</param-name>
-  	<param-value>/WEB-INF/restletContext.xml</param-value>
-  </context-param>
 
   <!--
     - Loads the CAS ApplicationContext.

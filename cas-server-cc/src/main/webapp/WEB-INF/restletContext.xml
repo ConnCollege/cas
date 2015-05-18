@@ -7,7 +7,7 @@
 				<constructor-arg value="http" />
 			</bean>
 		</property>
-		<property name="defaultTarget" ref="default"></property>
+		<property name="defaultTarget" ref="default" />
 	</bean>
 
 	<bean name="default" class="org.restlet.ext.spring.SpringRouter">
