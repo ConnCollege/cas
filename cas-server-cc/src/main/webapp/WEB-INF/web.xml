@@ -238,6 +238,11 @@
     <servlet-name>cas</servlet-name>
     <url-pattern>/403.html</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+  	<servlet-name>cas</servlet-name>
+  	<url-pattern>/cas-rest-api</url-pattern>
+  </servlet-mapping>
 
   <!-- Rest API -->
   <!--<servlet>
