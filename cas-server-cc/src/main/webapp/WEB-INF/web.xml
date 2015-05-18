@@ -38,14 +38,14 @@
     <param-value>client</param-value>
   </context-param>
   
-  <context-param>
+  <!--<context-param>
   	<param-name>org.restlet.component</param-name>
   	<param-value>baseComponent</param-value>
   </context-param>
   <context-param>
   	<param-name>contextConfigLocation</param-name>
   	<param-value>/WEB-INF/restletContext.xml</param-value>
-  </context-param>
+  </context-param>-->
 	
 	<resource-ref>
 		<res-ref-name>
