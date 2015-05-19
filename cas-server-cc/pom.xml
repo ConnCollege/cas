@@ -62,6 +62,12 @@
 			<artifactId>cas-server-support-ldap</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
+		<!-- rest ticket support -->
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-server-integration-restlet</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- Chaptcha Support -->
         <dependency>
             <groupId>net.tanesha.recaptcha4j</groupId>

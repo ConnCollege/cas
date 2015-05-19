@@ -26,11 +26,18 @@
   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
   <display-name>Central Authentication System (CAS) ${project.version}</display-name>
 
+
+  <!-- method 1: context loading -->
+  <!--<context-param>
+  	<param-name>org.restlet.component</param-name>
+  	<param-value>baseComponent</param-value>
+  </context-param>-->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
       /WEB-INF/spring-configuration/*.xml
       /WEB-INF/deployerConfigContext.xml
+      <!--/WEB-INF/restletContext.xml method1: context file -->
     </param-value>
   </context-param>
   <context-param>
@@ -50,14 +57,14 @@
 		</res-auth>
 	</resource-ref>
 
-  <!--<filter>
+  <filter>
     <filter-name>CAS Client Info Logging Filter</filter-name>
     <filter-class>com.github.inspektr.common.web.ClientInfoThreadLocalFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>CAS Client Info Logging Filter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>-->
+  </filter-mapping>
 
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
@@ -71,15 +78,19 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/services/*</url-pattern>
   </filter-mapping>
+  <filter-mapping>
+  	<filter-name>springSecurityFilterChain</filter-name>
+  	<url-pattern>/cas-rest-api/*</url-pattern>
+  </filter-mapping>
 
-  <!--<filter>
+  <filter>
     <filter-name>characterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>characterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>-->
+  </filter-mapping>
 
   <!--
     - Loads the CAS ApplicationContext.
