@@ -30,9 +30,7 @@
 		</property>
 	</bean>
 	
-	<bean id="resetResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype">
-		<property name="container" />
-	</bean>
+	<bean id="resetResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
 	
 	<!-- <bean id="db4oContainer"
 	   class="org.springmodules.db4o.ObjectContainerFactoryBean">
