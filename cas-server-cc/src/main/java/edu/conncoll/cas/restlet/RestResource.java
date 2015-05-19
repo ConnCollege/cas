@@ -28,7 +28,7 @@ public class RestResource extends ServerResource
 	
 	public RestResource() { }
 	
-	public void init( Context context, Request request, Response response ) {
+	public void init( org.restlet.Context context, org.restlet.data.Request request, org.restlet.data.Response response ) {
 		super.init(context, request, response);
 	}
 	
