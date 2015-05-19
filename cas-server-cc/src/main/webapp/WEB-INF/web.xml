@@ -28,16 +28,11 @@
 
 
   <!-- method 1: context loading -->
-  <!--<context-param>
-  	<param-name>org.restlet.component</param-name>
-  	<param-value>baseComponent</param-value>
-  </context-param>-->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
       /WEB-INF/spring-configuration/*.xml
       /WEB-INF/deployerConfigContext.xml
-      <!--/WEB-INF/restletContext.xml method1: context file -->
     </param-value>
   </context-param>
   <context-param>
@@ -77,10 +72,6 @@
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/services/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-  	<filter-name>springSecurityFilterChain</filter-name>
-  	<url-pattern>/cas-rest-api/*</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -240,7 +231,7 @@
   <!-- Rest API -->
   <servlet>
     <servlet-name>ccrest</servlet-name>
-    <servlet-class>org.restlet.ext.servlet.SpringServerServlet</servlet-class>
+    <servlet-class>org.restlet.ext.servlet.RestletFrameworkServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   
