@@ -24,7 +24,7 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
 public class RestResource extends ServerResource 
 {
 	
-	private ObjectContainer container;
+	/*private ObjectContainer container;
 	
 	public RestResource() { }
 	
@@ -43,7 +43,7 @@ public class RestResource extends ServerResource
 	
 	public void setContainer(ObjectContainer container) {
 		this.container = container;
-	}
+	}*/
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	

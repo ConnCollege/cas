@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
-	<bean id="baseComponent" class="org.restlet.ext.spring.SpringComponent">
+	<!-- <bean id="baseComponent" class="org.restlet.ext.spring.SpringComponent">
 		<property name="server">
 			<bean class="org.restlet.ext.spring.SpringServer">
 				<constructor-arg value="http" />
@@ -16,7 +16,7 @@
 				<entry key="/v1" value-ref="root" />
 			</map>
 		</property>
-	</bean>
+	</bean>-->
 	
 	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
@@ -34,7 +34,7 @@
 		<property name="container" ref="db4oContainer" />
 	</bean>
 	
-	<bean id="db4oContainer"
+	<!-- <bean id="db4oContainer"
 	   class="org.springmodules.db4o.ObjectContainerFactoryBean">
 	   <property name="configuration" ref="db4oConfiguration" />
 	   <property name="databaseFile" value="file://${user.home}/restbook.dbo" />
@@ -44,5 +44,5 @@
 	    class="org.springmodules.db4o.ConfigurationFactoryBean">
 	    <property name="updateDepth" value="2" />
 	    <property name="configurationCreationMode" value="NEW" />
-	</bean>
+	</bean>-->
 </beans>

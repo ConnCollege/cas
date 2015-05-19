@@ -231,7 +231,7 @@
   <!-- Rest API -->
   <servlet>
     <servlet-name>ccrest</servlet-name>
-    <servlet-class>org.restlet.ext.servlet.SpringServerServlet</servlet-class>
+    <servlet-class>org.restlet.ext.servlet.RestletFrameworkServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   
