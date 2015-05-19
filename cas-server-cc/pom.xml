@@ -63,11 +63,11 @@
 			<version>${project.version}</version>
 		</dependency>	
 		<!-- rest ticket support -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.jasig.cas</groupId>
 			<artifactId>cas-server-integration-restlet</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>-->
 		<!-- Chaptcha Support -->
         <dependency>
             <groupId>net.tanesha.recaptcha4j</groupId>
@@ -184,34 +184,9 @@
 		</dependency>
 		<!-- Restlet support -->
 		<dependency>
-			<groupId>org.restlet.jee</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>2.2-RC4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.jee</groupId>
-			<artifactId>org.restlet.ext.spring</artifactId>
-			<version>2.2-RC4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.jee</groupId>
-			<artifactId>org.restlet.ext.servlet</artifactId>
-			<version>2.2-RC4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.jee</groupId>
+			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.json</artifactId>
-			<version>2.2-RC4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>com.db4o</artifactId>
-			<version>7.7.67</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springmodules</groupId>
-			<artifactId>spring-modules-db4o</artifactId>
-			<version>0.9a</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jasig.cas</groupId>
