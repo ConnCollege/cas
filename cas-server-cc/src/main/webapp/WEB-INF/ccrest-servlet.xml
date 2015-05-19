@@ -31,7 +31,7 @@
 	</bean>
 	
 	<bean id="resetResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype">
-		<property name="container" ref="db4oContainer" />
+		<property name="container" />
 	</bean>
 	
 	<!-- <bean id="db4oContainer"
