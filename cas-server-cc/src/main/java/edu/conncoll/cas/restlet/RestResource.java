@@ -108,6 +108,8 @@ public class RestResource extends Resource
 						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						log.debug("Invalid security token ( uid: " + sec + " )");
 					} else {
+						String uuidResponseString = ToStringBuilder.reflectionToString(uuidResponse);
+						log.debug(uuidResponseString);
 						String uid = uuidResponse.get("ResetUID").toString();
 						log.debug("Security token retrieved successfully ( uid: " + uid + " )");
 						
