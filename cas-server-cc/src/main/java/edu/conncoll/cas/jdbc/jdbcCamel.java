@@ -959,7 +959,7 @@ public class jdbcCamel {
 			declareParameter(new SqlReturnResultSet("resetRemoveData", new RowMapper(){
 				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
 					Map<String,Object> resetRemoveData = new HashMap<String,Object>();
-					resetRemoveData.put("rows_deleted", rs.getObject(0));
+					resetRemoveData.put("rows_deleted", rs.getObject(1));
 					return resetRemoveData;
 				}
 			}));
