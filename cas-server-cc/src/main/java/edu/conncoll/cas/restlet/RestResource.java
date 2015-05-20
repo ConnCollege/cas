@@ -132,10 +132,12 @@ public class RestResource extends Resource
 		} catch (JSONException e) {
 			getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage() );
 			getResponse().setEntity( "JSON Error: ", MediaType.APPLICATION_JSON );
+			log.error(e);
 		} catch (Exception e) {
 			log.error( "Restlet Internal Server Error: " + e.getMessage() );
 			getResponse().setEntity( "Internal Server Error: ", MediaType.APPLICATION_JSON );
 			getResponse().setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
+			log.error(e);
 		}
 	}
 }
