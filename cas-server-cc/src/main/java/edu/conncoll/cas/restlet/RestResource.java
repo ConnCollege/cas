@@ -101,7 +101,6 @@ public class RestResource extends Resource
 					jdbc.setDataSource(this.dataSource);
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
 					ArrayList resetCheckData = (ArrayList) uuidResponse.get("resetCheckData");
-					HashMap<String,String> resetCheckRecord = (HashMap)resetCheckData.get(0);
 					
 					//if no security token is found, return an error
 					if ( resetCheckData.isEmpty() ) {
@@ -111,6 +110,7 @@ public class RestResource extends Resource
 						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						log.debug("Invalid security token ( uid: " + sec + " )");
 					} else {
+						HashMap<String,String> resetCheckRecord = (HashMap)resetCheckData.get(0);
 						String uid = resetCheckRecord.get("ResetUID");
 						log.debug("Security token retrieved successfully ( uid: " + uid + " )");
 						
