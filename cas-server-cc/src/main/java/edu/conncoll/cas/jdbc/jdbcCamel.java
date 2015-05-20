@@ -939,7 +939,6 @@ public class jdbcCamel {
 				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
 					Map<String,Object> resetCheckData = new HashMap<String,Object>();
 					resetCheckData.put("ResetUID", rs.getObject(0));
-					System.out.println(rs.getObject(0).toString());
 					resetCheckData.put("AdminUser", rs.getObject(1));
 					return resetCheckData;
 				}
@@ -957,6 +956,13 @@ public class jdbcCamel {
 		public UUIDRemove( DataSource dataSource ) {
 			super(dataSource, "CAS_UUIDRemove");
 			declareParameter(new SqlParameter("uid", Types.VARCHAR));
+			declareParameter(new SqlReturnResultSet("resetRemoveData", new RowMapper(){
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> resetRemoveData = new HashMap<String,Object>();
+					resetRemoveData.put("rows_deleted", rs.getObject(0));
+					return resetRemoveData;
+				}
+			}));
 			compile();
 		}
 		public Map<String,Object> execute(String uuid) {

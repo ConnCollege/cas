@@ -116,7 +116,10 @@ public class RestResource extends Resource
 						
 						//remove used security token from db
 						Map<String,Object> uuidRemoved = jdbc.removeUUID(uid);
-						if ( uuidRemoved.size() < 1 ) {
+						ArrayList resetRemoveData = (ArrayList) uuidRemoved.get("resetRemoveData");
+						HashMap<String,Integer> resetRemoveRecord = (HashMap)resetRemoveData.get(0);
+						int rowsRemoved = resetRemoveRecord.get("rows_deleted");
+						if ( rowsRemoved < 1 ) {
 							log.debug("Failed to remove security token from db");
 						} else {
 							log.debug("Security token removed from db successfully ( uid: " + uid + " )");
