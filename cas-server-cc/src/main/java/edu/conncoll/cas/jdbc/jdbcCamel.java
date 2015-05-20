@@ -939,6 +939,7 @@ public class jdbcCamel {
 				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
 					Map<String,Object> resetCheckData = new HashMap<String,Object>();
 					resetCheckData.put("ResetUID", rs.getObject(0));
+					System.out.println(rs.getObject(0).toString());
 					resetCheckData.put("AdminUser", rs.getObject(1));
 					return resetCheckData;
 				}
