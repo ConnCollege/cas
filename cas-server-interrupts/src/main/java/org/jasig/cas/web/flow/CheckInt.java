@@ -8,9 +8,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.commons.net.util.SubnetUtils;
 import org.springframework.webflow.execution.RequestContext;
-
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.web.support.WebUtils;
 
@@ -34,9 +33,13 @@ public final class CheckInt {
 	
 	public final void setReqLogin(final List<String> reqLogin) {
 	        this.reqLogin = reqLogin;
-	        for(String intStr :  this.reqLogin) {
-	        	log.debug("CheckInt adding Interrut " + intStr);
-	        	this.reqLogin.add(intStr);
+	}
+	
+	public final void setLocalIpRanges(final List<String> localIpRanges) {
+	        this.localIpRanges = localIpRanges;
+	        for(String subNet :  this.localIpRanges) {
+	        	log.debug("CheckFlags adding local ip range " + subNet);
+	        	this.localSubNets.add(new SubnetUtils(subNet));
 	        }
 	}
 }
