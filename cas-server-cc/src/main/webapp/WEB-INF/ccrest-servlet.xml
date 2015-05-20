@@ -16,13 +16,18 @@
 			<map>
 				<entry key="/reset/">
 					<bean class="org.restlet.ext.spring.SpringFinder">
-						<lookup-method name="createResource" bean="restResource"/>
+						<lookup-method name="createResource" bean="restResource" />
 					</bean>
 				</entry>
 			</map>
 		</property>
 	</bean>
 	
-	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
+	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" p:dataSource-ref="dataSourceCamel" />
+	
+	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
+		p:URL="${camel.db.url}"
+		p:password="${camel.db.password}"
+		p:user="${camel.db.username}" />
 	
 </beans>

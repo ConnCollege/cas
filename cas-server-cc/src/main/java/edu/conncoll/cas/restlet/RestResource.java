@@ -3,6 +3,9 @@ package edu.conncoll.cas.restlet;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -12,12 +15,14 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Variant;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
 public class RestResource extends Resource 
 {
+	@NotNull
+    private DataSource dataSource;
 	
 	public final boolean allowGet() {
 		return false;
@@ -34,6 +39,10 @@ public class RestResource extends Resource
 	public final boolean allowDelete() {
 		return false;
 	}
+	
+	public final void setDataSource(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -86,6 +95,7 @@ public class RestResource extends Resource
 					
 					//authenticate security UUID
 					jdbcCamel jdbc = new jdbcCamel();
+					jdbc.setDataSource(this.dataSource);
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
 					
 					//if no security token is found, return an error
