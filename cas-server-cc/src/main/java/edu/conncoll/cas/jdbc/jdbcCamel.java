@@ -938,8 +938,8 @@ public class jdbcCamel {
 			declareParameter(new SqlReturnResultSet("resetCheckData", new RowMapper(){
 				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
 					Map<String,Object> resetCheckData = new HashMap<String,Object>();
-					resetCheckData.put("ResetUID", rs.getObject(0));
-					resetCheckData.put("AdminUser", rs.getObject(1));
+					resetCheckData.put("ResetUID", rs.getObject(1));
+					resetCheckData.put("AdminUser", rs.getObject(2));
 					return resetCheckData;
 				}
 			}));
