@@ -34,12 +34,4 @@ public final class CheckInt {
 	public final void setReqLogin(final List<String> reqLogin) {
 	        this.reqLogin = reqLogin;
 	}
-	
-	public final void setLocalIpRanges(final List<String> localIpRanges) {
-	        this.localIpRanges = localIpRanges;
-	        for(String subNet :  this.localIpRanges) {
-	        	log.debug("CheckFlags adding local ip range " + subNet);
-	        	this.localSubNets.add(new SubnetUtils(subNet));
-	        }
-	}
 }
