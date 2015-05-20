@@ -96,6 +96,7 @@ public class RestResource extends Resource
 					//authenticate security UUID
 					jdbcCamel jdbc = new jdbcCamel();
 					jdbc.setDataSource(this.dataSource);
+					log.info(this.dataSource.toString());
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
 					
 					//if no security token is found, return an error
