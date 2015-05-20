@@ -38,12 +38,23 @@
 	</decision-state>
 	
 	<decision-state id="hasServiceCheck">
-		<if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
+		<if test="flowScope.service != null" then="renewRequestCheck" else="hasFlagCheck" />
+	</decision-state>
+	
+	<decision-state id="hasIntCheck">
+		<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
 	</decision-state>
 	
 	<decision-state id="renewRequestCheck">
 		<if test="requestParameters.renew != '' and requestParameters.renew != null" then="serviceAuthorizationCheck" else="generateServiceTicket" />
 	</decision-state>
+	
+	<action-state id="forceInterrupt">
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials, flowScope.interrupt)" />
+		<set name="flowScope.flag" value="flowScope.interrupt" />
+		<transition on="LoginReq" to="generateLoginTicket" />
+		<transition on="LoginOk" to="showInterrupt" />
+	</action-state>
 
     <!-- Do a service authorization check early without the need to login first -->
     <action-state id="serviceAuthorizationCheck">
@@ -105,11 +116,11 @@
 	
 	<end-state id="pwdWarningPostView" view="casWarnPassView" parent="#pwdWarningAbstractView" />
 	<action-state id="casExpiredPassView">
-		<evaluate expression="jdbcCamel.setPWD()" result="flowScope.Flag" result-type="java.lang.String" />	
+		<set name="flowScope.Flag" value="'PWD'"/>
 		<transition to="showInterrupt" />
 	</action-state>
 	<action-state id="casMustChangePassView">
-		<evaluate expression="jdbcCamel.setPWD()" result="flowScope.Flag" result-type="java.lang.String" />	
+		<set name="flowScope.Flag" value="'PWD'"/>
 		<transition to="showInterrupt" />
 	</action-state>
 	<end-state id="casAccountDisabledView" view="casAccountDisabledView" />
@@ -162,7 +173,7 @@
 	      To enable LPPE on the 'success' replace the below transition with:
 	      <transition on="success" to="passwordPolicyCheck" />
 	    -->
-		<transition on="success" to="CheckFlags" />
+		<transition on="success" to="CheckInt" />
 		<transition on="error" to="generateLoginTicket" />
 		<transition on="accountDisabled" to="casAccountDisabledView" />
 	    <transition on="mustChangePassword" to="casMustChangePassView" />
@@ -197,6 +208,10 @@
         <evaluate expression="flowScope.service.getResponse(requestScope.serviceTicketId)" result-type="org.jasig.cas.authentication.principal.Response" result="requestScope.response" />
         <transition to="postRedirectDecision" />
     </action-state>
+    
+    <decision-state id="CheckInt">
+    	<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
+    </decision-state>
     
     <action-state id="CheckFlags">
 		<evaluate expression="CheckFlags.check(flowRequestContext, flowScope.credentials)" result="flowScope.Flag" result-type="java.lang.String" />
@@ -272,9 +287,13 @@
 	
 	<action-state id="SaveInterrupt">
 		<evaluate expression="jdbcCamel.writeFlow(flowScope.Flag,flowRequestContext,flowScope.credentials,flowScope.IntData)" />
-		<transition on="Saved" to="SetFlag" />
+		<transition on="Saved" to="hasIntAfterSave" />
 		<transition on="Failed" to="showInterrupt" />
 	</action-state>
+	
+	<decision-state id="hasIntAfterSave">
+		<if test="flowScope.interrupt != null" then="IntUpdated" else="SetFlag" />
+	</decision-state>
 	
 	<action-state id="SetFlag">
 		<evaluate expression="CheckFlags.update(flowRequestContext, flowScope.credentials, flowScope.Flag)" />
@@ -313,6 +332,8 @@
 	<end-state id="viewServiceErrorView" view="viewServiceErrorView" />
     
     <end-state id="viewServiceSsoErrorView" view="viewServiceSsoErrorView" />
+    
+    <end-state id="IntUpdated" view="SAVED" />
 
 	<global-transitions>
         <!-- CAS-1023 This one is simple - redirects to a login page (same as renew) when 'ssoEnabled' flag is unchecked

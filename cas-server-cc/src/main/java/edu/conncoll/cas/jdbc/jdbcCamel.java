@@ -1,21 +1,19 @@
 package edu.conncoll.cas.jdbc;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-
 import java.lang.Character;
 import java.lang.Integer;
-
 import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-
 import java.util.HashMap;
+import java.util.Collections;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -28,7 +26,6 @@ import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
@@ -42,24 +39,22 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.jdbc.core.RowMapper;
-
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.DirContextOperations;
-
 import org.springframework.webflow.execution.RequestContext;
 
-import sample.appsforyourdomain.AppsForYourDomainClient;
-
-import com.google.gdata.data.appsforyourdomain.provisioning.UserEntry;
-import com.google.gdata.data.appsforyourdomain.provisioning.NicknameEntry;
-import com.google.gdata.data.appsforyourdomain.provisioning.NicknameFeed;
-import com.google.gdata.data.appsforyourdomain.Nickname;
-import com.google.gdata.data.appsforyourdomain.Login;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.admin.directory.Directory;
+import com.google.api.services.admin.directory.DirectoryScopes;
+import com.google.api.services.admin.directory.model.User;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
@@ -131,6 +126,17 @@ public class jdbcCamel {
 	}
 	
 	private Log log = LogFactory.getLog(this.getClass());
+	
+	private static final String APPLICATION_NAME = "Conncoll-CAS/3.4.10";
+	   
+	/** E-mail address of the service account. */
+	private static final String SERVICE_ACCOUNT_EMAIL = "46405817960-0j56j21hdlf08me03r8farnp4hvc0epa@developer.gserviceaccount.com";
+	 
+	/** Global instance of the HTTP transport. */
+	private static HttpTransport httpTransport;
+	 
+	/** Global instance of the JSON factory. */
+	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	
 	public void readFlow (final String flag, final RequestContext context, final UsernamePasswordCredentials credentials) throws Exception {
 		String userName = credentials.getUsername();
@@ -227,24 +233,7 @@ public class jdbcCamel {
 					context.getFlowScope().put("firstname","");
 					context.getFlowScope().put("lastname","");
 				}	
-				AppsForYourDomainClient googleCTX = new AppsForYourDomainClient ("googleadmin@conncoll.edu","alpdhuez","conncoll.edu");
-			
-				try {
-					NicknameFeed nickNames = googleCTX.retrieveNicknames(userName);
-					List<NicknameEntry> nameList = nickNames.getEntries();
-					log.debug("readFlow found " + nameList.size() + " nicknames ");
-					if (nameList.size() > 0){
-						for (int x=0; x<nameList.size(); x++) {
-							Nickname firstNick = nameList.get(x).getNickname();
-							if (firstNick.getName().indexOf(".") > 0){
-								log.debug("readFlow sending nickname " + firstNick.getName());
-								context.getFlowScope().put("NickName", firstNick.getName());
-							}
-						}
-					}
-				} catch (Exception e) {
-					// No Google account					 
-				}		
+				
 				context.getFlowScope().put("userName", userName);
 			break;
 			case EMR:
@@ -644,14 +633,36 @@ public class jdbcCamel {
 
 		log.debug("Setting gMail Password");
 		log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
-		AppsForYourDomainClient googleCTX = new AppsForYourDomainClient (this.mainUsername,this.mainPassword,domain);
+
+		
+		httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+		
+		
+		// service account credential
+		GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+			.setJsonFactory(JSON_FACTORY)
+			.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
+			.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
+			.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
+			.setServiceAccountUser( "atilling@conncoll.edu" )
+			.build();
+		
+		// Directory Connection
+		Directory directory = new Directory.Builder(httpTransport, JSON_FACTORY, credential)
+			.setApplicationName(APPLICATION_NAME)
+			.build();
+		
 		try {
-			UserEntry userEntry = googleCTX.retrieveUser(userName);
-			Login userLogin = userEntry.getLogin();
-			userLogin.setAgreedToTerms(true);
-			userLogin.setChangePasswordAtNextLogin(false);
-			userLogin.setPassword(newPass);
-			googleCTX.updateUser(userName,userEntry);
+			Directory.Users.List request = directory.users().list();
+			request.setDomain("conncoll.edu");
+			request.setQuery("email:" + userName + "@conncoll.edu");
+			
+			List<User> users = request.execute().getUsers();
+			User user = users.get(0);
+			user = user.setAgreedToTerms(true);
+			user = user.setChangePasswordAtNextLogin(false);
+			user = user.setPassword(newPass);
+			directory.users().update(user.getId(),user).execute();
 		} catch (Exception e) {
 			log.info("Password reset failed at google");
 			// No Google account					 
