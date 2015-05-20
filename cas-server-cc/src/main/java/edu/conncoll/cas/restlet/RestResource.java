@@ -101,15 +101,13 @@ public class RestResource extends Resource
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
 					
 					//if no security token is found, return an error
-					if ( uuidResponse.isEmpty() ) {
+					if ( uuidResponse.size() == 0 ) {
 						jsonResponse.put("result", "error");
 						jsonResponse.put("message", "Invalid security token");
 						getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
 						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						log.debug("Invalid security token ( uid: " + sec + " )");
 					} else {
-						String uuidResponseString = ToStringBuilder.reflectionToString(uuidResponse);
-						log.debug(uuidResponseString);
 						String uid = uuidResponse.get("ResetUID").toString();
 						log.debug("Security token retrieved successfully ( uid: " + uid + " )");
 						
