@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -15,7 +16,6 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
@@ -95,8 +95,9 @@ public class RestResource extends Resource
 					
 					//authenticate security UUID
 					jdbcCamel jdbc = new jdbcCamel();
+					String connectionString = ToStringBuilder.reflectionToString(this.dataSource);
+					log.debug(connectionString);
 					jdbc.setDataSource(this.dataSource);
-					log.info(this.dataSource.toString());
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
 					
 					//if no security token is found, return an error
