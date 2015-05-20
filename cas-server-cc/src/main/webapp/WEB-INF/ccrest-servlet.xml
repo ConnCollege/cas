@@ -16,7 +16,7 @@
 			<map>
 				<entry key="/reset/">
 					<bean class="org.restlet.ext.spring.SpringFinder">
-						<lookup-method name="createResource" bean="resetResource"/>
+						<lookup-method name="createResource" bean="restResource"/>
 					</bean>
 				</entry>
 			</map>
