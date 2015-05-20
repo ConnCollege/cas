@@ -23,6 +23,6 @@
 		</property>
 	</bean>
 	
-	<bean id="resetResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
+	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
 	
 </beans>
