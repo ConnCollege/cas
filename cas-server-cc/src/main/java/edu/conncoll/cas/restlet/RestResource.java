@@ -147,7 +147,7 @@ public class RestResource extends Resource
 			getResponse().setEntity( "{ \"JSON Error\": \"" + e.getMessage() + "\"}", MediaType.APPLICATION_JSON );
 			log.error(e);
 		} catch (Exception e) {
-			log.error( "Restlet Internal Server Error: " + e.getMessage() );
+			e.printStackTrace();
 			getResponse().setEntity( "{ \"Internal Server Error\": \"" + e.getMessage() + "\"}", MediaType.APPLICATION_JSON );
 			getResponse().setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
 			log.error(e);
