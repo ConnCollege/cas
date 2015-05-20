@@ -133,6 +133,7 @@ public class RestResource extends Resource
 							jsonResponse.put("result", "error");
 							jsonResponse.put("message", jdbc.getRestfulResponse().getErrMessage());
 							getResponse().setStatus( Status.CLIENT_ERROR_NOT_FOUND, jsonResponse.toString() );
+							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
 							log.debug("  Failure reason: " + jdbc.getRestfulResponse().getErrMessage() );
 						}
@@ -143,11 +144,11 @@ public class RestResource extends Resource
 			
 		} catch (JSONException e) {
 			getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage() );
-			getResponse().setEntity( "JSON Error: ", MediaType.APPLICATION_JSON );
+			getResponse().setEntity( "{ \"JSON Error\": \"" + e.getMessage() + "\"}", MediaType.APPLICATION_JSON );
 			log.error(e);
 		} catch (Exception e) {
 			log.error( "Restlet Internal Server Error: " + e.getMessage() );
-			getResponse().setEntity( "Internal Server Error: ", MediaType.APPLICATION_JSON );
+			getResponse().setEntity( "{ \"Internal Server Error\": \"" + e.getMessage() + "\"}", MediaType.APPLICATION_JSON );
 			getResponse().setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
 			log.error(e);
 		}
