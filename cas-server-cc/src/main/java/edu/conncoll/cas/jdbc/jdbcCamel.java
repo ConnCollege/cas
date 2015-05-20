@@ -935,6 +935,14 @@ public class jdbcCamel {
 		public UUIDRead( DataSource dataSource ) {
 			super(dataSource, "CAS_UUIDRead");
 			declareParameter(new SqlParameter("uid", Types.VARCHAR) );
+			declareParameter(new SqlReturnResultSet("resetCheckData", new RowMapper(){
+				public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+					Map<String,Object> resetCheckData = new HashMap<String,Object>();
+					resetCheckData.put("ResetUID", rs.getObject(0));
+					resetCheckData.put("AdminUser", rs.getObject(1));
+					return resetCheckData;
+				}
+			}));
 			compile();
 		}
 		public Map<String,Object> execute(String uuid) {

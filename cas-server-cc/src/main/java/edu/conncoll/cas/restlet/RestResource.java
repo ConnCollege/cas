@@ -99,16 +99,17 @@ public class RestResource extends Resource
 					log.debug(connectionString);
 					jdbc.setDataSource(this.dataSource);
 					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
+					Map<String,Object> resetCheckData = (Map<String,Object>) uuidResponse.get("resetCheckData");
 					
 					//if no security token is found, return an error
-					if ( uuidResponse.size() == 0 ) {
+					if ( resetCheckData.isEmpty() ) {
 						jsonResponse.put("result", "error");
 						jsonResponse.put("message", "Invalid security token");
 						getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
 						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						log.debug("Invalid security token ( uid: " + sec + " )");
 					} else {
-						String uid = uuidResponse.get("ResetUID").toString();
+						String uid = resetCheckData.get("ResetUID").toString();
 						log.debug("Security token retrieved successfully ( uid: " + uid + " )");
 						
 						//remove used security token from db
