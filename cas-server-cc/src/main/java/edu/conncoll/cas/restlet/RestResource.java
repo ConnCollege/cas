@@ -7,9 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -28,6 +25,14 @@ public class RestResource extends Resource
 	
 	public final boolean allowPost() {
 		return true;
+	}
+	
+	public final boolean allowPut() {
+		return false;
+	}
+	
+	public final boolean allowDelete() {
+		return false;
 	}
 	
 	private Log log = LogFactory.getLog(this.getClass());
@@ -71,6 +76,8 @@ public class RestResource extends Resource
 					jsonResponse.put("result", "error");
 					jsonResponse.put("message", "incomplete parameters");
 					jsonResponse.put("reasons", reasons);
+					getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
+					getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 				} else {
 					//create the variables necessary for password resets
 					String sec = json.getString("sec");
@@ -85,6 +92,8 @@ public class RestResource extends Resource
 					if ( uuidResponse.isEmpty() ) {
 						jsonResponse.put("result", "error");
 						jsonResponse.put("message", "Invalid security token");
+						getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
+						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						log.debug("Invalid security token ( uid: " + sec + " )");
 					} else {
 						String uid = uuidResponse.get("ResetUID").toString();
@@ -106,8 +115,7 @@ public class RestResource extends Resource
 							jsonResponse.put("result", "success");
 							jsonResponse.put("message", "password for " + uname + " has been successfully changed.");
 							getResponse().setStatus( Status.SUCCESS_OK );
-							JsonRepresentation jsonRepResponse = new JsonRepresentation( jsonResponse );
-							getResponse().setEntity( );
+							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							log.debug("Password changed successfully for " + uname + "( uname: " + uname + " )");
 						} else {
 							jsonResponse.put("result", "error");
@@ -123,8 +131,10 @@ public class RestResource extends Resource
 			
 		} catch (JSONException e) {
 			getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage() );
+			getResponse().setEntity( "JSON Error: ", MediaType.APPLICATION_JSON );
 		} catch (Exception e) {
 			log.error( "Restlet Internal Server Error: " + e.getMessage() );
+			getResponse().setEntity( "Internal Server Error: ", MediaType.APPLICATION_JSON );
 			getResponse().setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
 		}
 	}

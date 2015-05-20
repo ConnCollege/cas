@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
-<beans>
-	<!-- <bean id="baseComponent" class="org.restlet.ext.spring.SpringComponent">
-		<property name="server">
-			<bean class="org.restlet.ext.spring.SpringServer">
-				<constructor-arg value="http" />
-			</bean>
-		</property>
-		<property name="defaultTarget" ref="default" />
-	</bean>
-
-	<bean name="default" class="org.restlet.ext.spring.SpringRouter">
-		<property name="attachments">
-			<map>
-				<entry key="/v1" value-ref="root" />
-			</map>
-		</property>
-	</bean>-->
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    				  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						  http://www.springframework.org/schema/context 
+						  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+	<context:annotation-config/>
 	
 	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
 				<entry key="/reset/">
 					<bean class="org.restlet.ext.spring.SpringFinder">
-						<lookup-method name="create" bean="resetResource"/>
+						<lookup-method name="createResource" bean="resetResource"/>
 					</bean>
 				</entry>
 			</map>
@@ -32,15 +25,4 @@
 	
 	<bean id="resetResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" />
 	
-	<!-- <bean id="db4oContainer"
-	   class="org.springmodules.db4o.ObjectContainerFactoryBean">
-	   <property name="configuration" ref="db4oConfiguration" />
-	   <property name="databaseFile" value="file://${user.home}/restbook.dbo" />
-	</bean>
-
-	<bean id="db4oConfiguration"
-	    class="org.springmodules.db4o.ConfigurationFactoryBean">
-	    <property name="updateDepth" value="2" />
-	    <property name="configurationCreationMode" value="NEW" />
-	</bean>-->
 </beans>
