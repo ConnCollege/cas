@@ -275,4 +275,13 @@
          	</list>
          </property>   
     </bean>
+    <bean id="CheckInt" class="org.jasig.cas.web.flow.CheckInt">
+    	<property name="reqLogin">
+            <list>
+            	<value>PWD</value>
+            	<value>EMR</value>
+            	<value>QNA</value>
+            </list>
+        </property>
+    </bean>
 </beans>
