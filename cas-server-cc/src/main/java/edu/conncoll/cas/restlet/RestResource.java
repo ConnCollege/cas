@@ -49,7 +49,8 @@ public class RestResource extends Resource
 	@Override
 	public void acceptRepresentation( Representation resetEntity ) {
 		
-		//create a json object
+		//create json objects (one for response and one for incoming request)
+		//and an array list for errors
 		JSONObject json = null;
 		JSONObject jsonResponse = new JSONObject();
 		ArrayList<String> reasons = new ArrayList<String>();
