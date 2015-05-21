@@ -578,7 +578,7 @@ public class jdbcCamel {
 				}
 			}
 		);
-		DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());//TODO: this can lead to index issues
+		DirContextOperations ldapcontext = ldapTemplate.lookupContext( (DN.isEmpty()) ? "" : DN.get(0).toString() );//DN.get(0).toString());
 
 		log.debug("Finding user in Vault");
 		List vaultDN = this.vaultTemplate.search(
