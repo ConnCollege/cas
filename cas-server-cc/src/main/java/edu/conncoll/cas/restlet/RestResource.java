@@ -124,6 +124,8 @@ public class RestResource extends Resource
 							log.debug("Security token removed from db successfully ( uid: " + uid + " )");
 						}
 						
+						log.debug( "Password change issued ( uname: " + uname + " password: " + password + " setAD: " + Boolean.toString(setAD) + " )" );
+						
 						//reset password
 						boolean resetSuccess = this.jdbc.setPassword( uname, password, setAD);
 						
