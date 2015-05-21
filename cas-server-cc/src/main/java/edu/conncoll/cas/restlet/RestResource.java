@@ -88,7 +88,7 @@ public class RestResource extends Resource
 				Iterator<?> keys = json.keys();
 				while( keys.hasNext() ) {
 					Object obj = keys.next();
-					if ( !obj.equals("password") || !obj.equals("sec") || !obj.equals("uname") || obj.equals("setAD") ) {
+					if ( ( !obj.equals("password") && !obj.equals("sec") && !obj.equals("uname") && obj.equals("setAD") ) ) {
 						reasons.add("Invalid parameter: " + obj.toString() );
 					}
 				}
