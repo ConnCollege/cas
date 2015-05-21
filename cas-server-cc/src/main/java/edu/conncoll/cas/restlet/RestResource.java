@@ -79,6 +79,10 @@ public class RestResource extends Resource
 					reasons.add("no password was provided");
 				}
 				
+				if ( !json.has("setAD") ) {
+					reasons.add("AD flag was not provided");
+				}
+				
 				if ( !reasons.isEmpty() ) {
 					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					jsonResponse.put("result", "error");
@@ -91,6 +95,7 @@ public class RestResource extends Resource
 					String sec = json.getString("sec");
 					String uname = json.getString("uname");
 					String password = json.getString("password");
+					boolean setAD = json.getBoolean("setAD");
 					
 					//authenticate security UUID
 					Map<String,Object> uuidResponse = this.jdbc.getUUID(sec);
@@ -120,7 +125,7 @@ public class RestResource extends Resource
 						}
 						
 						//reset password
-						boolean resetSuccess = this.jdbc.setPassword( uname, password, false);
+						boolean resetSuccess = this.jdbc.setPassword( uname, password, setAD);
 						
 						//process the result of the password change
 						if ( resetSuccess ) {
