@@ -1,6 +1,7 @@
 package edu.conncoll.cas.restlet;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -83,6 +84,15 @@ public class RestResource extends Resource
 					reasons.add("AD flag was not provided");
 				}
 				
+				//check for invalid parameters sent to the rest api
+				Iterator<?> keys = json.keys();
+				while( keys.hasNext() ) {
+					Object obj = keys.next();
+					if ( !obj.equals("password") || !obj.equals("sec") || !obj.equals("uname") || obj.equals("setAD") ) {
+						reasons.add("Invalid parameter: " + obj.toString() );
+					}
+				}
+				
 				if ( !reasons.isEmpty() ) {
 					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					jsonResponse.put("result", "error");
@@ -90,6 +100,7 @@ public class RestResource extends Resource
 					jsonResponse.put("reasons", reasons);
 					getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
 					getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
+					log.debug("Bad request sent for password reset");
 				} else {
 					//create the variables necessary for password resets
 					String sec = json.getString("sec");
@@ -119,7 +130,7 @@ public class RestResource extends Resource
 						HashMap<String,Integer> resetRemoveRecord = (HashMap)resetRemoveData.get(0);
 						int rowsRemoved = resetRemoveRecord.get("rows_deleted");
 						if ( rowsRemoved < 1 ) {
-							log.debug("Failed to remove security token from db");
+							log.warn("Failed to remove security token from db ( uid: " + uid + " )");
 						} else {
 							log.debug("Security token removed from db successfully ( uid: " + uid + " )");
 						}
