@@ -94,6 +94,7 @@ public class RestResource extends Resource
 					}
 				}
 				
+				//if there are valid error reasons, then send back an error response
 				if ( !reasons.isEmpty() ) {
 					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					jsonResponse.put("result", "error");
