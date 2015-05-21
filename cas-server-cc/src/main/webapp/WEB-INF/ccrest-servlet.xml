@@ -11,6 +11,7 @@
 	
 	<context:annotation-config/>
 	<import resource="spring-configuration/propertyFileConfigurer.xml" />
+	<import resource="spring-configuration/camelJDBC.xml" />
 	
 	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
@@ -24,11 +25,6 @@
 		</property>
 	</bean>
 	
-	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" p:dataSource-ref="dataSourceCamel" />
-	
-	<bean id="dataSourceCamel" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource"
-		p:URL="${camel.db.url}"
-		p:password="${camel.db.password}"
-		p:user="${camel.db.username}" />
+	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" p:camelJdbc-ref="jdbcCamel" />
 	
 </beans>

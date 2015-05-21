@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -23,7 +21,7 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
 public class RestResource extends Resource 
 {
 	@NotNull
-    private DataSource dataSource;
+	private jdbcCamel jdbc;
 	
 	public final boolean allowGet() {
 		return false;
@@ -41,9 +39,9 @@ public class RestResource extends Resource
 		return false;
 	}
 	
-	public final void setDataSource(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	public final void setCamelJdbc(final jdbcCamel jdbc) {
+		this.jdbc = jdbc;
+	}
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -95,11 +93,7 @@ public class RestResource extends Resource
 					String password = json.getString("password");
 					
 					//authenticate security UUID
-					jdbcCamel jdbc = new jdbcCamel();
-					String connectionString = ToStringBuilder.reflectionToString(this.dataSource);
-					log.debug(connectionString);
-					jdbc.setDataSource(this.dataSource);
-					Map<String,Object> uuidResponse = jdbc.getUUID(sec);
+					Map<String,Object> uuidResponse = this.jdbc.getUUID(sec);
 					ArrayList resetCheckData = (ArrayList) uuidResponse.get("resetCheckData");
 					
 					//if no security token is found, return an error
@@ -115,7 +109,7 @@ public class RestResource extends Resource
 						log.debug("Security token retrieved successfully ( uid: " + uid + " )");
 						
 						//remove used security token from db
-						Map<String,Object> uuidRemoved = jdbc.removeUUID(uid);
+						Map<String,Object> uuidRemoved = this.jdbc.removeUUID(uid);
 						ArrayList resetRemoveData = (ArrayList) uuidRemoved.get("resetRemoveData");
 						HashMap<String,Integer> resetRemoveRecord = (HashMap)resetRemoveData.get(0);
 						int rowsRemoved = resetRemoveRecord.get("rows_deleted");
@@ -126,7 +120,7 @@ public class RestResource extends Resource
 						}
 						
 						//reset password
-						boolean resetSuccess = jdbc.setPassword( uname, password, false);
+						boolean resetSuccess = this.jdbc.setPassword( uname, password, false);
 						
 						//process the result of the password change
 						if ( resetSuccess ) {
@@ -137,11 +131,11 @@ public class RestResource extends Resource
 							log.debug("Password changed successfully for " + uname + "( uname: " + uname + " )");
 						} else {
 							jsonResponse.put("result", "error");
-							jsonResponse.put("message", jdbc.getRestfulResponse().getErrMessage());
+							jsonResponse.put("message", this.jdbc.getRestfulResponse().getErrMessage());
 							getResponse().setStatus( Status.CLIENT_ERROR_NOT_FOUND, jsonResponse.toString() );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
-							log.debug("  Failure reason: " + jdbc.getRestfulResponse().getErrMessage() );
+							log.debug("  Failure reason: " + this.jdbc.getRestfulResponse().getErrMessage() );
 						}
 					}
 				}
