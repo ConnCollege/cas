@@ -38,7 +38,7 @@
 	</decision-state>
 	
 	<decision-state id="hasServiceCheck">
-		<if test="flowScope.service != null" then="renewRequestCheck" else="hasFlagCheck" />
+		<if test="flowScope.service != null" then="renewRequestCheck" else="hasIntCheck" />
 	</decision-state>
 	
 	<decision-state id="hasIntCheck">
@@ -210,7 +210,7 @@
     </action-state>
     
     <decision-state id="CheckInt">
-    	<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
+    	<if test="flowScope.interrupt != null" then="forceInterrupt" else="CheckFlags" />
     </decision-state>
     
     <action-state id="CheckFlags">
