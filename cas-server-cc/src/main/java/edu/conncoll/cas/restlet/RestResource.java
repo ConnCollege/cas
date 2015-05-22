@@ -19,6 +19,37 @@ import org.restlet.resource.Resource;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
+
+/**
+ * <p>A simple REST service built into CAS for password resets. No specific 
+ * resources such as users, accounts, or otherwise are defined apart from the
+ * restlet itself.</p>
+ * 
+ * <p>Account and user specific logic is provided by the <tt>jdbcCamel</tt> 
+ * object whose intended usage is to be initialized within the restlet's servlet 
+ * XML file and utilized for its existing functionality (i.e., password reset 
+ * logic specific to active directory, the data vault, and other existing 
+ * technologies has already been implemented within jdbCamel and will likewise 
+ * be used).</p>
+ * 
+ * <p>Password resets are validated via unique records written to an external 
+ * database by the client requesting the reset. For example, if a script were 
+ * to issue a call to this restlet, it would first be required to create a 
+ * record in the external database then pass along the universally unique 
+ * ID stored in that database to the restlet . The restlet then takes the 
+ * unique ID and queries the database to verify that a reset should take place 
+ * at all. If no record is returned, then no reset is completed. The retrieval 
+ * and deletion of the unique records is handled by the <tt>jdbcCamel</tt> 
+ * object. </p>
+ * 
+ * @version 1.0 alpha 5/22/2015
+ * @see org.restlet.resource.Resource
+ * @see org.restlet.resource.Representation
+ * @see org.restlet.ext.json.JsonRepresentation
+ * @see edu.conncoll.cas.jdbc.jdbcCamel
+ * @author Mike Matovic
+ *
+ */
 public class RestResource extends Resource 
 {
 	@NotNull

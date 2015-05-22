@@ -10,9 +10,12 @@
 						  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<context:annotation-config/>
+	
+	<!-- include configuration file and camelJDBC -->
 	<import resource="spring-configuration/propertyFileConfigurer.xml" />
 	<import resource="spring-configuration/camelJDBC.xml" />
 	
+	<!-- create a root level bean. This is where routes will be defined -->
 	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
@@ -25,6 +28,7 @@
 		</property>
 	</bean>
 	
+	<!-- create a bean for the actual rest resource -->
 	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" p:camelJdbc-ref="jdbcCamel" />
 	
 </beans>
