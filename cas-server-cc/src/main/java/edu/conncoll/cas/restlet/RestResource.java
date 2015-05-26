@@ -43,6 +43,7 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
  * object. </p>
  * 
  * @version 1.0 alpha 5/22/2015
+ * @see org.json.JSONObject
  * @see org.restlet.resource.Resource
  * @see org.restlet.resource.Representation
  * @see org.restlet.ext.json.JsonRepresentation
@@ -127,9 +128,8 @@ public class RestResource extends Resource
 				
 				//if there are valid error reasons, then send back an error response
 				if ( !reasons.isEmpty() ) {
-					getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 					jsonResponse.put("result", "error");
-					jsonResponse.put("message", "incomplete parameters");
+					jsonResponse.put("message", "incomplete and/or invalid parameters");
 					jsonResponse.put("reasons", reasons);
 					getResponse().setStatus( Status.CLIENT_ERROR_BAD_REQUEST );
 					getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
