@@ -578,6 +578,7 @@ public class jdbcCamel {
 				}
 			}
 		);
+		//This line breaks if someone is not found in AD
 		DirContextOperations ldapcontext = ldapTemplate.lookupContext( (DN.isEmpty()) ? "" : DN.get(0).toString() );
 
 		log.debug("Finding user in Vault");
@@ -590,6 +591,7 @@ public class jdbcCamel {
 			}
 		);
 		
+		//which in turn breaks whether finding the correct domain for gmail
 		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
 		String domain;
 		if (Attrib.length() > 0 ){
