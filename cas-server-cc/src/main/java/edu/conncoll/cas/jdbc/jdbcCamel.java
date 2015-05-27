@@ -569,18 +569,8 @@ public class jdbcCamel {
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 		
-		log.debug("Finding user in AD");
-		List DN = this.ldapTemplate.search(
-			this.searchBase, searchFilter, 
-			new AbstractContextMapper(){
-				protected Object doMapFromContext(DirContextOperations ctx) {
-					return ctx.getNameInNamespace();
-				}
-			}
-		);
-		//This line breaks if someone is not found in AD
-		DirContextOperations ldapcontext = ldapTemplate.lookupContext( (DN.isEmpty()) ? "" : DN.get(0).toString() );
-
+		this.restfulResponse = new RestfulResponse();
+		
 		log.debug("Finding user in Vault");
 		List vaultDN = this.vaultTemplate.search(
 			this.vaultSearchBase, vaultSearchFilter, 
@@ -590,9 +580,48 @@ public class jdbcCamel {
 				}
 			}
 		);
+
+		log.debug("Finding user in AD");
+		List DN = this.ldapTemplate.search(
+			this.searchBase, searchFilter, 
+			new AbstractContextMapper(){
+				protected Object doMapFromContext(DirContextOperations ctx) {
+					return ctx.getNameInNamespace();
+				}
+			}
+		);
+
+		boolean inVault = true;
+		boolean inAD = true;
+		if ( vaultDN.isEmpty() ) {
+			log.debug( "User was not found in AD (username: " + userName + ")" );
+			inVault = false;
+		}
 		
-		//which in turn breaks whether finding the correct domain for gmail
-		String Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
+		if ( DN.isEmpty() ) {
+			log.debug( "User was not found in vault (username: " + userName + ")" );
+			inAD = false;
+		}
+		
+		DirContextOperations ldapcontext = null;
+		DirContextOperations vaultcontext = null;
+		
+		String Attrib = "";
+		if ( !inAD && !inVault ) {
+			log.debug("User not in AD or vault. Defaults used for mail domain.");
+			this.restfulResponse.addMessage("User was not in AD or the Vault.");
+			return false;
+		} else if ( inVault ) {
+			log.debug( "User found in vault. Mail domain pulled from ccMailDom attribute." );
+			vaultcontext = vaultTemplate.lookupContext( vaultDN.get(0).toString() );
+			Attrib = vaultcontext.getStringAttribute("ccMailDom");
+		} else if ( inAD ) {
+			log.debug( "User was not found in the vault but exists in AD. Mail domain pulled from extensionAttribute14.");
+			ldapcontext = ldapTemplate.lookupContext( DN.get(0).toString() );
+			Attrib = ldapcontext.getStringAttribute("extensionAttribute14");
+		}
+		
+		
 		String domain;
 		if (Attrib.length() > 0 ){
 			if (Attrib.equals("alumni")) {
@@ -604,7 +633,7 @@ public class jdbcCamel {
 			domain  = "conncoll.edu";
 		}
 		
-		if (setAD){
+		if ( setAD && inAD ){
 			log.debug("Setting AD Password");
 			ModificationItem[] mods = new ModificationItem[1];
 			
@@ -619,10 +648,12 @@ public class jdbcCamel {
 				if ( context != null ) {
 					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
 				} else {
-					this.setRestfulResponse("Password rejected by server, please ensure your password meets all the listed criteria.");
+					this.restfulResponse.addMessage("Password rejected by server, please ensure your password meets all the listed criteria.");
 				}
 				return false;
 			}
+		} else if ( setAD && !inAD) {
+			this.restfulResponse.addMessage("Password not set in AD. User not found.");
 		}
 		
 
@@ -630,17 +661,21 @@ public class jdbcCamel {
 		
 		mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
 
-		log.debug("Setting Vault Password");
-		try {
-			vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
-		}catch( Exception e){
-			log.warn("Password reset failed at Vault");
-			if ( context != null ) {
-				context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
-			} else {
-				this.setRestfulResponse("Password rejected by server, please ensure your password meets all the listed criteria.");
+		if ( inVault ) {
+			log.debug("Setting Vault Password");
+			try {
+				vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+			}catch( Exception e){
+				log.warn("Password reset failed at Vault");
+				if ( context != null ) {
+					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+				} else {
+					this.restfulResponse.addMessage("Password rejected by server, please ensure your password meets all the listed criteria.");
+				}
+				return false;
 			}
-			return false;
+		} else {
+			this.restfulResponse.addMessage("Password not set in vault. User not found.");
 		}
 
 		log.debug("Setting gMail Password");
@@ -789,9 +824,23 @@ public class jdbcCamel {
 	 */
 	public class RestfulResponse {
 		private String ErrMessage;
+		private ArrayList<String> Messages;
+		
+		protected RestfulResponse(){
+			this.ErrMessage = "";
+			this.Messages = new ArrayList<String>();
+		}
 		
 		protected RestfulResponse(String ErrMessage) {
 			this.ErrMessage = ErrMessage;
+		}
+		
+		protected void addMessage(String Message) {
+			this.Messages.add(Message);
+		}
+		
+		public ArrayList<String> getMessages() {
+			return this.Messages;
 		}
 		
 		public String getErrMessage() {
@@ -799,6 +848,7 @@ public class jdbcCamel {
 		}
 	}
 	
+	@Deprecated
 	private void setRestfulResponse( String ErrMessage ) {
 		this.restfulResponse = new RestfulResponse(ErrMessage);
 	}
