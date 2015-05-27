@@ -1,6 +1,7 @@
 package edu.conncoll.cas.restlet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -174,19 +175,30 @@ public class RestResource extends Resource
 						boolean resetSuccess = this.jdbc.setPassword( uname, password, setAD);
 						
 						//process the result of the password change
+						ArrayList<String> restfulMessages = null;
 						if ( resetSuccess ) {
+							restfulMessages = this.jdbc.getRestfulResponse().getMessages();
 							jsonResponse.put("result", "success");
 							jsonResponse.put("message", "password for " + uname + " has been successfully changed.");
+							jsonResponse.put("reset messages", restfulMessages);
+							
 							getResponse().setStatus( Status.SUCCESS_OK );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
+							
 							log.debug("Password changed successfully for " + uname + "( uname: " + uname + " )");
 						} else {
+							restfulMessages = this.jdbc.getRestfulResponse().getMessages();
 							jsonResponse.put("result", "error");
-							jsonResponse.put("message", this.jdbc.getRestfulResponse().getErrMessage());
+							jsonResponse.put("message", "There were errors when attempting to reset passwords for " + uname + ".");
+							jsonResponse.put("reset messages", restfulMessages );
+							
 							getResponse().setStatus( Status.CLIENT_ERROR_NOT_FOUND, jsonResponse.toString() );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
+							
 							log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
-							log.debug("  Failure reason: " + this.jdbc.getRestfulResponse().getErrMessage() );
+							for ( String message : restfulMessages ) {								
+								log.debug("  Failure reason: " + message );
+							}
 						}
 					}
 				}
