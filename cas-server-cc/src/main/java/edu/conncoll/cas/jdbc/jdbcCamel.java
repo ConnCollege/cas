@@ -643,6 +643,7 @@ public class jdbcCamel {
 				mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
 			try {
 				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
+				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
 				log.warn("Password reset failed at AD");
 				if ( context != null ) {
@@ -665,6 +666,7 @@ public class jdbcCamel {
 			log.debug("Setting Vault Password");
 			try {
 				vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+				this.restfulResponse.addMessage("Vault password successfully changed.");
 			}catch( Exception e){
 				log.warn("Password reset failed at Vault");
 				if ( context != null ) {
@@ -823,6 +825,7 @@ public class jdbcCamel {
 	 * @author mmatovic
 	 */
 	public class RestfulResponse {
+		@Deprecated
 		private String ErrMessage;
 		private ArrayList<String> Messages;
 		
@@ -830,7 +833,7 @@ public class jdbcCamel {
 			this.ErrMessage = "";
 			this.Messages = new ArrayList<String>();
 		}
-		
+		@Deprecated
 		protected RestfulResponse(String ErrMessage) {
 			this.ErrMessage = ErrMessage;
 		}
@@ -842,7 +845,7 @@ public class jdbcCamel {
 		public ArrayList<String> getMessages() {
 			return this.Messages;
 		}
-		
+		@Deprecated
 		public String getErrMessage() {
 			return this.ErrMessage;
 		}
