@@ -1,26 +1,31 @@
 package org.jasig.cas.web.flow;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.net.util.SubnetUtils;
+
 import org.springframework.webflow.execution.RequestContext;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.web.support.WebUtils;
 
 public final class CheckInt {
 	
+	private static final String CONST_PARAM_INTERRUPT = "interrupt";
+	
 	private List<String> reqLogin;
+	
+	public  String check( RequestContext context,  UsernamePasswordCredentials credentials) throws Exception {
 		
-	
-	private Log log = LogFactory.getLog(this.getClass());
-	
-	public final String check(final RequestContext context, final UsernamePasswordCredentials credentials, String interrupt) throws Exception {
+		 HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+		
+		String interrupt = request.getParameter(CONST_PARAM_INTERRUPT);
+		
+		context.getFlowScope().put("interrupt", interrupt);	
+		
+		if (interrupt == null) {
+			return "noInterrupt";
+		}	
 		if (reqLogin.indexOf(interrupt) != -1){
 			if (credentials != null && credentials.getUsername() != null) {
 				return "LoginOk";
@@ -29,6 +34,7 @@ public final class CheckInt {
 			}
 		}
 		return "LoginOk";
+
 	}
 	
 	public final void setReqLogin(final List<String> reqLogin) {

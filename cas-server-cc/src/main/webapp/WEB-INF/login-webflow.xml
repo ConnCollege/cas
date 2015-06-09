@@ -41,19 +41,20 @@
 		<if test="flowScope.service != null" then="renewRequestCheck" else="hasIntCheck" />
 	</decision-state>
 	
-	<decision-state id="hasIntCheck">
-		<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
-	</decision-state>
+	<action-state id="hasIntCheck">
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" result="flowScope.interrupt" result-type="java.lang.String" />
+		<transition on="LoginOk" to="forceInterrupt" />
+		<transition on="LoginReq" to="generateLoginTicket" />
+		<transition ton="noInterupt"o="viewGenericLoginSuccess" />
+	</action-state>
 	
 	<decision-state id="renewRequestCheck">
 		<if test="requestParameters.renew != '' and requestParameters.renew != null" then="serviceAuthorizationCheck" else="generateServiceTicket" />
 	</decision-state>
 	
 	<action-state id="forceInterrupt">
-		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials, flowScope.interrupt)" />
 		<set name="flowScope.flag" value="flowScope.interrupt" />
-		<transition on="LoginReq" to="generateLoginTicket" />
-		<transition on="LoginOk" to="showInterrupt" />
+		<transition to="showInterrupt" />
 	</action-state>
 
     <!-- Do a service authorization check early without the need to login first -->
