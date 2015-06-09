@@ -42,10 +42,10 @@
 	</decision-state>
 	
 	<action-state id="hasIntCheck">
-		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" result="flowScope.interrupt" result-type="java.lang.String" />
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
 		<transition on="LoginOk" to="forceInterrupt" />
 		<transition on="LoginReq" to="generateLoginTicket" />
-		<transition ton="noInterupt"o="viewGenericLoginSuccess" />
+		<transition on="noInterrupt" to="viewGenericLoginSuccess" />
 	</action-state>
 	
 	<decision-state id="renewRequestCheck">
