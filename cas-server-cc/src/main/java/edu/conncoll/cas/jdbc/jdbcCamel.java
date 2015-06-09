@@ -655,6 +655,8 @@ public class jdbcCamel {
 			}
 		} else if ( setAD && !inAD) {
 			this.restfulResponse.addMessage("Password not set in AD. User not found.");
+		} else if ( !setAD && inAD ) {
+			this.restfulResponse.addMessage("Password not set in AD per user request.");
 		}
 		
 
