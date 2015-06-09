@@ -714,8 +714,10 @@ public class jdbcCamel {
 			user = user.setChangePasswordAtNextLogin(false);
 			user = user.setPassword(newPass);
 			directory.users().update(user.getId(),user).execute();
+			this.restfulResponse.addMessage("Gmail password successfully changed.");
 		} catch (Exception e) {
 			log.info("Password reset failed at google");
+			this.restfulResponse.addMessage("Password reset failed at google");
 			// No Google account					 
 		}		
 
