@@ -18,9 +18,7 @@ public final class CheckInt {
 	
 	private List<String> reqLogin;
 	
-	/** Instance of CentralAuthenticationService. */
-    @NotNull
-    private CentralAuthenticationService centralAuthenticationService;
+	private TicketRegistry ticketRegistry;
 	
 	public  String check( RequestContext context,  UsernamePasswordCredentials credentials) throws Exception {
 		
@@ -32,7 +30,7 @@ public final class CheckInt {
 		
 		final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context);
 		
-		Ticket ticketGrantingTicket = centralAuthenticationService.ticketRegistry.getTicket(ticketGrantingTicketId);
+		Ticket ticketGrantingTicket = ticketRegistry.getTicket(ticketGrantingTicketId);
 		
 		if (interrupt == null) {
 			return "noInterrupt";
@@ -48,9 +46,9 @@ public final class CheckInt {
 
 	}
 	
-	public void setCentralAuthenticationService(
-        final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
+	public void setTicketRegistry(
+        final TicketRegistry ticketRegistry) {
+        this.ticketRegistry = ticketRegistry;
     }
 	
 	
