@@ -276,6 +276,7 @@
          </property>   
     </bean>
     <bean id="CheckInt" class="org.jasig.cas.web.flow.CheckInt">
+    	<property name="centralAuthenticationService" ref="centralAuthenticationService" />
     	<property name="reqLogin">
             <list>
             	<value>PWD</value>

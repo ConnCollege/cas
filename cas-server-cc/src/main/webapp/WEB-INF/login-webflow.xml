@@ -53,7 +53,7 @@
 	</decision-state>
 	
 	<action-state id="forceInterrupt">
-		<set name="flowScope.flag" value="flowScope.interrupt" />
+		<set name="flowScope.Flag" value="flowScope.interrupt" />
 		<transition to="showInterrupt" />
 	</action-state>
 
@@ -220,7 +220,7 @@
 		<transition to="showInterrupt" />
 	</action-state>
 	
-	<!-- Show custom view that interupts the login flow -->
+	<!-- Show custom view that interrupts the login flow -->
 	<view-state id="showInterrupt" view="${flowScope.Flag}" model="IntData">
 		<var name="IntData" class="org.jasig.cas.web.support.IntData" />
 		<binder>
