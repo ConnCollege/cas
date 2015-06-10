@@ -6,8 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
-import org.jasig.cas.ticket.registry.TicketRegistry;
-import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
 
 import org.springframework.webflow.execution.RequestContext;
@@ -29,13 +27,12 @@ public final class CheckInt {
 		context.getFlowScope().put("interrupt", interrupt);			
 		String ticketGrantingTicketId = (String)context.getFlowScope().get("ticketGrantingTicketId");	
 		log.debug("CheckInt got TGT " + ticketGrantingTicketId);
-		TicketGrantingTicket ticketGrantingTicket = (TicketGrantingTicket) ticketRegistry.getTicket(ticketGrantingTicketId);
 		
 		if (interrupt == null) {
 			return "noInterrupt";
 		}	
 		if (NoLogReq.indexOf(interrupt) == -1){
-			if (!ticketGrantingTicket.isExpired()) {				
+			if (ticketGrantingTicketId != null) {				
 				String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();				
 				credentials.setUsername(userName);		
 				log.debug("CheckInt setting username " + userName);
