@@ -195,7 +195,7 @@ public class RestResource extends Resource
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							
 							log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
-							for ( String message : restfulMessages ) {								
+							for ( String message : restfulMessages ) {
 								log.debug("  Failure reason: " + message );
 							}
 						}
