@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+import org.jasig.cas.ticket.registry.TicketRegistry;
+import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
 
 import org.springframework.webflow.execution.RequestContext;
@@ -33,9 +35,12 @@ public final class CheckInt {
 		}	
 		if (NoLogReq.indexOf(interrupt) == -1){
 			if (ticketGrantingTicketId != null) {				
-				String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();				
-				credentials.setUsername(userName);		
-				log.debug("CheckInt setting username " + userName);
+				TicketGrantingTicket ticketGrantingTicket = (TicketGrantingTicket) ticketRegistry.getTicket(ticketGrantingTicketId);
+				String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();			
+				if (credentials.getUsername() == null){
+					credentials.setUsername(userName);		
+					log.debug("CheckInt setting username " + userName);
+				}
 				return "LoginOk";
 			} else {
 				log.debug("CheckInt login required");
