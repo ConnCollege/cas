@@ -30,22 +30,29 @@
     </on-start>
 
 	<decision-state id="ticketGrantingTicketExistsCheck">
-		<if test="flowScope.ticketGrantingTicketId != null" then="hasIntCheck" else="gatewayRequestCheck" />
+		<if test="flowScope.ticketGrantingTicketId != null" then="hasIntCheckLoggedIn" else="gatewayRequestCheck" />
 	</decision-state>
     
 	<decision-state id="gatewayRequestCheck">
-		<if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="serviceAuthorizationCheck" />
+		<if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="hasIntCheckNotLogin" />
 	</decision-state>
 	
 	<decision-state id="hasServiceCheck">
 		<if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
 	</decision-state>
 	
-	<action-state id="hasIntCheck">
+	<action-state id="hasIntCheckLoggedIn">
 		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
 		<transition on="LoginOk" to="forceInterrupt" />
 		<transition on="LoginReq" to="generateLoginTicket" />
 		<transition on="noInterrupt" to="hasServiceCheck" />
+	</action-state>
+	
+	<action-state id="hasIntCheckNotLogin">
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
+		<transition on="LoginOk" to="forceInterrupt" />
+		<transition on="LoginReq" to="serviceAuthorizationCheck" />
+		<transition on="noInterrupt" to="serviceAuthorizationCheck" />
 	</action-state>
 	
 	<decision-state id="renewRequestCheck">
