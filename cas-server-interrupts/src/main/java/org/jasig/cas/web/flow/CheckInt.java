@@ -2,8 +2,6 @@ package org.jasig.cas.web.flow;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,11 +23,11 @@ public final class CheckInt {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	public  String check( RequestContext context,  UsernamePasswordCredentials credentials) throws Exception {
-		
-		HttpServletRequest request = WebUtils.getHttpServletRequest(context);		
-		String interrupt = request.getParameter(CONST_PARAM_INTERRUPT);		
+			
+		String interrupt = WebUtils.getHttpServletRequest(context).getParameter(CONST_PARAM_INTERRUPT);
+		log.debug("CheckInt got Passed interrupt " + interrupt);
 		context.getFlowScope().put("interrupt", interrupt);			
-		final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context);		
+		String ticketGrantingTicketId = (String)context.getFlowScope().get("ticketGrantingTicketId");	
 		log.debug("CheckInt got TGT " + ticketGrantingTicketId);
 		TicketGrantingTicket ticketGrantingTicket = (TicketGrantingTicket) ticketRegistry.getTicket(ticketGrantingTicketId);
 		

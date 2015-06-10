@@ -30,7 +30,7 @@
     </on-start>
 
 	<decision-state id="ticketGrantingTicketExistsCheck">
-		<if test="flowScope.ticketGrantingTicketId != null" then="hasServiceCheck" else="gatewayRequestCheck" />
+		<if test="flowScope.ticketGrantingTicketId != null" then="hasIntCheck" else="gatewayRequestCheck" />
 	</decision-state>
     
 	<decision-state id="gatewayRequestCheck">
@@ -38,14 +38,14 @@
 	</decision-state>
 	
 	<decision-state id="hasServiceCheck">
-		<if test="flowScope.service != null" then="renewRequestCheck" else="hasIntCheck" />
+		<if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
 	</decision-state>
 	
 	<action-state id="hasIntCheck">
 		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
 		<transition on="LoginOk" to="forceInterrupt" />
 		<transition on="LoginReq" to="generateLoginTicket" />
-		<transition on="noInterrupt" to="viewGenericLoginSuccess" />
+		<transition on="noInterrupt" to="hasServiceCheck" />
 	</action-state>
 	
 	<decision-state id="renewRequestCheck">
