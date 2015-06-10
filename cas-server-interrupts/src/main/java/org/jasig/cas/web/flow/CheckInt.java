@@ -14,38 +14,31 @@ public final class CheckInt {
 	
 	private static final String CONST_PARAM_INTERRUPT = "interrupt";
 	
-	private List<String> reqLogin;
+	private List<String> NoLogReq;
 	
 	private TicketRegistry ticketRegistry;
 	
 	public  String check( RequestContext context,  UsernamePasswordCredentials credentials) throws Exception {
 		
-		HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-		
-		String interrupt = request.getParameter(CONST_PARAM_INTERRUPT);
-		
-		context.getFlowScope().put("interrupt", interrupt);	
-		
-		final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context);
-		
+		HttpServletRequest request = WebUtils.getHttpServletRequest(context);		
+		String interrupt = request.getParameter(CONST_PARAM_INTERRUPT);		
+		context.getFlowScope().put("interrupt", interrupt);			
+		final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context);		
 		TicketGrantingTicket ticketGrantingTicket = (TicketGrantingTicket) ticketRegistry.getTicket(ticketGrantingTicketId);
-		
-		String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();
-		
-		credentials.setUsername(userName);
 		
 		if (interrupt == null) {
 			return "noInterrupt";
 		}	
-		if (reqLogin.indexOf(interrupt) != -1){
-			if (!ticketGrantingTicket.isExpired()) {
+		if (NoLogReq.indexOf(interrupt) == -1){
+			if (!ticketGrantingTicket.isExpired()) {				
+				String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();				
+				credentials.setUsername(userName);				
 				return "LoginOk";
 			} else {
 				return "LoginReq";
 			}
 		}
 		return "LoginOk";
-
 	}
 	
 	public void setTicketRegistry(
@@ -54,7 +47,7 @@ public final class CheckInt {
     }
 	
 	
-	public final void setReqLogin(final List<String> reqLogin) {
-	        this.reqLogin = reqLogin;
+	public final void setNoLogReq(final List<String> NoLogReq) {
+	        this.NoLogReq = NoLogReq;
 	}
 }
