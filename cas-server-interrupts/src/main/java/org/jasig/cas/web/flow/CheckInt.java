@@ -4,11 +4,15 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.webflow.execution.RequestContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.ticket.registry.TicketRegistry;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
+
+import org.springframework.webflow.execution.RequestContext;
 
 public final class CheckInt {
 	
@@ -18,12 +22,15 @@ public final class CheckInt {
 	
 	private TicketRegistry ticketRegistry;
 	
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	public  String check( RequestContext context,  UsernamePasswordCredentials credentials) throws Exception {
 		
 		HttpServletRequest request = WebUtils.getHttpServletRequest(context);		
 		String interrupt = request.getParameter(CONST_PARAM_INTERRUPT);		
 		context.getFlowScope().put("interrupt", interrupt);			
 		final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context);		
+		log.debug("CheckInt got TGT " + ticketGrantingTicketId);
 		TicketGrantingTicket ticketGrantingTicket = (TicketGrantingTicket) ticketRegistry.getTicket(ticketGrantingTicketId);
 		
 		if (interrupt == null) {
@@ -32,12 +39,15 @@ public final class CheckInt {
 		if (NoLogReq.indexOf(interrupt) == -1){
 			if (!ticketGrantingTicket.isExpired()) {				
 				String userName = ticketGrantingTicket.getAuthentication().getPrincipal().getId();				
-				credentials.setUsername(userName);				
+				credentials.setUsername(userName);		
+				log.debug("CheckInt setting username " + userName);
 				return "LoginOk";
 			} else {
+				log.debug("CheckInt login required");
 				return "LoginReq";
 			}
 		}
+		log.debug("CheckInt No login required");
 		return "LoginOk";
 	}
 	
