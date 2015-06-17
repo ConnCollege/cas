@@ -48,7 +48,7 @@
 	<form:form commandName="${commandName}" htmlEscape="true" metdod="post">
 		<c:forEach items="${UserQNA}" var="question">
 			${question.question} 
-			<input size="25" name="fields[${question.questnum}]" value=""
+			<input size="25" name="fields[${question.questnum+2}]" value=""
 				ccreq="true" title="First Security Answer" />
 			<br />
 			<br />
@@ -88,7 +88,7 @@
         			Choose a password:
         		</td>
         		<td>
-        			<input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[4]" ccvalid="password"  />
+        			<input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[1]" ccvalid="password"  />
         		</td>
         	</tr>
         	<tr>
@@ -96,7 +96,7 @@
         			Re-enter your password:
         		</td>
         		<td>
-        			 <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[2]" ccvalid="password"  />
+        			 <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[2]" ccvalid="password"  />
         		</td>
         	</tr>
         </table>

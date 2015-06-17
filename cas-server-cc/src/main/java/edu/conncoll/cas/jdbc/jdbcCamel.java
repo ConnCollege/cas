@@ -466,9 +466,17 @@ public class jdbcCamel {
 		}
 		if (flag.equals("RST2")) {
 			//Check QNA Answers are correct
-			
+			SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
+			List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
+			for (Iterator<E> iter = QNAData.iterator(); iter.hasNext(); ) {
+			    E element = iter.next();
+			    if (intData.getField(element.get("QuestNum")+2) != element.get("Answer")){
+			    	context.getFlowScope().put("ErrorMsg", "Security Answer did not match.");
+			    	return "Failed"; 
+			    }
+			}
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
-				//context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please try again later.");
+				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please review password requirements.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
@@ -482,7 +490,7 @@ public class jdbcCamel {
 		}
 		if (flag.equals("PWD")) {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
-				//context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please try again later.");
+				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please review password requirements.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
