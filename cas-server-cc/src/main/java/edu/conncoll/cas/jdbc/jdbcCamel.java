@@ -148,7 +148,7 @@ public class jdbcCamel {
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
 		
 		switch (Interrupts.toInt(flag)) {
-			case RESET:
+			case RST2:
 				namedParameters = new MapSqlParameterSource("username", userName );
 				SQL = "select QuestNum, question,Answer from cc_user_qnaPair cuqp inner join cc_user_questions cuq on cuqp.QuestionId=cuq.id where cuqp.UId=:username order by QuestNum";
 				List<Map<String,Object>> UserQNA = jdbcTemplate.queryForList(SQL,namedParameters);
@@ -334,16 +334,13 @@ public class jdbcCamel {
 				} 
 				*/
 			break;
-			case  RST2:
-				
-			break;
 			default:
 				
 			break;
 		}
 	}
 	
-	public String writeFlow (final String flag, final RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
+	public String writeFlow (String flag, final RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
 		throws Exception {
 		String userName = credentials.getUsername();
 		String SQL = "";
@@ -481,6 +478,7 @@ public class jdbcCamel {
 			log.debug ("Password reset for " + intData.getField(1));
 			credentials.setUsername(intData.getField(1));
 			context.getFlashScope().put("Flag","RST2");
+			flag="RST2";
 			return "Failed";
 		}
 		if (flag.equals("PWD")) {
