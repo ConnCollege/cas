@@ -114,7 +114,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -334,6 +334,9 @@ public class jdbcCamel {
 				} 
 				*/
 			break;
+			case  RST2:
+				
+			break;
 			default:
 				
 			break;
@@ -464,7 +467,22 @@ public class jdbcCamel {
 			credentials.setUsername(intData.getField(1));
 			credentials.setPassword(intData.getField(4));
 		}
-		
+		if (flag.equals("RST2")) {
+			//Check QNA Answers are correct
+			
+			if (!setPassword ( context, userName,  intData.getField(1), true)){
+				//context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please try again later.");
+				log.error("Returning Password Set failed.");
+				return "Failed";
+			}
+			credentials.setPassword(intData.getField(1));
+		}
+		if (flag.equals("RESET")) {
+			log.debug ("Password reset for " + intData.getField(1));
+			credentials.setUsername(intData.getField(1));
+			context.getFlashScope().put("Flag","RST2");
+			return "Failed";
+		}
 		if (flag.equals("PWD")) {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
 				//context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please try again later.");
