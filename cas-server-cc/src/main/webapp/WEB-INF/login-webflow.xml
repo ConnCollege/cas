@@ -30,30 +30,38 @@
     </on-start>
 
 	<decision-state id="ticketGrantingTicketExistsCheck">
-		<if test="flowScope.ticketGrantingTicketId != null" then="hasServiceCheck" else="gatewayRequestCheck" />
+		<if test="flowScope.ticketGrantingTicketId != null" then="hasIntCheckLoggedIn" else="gatewayRequestCheck" />
 	</decision-state>
     
 	<decision-state id="gatewayRequestCheck">
-		<if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="serviceAuthorizationCheck" />
+		<if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="hasIntCheckNotLogin" />
 	</decision-state>
 	
 	<decision-state id="hasServiceCheck">
-		<if test="flowScope.service != null" then="renewRequestCheck" else="hasFlagCheck" />
+		<if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
 	</decision-state>
 	
-	<decision-state id="hasIntCheck">
-		<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
-	</decision-state>
+	<action-state id="hasIntCheckLoggedIn">
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
+		<transition on="LoginOk" to="forceInterrupt" />
+		<transition on="LoginReq" to="generateLoginTicket" />
+		<transition on="noInterrupt" to="hasServiceCheck" />
+	</action-state>
+	
+	<action-state id="hasIntCheckNotLogin">
+		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials)" />
+		<transition on="LoginOk" to="forceInterrupt" />
+		<transition on="LoginReq" to="serviceAuthorizationCheck" />
+		<transition on="noInterrupt" to="serviceAuthorizationCheck" />
+	</action-state>
 	
 	<decision-state id="renewRequestCheck">
 		<if test="requestParameters.renew != '' and requestParameters.renew != null" then="serviceAuthorizationCheck" else="generateServiceTicket" />
 	</decision-state>
 	
 	<action-state id="forceInterrupt">
-		<evaluate expression="CheckInt.check(flowRequestContext, flowScope.credentials, flowScope.interrupt)" />
-		<set name="flowScope.flag" value="flowScope.interrupt" />
-		<transition on="LoginReq" to="generateLoginTicket" />
-		<transition on="LoginOk" to="showInterrupt" />
+		<set name="flowScope.Flag" value="flowScope.interrupt" />
+		<transition to="showInterrupt" />
 	</action-state>
 
     <!-- Do a service authorization check early without the need to login first -->
@@ -210,7 +218,7 @@
     </action-state>
     
     <decision-state id="CheckInt">
-    	<if test="flowScope.interrupt != null" then="forceInterrupt" else="viewGenericLoginSuccess" />
+    	<if test="flowScope.interrupt != null" then="forceInterrupt" else="CheckFlags" />
     </decision-state>
     
     <action-state id="CheckFlags">
@@ -219,7 +227,7 @@
 		<transition to="showInterrupt" />
 	</action-state>
 	
-	<!-- Show custom view that interupts the login flow -->
+	<!-- Show custom view that interrupts the login flow -->
 	<view-state id="showInterrupt" view="${flowScope.Flag}" model="IntData">
 		<var name="IntData" class="org.jasig.cas.web.support.IntData" />
 		<binder>

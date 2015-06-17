@@ -276,11 +276,12 @@
          </property>   
     </bean>
     <bean id="CheckInt" class="org.jasig.cas.web.flow.CheckInt">
-    	<property name="reqLogin">
+    	<property name="ticketRegistry" ref="ticketRegistry" />
+    	<property name="noLogReq">
             <list>
-            	<value>PWD</value>
-            	<value>EMR</value>
-            	<value>QNA</value>
+            	<value>INIT</value>
+            	<value>RESET</value>
+            	<value>RST2</value>
             </list>
         </property>
     </bean>
