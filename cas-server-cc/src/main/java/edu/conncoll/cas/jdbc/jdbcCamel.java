@@ -340,7 +340,7 @@ public class jdbcCamel {
 		}
 	}
 	
-	public String writeFlow (String flag, final RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
+	public String writeFlow (final String flag, final RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
 		throws Exception {
 		String userName = credentials.getUsername();
 		String SQL = "";
@@ -477,8 +477,7 @@ public class jdbcCamel {
 		if (flag.equals("RESET")) {
 			log.debug ("Password reset for " + intData.getField(1));
 			credentials.setUsername(intData.getField(1));
-			context.getFlashScope().put("Flag","RST2");
-			flag="RST2";
+			context.getFlowScope().put("Flag","RST2");
 			return "Failed";
 		}
 		if (flag.equals("PWD")) {
