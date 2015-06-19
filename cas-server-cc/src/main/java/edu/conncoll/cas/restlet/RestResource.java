@@ -98,22 +98,7 @@ public class RestResource extends Resource
 				
 				//get a JSON object from our incoming data
 				log.debug(Long.toString( resetEntity.getSize()));
-				String resetEntityInputString = resetEntity.getText();
-				int zeroIndex = resetEntityInputString.indexOf('\0');
-				
-				JsonRepresentation jsonRep = null;
-				String resetEntityText = "";
-				if ( zeroIndex != -1 ) {
-					int index = 0;
-					while ( index != zeroIndex ) {
-						resetEntityText = resetEntityText + resetEntityInputString.charAt(index);
-						index++;
-					}
-					jsonRep = new JsonRepresentation(resetEntityText);
-				} else {
-					//something Error here
-					jsonRep = new JsonRepresentation(resetEntity);
-				}
+				JsonRepresentation jsonRep = new JsonRepresentation(resetEntity);
 				json = jsonRep.toJsonObject();
 				
 				//validate that the required parameters were passed with the request
