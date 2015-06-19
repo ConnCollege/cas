@@ -97,7 +97,8 @@ public class RestResource extends Resource
 			} else {
 				
 				//get a JSON object from our incoming data
-				log.debug(resetEntity.getText());
+				log.debug(Long.toString( resetEntity.getSize()));
+				log.debug( Integer.toString(resetEntity.getText().indexOf('\0') ) );
 				JsonRepresentation jsonRep = new JsonRepresentation(resetEntity);
 				json = jsonRep.toJsonObject();
 				
