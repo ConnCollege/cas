@@ -100,17 +100,20 @@ public class RestResource extends Resource
 				log.debug(Long.toString( resetEntity.getSize()));
 				log.debug( Integer.toString(resetEntity.getText().indexOf('\0') ) );
 				
+				JsonRepresentation jsonRep = null;
 				String resetEntityText = "";
 				int zeroIndex = resetEntity.getText().indexOf('\0');
 				if ( zeroIndex != -1 ) {
 					int index = 0;
 					while ( index != resetEntity.getText().indexOf('\0') ) {
 						resetEntityText = resetEntityText + resetEntity.getText().charAt(index);
+						index++;
 					}
+					jsonRep = new JsonRepresentation(resetEntityText);
 				} else {
 					//something Error here
+					jsonRep = new JsonRepresentation(resetEntity);
 				}
-				JsonRepresentation jsonRep = new JsonRepresentation(resetEntityText);
 				json = jsonRep.toJsonObject();
 				
 				//validate that the required parameters were passed with the request
