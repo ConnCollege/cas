@@ -623,7 +623,7 @@ public class jdbcCamel {
 		
 		
 		String domain;
-		if (Attrib.length() > 0 ){
+		if ( Attrib != null ){
 			if (Attrib.equals("alumni")) {
 				domain = "alumni.conncoll.edu";
 			} else {
