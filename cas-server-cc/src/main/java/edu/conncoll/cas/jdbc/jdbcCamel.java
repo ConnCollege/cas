@@ -27,6 +27,7 @@ import javax.naming.Context;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import javax.naming.ldap.BasicControl;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
@@ -59,6 +60,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
+
 
 
 public class jdbcCamel {
@@ -664,8 +666,20 @@ public class jdbcCamel {
 			String newQuotedPassword = "\"" + newPass + "\"";
 			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
 	
-				mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
+
+			// Set password history enforcement hint
+			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
+			final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
+			BasicControl[] controls = new BasicControl[2];
+			final String LDAP_SERVER_POLICY_HINTS_OID_2008 = "1.2.840.113556.1.4.2066";
+			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID_2008, true, controlData);
+			final String LDAP_SERVER_POLICY_HINTS_OID_2012 = "1.2.840.113556.1.4.2239";
+			controls[1] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID_2012, true, controlData);
+			dctx.setRequestControls(controls);
+			
 			try {
+				// Change password
 				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
 				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
@@ -681,77 +695,77 @@ public class jdbcCamel {
 			this.restfulResponse.addMessage("Password not set in AD. User not found.");
 		} else if ( !setAD && inAD ) {
 			this.restfulResponse.addMessage("Password not set in AD per user request.");
-		}
-		
-
-		ModificationItem[] mods = new ModificationItem[1];
-		
-		mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
-
-		if ( inVault ) {
-			log.debug("Setting Vault Password");
-			try {
-				vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
-				this.restfulResponse.addMessage("Vault password successfully changed.");
-			}catch( Exception e){
-				log.warn("Password reset failed at Vault");
-				if ( context != null ) {
-					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
-				} else {
-					this.restfulResponse.addMessage("Password rejected by server, please ensure your password meets all the listed criteria.");
-				}
-				return false;
-			}
-		} else {
-			this.restfulResponse.addMessage("Password not set in vault. User not found.");
-		}
-
-		log.debug("Setting gMail Password");
-		log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
-
-		
-		httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-		
-		
-		// service account credential
-		GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
-			.setJsonFactory(JSON_FACTORY)
-			.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
-			.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
-			.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
-			.setServiceAccountUser( "atilling@conncoll.edu" )
-			.build();
-		
-		// Directory Connection
-		Directory directory = new Directory.Builder(httpTransport, JSON_FACTORY, credential)
-			.setApplicationName(APPLICATION_NAME)
-			.build();
-		
-		try {
-			Directory.Users.List request = directory.users().list();
-			request.setDomain("conncoll.edu");
-			request.setQuery("email:" + userName + "@conncoll.edu");
+		} else if (!setAD) {
 			
-			List<User> users = request.execute().getUsers();
-			User user = users.get(0);
-			user = user.setAgreedToTerms(true);
-			user = user.setChangePasswordAtNextLogin(false);
-			user = user.setPassword(newPass);
-			directory.users().update(user.getId(),user).execute();
-			this.restfulResponse.addMessage("Gmail password successfully changed.");
-		} catch (Exception e) {
-			log.info("Password reset failed at google");
-			this.restfulResponse.addMessage("Password reset failed at google");
-			// No Google account					 
-		}		
-
-		log.debug("Saving Aduit trail");
-		String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
-
-		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
-		int check = jdbcTemplate.update(SQL,namedParameters);
-		log.debug("Insert result " + check);
-		
+	
+			ModificationItem[] mods = new ModificationItem[1];
+			
+			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", newPass));
+	
+			if ( inVault ) {
+				log.debug("Setting Vault Password");
+				try {
+					vaultTemplate.modifyAttributes(vaultDN.get(0).toString(),mods);
+					this.restfulResponse.addMessage("Vault password successfully changed.");
+				}catch( Exception e){
+					log.warn("Password reset failed at Vault");
+					if ( context != null ) {
+						context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
+					} else {
+						this.restfulResponse.addMessage("Password rejected by server, please ensure your password meets all the listed criteria.");
+					}
+					return false;
+				}
+			} else {
+				this.restfulResponse.addMessage("Password not set in vault. User not found.");
+			}
+	
+			log.debug("Setting gMail Password");
+			log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
+	
+			
+			httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+			
+			
+			// service account credential
+			GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+				.setJsonFactory(JSON_FACTORY)
+				.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
+				.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
+				.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
+				.setServiceAccountUser( "atilling@conncoll.edu" )
+				.build();
+			
+			// Directory Connection
+			Directory directory = new Directory.Builder(httpTransport, JSON_FACTORY, credential)
+				.setApplicationName(APPLICATION_NAME)
+				.build();
+			
+			try {
+				Directory.Users.List request = directory.users().list();
+				request.setDomain("conncoll.edu");
+				request.setQuery("email:" + userName + "@conncoll.edu");
+				
+				List<User> users = request.execute().getUsers();
+				User user = users.get(0);
+				user = user.setAgreedToTerms(true);
+				user = user.setChangePasswordAtNextLogin(false);
+				user = user.setPassword(newPass);
+				directory.users().update(user.getId(),user).execute();
+				this.restfulResponse.addMessage("Gmail password successfully changed.");
+			} catch (Exception e) {
+				log.info("Password reset failed at google");
+				this.restfulResponse.addMessage("Password reset failed at google");
+				// No Google account					 
+			}		
+	
+			log.debug("Saving Aduit trail");
+			String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
+	
+			SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
+			int check = jdbcTemplate.update(SQL,namedParameters);
+			log.debug("Insert result " + check);
+		}
 		return true;
 	}
 	
