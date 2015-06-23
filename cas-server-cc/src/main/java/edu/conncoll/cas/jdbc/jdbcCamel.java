@@ -673,8 +673,10 @@ public class jdbcCamel {
 			BasicControl[] controls = new BasicControl[1];
 			String LDAP_SERVER_POLICY_HINTS_OID;
 			if (ADVersion == "2008") {
+				log.debug ("Setting the 2008 password enfocement hint");
 				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
 			} else {
+				log.debug ("Setting the 2012 password enfocement hint");
 				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
 			}
 			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
@@ -682,12 +684,12 @@ public class jdbcCamel {
 			
 			try {
 				// Change password
+				log.debug ("Performing the password change");
 				dctx.modifyAttributes(DN.get(0).toString(),mods);
 				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
 				log.warn("Password reset failed at AD");
 				log.warn(e.getMessage());
-				log.warn(e.getStackTrace());
 				if ( context != null ) {
 					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
 				} else {
