@@ -481,7 +481,6 @@ public class jdbcCamel {
 			    }
 			}
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
-				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please review password requirements.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
@@ -495,7 +494,6 @@ public class jdbcCamel {
 		}
 		if (flag.equals("PWD")) {
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
-				context.getFlowScope().put("ErrorMsg", "Password change was rejected by the server, please review password requirements.");
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
