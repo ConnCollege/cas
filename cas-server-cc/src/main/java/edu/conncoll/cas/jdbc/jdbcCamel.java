@@ -1,11 +1,7 @@
 package edu.conncoll.cas.jdbc;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.lang.Character;
 import java.lang.Integer;
 import java.sql.Types;
