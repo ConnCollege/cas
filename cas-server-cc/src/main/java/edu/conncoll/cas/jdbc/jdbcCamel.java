@@ -112,6 +112,9 @@ public class jdbcCamel {
 	@NotNull
     private String nuVisionPath;
 	
+	@NotNull
+    private String ADVersion;
+	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
 		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, NOVALUE;    
@@ -667,11 +670,13 @@ public class jdbcCamel {
 			// Set password history enforcement hint
 			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
 			final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
-			BasicControl[] controls = new BasicControl[2];
-			final String LDAP_SERVER_POLICY_HINTS_OID_2008 = "1.2.840.113556.1.4.2066";
-			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID_2008, true, controlData);
-			final String LDAP_SERVER_POLICY_HINTS_OID_2012 = "1.2.840.113556.1.4.2239";
-			controls[1] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID_2012, true, controlData);
+			BasicControl[] controls = new BasicControl[1];
+			if (ADVersion == "2008") {
+				final String LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
+			} else {
+				final String LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
+			}
+			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
 			dctx.setRequestControls(controls);
 			
 			try {
@@ -680,6 +685,8 @@ public class jdbcCamel {
 				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
 				log.warn("Password reset failed at AD");
+				log.warn(e.getMessage());
+				log.warn(e.getStackTrace());
 				if ( context != null ) {
 					context.getFlowScope().put("ErrorMsg", "Password rejected by server, please ensure your password meets all the listed criteria.");
 				} else {
@@ -852,6 +859,10 @@ public class jdbcCamel {
 	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}
+	
+	public void setADVersion (final String ADVersion) {
+		this.ADVersion = ADVersion;
 	}
 	
 	public void setVaultFilter (final String vaultFilter) {
