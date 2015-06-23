@@ -472,7 +472,8 @@ public class jdbcCamel {
 			List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 			for (int i=0;i < QNAData.size();i++) {
 				Map<String,Object> row = QNAData.get(i);
-				if (intData.getField((int)row.get("QuestNum") + 2) != row.get("Answer")){
+				int questNum = (Integer)row.get("QuestNum");
+				if (intData.getField( questNum + 2) != row.get("Answer")){
 			    	context.getFlowScope().put("ErrorMsg", "Security Answer did not match.");
 			    	return "Failed"; 
 				}
