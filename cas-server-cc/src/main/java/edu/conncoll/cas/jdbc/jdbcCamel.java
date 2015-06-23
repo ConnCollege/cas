@@ -676,7 +676,7 @@ public class jdbcCamel {
 			
 			try {
 				// Change password
-				ldapTemplate.modifyAttributes(DN.get(0).toString(),mods);
+				dctx.modifyAttributes(DN.get(0).toString(),mods);
 				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
 				log.warn("Password reset failed at AD");
