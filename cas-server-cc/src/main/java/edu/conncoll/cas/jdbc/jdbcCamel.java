@@ -671,10 +671,11 @@ public class jdbcCamel {
 			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
 			final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
 			BasicControl[] controls = new BasicControl[1];
+			String LDAP_SERVER_POLICY_HINTS_OID;
 			if (ADVersion == "2008") {
-				final String LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
+				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
 			} else {
-				final String LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
+				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
 			}
 			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
 			dctx.setRequestControls(controls);
