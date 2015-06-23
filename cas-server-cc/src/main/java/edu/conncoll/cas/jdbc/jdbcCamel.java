@@ -24,6 +24,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.ldap.BasicControl;
+import javax.naming.ldap.LdapContext;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
@@ -469,12 +470,12 @@ public class jdbcCamel {
 			//Check QNA Answers are correct
 			SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
 			List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
-			for (Iterator<E> iter = QNAData.iterator(); iter.hasNext(); ) {
-			    E element = iter.next();
-			    if (intData.getField(element.get("QuestNum")+2) != element.get("Answer")){
+			for (int i=0;i < QNAData.size();i++) {
+				Map<String,Object> row = QNAData.get(i);
+				if (intData.getField((int)row.get("QuestNum") + 2) != row.get("Answer")){
 			    	context.getFlowScope().put("ErrorMsg", "Security Answer did not match.");
 			    	return "Failed"; 
-			    }
+				}
 			}
 			if (!setPassword ( context, userName,  intData.getField(1), true)){
 				log.error("Returning Password Set failed.");
