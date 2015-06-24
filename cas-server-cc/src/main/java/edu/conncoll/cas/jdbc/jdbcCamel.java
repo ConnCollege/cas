@@ -677,7 +677,7 @@ public class jdbcCamel {
 				final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
 				BasicControl[] controls = new BasicControl[1];
 				String LDAP_SERVER_POLICY_HINTS_OID;
-				if (this.adVersion == "2008") {
+				if (this.adVersion.equals("2008")) {
 					log.debug ("Setting the 2008 password enfocement hint");
 					LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
 				} else {
