@@ -117,11 +117,15 @@ public class RestResource extends Resource
 					reasons.add("AD flag was not provided");
 				}
 				
+				if ( !json.has("enforce") ) {
+					reasons.add("Password policy enforcement flag was not provided");
+				}
+				
 				//check for invalid parameters sent to the rest api
 				Iterator<?> keys = json.keys();
 				while( keys.hasNext() ) {
 					Object obj = keys.next();
-					if ( ( !obj.equals("password") && !obj.equals("sec") && !obj.equals("uname") && !obj.equals("setAD") ) ) {
+					if ( ( !obj.equals("password") && !obj.equals("sec") && !obj.equals("uname") && !obj.equals("setAD") && !obj.equals("enforce") ) ) {
 						reasons.add("Invalid parameter: " + obj.toString() );
 					}
 				}
@@ -140,6 +144,7 @@ public class RestResource extends Resource
 					String uname = json.getString("uname");
 					String password = json.getString("password");
 					boolean setAD = json.getBoolean("setAD");
+					boolean enforce = json.getBoolean("enforce");
 					
 					//authenticate security UUID
 					Map<String,Object> uuidResponse = this.jdbc.getUUID(sec);
@@ -171,7 +176,7 @@ public class RestResource extends Resource
 						log.debug( "Password change issued ( uname: " + uname + " password: " + password + " setAD: " + Boolean.toString(setAD) + " )" );
 						
 						//reset password
-						boolean resetSuccess = this.jdbc.setPassword( uname, password, setAD);
+						boolean resetSuccess = this.jdbc.setPassword( uname, password, setAD, enforce);
 						
 						//process the result of the password change
 						ArrayList<String> restfulMessages = null;

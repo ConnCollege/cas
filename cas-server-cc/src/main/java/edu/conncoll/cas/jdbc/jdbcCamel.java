@@ -783,8 +783,8 @@ public class jdbcCamel {
 		return true;
 	}
 	
-	public boolean setPassword( String userName, String newPass, boolean setAD ) throws Exception {
-		return this.setPassword(null, userName, newPass, setAD);
+	public boolean setPassword( String userName, String newPass, boolean setAD, boolean enforce ) throws Exception {
+		return this.setPassword(null, userName, newPass, setAD, enforce);
 	}
 	
 	public Map<String,Object> getUUID( String uuid ) {
