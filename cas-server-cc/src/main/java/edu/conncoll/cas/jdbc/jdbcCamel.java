@@ -591,6 +591,10 @@ public class jdbcCamel {
 	
 	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
 		throws Exception{
+		return setPassword (context,userName,newPass,setAD, true);
+	}
+	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD, boolean enforce)
+			throws Exception{
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 		
@@ -669,18 +673,20 @@ public class jdbcCamel {
 
 			// Set password history enforcement hint
 			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
-			final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
-			BasicControl[] controls = new BasicControl[1];
-			String LDAP_SERVER_POLICY_HINTS_OID;
-			if (ADVersion == "2008") {
-				log.debug ("Setting the 2008 password enfocement hint");
-				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
-			} else {
-				log.debug ("Setting the 2012 password enfocement hint");
-				LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
+			if (enforce) {
+				final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
+				BasicControl[] controls = new BasicControl[1];
+				String LDAP_SERVER_POLICY_HINTS_OID;
+				if (ADVersion == "2008") {
+					log.debug ("Setting the 2008 password enfocement hint");
+					LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2066";
+				} else {
+					log.debug ("Setting the 2012 password enfocement hint");
+					LDAP_SERVER_POLICY_HINTS_OID = "1.2.840.113556.1.4.2239";
+				}
+				controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
+				dctx.setRequestControls(controls);
 			}
-			controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
-			dctx.setRequestControls(controls);
 			
 			try {
 				// Change password
@@ -695,8 +701,10 @@ public class jdbcCamel {
 				} else {
 					this.restfulResponse.addMessage("Password rejected by server, please ensure your password meets all the listed criteria.");
 				}
+				dctx.close();
 				return false;
 			}
+			dctx.close();
 		} else if ( setAD && !inAD) {
 			this.restfulResponse.addMessage("Password not set in AD. User not found.");
 		} else if ( !setAD && inAD ) {
