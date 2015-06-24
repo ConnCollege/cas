@@ -60,5 +60,5 @@
 		p:mainPassword="${main.gmail.password}"
 		p:recaptchaPublic="${recaptcha.key.public}"
 		p:recaptchaPrivate="${recaptcha.key.private}" 
-		p:ADVersion="${ldap.adversion}"/>
+		p:adVersion="${ldap.adversion}"/>
 </beans>

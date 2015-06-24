@@ -113,7 +113,7 @@ public class jdbcCamel {
     private String nuVisionPath;
 	
 	@NotNull
-    private String ADVersion;
+    private String adVersion;
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
@@ -872,8 +872,9 @@ public class jdbcCamel {
 		this.filter = filter;
 	}
 	
-	public void setADVersion (final String ADVersion) {
-		this.ADVersion = ADVersion;
+	public void setAdVersion (final String adVersion) {
+		this.adVersion = adVersion;
+		log.debug ("ADVersion: " + this.adVersion);
 	}
 	
 	public void setVaultFilter (final String vaultFilter) {
