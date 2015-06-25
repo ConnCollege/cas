@@ -81,6 +81,7 @@ public class RestResource extends Resource
 	
 	@Override
 	public void handleOptions() {
+		log.debug("Options override was called.");
 		Form headers = (Form)getResponse().getAttributes().get("org.restlet.http.headers");
 		if ( headers == null ) {
 			headers = new Form();
