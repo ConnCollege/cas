@@ -15,6 +15,11 @@
 	<import resource="spring-configuration/propertyFileConfigurer.xml" />
 	<import resource="spring-configuration/camelJDBC.xml" />
 	
+	<!-- create a filter to added needed header information to the response -->
+	<bean id="headerFilter" class="edu.conncoll.cas.restlet.RestHeader">
+		<property name="next" ref="root" />
+	</bean>
+	
 	<!-- create a root level bean. This is where routes will be defined -->
 	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
