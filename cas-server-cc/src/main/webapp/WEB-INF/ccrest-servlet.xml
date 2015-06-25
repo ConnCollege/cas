@@ -20,7 +20,7 @@
 		<property name="next" ref="route" />
 	</bean>
 	
-	<!-- create a root level bean. This is where routes will be defined -->
+	<!-- This is where routes will be defined -->
 	<bean id="route" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
