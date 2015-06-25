@@ -83,6 +83,11 @@ public class RestResource extends Resource
 	public void acceptRepresentation( Representation resetEntity ) {
 		
 		Form headers = (Form)getResponse().getAttributes().get("org.restlet.http.headers");
+		
+		if (headers == null) {
+			headers = new Form();
+			getResponse().getAttributes().put("org.restlet.http.headers", headers);
+		}
 		headers.add("Access-Control-Allow-Origin","https://cameldev.conncoll.edu");
 		
 		//create json objects (one for response and one for incoming request)
