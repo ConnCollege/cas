@@ -11,8 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
@@ -80,15 +83,19 @@ public class RestResource extends Resource
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	@Override
-	public void acceptRepresentation( Representation resetEntity ) {
-		
-		Form headers = (Form)getResponse().getAttributes().get("org.restlet.http.headers");
+	public void init(Context context, Request request, Response response ){
+		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
 		
 		if (headers == null) {
 			headers = new Form();
-			getResponse().getAttributes().put("org.restlet.http.headers", headers);
+			response.getAttributes().put("org.restlet.http.headers", headers);
 		}
 		headers.add("Access-Control-Allow-Origin","https://cameldev.conncoll.edu");
+		super.init(context, request, response);
+	}
+	
+	@Override
+	public void acceptRepresentation( Representation resetEntity ) {
 		
 		//create json objects (one for response and one for incoming request)
 		//and an array list for errors
