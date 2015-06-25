@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -80,6 +81,9 @@ public class RestResource extends Resource
 	
 	@Override
 	public void acceptRepresentation( Representation resetEntity ) {
+		
+		Form headers = (Form)getResponse().getAttributes().get("org.restlet.http.headers");
+		headers.add("Access-Control-Allow-Origin","https://cameldev.conncoll.edu");
 		
 		//create json objects (one for response and one for incoming request)
 		//and an array list for errors
