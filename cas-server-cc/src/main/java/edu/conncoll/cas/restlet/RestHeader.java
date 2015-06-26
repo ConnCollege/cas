@@ -25,7 +25,8 @@ public class RestHeader extends Filter{
 			response.getAttributes().put("org.restlet.http.headers", headers);
 		}
 		headers.add("Access-Control-Allow-Origin","https://cameldev.conncoll.edu");
-		log.debug("Access-Control-Allow-Origin header added to response");
+		headers.add("Access-Control-Allow-Headers","Content-Type, Accept, Origin, Accept-Language, Accept-Encoding, User-Agent, Referer, Host");
+		log.debug("Access-Control-Allow headers added to response");
 		return super.beforeHandle(request, response);
 	}
 }
