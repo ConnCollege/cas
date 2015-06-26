@@ -73,6 +73,10 @@ public class RestResource extends Resource
 		return false;
 	}
 	
+	public final boolean allowOptions(){
+		return true;
+	}
+	
 	public final void setCamelJdbc(final jdbcCamel jdbc) {
 		this.jdbc = jdbc;
 	}
