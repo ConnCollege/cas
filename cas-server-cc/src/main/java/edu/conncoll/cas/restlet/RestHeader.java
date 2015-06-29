@@ -46,7 +46,6 @@ public class RestHeader extends Filter{
 	@Override
 	protected int beforeHandle(Request request, Response response) {
 		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
-		Form requestHeaders = (Form)request.getAttributes().get("org.restlet.http.headers");
 		String responseHeader = "";
 		
 		if ( headers == null ) {
@@ -55,7 +54,7 @@ public class RestHeader extends Filter{
 		}
 		
 		for ( String acceptedDomain : this.acceptedDomains ) {
-			if ( requestHeaders.contains( acceptedDomain ) ) {
+			if ( request.getOriginalRef().equals( acceptedDomain ) ) {
 				responseHeader = acceptedDomain;
 			}
 		}
