@@ -67,7 +67,7 @@ public class RestHeader extends Filter{
 		}
 		
 		if ( !domainAccepted ) {
-			log.warn("Not an accepted domain origin: " + requestOrigin.toString());
+			log.warn("Not an accepted domain origin: " + requestOrigin);
 		}
 		
 		headers.add("Access-Control-Allow-Headers","Content-Type, Accept, Origin, Accept-Language, Accept-Encoding, User-Agent, Referer, Host");
