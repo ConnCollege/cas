@@ -15,8 +15,24 @@
 	<import resource="spring-configuration/propertyFileConfigurer.xml" />
 	<import resource="spring-configuration/camelJDBC.xml" />
 	
+	<!-- create list of accepted domains -->
+	<bean id="camelDev" class="java.lang.String">
+		<constructor-arg value="https://cameldev.conncoll.edu" />
+	</bean>
+	<bean id="camelWeb" class="java.lang.String">
+		<constructor-arg value="https://camelweb.conncoll.edu" />
+	</bean>
+	<bean id="acceptedDomains" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="camelDev" />
+				<ref bean="camelWeb" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
 	<!-- create a filter to added needed header information to the response -->
-	<bean id="root" class="edu.conncoll.cas.restlet.RestHeader">
+	<bean id="root" class="edu.conncoll.cas.restlet.RestHeader" p:acceptedDomains-ref="acceptedDomains">
 		<property name="next" ref="route" />
 	</bean>
 	
