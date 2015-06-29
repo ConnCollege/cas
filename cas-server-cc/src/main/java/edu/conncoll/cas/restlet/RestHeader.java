@@ -20,7 +20,7 @@ import org.restlet.data.Response;
  * <p>For any domains such as camelweb or cameldev, they will need to be added 
  * here to allow for resets to be processed.</p>
  * 
- * @version 1.0 beta (6/29/2015)
+ * @version 1.0 RC1 (6/29/2015)
  * @see org.restlet.Filter
  * @author mmatovic
  *
@@ -67,7 +67,7 @@ public class RestHeader extends Filter{
 			}
 		}
 		
-		if ( !domainAccepted ) {
+		if ( !domainAccepted && !requestOrigin.equals("Unspecified") ) {
 			log.warn("Not an accepted domain origin: " + requestOrigin);
 		}
 		

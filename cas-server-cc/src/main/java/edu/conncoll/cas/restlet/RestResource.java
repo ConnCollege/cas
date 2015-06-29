@@ -42,7 +42,7 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
  * and deletion of the unique records is handled by the <tt>jdbcCamel</tt> 
  * object. </p>
  * 
- * @version 1.0 beta 6/29/2015
+ * @version 1.0 RC1 6/29/2015
  * @see org.json.JSONObject
  * @see org.restlet.resource.Resource
  * @see org.restlet.resource.Representation
