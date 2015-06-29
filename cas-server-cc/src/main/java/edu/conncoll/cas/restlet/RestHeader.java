@@ -31,6 +31,10 @@ public class RestHeader extends Filter{
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
+	public final void setAcceptedDomains (final ArrayList<?> acceptedDomains ) {
+		this.acceptedDomains = (ArrayList<String>) acceptedDomains;
+	}
+	
 	public RestHeader() {
 		super();
 		log.debug("RestHeader filter was created");
