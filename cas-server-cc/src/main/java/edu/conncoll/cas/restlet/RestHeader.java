@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.restlet.Filter;
 import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -46,9 +47,11 @@ public class RestHeader extends Filter{
 	@Override
 	protected int beforeHandle(Request request, Response response) {
 		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
+		Form requestHeaders = (Form)request.getAttributes().get("org.restlet.http.headers");
+		Parameter requestOrigin = requestHeaders.getFirst("Origin");
 		String responseHeader = "";
 		
-		log.debug(request.getOriginalRef());
+		log.debug(requestHeaders.getFirst("Origin"));
 		
 		if ( headers == null ) {
 			headers = new Form();
@@ -56,7 +59,7 @@ public class RestHeader extends Filter{
 		}
 		
 		for ( String acceptedDomain : this.acceptedDomains ) {
-			if ( request.getOriginalRef().equals( acceptedDomain ) ) {
+			if ( requestOrigin.equals( acceptedDomain ) ) {
 				responseHeader = acceptedDomain;
 			}
 		}
