@@ -59,7 +59,7 @@ public class RestHeader extends Filter{
 		}
 		
 		for ( String acceptedDomain : this.acceptedDomains ) {
-			if ( requestOrigin.equals( acceptedDomain ) ) {
+			if ( requestOrigin.toString().equals(acceptedDomain) ) {
 				responseHeader = acceptedDomain;
 			}
 		}
