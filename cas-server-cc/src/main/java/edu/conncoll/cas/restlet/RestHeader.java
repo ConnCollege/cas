@@ -48,6 +48,8 @@ public class RestHeader extends Filter{
 		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
 		String responseHeader = "";
 		
+		log.debug(request.getOriginalRef());
+		
 		if ( headers == null ) {
 			headers = new Form();
 			response.getAttributes().put("org.restlet.http.headers", headers);
