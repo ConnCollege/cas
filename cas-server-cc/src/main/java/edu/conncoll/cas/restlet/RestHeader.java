@@ -48,7 +48,7 @@ public class RestHeader extends Filter{
 	protected int beforeHandle(Request request, Response response) {
 		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
 		Form requestHeaders = (Form)request.getAttributes().get("org.restlet.http.headers");
-		Parameter requestOrigin = requestHeaders.getFirst("Origin");
+		String requestOrigin = requestHeaders.getFirst("Origin").toString();
 		boolean domainAccepted = false;
 		
 		log.debug(requestHeaders.getFirst("Origin"));
@@ -59,7 +59,7 @@ public class RestHeader extends Filter{
 		}
 		
 		for ( String acceptedDomain : this.acceptedDomains ) {
-			if ( requestOrigin.toString().equals("Origin: " + acceptedDomain) ) {
+			if ( requestOrigin.equals("Origin: " + acceptedDomain) ) {
 				headers.add("Access-Control-Allow-Origin",acceptedDomain);
 				log.debug("Accepted domain. Access-Control-Allow-Origin header updated.");
 				domainAccepted = true;
