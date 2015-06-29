@@ -33,6 +33,9 @@ public class RestHeader extends Filter{
 	
 	public final void setAcceptedDomains (final ArrayList<?> acceptedDomains ) {
 		this.acceptedDomains = (ArrayList<String>) acceptedDomains;
+		for ( String acceptedDomain : this.acceptedDomains ) {
+			log.debug(acceptedDomain);
+		}
 	}
 	
 	public RestHeader() {
@@ -51,7 +54,7 @@ public class RestHeader extends Filter{
 			response.getAttributes().put("org.restlet.http.headers", headers);
 		}
 		
-		for ( String acceptedDomain : acceptedDomains ) {
+		for ( String acceptedDomain : this.acceptedDomains ) {
 			if ( requestHeaders.contains( acceptedDomain ) ) {
 				responseHeader = acceptedDomain;
 			}
