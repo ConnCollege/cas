@@ -48,10 +48,10 @@ public class RestHeader extends Filter{
 	protected int beforeHandle(Request request, Response response) {
 		Form headers = (Form)response.getAttributes().get("org.restlet.http.headers");
 		Form requestHeaders = (Form)request.getAttributes().get("org.restlet.http.headers");
-		String requestOrigin = requestHeaders.getFirst("Origin").toString();
+		String requestOrigin = requestHeaders.getFirst("Origin").getValue();
 		boolean domainAccepted = false;
 		
-		log.debug(requestHeaders.getFirst("Origin"));
+		log.debug(requestOrigin);
 		
 		if ( headers == null ) {
 			headers = new Form();
