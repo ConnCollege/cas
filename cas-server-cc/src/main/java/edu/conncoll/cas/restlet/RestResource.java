@@ -11,7 +11,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -43,7 +42,7 @@ import edu.conncoll.cas.jdbc.jdbcCamel;
  * and deletion of the unique records is handled by the <tt>jdbcCamel</tt> 
  * object. </p>
  * 
- * @version 1.0 alpha 5/22/2015
+ * @version 1.0 beta 6/29/2015
  * @see org.json.JSONObject
  * @see org.restlet.resource.Resource
  * @see org.restlet.resource.Representation

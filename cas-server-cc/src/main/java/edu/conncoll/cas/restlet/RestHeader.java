@@ -7,6 +7,19 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
+
+/**
+ * <p>A simple filter used in conjunction with the <tt>RestResource</tt> to 
+ * initialize Access-Control headers on the restlet response.</p>
+ * 
+ * <p>For any domains such as camelweb or cameldev, they will need to be added 
+ * here to allow for resets to be processed.</p>
+ * 
+ * @version 1.0 beta (6/29/2015)
+ * @see org.restlet.Filter
+ * @author mmatovic
+ *
+ */
 public class RestHeader extends Filter{
 	
 	private Log log = LogFactory.getLog(this.getClass());
