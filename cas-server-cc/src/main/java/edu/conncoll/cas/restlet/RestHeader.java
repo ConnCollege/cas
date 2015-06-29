@@ -60,7 +60,7 @@ public class RestHeader extends Filter{
 		}
 		
 		for ( String acceptedDomain : this.acceptedDomains ) {
-			if ( requestOrigin.equals("Origin: " + acceptedDomain) ) {
+			if ( requestOrigin.equals(acceptedDomain) ) {
 				headers.add("Access-Control-Allow-Origin",acceptedDomain);
 				log.debug("Accepted domain. Access-Control-Allow-Origin header updated.");
 				domainAccepted = true;
