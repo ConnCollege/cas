@@ -156,8 +156,8 @@
         </transition>
         
         <!-- Conncoll interrupt Transitions -->
-        <transition on="forgotPassword" to="showInterrupt" validate="false">
-            <set name="flowScope.Flag" value="'RESET'"/>
+        <transition on="forgotPassword" to="forceInterrupt" validate="false">
+            <set name="flowScope.interrupt" value="'RESET'"/>
         </transition>
         <transition on="initialize" to="showInterrupt" validate="false">
             <set name="flowScope.Flag" value="'INIT'"/>
