@@ -2,7 +2,7 @@
 <Context crossContext="true">
 	<Resource name="mail/Session" auth="Container"
             type="javax.mail.Session"
-            mail.smtp.host="outbounds9.obsmtp.com"
+            mail.smtp.host="smtp-relay.gmail.com"
 			mail.transport.protocol="smtp"
 			mail.from="help@conncoll.edu" />
 </Context>

@@ -25,7 +25,7 @@
         <input type="hidden" name="lt" value="${loginTicket}" />
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />
-        <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=forgotPassword'; return false;">forgot password</a></p><br />
+        <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?interrupt=RESET'; return false;">forgot password</a></p><br />
         <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=initialize'; return false;">create new account</a></p><br />   
     </form:form>
     <p><a href="http://www.conncoll.edu">Connecticut College Homepage</a></p>
