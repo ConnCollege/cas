@@ -15,8 +15,29 @@
 	<import resource="spring-configuration/propertyFileConfigurer.xml" />
 	<import resource="spring-configuration/camelJDBC.xml" />
 	
-	<!-- create a root level bean. This is where routes will be defined -->
-	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
+	<!-- create list of accepted domains -->
+	<bean id="camelDev" class="java.lang.String">
+		<constructor-arg value="https://cameldev.conncoll.edu" />
+	</bean>
+	<bean id="camelWeb" class="java.lang.String">
+		<constructor-arg value="https://camelweb.conncoll.edu" />
+	</bean>
+	<bean id="acceptedDomains" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="camelDev" />
+				<ref bean="camelWeb" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<!-- create a filter to added needed header information to the response -->
+	<bean id="root" class="edu.conncoll.cas.restlet.RestHeader" p:acceptedDomains-ref="acceptedDomains">
+		<property name="next" ref="route" />
+	</bean>
+	
+	<!-- This is where routes will be defined -->
+	<bean id="route" class="org.restlet.ext.spring.SpringRouter">
 		<property name="attachments">
 			<map>
 				<entry key="/reset/">
