@@ -710,10 +710,10 @@ public class jdbcCamel {
 			dctx.close();
 		} else if ( setAD && !inAD) {
 			this.restfulResponse.addMessage("Password not set in AD. User not found.");
-		} else if ( !setAD && inAD ) {
-			this.restfulResponse.addMessage("Password not set in AD per user request.");
+		//} else if ( !setAD && inAD ) {
+		//	this.restfulResponse.addMessage("Password not set in AD per user request.");
 		} else if (!setAD) {
-			
+			this.restfulResponse.addMessage("Password not set in AD per user request.");
 	
 			ModificationItem[] mods = new ModificationItem[1];
 			
