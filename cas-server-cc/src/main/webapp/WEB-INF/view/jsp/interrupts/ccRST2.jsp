@@ -46,6 +46,22 @@
 	</div>
 	<div id="field01Error" style="display: none; background: #FFDAD9"></div>
 	<form:form commandName="${commandName}" htmlEscape="true" metdod="post">
+		<c:choose>
+    	<c:when test='${fn:length(ErrorMsg)>3}'>
+        	<div id="MainErrorHead" style="background:#F00"> 
+				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+			</div>
+        	<div id="field01Error" style="background:#FFDAD9">
+            	${ErrorMsg}
+            </div>
+        </c:when>
+        <c:otherwise>
+        	<div id="MainErrorHead" style="display:none;background:#F00"> 
+				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+			</div>
+        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>        
+        </c:otherwise>
+    </c:choose> 
 		<c:forEach items="${UserQNA}" var="question">
 			${question.question} 
 			<input size="25" name="fields[${question.questnum+2}]" value=""
@@ -99,7 +115,20 @@
         			 <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[2]" ccvalid="password"  />
         		</td>
         	</tr>
-        </table>
+        </table> 
+        <c:choose>
+    	<c:when test='${fn:length(ErrorMsg)>3}'>
+        	<div id="MainErrorFoot" style="background:#F00"> 
+				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+			</div>
+        </c:when>
+        <c:otherwise>
+        	<div id="MainErrorFoot" style="display:none;background:#F00"> 
+				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+			</div>
+        	<div id="field01Error" style="display:none;background:#FFDAD9"></div>        
+        </c:otherwise>
+    </c:choose>     
 		<input type="hidden" name="lt" value="${loginTicket}" />
 		<input type="hidden" name="execution" value="${flowExecutionKey}" />
 		<input type="hidden" name="_eventId" value="submit" />

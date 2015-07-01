@@ -471,7 +471,7 @@ public class jdbcCamel {
 		}
 		if (flag.equals("RST2")) {
 			//Check QNA Answers are correct
-			SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq left join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
+			SQL = "select id, question qChoice, active, QuestNum, Answer from cc_user_questions cuq inner join cc_user_qnaPair cuqp on cuq.id = cuqp.QuestionId and cuqp.UId = :username order by QuestNum";				
 			List<Map<String,Object>> QNAData = jdbcTemplate.queryForList(SQL,namedParameters);	
 			for (int i=0;i < QNAData.size();i++) {
 				Map<String,Object> row = QNAData.get(i);
