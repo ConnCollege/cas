@@ -476,7 +476,10 @@ public class jdbcCamel {
 			for (int i=0;i < QNAData.size();i++) {
 				Map<String,Object> row = QNAData.get(i);
 				int questNum = (Integer)row.get("QuestNum");
-				if (intData.getField( questNum + 2) != row.get("Answer")){
+				String rstAnswer = (String)intData.getField( questNum + 2);
+				String dbAnswer = (String)row.get("Answer");
+				log.debug ("comparing :" + rstAnswer +" to " + dbAnswer);
+				if (!rstAnswer.equalsIgnoreCase(dbAnswer)){
 			    	context.getFlowScope().put("ErrorMsg", "Security Answer did not match.");
 			    	return "Failed"; 
 				}
