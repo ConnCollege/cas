@@ -106,7 +106,12 @@
 	  <property name="warningDays" value="${ldap.authentication.lppe.warningDays}" />
 	  <property name="validDays" value="${ldap.authentication.lppe.validDays}" />
 	  <property name="noWarnAttribute" value="${ldap.authentication.lppe.noWarnAttribute}" />
-	  <property name="noWarnValues" value="${ldap.authentication.lppe.noWarnValues}" />
+	  <property name="noWarnValues">
+		<list>
+			<value>544</value>
+			<value>66080</value>
+		</list>
+	  </property>
 	</bean>
 	
 	
