@@ -265,7 +265,7 @@
         </property>
     	<property name="vpnIpRanges">
             <list>
-            	<value>136.244.196.0/24</value>
+            	<value>136.244.183.0/24</value>
             	<value>136.244.248.0/24</value>
             </list>
         </property>
