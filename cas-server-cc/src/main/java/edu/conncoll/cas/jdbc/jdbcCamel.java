@@ -9,8 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.List;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -57,7 +59,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
-
 
 
 public class jdbcCamel {
@@ -345,7 +346,7 @@ public class jdbcCamel {
 		}
 	}
 	
-	public String writeFlow (final String flag, final RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
+	public String writeFlow (final String flag,  RequestContext context, UsernamePasswordCredentials credentials, final IntData intData) 
 		throws Exception {
 		String userName = credentials.getUsername();
 		String SQL = "";
@@ -488,6 +489,30 @@ public class jdbcCamel {
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
+			List DN = this.ldapTemplate.search(
+					this.searchBase, searchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
+						}
+					}
+				);
+				
+				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				
+				
+				log.debug("CheckFlags Updating attribute " + ldapAttrib);
+				String Attrib = ldapcontext.getStringAttribute(ldapAttrib);
+				if (Attrib == null){
+					return "noFlag";
+				}
+				DateFormat dfm = new SimpleDateFormat("MM/dd/yyyy");
+				Attrib = Attrib.toString().replace(flag+"=;",flag+"="+dfm.format(new Date())+";");
+				
+				log.info("CheckFlags writing update '"+ Attrib +"'to attribute " + ldapAttrib);
+				ldapcontext.setAttributeValue(ldapAttrib, Attrib);
+				ldapTemplate.modifyAttributes(ldapcontext);
+				
 			credentials.setPassword(intData.getField(1));
 		}
 		if (flag.equals("RESET")) {

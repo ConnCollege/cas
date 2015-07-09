@@ -11,7 +11,7 @@
     <form:errors path="*" cssClass="errors" id="status" element="div" />
         <form:input cssClass="required" cssErrorClass="error" id="fields[1]" size="25" tabindex="1" accesskey="${userNameAccessKey}" path="fields[1]" autocomplete="false" htmlEscape="true" placeholder="Camel Username" />
         <br />        
-        <input type="submit" value="Reset Password" />
+        <input type="submit" value="Reset Password" tabindex="2" />
         <input type="hidden" name="lt" value="${loginTicket}" />
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />  

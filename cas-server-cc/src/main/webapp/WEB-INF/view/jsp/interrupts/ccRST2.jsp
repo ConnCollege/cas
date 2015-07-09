@@ -65,7 +65,7 @@
 		<c:forEach items="${UserQNA}" var="question">
 			${question.question} 
 			<input size="25" name="fields[${question.questnum+2}]" value=""
-				ccreq="true" title="First Security Answer" />
+				ccreq="true" title="First Security Answer" tabindex="${question.questnum}" />
 			<br />
 			<br />
 		</c:forEach>
@@ -104,7 +104,7 @@
         			Choose a password:
         		</td>
         		<td>
-        			<input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[1]" ccvalid="password"  />
+        			<input type="password" Class="required" size="25" tabindex="4" id="field01" name="fields[1]" ccvalid="password"  />
         		</td>
         	</tr>
         	<tr>
@@ -112,7 +112,7 @@
         			Re-enter your password:
         		</td>
         		<td>
-        			 <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[2]" ccvalid="password"  />
+        			 <input type="password" Class="required" size="25" tabindex="5" id="field02" name="fields[2]" ccvalid="password"  />
         		</td>
         	</tr>
         </table> 
@@ -132,7 +132,7 @@
 		<input type="hidden" name="lt" value="${loginTicket}" />
 		<input type="hidden" name="execution" value="${flowExecutionKey}" />
 		<input type="hidden" name="_eventId" value="submit" />
-		<input type="submit" value="Continue" id="btnSubmit" />
+		<input type="submit" value="Continue" id="btnSubmit" tabindex="6" />
 		<div id="MainErrorFoot" style="display: none; background: #F00">
 			<strong>There was an error with your form. Please fix all
 				fields as noted above in pink.</strong>

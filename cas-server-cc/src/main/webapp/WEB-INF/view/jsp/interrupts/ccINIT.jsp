@@ -48,7 +48,7 @@ function InLineValid(){
 							Camel Username:
 						</td>
 						<td>
-		        			<input size="25" id="uname" name="fields[1]" value="" ccreq="true" title="Camel Username" />
+		        			<input size="25" id="uname" name="fields[1]" value="" ccreq="true" title="Camel Username" tabindex="1" />
 		        		</td>
 		        	</tr>
 					<tr>
@@ -56,7 +56,7 @@ function InLineValid(){
 							Birth Date:
 						</td>
 						<td>
-		        			<input size="25" id="birthdate" name="fields[2]" placeholder="mm/dd/yyyy"  title="Birth Date" ccregex="(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20\d\d)" />
+		        			<input size="25" id="birthdate" name="fields[2]" placeholder="mm/dd/yyyy"  title="Birth Date" ccregex="(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20\d\d)" tabindex="2" />
 		        		</td>
 		        	</tr>
 					<tr>
@@ -64,7 +64,7 @@ function InLineValid(){
 							Camel Number:
 						</td>
 						<td>
-		        			<input size="25" id="camelnumber" name="fields[3]" value="" ccreq="true" ccMinLength="8" ccNumOnly="true" title="Camel Number" />
+		        			<input size="25" id="camelnumber" name="fields[3]" value="" ccreq="true" ccMinLength="8" ccNumOnly="true" title="Camel Number" tabindex="3" />
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -101,7 +101,7 @@ function InLineValid(){
 		        			Choose a password:
 		        		</td>
 		        		<td>
-		        			<input type="password" Class="required" size="25" id="field04" name="fields[4]" ccvalid="password" title="password" />
+		        			<input type="password" Class="required" size="25" id="field04" name="fields[4]" ccvalid="password" title="password" tabindex="4" />
 		        		</td>
 		        	</tr>
 		        	<tr>
@@ -109,14 +109,14 @@ function InLineValid(){
 		        			Re-enter your password:
 		        		</td>
 		        		<td>
-		        			 <input type="password" Class="required" size="25" id="field05" name="fields[5]" />
+		        			 <input type="password" Class="required" size="25" id="field05" name="fields[5]" tabindex="5" />
 		        		</td>
 		        	</tr>
 		        </table>
 				<input type="hidden" name="lt" value="${loginTicket}" />
 				<input type="hidden" name="execution" value="${flowExecutionKey}" />
 				<input type="hidden" name="_eventId" value="submit" />
-		        <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>  
+		        <div align="center"><input type="submit" value="Continue" id="btnSubmit" tabindex="6" /></div>  
 		    </form:form>
 		
 </div>

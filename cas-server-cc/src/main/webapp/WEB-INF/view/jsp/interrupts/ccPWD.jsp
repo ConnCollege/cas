@@ -77,7 +77,7 @@ select {
     </c:choose> 
     <input type="password" Class="required" size="25" tabindex="1" id="field01" name="fields[1]" ccvalid="password"  /><br /><br />
     <strong>Re-enter your password:</strong><br />
-    <input type="password" Class="required" size="25" tabindex="1" id="field02" name="fields[2]" ccvalid="password"  /><br /><br />				
+    <input type="password" Class="required" size="25" tabindex="2" id="field02" name="fields[2]" ccvalid="password"  /><br /><br />				
     <c:choose>
     	<c:when test='${fn:length(ErrorMsg)>3}'>
         	<div id="MainErrorFoot" style="background:#F00"> 
@@ -94,7 +94,7 @@ select {
 	<input type="hidden" name="lt" value="${loginTicket}" />
 	<input type="hidden" name="execution" value="${flowExecutionKey}" />
 	<input type="hidden" name="_eventId" value="submit" />
-    <div align="center"><input type="submit" value="Continue" id="btnSubmit" /></div>
+    <div align="center"><input type="submit" value="Continue" id="btnSubmit" tabindex="3" /></div>
     <strong>
     <em>Important to Note: </em><br /><br />
     If this is your first login, you will need to type your new password again and accept Google’s terms of service the first time you access your e-mail.<br /><br />
