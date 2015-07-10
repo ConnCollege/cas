@@ -489,6 +489,7 @@ public class jdbcCamel {
 				log.error("Returning Password Set failed.");
 				return "Failed";
 			}
+			String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 			List DN = this.ldapTemplate.search(
 				this.searchBase, searchFilter, 
 				new AbstractContextMapper(){
@@ -501,13 +502,12 @@ public class jdbcCamel {
 			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 			
 			String ldapAttrib="extensionAttribute8";
-			flag="PWD";
 			
 			log.debug("Writeflow Updating attribute " + ldapAttrib);
 			String Attrib = ldapcontext.getStringAttribute(ldapAttrib);
 			if (Attrib != null){
 				DateFormat dfm = new SimpleDateFormat("MM/dd/yyyy");
-				Attrib = Attrib.toString().replace(flag+"=;",flag+"="+dfm.format(new Date())+";");
+				Attrib = Attrib.toString().replace("PWD=;","PWD="+dfm.format(new Date())+";");
 				
 				log.info("Writeflow writing update '"+ Attrib +"'to attribute " + ldapAttrib);
 				ldapcontext.setAttributeValue(ldapAttrib, Attrib);
