@@ -490,28 +490,29 @@ public class jdbcCamel {
 				return "Failed";
 			}
 			List DN = this.ldapTemplate.search(
-					this.searchBase, searchFilter, 
-					new AbstractContextMapper(){
-						protected Object doMapFromContext(DirContextOperations ctx) {
-							return ctx.getNameInNamespace();
-						}
+				this.searchBase, searchFilter, 
+				new AbstractContextMapper(){
+					protected Object doMapFromContext(DirContextOperations ctx) {
+						return ctx.getNameInNamespace();
 					}
-				);
-				
-				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
-				
-				
-				log.debug("CheckFlags Updating attribute " + ldapAttrib);
-				String Attrib = ldapcontext.getStringAttribute(ldapAttrib);
-				if (Attrib == null){
-					return "noFlag";
 				}
+			);
+			
+			DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+			
+			ldapAttrib="extensionAttribute8";
+			flag="PWD";
+			
+			log.debug("CheckFlags Updating attribute " + ldapAttrib);
+			String Attrib = ldapcontext.getStringAttribute(ldapAttrib);
+			if (Attrib != null){
 				DateFormat dfm = new SimpleDateFormat("MM/dd/yyyy");
 				Attrib = Attrib.toString().replace(flag+"=;",flag+"="+dfm.format(new Date())+";");
 				
 				log.info("CheckFlags writing update '"+ Attrib +"'to attribute " + ldapAttrib);
 				ldapcontext.setAttributeValue(ldapAttrib, Attrib);
 				ldapTemplate.modifyAttributes(ldapcontext);
+			}
 				
 			credentials.setPassword(intData.getField(1));
 		}
