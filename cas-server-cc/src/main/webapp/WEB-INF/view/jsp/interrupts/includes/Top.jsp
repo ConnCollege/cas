@@ -77,7 +77,7 @@
 					data-intro="Your links to Email, Moodle, ePortfolio, ConnQuest, and Self Service are at the top of every Camelweb page.  Click Next to continue or click Skip to stop the tour."
 					data-step="1">
 					<div class="logo">
-						<a href="/web/home-community/"><span style="font-family: serif;"><strong>Camel</strong>Web</span></a>
+						<span style="font-family: serif;"><strong>Camel</strong>Web</span>
 					</div>
 					
 				</div>
