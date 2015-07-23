@@ -70,7 +70,7 @@ select {
         </c:when>
         <c:otherwise>
         	<div id="MainErrorHead" style="display:none;background:#F00"> 
-				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+				<strong>There was an error with your form. Please fix all fields as noted below in pink.</strong> 
 			</div>
         	<div id="field01Error" style="display:none;background:#FFDAD9"></div>        
         </c:otherwise>

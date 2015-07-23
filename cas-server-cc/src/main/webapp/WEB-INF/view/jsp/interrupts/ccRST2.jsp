@@ -49,7 +49,7 @@
 		<c:choose>
     	<c:when test='${fn:length(ErrorMsg)>3}'>
         	<div id="MainErrorHead" style="background:#F00"> 
-				<strong>There was an error with your form. Please fix all fields as noted above in pink.</strong> 
+				<strong>There was an error with your form. Please fix all fields as noted below in pink.</strong> 
 			</div>
         	<div id="field01Error" style="background:#FFDAD9">
             	${ErrorMsg}
