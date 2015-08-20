@@ -4,7 +4,8 @@
 		<cas:attributes>
 		<c:forEach var="attr"
 			items="${assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes}">
-				<cas:${fn:escapeXml(attr.key)}>${fn:escapeXml(attr.value)}</cas:${fn:escapeXml(attr.key)}>		
+				<cas:${fn:escapeXml(attr.key)}>${fn:escapeXml(attr.value)}</cas:${fn:escapeXml(attr.key)}>	
+				<cas:attribute name="${fn:escapeXml(attr.key)}" value="${fn:escapeXml(attr.value)}"/>	
 		</c:forEach>
 		</cas:attributes>
 <c:if test="${not empty pgtIou}">
