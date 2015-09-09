@@ -116,6 +116,9 @@ public class jdbcCamel {
 	@NotNull
     private String adVersion;
 	
+	@NotNull
+    private Boolean gmSync;
+	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
 		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, NOVALUE;    
@@ -762,46 +765,48 @@ public class jdbcCamel {
 			} else {
 				this.restfulResponse.addMessage("Password not set in vault. User not found.");
 			}
+			if (this.gmSync != false) {
 	
-			log.debug("Setting gMail Password");
-			log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
+				log.debug("Setting gMail Password");
+				log.debug("Connecting to google with user: " + this.mainUsername + " Password: " + this.mainPassword + " domain: " + domain);
 	
-			
-			httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-			
-			
-			// service account credential
-			GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
-				.setJsonFactory(JSON_FACTORY)
-				.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
-				.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
-				.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
-				.setServiceAccountUser( "atilling@conncoll.edu" )
-				.build();
-			
-			// Directory Connection
-			Directory directory = new Directory.Builder(httpTransport, JSON_FACTORY, credential)
-				.setApplicationName(APPLICATION_NAME)
-				.build();
-			
-			try {
-				Directory.Users.List request = directory.users().list();
-				request.setDomain("conncoll.edu");
-				request.setQuery("email:" + userName + "@conncoll.edu");
 				
-				List<User> users = request.execute().getUsers();
-				User user = users.get(0);
-				user = user.setAgreedToTerms(true);
-				user = user.setChangePasswordAtNextLogin(false);
-				user = user.setPassword(newPass);
-				directory.users().update(user.getId(),user).execute();
-				this.restfulResponse.addMessage("Gmail password successfully changed.");
-			} catch (Exception e) {
-				log.info("Password reset failed at google");
-				this.restfulResponse.addMessage("Password reset failed at google");
-				// No Google account					 
-			}		
-	
+				httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+				
+				
+				// service account credential
+				GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+					.setJsonFactory(JSON_FACTORY)
+					.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
+					.setServiceAccountScopes(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_USER))
+					.setServiceAccountPrivateKeyFromP12File(new File("/home/tomcat/CASCfg/GoogleAPI-key.p12"))
+					.setServiceAccountUser( "atilling@conncoll.edu" )
+					.build();
+				
+				// Directory Connection
+				Directory directory = new Directory.Builder(httpTransport, JSON_FACTORY, credential)
+					.setApplicationName(APPLICATION_NAME)
+					.build();
+				
+				try {
+					Directory.Users.List request = directory.users().list();
+					request.setDomain("conncoll.edu");
+					request.setQuery("email:" + userName + "@conncoll.edu");
+					
+					List<User> users = request.execute().getUsers();
+					User user = users.get(0);
+					user = user.setAgreedToTerms(true);
+					user = user.setChangePasswordAtNextLogin(false);
+					user = user.setPassword(newPass);
+					directory.users().update(user.getId(),user).execute();
+					this.restfulResponse.addMessage("Gmail password successfully changed.");
+				} catch (Exception e) {
+					log.info("Password reset failed at google");
+					this.restfulResponse.addMessage("Password reset failed at google");
+					// No Google account					 
+				}		
+			}	
+				
 			log.debug("Saving Aduit trail");
 			String SQL = "insert cc_user_password_history (date,uid,ip,adminid) (select getdate() date, id uid, 'CAS Services' ip, id adminid from cc_user where email=:user) ";
 	
@@ -899,6 +904,10 @@ public class jdbcCamel {
 	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}
+	
+	public void setGmSync (final Boolean gmsync) {
+		this.gmSync = gmsync;
 	}
 	
 	public void setAdVersion (final String adVersion) {

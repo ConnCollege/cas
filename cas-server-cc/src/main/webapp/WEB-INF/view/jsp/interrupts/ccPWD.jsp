@@ -8,15 +8,17 @@
 <p>The password cannot contain all or part of your user account name and it must be <b>at least</b> eight characters in length. The password also <b>may not contain any part of your login id</b>. In addition it needs to contain characters from three of the following categories:</p>
 <p>English uppercase characters (A through Z)<br />
 
+English upper case characters (A through Z)<br />
 English lower case characters (a through z)<br />
 Numbers (0 through 9)<br />
 Non-alphabetic characters (for example, ! $,#, %).</p>
 <p>If you are unable to log in to your email account after changing your password, contact the computer IT Service Desk at x4357 </p>
 <p>Below are some examples of passwords that would follow the necessary criteria:<br />
 &amp;Ez2do Suce$$ful 2S!ncere Etc&amp;etc Came12oo4</p>
-
-<p>Passwords will now need to be changed every 180 days. Please choose a password that meets the above requirements but is easy enough to remember that you do not have to write it down. The three previous passwords cannot be used. (If you do feel the need to write your password down, please store it in a secure location!)<br />
 <em>Do not use the example passwords above.</em></p>
+
+<p>Passwords will now need to be changed every 180 days. Please choose a password that meets the above requirements but is easy enough to remember that you do not have to write it down. The three previous passwords cannot be used. <br />
+<p>Passwords may only be changed once every 24 hours. </p>
  
 <script type="text/javascript"> 
  
