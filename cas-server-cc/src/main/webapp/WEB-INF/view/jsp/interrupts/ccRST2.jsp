@@ -86,9 +86,8 @@
 		<tr>
         		<td colspan="2">
         		<p>The password cannot contain all or part of your user account name and it must be <b>at least</b> eight characters in length. The password also <b>may not contain any part of your login id</b>. In addition it needs to contain characters from three of the following categories:</p>
-				<p>English uppercase characters (A through Z)<br />
 				
-				English upper case characters (A through Z)<br />
+				<p>English upper case characters (A through Z)<br />
 				English lower case characters (a through z)<br />
 				Numbers (0 through 9)<br />
 				Non-alphabetic characters (for example, ! $,#, %).</p>
