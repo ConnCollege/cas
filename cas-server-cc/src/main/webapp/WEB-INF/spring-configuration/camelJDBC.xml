@@ -52,7 +52,7 @@
 		p:filter="sAMAccountName=%u"
 		p:vaultFilter="UId=%u"
 		p:ldapTemplate-ref="ldapTemplate"
-		p:gmsync="${password.gmSync}"
+		p:gmSync="${password.gmsync}"
 		p:vaultTemplate-ref="vaultTemplate"
 		p:searchBase="${ldap.authentication.basedn}"
 		p:vaultSearchBase="${vault.authentication.basedn}"
