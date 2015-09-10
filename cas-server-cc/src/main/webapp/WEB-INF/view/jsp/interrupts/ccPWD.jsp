@@ -7,8 +7,8 @@
 <div style="display: none; background: #f00;" id="MainErrorHead"><strong>There was an error with your form. Please fix all fields as noted below in pink.</strong> </div>
 <p>The password cannot contain all or part of your user account name and it must be <b>at least</b> eight characters in length. The password also <b>may not contain any part of your login id</b>. In addition it needs to contain characters from three of the following categories:</p>
 
-<p>English upper case characters (A through Z)<br />
-English lower case characters (a through z)<br />
+<p>English uppercase characters (A through Z)<br />
+English lowercase characters (a through z)<br />
 Numbers (0 through 9)<br />
 Non-alphabetic characters (for example, ! $,#, %).</p>
 <p>If you are unable to log in to your email account after changing your password, contact the computer IT Service Desk at x4357 </p>
@@ -17,7 +17,7 @@ Non-alphabetic characters (for example, ! $,#, %).</p>
 <em>Do not use the example passwords above.</em></p>
 
 <p>Passwords will now need to be changed every 180 days. Please choose a password that meets the above requirements but is easy enough to remember that you do not have to write it down. The three previous passwords cannot be used. <br />
-<p>Passwords may only be changed once every 24 hours. </p>
+<p><b>Passwords may only be changed once every 24 hours.</b></p>
  
 <script type="text/javascript"> 
  
