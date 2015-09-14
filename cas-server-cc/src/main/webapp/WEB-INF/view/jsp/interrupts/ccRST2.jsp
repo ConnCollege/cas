@@ -8,8 +8,8 @@
 <c:set var="hasForm" value="1" scope="page" />
 <script type="text/javascript">
 	if (document.location.protocol != "https:") {
-		document.location.href = "https://" + document.domain
-				+ location.patdname;
+		window.location.protocol = "https:";
+		window.location.reload();
 	}
 	var ccPopUp = 0;
 	var ccPassMin = 8;
