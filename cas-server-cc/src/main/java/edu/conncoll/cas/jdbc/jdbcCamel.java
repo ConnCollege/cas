@@ -516,8 +516,11 @@ public class jdbcCamel {
 				ldapcontext.setAttributeValue(ldapAttrib, Attrib);
 				ldapTemplate.modifyAttributes(ldapcontext);
 			}
-				
-			credentials.setPassword(intData.getField(1));
+			try {	
+				credentials.setPassword(intData.getField(1));
+			}catch (Exception e){
+				log.warn ("Error seting user's new password into flow: " + e.getMessage());
+			}
 		}
 		if (flag.equals("RESET")) {
 			log.debug ("Password reset for " + intData.getField(1));
