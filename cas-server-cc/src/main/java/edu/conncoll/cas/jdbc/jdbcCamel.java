@@ -517,6 +517,7 @@ public class jdbcCamel {
 				ldapTemplate.modifyAttributes(ldapcontext);
 			}
 			try {	
+				log.debug ("Updating user password in context");
 				credentials.setPassword(intData.getField(1));
 			}catch (Exception e){
 				log.warn ("Error seting user's new password into flow: " + e.getMessage());
@@ -621,6 +622,7 @@ public class jdbcCamel {
 				log.debug("Update result " + check);
 			}
 		}
+		log.debug("Writeflow completed successfully, returning saved.");
 		return "Saved";
 	}
 	
