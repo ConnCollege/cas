@@ -632,36 +632,54 @@ public class jdbcCamel {
 		
 		this.restfulResponse = new RestfulResponse();
 		
+
+
+		boolean inVault = false;
+		boolean inAD = false;
+		
 		log.debug("Finding user in Vault");
-		List vaultDN = this.vaultTemplate.search(
-			this.vaultSearchBase, vaultSearchFilter, 
-			new AbstractContextMapper(){
-				protected Object doMapFromContext(DirContextOperations ctx) {
-					return ctx.getNameInNamespace();
+		try {
+			List vaultDN = this.vaultTemplate.search(
+				this.vaultSearchBase, vaultSearchFilter, 
+				new AbstractContextMapper(){
+					protected Object doMapFromContext(DirContextOperations ctx) {
+						return ctx.getNameInNamespace();
+					}
 				}
-			}
-		);
+			);
+		} catch (exception e){
+			log.error("Error finding user in vault: " + e.message);
+			List vaultDN = null;
+		}
 
 		log.debug("Finding user in AD");
-		List DN = this.ldapTemplate.search(
-			this.searchBase, searchFilter, 
-			new AbstractContextMapper(){
-				protected Object doMapFromContext(DirContextOperations ctx) {
-					return ctx.getNameInNamespace();
+		try {
+			List DN = this.ldapTemplate.search(
+				this.searchBase, searchFilter, 
+				new AbstractContextMapper(){
+					protected Object doMapFromContext(DirContextOperations ctx) {
+						return ctx.getNameInNamespace();
+					}
 				}
-			}
-		);
-
-		boolean inVault = true;
-		boolean inAD = true;
-		if ( vaultDN.isEmpty() ) {
-			log.debug( "User was not found in AD (username: " + userName + ")" );
-			inVault = false;
+			);
+		} catch (exception e){
+			log.error("Error finding user in AD: " + e.message);
+			List DN = null;
 		}
 		
-		if ( DN.isEmpty() ) {
-			log.debug( "User was not found in vault (username: " + userName + ")" );
-			inAD = false;
+		
+		if ( !vaultDN.isEmpty() ) {
+			log.debug( "User was found in vault (username: " + userName + ")" );
+			inVault = true;
+		}else{
+			log.debug( "User was NOT found in vault (username: " + userName + ")" );
+		}
+		
+		if ( !DN.isEmpty() ) {
+			log.debug( "User was found in AD (username: " + userName + ")" );
+			inAD = true;
+		}else{
+			log.debug( "User was NOT found in AD (username: " + userName + ")" );
 		}
 		
 		DirContextOperations ldapcontext = null;

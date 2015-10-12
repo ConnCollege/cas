@@ -228,8 +228,7 @@ We may also send recorded emergency messages to your personal phone, such as a c
         	<c:set var="found" value="0" />
         	<c:set var="y" value="${(x * 5) + 9}" />
         	<c:forEach var="z" begin="0" end="${fn:length(Phones)-1}">
-        		<c:if test="${Phones[z].PhoneCode.matches('[0-9]+')}">
-                <c:if test="${Phones[z].PhoneCode == x}">
+                <c:if test="${Phones[z].PhoneCode.equals(String.valueOf(x))}">
                     <tr align="center">
                         <td>
                             #${x}<input name="fields[${y + 1}]" type="text" size="3" maxlength="3" ccnumonly="true" ccnumtype="whole" title="Phone Number area code for contact ${x}" value="${Phones[z].AreaCode}" />
@@ -253,7 +252,6 @@ We may also send recorded emergency messages to your personal phone, such as a c
                         </td>
                      </tr>
                      <c:set var="found" value="1" />
-            	</c:if>
             	</c:if>
          	</c:forEach>
             <c:if test="${found == 0}">
@@ -315,7 +313,7 @@ We may also send recorded emergency messages to your personal phone, such as a c
             <th scope="col"><input name="fields[38]" type="radio" value="p"<c:if test="${emrData.Tty == 'p'}"> checked="true"</c:if> />
                 <span class="btext1">Primary</span></th>
             <c:forEach var="x" begin="1" end="4">
-            	<th scope="col"><input name="fields[38]" type="radio" value="${x}"<c:if test="${emrData.Tty == x}"> checked="true"</c:if> />
+            	<th scope="col"><input name="fields[38]" type="radio" value="${x}"<c:if test="${emrData.Tty.equals(String.valueOf(x))}"> checked="true"</c:if> />
                 <span class="btext1">Other #${x}</span></th>
             </c:forEach>
         </tr>
