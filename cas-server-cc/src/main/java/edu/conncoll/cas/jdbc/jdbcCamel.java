@@ -647,7 +647,7 @@ public class jdbcCamel {
 					}
 				}
 			);
-		} catch (exception e){
+		} catch (Exception e){
 			log.error("Error finding user in vault: " + e.message);
 			List vaultDN = null;
 		}
@@ -662,7 +662,7 @@ public class jdbcCamel {
 					}
 				}
 			);
-		} catch (exception e){
+		} catch (Exception e){
 			log.error("Error finding user in AD: " + e.message);
 			List DN = null;
 		}
