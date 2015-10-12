@@ -636,10 +636,12 @@ public class jdbcCamel {
 
 		boolean inVault = false;
 		boolean inAD = false;
+		List vaultDN; 
+		List DN;
 		
 		log.debug("Finding user in Vault");
 		try {
-			List vaultDN = this.vaultTemplate.search(
+			vaultDN = this.vaultTemplate.search(
 				this.vaultSearchBase, vaultSearchFilter, 
 				new AbstractContextMapper(){
 					protected Object doMapFromContext(DirContextOperations ctx) {
@@ -649,12 +651,12 @@ public class jdbcCamel {
 			);
 		} catch (Exception e){
 			log.error("Error finding user in vault: " + e.getMessage());
-			List vaultDN = null;
+			vaultDN= null;
 		}
 
 		log.debug("Finding user in AD");
 		try {
-			List DN = this.ldapTemplate.search(
+			DN= this.ldapTemplate.search(
 				this.searchBase, searchFilter, 
 				new AbstractContextMapper(){
 					protected Object doMapFromContext(DirContextOperations ctx) {
@@ -664,7 +666,7 @@ public class jdbcCamel {
 			);
 		} catch (Exception e){
 			log.error("Error finding user in AD: " + e.getMessage());
-			List DN = null;
+			DN = null;
 		}
 		
 		
