@@ -641,8 +641,8 @@ public class jdbcCamel {
 
 		boolean inVault = false;
 		boolean inAD = false;
-		List vaultDN; 
-		List DN;
+		List vaultDN = Collections.emptyList(); 
+		List DN = Collections.emptyList();
 		
 		log.debug("Finding user in Vault");
 		try {
@@ -656,7 +656,7 @@ public class jdbcCamel {
 			);
 		} catch (Exception e){
 			log.error("Error finding user in vault: " + e.getMessage());
-			vaultDN= null;
+			vaultDN = Collections.emptyList();
 		}
 
 		log.debug("Finding user in AD");
@@ -671,7 +671,7 @@ public class jdbcCamel {
 			);
 		} catch (Exception e){
 			log.error("Error finding user in AD: " + e.getMessage());
-			DN = null;
+			DN = Collections.emptyList();
 		}
 		
 		
