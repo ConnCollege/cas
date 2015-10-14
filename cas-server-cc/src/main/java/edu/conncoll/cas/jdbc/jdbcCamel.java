@@ -730,9 +730,6 @@ public class jdbcCamel {
 
 			// Set password history enforcement hint
 			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
-			log.debug("Initial Context environment: "+dctx.getEnvironment());
-			dctx.addToEnvironment("com.sun.jndi.ldap.read.timeout", "10000");
-			dctx.addToEnvironment("com.sun.jndi.ldap.connect.timeout", "10000");
 			if (enforce) {
 				final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
 				BasicControl[] controls = new BasicControl[1];
