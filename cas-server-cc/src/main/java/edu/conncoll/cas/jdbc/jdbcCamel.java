@@ -730,6 +730,9 @@ public class jdbcCamel {
 
 			// Set password history enforcement hint
 			LdapContext dctx = (LdapContext)ldapTemplate.getContextSource().getReadWriteContext();
+			log.debug("Initial Context environment: "+dctx.getEnvironment());
+			dctx.addToEnvironment("com.sun.jndi.ldap.read.timeout", "10000");
+			dctx.addToEnvironment("com.sun.jndi.ldap.connect.timeout", "10000");
 			if (enforce) {
 				final byte[] controlData = {48,(byte)132,0,0,0,3,2,1,1};
 				BasicControl[] controls = new BasicControl[1];
@@ -743,13 +746,12 @@ public class jdbcCamel {
 				}
 				controls[0] = new BasicControl(LDAP_SERVER_POLICY_HINTS_OID, true, controlData);
 				dctx.setRequestControls(controls);
-				dctx.addToEnvironment("com.sun.jndi.ldap.read.timeout", "10000");
-				dctx.addToEnvironment("com.sun.jndi.ldap.connect.timeout", "10000");
 			}
 			
 			try {
 				// Change password
 				log.debug ("Performing the password change");
+				log.debug("Context environment: "+dctx.getEnvironment());
 				dctx.modifyAttributes(DN.get(0).toString(),mods);
 				this.restfulResponse.addMessage("AD password successfully changed.");
 			}catch( Exception e){
