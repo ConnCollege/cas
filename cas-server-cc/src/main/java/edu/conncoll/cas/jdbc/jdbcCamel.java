@@ -121,7 +121,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
