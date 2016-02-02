@@ -121,7 +121,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -319,32 +319,14 @@ public class jdbcCamel {
 				} catch (DataAccessException e){
 					log.warn("SQL for Clone Table update failed " + e.getMessage());
 				}
-				/* Write to NuVision file no longer valid
-				String fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;\r\n";
-				try {
-					FileWriter writer = new FileWriter(nuVisionPath,true);
-					log.info("writing to NuViosn file:" + fileStr);
-				    writer.append(fileStr);
-				    writer.flush();
-				    writer.close();
-				} catch(IOException e) {
-					log.error("unable to update nuvision file for id " + Attrib.toString());
-				} 
-				try {
-					FileWriter writer = new FileWriter(nuVisionPath+"_bak",true);
-					Date now = new Date();
-					fileStr = Attrib.toString() + ";;;;;;;;;;;;;;;;;;;;;;;"+now.toString()+"\r\n";
-					log.info("writing to NuViosn file:" + fileStr);
-				    writer.append(fileStr);
-				    writer.flush();
-				    writer.close();
-				} catch(IOException e) {
-					log.error("unable to update nuvision file for id " + Attrib.toString());
-				} 
-				*/
+			break;
+			case PECI:
+				//Find Countries
+				SQL = "select stvnatn_code, stvnatn_nation from saturn.stvnatn ";
+				Map<String,Object> countries = jdbcCensus.queryForMap(SQL);
 			break;
 			default:
-				
+				//No Special actions for interrupt
 			break;
 		}
 	}
@@ -621,6 +603,10 @@ public class jdbcCamel {
 				int check = jdbcTemplate.update(SQL,namedParameters);
 				log.debug("Update result " + check);
 			}
+		}
+
+		if (flag.equals("PECI")) {
+			
 		}
 		log.debug("Writeflow completed successfully, returning saved.");
 		return "Saved";

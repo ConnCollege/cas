@@ -24,7 +24,7 @@
         <sec:user name="tapal" password="notused" authorities="ROLE_ADMIN" />
         <sec:user name="lbsch" password="notused" authorities="ROLE_ADMIN" />
         <sec:user name="jsch" password="notused" authorities="ROLE_ADMIN" />
-        <sec:user name="briley" password="notused" authorities="ROLE_ADMIN" />
+        <sec:user name="mmatovic" password="notused" authorities="ROLE_ADMIN" />
     </sec:user-service>
 	
 	<!-- This is the serviceRegistry configuration for Hibernate  -->
