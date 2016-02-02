@@ -322,8 +322,45 @@ public class jdbcCamel {
 			break;
 			case PECI:
 				//Find Countries
-				SQL = "select stvnatn_code, stvnatn_nation from saturn.stvnatn ";
-				Map<String,Object> countries = jdbcCensus.queryForMap(SQL);
+				
+				Map<String,Map<String,Object>> options = new HashMap<String,Map<String,Object>>();
+				Map<String,Object> option = new HashMap <String,Object>();
+				List<Map<String,Object>> rows;
+				//Countries
+				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn ";
+				rows = jdbcCensus.queryForList(SQL);
+				for (Map<String,Object> row : rows){
+					option.put(row.get("key").toString(),row.get("value"));
+				}
+				options.put ("Countries",option);
+				option.clear();
+				//States
+				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat ";
+				rows = jdbcCensus.queryForList(SQL);
+				for (Map<String,Object> row : rows){
+					option.put(row.get("key").toString(),row.get("value"));
+				}
+				options.put ("States",option);
+				option.clear();
+				//Carriers
+				/*
+				SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier ";
+				rows = jdbcCensus.queryForList(SQL);
+				for (Map<String,Object> row : rows){
+					option.put(row.get("key").toString(),row.get("value"));
+				}
+				*/
+				options.put ("Carriers",option);
+				option.clear();
+				//Relationships
+				SQL = "select stvrelt_code key, stvrelt_desc value from saturn.stvrelt ";
+				rows = jdbcCensus.queryForList(SQL);
+				for (Map<String,Object> row : rows){
+					option.put(row.get("key").toString(),row.get("value"));
+				}
+				options.put ("Relationships",option);
+				option.clear();
+				context.getFlowScope().put("options", options);
 			break;
 			default:
 				//No Special actions for interrupt
