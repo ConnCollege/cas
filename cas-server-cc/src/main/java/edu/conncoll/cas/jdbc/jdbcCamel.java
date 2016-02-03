@@ -311,7 +311,7 @@ public class jdbcCamel {
 				}
 				//Write to Black Board Clone Table
 				try {
-					SQL = "update clone.clone_card set customfield8 = 'Y' , customfield12 = SYSDATE where person_number = :bannerId";
+					SQL = "update clone.clone_card set customfield8 = 'Y' , customfield12 = to_char(sysdate, 'mm/dd/yyyy hh:mi:ss AM') where person_number = :bannerId";
 					log.debug("SQL for update " + SQL);
 					log.debug("banner id " + Attrib.toString());
 					int check = jdbcBlackB.update(SQL, Attrib.toString());
@@ -321,45 +321,39 @@ public class jdbcCamel {
 				}
 			break;
 			case PECI:
-				//Find Countries
-				
 				Map<String,Map<String,Object>> options = new HashMap<String,Map<String,Object>>();
-				Map<String,Object> option = new HashMap <String,Object>();
 				List<Map<String,Object>> rows;
 				//Countries
 				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn ";
 				rows = jdbcCensus.queryForList(SQL);
+				options.put ("Countries",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
-					option.put(row.get("key").toString(),row.get("value"));
+					options.get("Countries").put(row.get("key").toString(),row.get("value"));
 				}
-				options.put ("Countries",option);
-				option.clear();
+				
 				//States
 				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat ";
 				rows = jdbcCensus.queryForList(SQL);
+				options.put ("States",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
-					option.put(row.get("key").toString(),row.get("value"));
+					options.get("States").put(row.get("key").toString(),row.get("value"));
 				}
-				options.put ("States",option);
-				option.clear();
+				
 				//Carriers
-				/*
-				SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier ";
-				rows = jdbcCensus.queryForList(SQL);
-				for (Map<String,Object> row : rows){
-					option.put(row.get("key").toString(),row.get("value"));
-				}
-				*/
-				options.put ("Carriers",option);
-				option.clear();
+				//SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier ";
+				//rows = jdbcCensus.queryForList(SQL);
+				options.put ("Carriers",new HashMap<String,Object>());
+				//for (Map<String,Object> row : rows){
+					//options.get("Carriers").put(row.get("key").toString(),row.get("value"));
+				//}
+				
 				//Relationships
 				SQL = "select stvrelt_code key, stvrelt_desc value from saturn.stvrelt ";
 				rows = jdbcCensus.queryForList(SQL);
+				options.put ("Relationships",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
-					option.put(row.get("key").toString(),row.get("value"));
+					options.get("Relationships").put(row.get("key").toString(),row.get("value"));
 				}
-				options.put ("Relationships",option);
-				option.clear();
 				context.getFlowScope().put("options", options);
 			break;
 			default:
