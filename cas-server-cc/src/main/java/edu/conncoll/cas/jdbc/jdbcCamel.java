@@ -324,15 +324,16 @@ public class jdbcCamel {
 				Map<String,Map<String,Object>> options = new HashMap<String,Map<String,Object>>();
 				List<Map<String,Object>> rows;
 				//Countries
-				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn ";
+				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn order by value";
 				rows = jdbcCensus.queryForList(SQL);
 				options.put ("Countries",new HashMap<String,Object>());
+				options.get("Countries").put("US","United States");
 				for (Map<String,Object> row : rows){
 					options.get("Countries").put(row.get("key").toString(),row.get("value"));
 				}
 				
 				//States
-				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat ";
+				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat order by value";
 				rows = jdbcCensus.queryForList(SQL);
 				options.put ("States",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
@@ -340,7 +341,7 @@ public class jdbcCamel {
 				}
 				
 				//Carriers
-				//SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier ";
+				//SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier order by value";
 				//rows = jdbcCensus.queryForList(SQL);
 				options.put ("Carriers",new HashMap<String,Object>());
 				//for (Map<String,Object> row : rows){
@@ -348,7 +349,7 @@ public class jdbcCamel {
 				//}
 				
 				//Relationships
-				SQL = "select stvrelt_code key, stvrelt_desc value from saturn.stvrelt ";
+				SQL = "select stvrelt_code key, stvrelt_desc value from saturn.stvrelt order by value";
 				rows = jdbcCensus.queryForList(SQL);
 				options.put ("Relationships",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
