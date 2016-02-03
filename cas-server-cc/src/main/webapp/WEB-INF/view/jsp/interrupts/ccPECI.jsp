@@ -6,7 +6,7 @@
   <title>Parent and Emergency Contact Information</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -76,6 +76,9 @@
     #draggablePanelList .panel-heading {
         cursor: move;
     }
+    .modal .modal-body {
+	    overflow-y: auto;
+	}
   </style>
 </head>
 <body>
@@ -167,7 +170,20 @@ public String displayDropdown(boolean required, String label, int label_column, 
 		fieldOut = fieldOut + " ccreq";
 	}	
 	fieldOut = fieldOut + "\">";
+	
+	if(label == "Country"){
+
+	}else if(label == "State"){		
+		
+	}else if(label == "Phone Carrier"){
+		
+	}else if(label == "Relationship"){
+		
+	}	
+
 	fieldOut = fieldOut + "<option value=\"\">Choose " + label + "</option>";
+	fieldOut = fieldOut + "<option value=\"New London\">New London</option>";
+	fieldOut = fieldOut + "<option value=\"Connecticut\">Connecticut</option>";
 	fieldOut = fieldOut + "</select>";
 	fieldOut = fieldOut + "</div>";
 	fieldOut = fieldOut + "</div>"; 
@@ -217,19 +233,19 @@ public String displayEntryModal(String type,String modal_title,String action){
   	ModalOut = ModalOut + displayDropdown(true,"Relationship",4,6,type + "_relationship","","",true,false);
   	if(type == "emergency_contact"){
   		//address not required for emergency contact
-	  	ModalOut = ModalOut + displayInput(false,"Address 1",4,6,type + "address1","text","",true,false);
-	  	ModalOut = ModalOut + displayInput(false,"Address 2",4,6,type + "address2","text","",true,false);
-	  	ModalOut = ModalOut + displayDropdown(false,"Country",4,6,type + "country","","",true,false);
-	  	ModalOut = ModalOut + displayDropdown(false,"City",4,6,type + "city","","",true,false);
+	  	ModalOut = ModalOut + displayInput(false,"Address 1",4,6,type + "_address1","text","",true,false);
+	  	ModalOut = ModalOut + displayInput(false,"Address 2",4,6,type + "_address2","text","",true,false);
+	  	ModalOut = ModalOut + displayDropdown(false,"Country",4,6,type + "_country","","",true,false);
+	  	ModalOut = ModalOut + displayDropdown(false,"City",4,6,type + "_city","","",true,false);
 	  	ModalOut = ModalOut + displayDropdown(false,"State",4,6,type + "_state","","",true,false);
-	  	ModalOut = ModalOut + displayInput(false,"Postal Code",4,6,type + "student_postal_code","postal code","",true,false);	  	
+	  	ModalOut = ModalOut + displayInput(false,"Postal Code",4,6,type + "_student_postal_code","postal code","",true,false);	  	
   	}else{
-	  	ModalOut = ModalOut + displayInput(true,"Address 1",4,6,type + "address1","text","",true,false);
-	  	ModalOut = ModalOut + displayInput(false,"Address 2",4,6,type + "address2","text","",true,false);
-	  	ModalOut = ModalOut + displayDropdown(true,"Country",4,6,type + "country","","",true,false);
-	  	ModalOut = ModalOut + displayDropdown(true,"City",4,6,type + "city","","",true,false);
+	  	ModalOut = ModalOut + displayInput(true,"Address 1",4,6,type + "_address1","text","",true,false);
+	  	ModalOut = ModalOut + displayInput(false,"Address 2",4,6,type + "_address2","text","",true,false);
+	  	ModalOut = ModalOut + displayDropdown(true,"Country",4,6,type + "_country","","",true,false);
+	  	ModalOut = ModalOut + displayDropdown(true,"City",4,6,type + "_city","","",true,false);
 	  	ModalOut = ModalOut + displayDropdown(true,"State",4,6,type + "_state","","",true,false);
-	  	ModalOut = ModalOut + displayInput(true,"Postal Code",4,6,type + "student_postal_code","postal code","",true,false);
+	  	ModalOut = ModalOut + displayInput(true,"Postal Code",4,6,type + "_student_postal_code","postal code","",true,false);
 	  	ModalOut = ModalOut + displayCheckbox(false,"This parent claims me as a dependent",4,6, type +"_dependent_check", "", "", "");
   	}
   	//save and close buttons
@@ -253,12 +269,17 @@ public String displayDeleteModal(String type,String modal_title,String action){
 %>
 
 <div class="container">
-  <h2>Update my Contact Information</h2>
+  <h2>Update Your Contact Information</h2>
   <p>Please enter your contact information, parent/guardian and emergency contact information below.</p> 
   <form class="form-horizontal" role="form" id="main_form" onsubmit="return formValidate(this.id)"> 
   <div id="step1" class="form_section">
 	  <h3>Step 1 Verify Your Permanent Mailing Address</h3>
 	  <p>Please do not enter your local or campus address.</p>
+	  <select>
+	  	<c:forEach items="${options.Countries}" var="countries">
+			<option value="${countries.key}" selected="selected">${country.value}</option>
+		</c:forEach>
+	  </select>
 	  <p><span class="required">* </span>Required Field</p>  
 		<%
 			out.print(displayInput(false,"First Name",2,10,"student_first_name","text","",true,true));
@@ -270,6 +291,7 @@ public String displayDeleteModal(String type,String modal_title,String action){
 			out.print(displayDropdown(true,"City",2,10,"student_city","city","",true,false));
 			out.print(displayDropdown(true,"State",2,10,"student_state","state","",true,false));
 			out.print(displayInput(true,"Postal Code",2,10,"student_postal_code","postal code","",true,false));
+			out.print("<div id='HiddenDiv1' name='HiddenDiv1'></div>");
 			out.print(displayInput(false,"Home Phone",2,10,"student_home_phone","tel","",true,false));
 			out.print(displayInput(false,"Non-college email",2,10,"student_non_college_email","email","",true,false));			
 		%>   	
@@ -345,8 +367,17 @@ public String displayDeleteModal(String type,String modal_title,String action){
 	      </div>
 	    </div>  
 	</div>      
+	
+	<input type="hidden"  name="statuscode"   id="student_statuscode">            
+    <input type="hidden"  name="dpverrorcode" id="student_dpverrorcode">
+    <input type="hidden"  name="message"      id="student_message">
+    <input type="hidden"  name="clnaddrbypass" id="clnaddrbypass" value="0">
+	
   </form>
 </div>
+
+
+    
 
 <%
 	out.print(displayEntryModal("parent","Enter Details","Save"));
@@ -355,7 +386,10 @@ public String displayDeleteModal(String type,String modal_title,String action){
 
 %>
 
+ <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=1003"></script>   
+
  <script type="text/javascript">
+ 
  
  $(document).ready( function(){
 	$("#student_mobile_phone_check").change(function(){
