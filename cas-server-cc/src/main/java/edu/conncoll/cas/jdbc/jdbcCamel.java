@@ -342,38 +342,20 @@ public class jdbcCamel {
 				}
 				
 				//Carriers
-				//SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier order by value";
-				//rows = jdbcCensus.queryForList(SQL);
+				SQL = "select vendor_code key, vendor_desc value from peci.cc_gen_peci_phone_carriers order by display_order";
+				rows = jdbcCensus.queryForList(SQL);
 				options.put ("Carriers",new LinkedHashMap<String,Object>());
-				//for (Map<String,Object> row : rows){
-					//options.get("Carriers").put(row.get("key").toString(),row.get("value"));
-				//}
+				for (Map<String,Object> row : rows){
+					options.get("Carriers").put(row.get("key").toString(),row.get("value"));
+				}
 				
 				//Relationships
-				/* No Longer pulling from DB in order to order and filter
-				SQL = "select stvrelt_code key, stvrelt_desc value from saturn.stvrelt order by value";
+				SQL = "select peci_relt_code key, peci_relt_desc value from cc_gen_peci_relt_val_codes where peci_enabled = 'Y' order by peci_display_order";
 				rows = jdbcCensus.queryForList(SQL);
 				options.put ("Relationships",new HashMap<String,Object>());
 				for (Map<String,Object> row : rows){
 					options.get("Relationships").put(row.get("key").toString(),row.get("value"));
 				}
-				*/
-				options.put ("Relationships",new LinkedHashMap<String,Object>());
-				options.get("Relationships").put("M","Mother");
-				options.get("Relationships").put("F","Father");
-				options.get("Relationships").put("H","Step Parent");
-				options.get("Relationships").put("G","Grandparent");
-				options.get("Relationships").put("B","Brother");
-				options.get("Relationships").put("S","Sister");
-				options.get("Relationships").put("A","Aunt");
-				options.get("Relationships").put("U","Uncle");
-				options.get("Relationships").put("C","Cousin");
-				options.get("Relationships").put("Y","Friend");
-				options.get("Relationships").put("Z","Guardian");
-				options.get("Relationships").put("Q","Family Member");
-				options.get("Relationships").put("R","Great Grandparent");
-				options.get("Relationships").put("W","Spouse");
-				options.get("Relationships").put("P","Partner");
 				
 				context.getFlowScope().put("options", options);
 			break;
