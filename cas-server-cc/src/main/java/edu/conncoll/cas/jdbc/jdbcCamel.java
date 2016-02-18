@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.List;
 
@@ -321,12 +322,12 @@ public class jdbcCamel {
 				}
 			break;
 			case PECI:
-				Map<String,Map<String,Object>> options = new HashMap<String,Map<String,Object>>();
+				Map<String,Map<String,Object>> options = new LinkedHashMap<String,Map<String,Object>>();
 				List<Map<String,Object>> rows;
 				//Countries
 				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn order by value";
 				rows = jdbcCensus.queryForList(SQL);
-				options.put ("Countries",new HashMap<String,Object>());
+				options.put ("Countries",new LinkedHashMap<String,Object>());
 				options.get("Countries").put("US","United States");
 				for (Map<String,Object> row : rows){
 					options.get("Countries").put(row.get("key").toString(),row.get("value"));
@@ -335,7 +336,7 @@ public class jdbcCamel {
 				//States
 				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat order by value";
 				rows = jdbcCensus.queryForList(SQL);
-				options.put ("States",new HashMap<String,Object>());
+				options.put ("States",new LinkedHashMap<String,Object>());
 				for (Map<String,Object> row : rows){
 					options.get("States").put(row.get("key").toString(),row.get("value"));
 				}
@@ -343,7 +344,7 @@ public class jdbcCamel {
 				//Carriers
 				//SQL = "select mobile_carrier_name key, mobile_carrier_name value from peci.cc_gen_peci_phone_carrier order by value";
 				//rows = jdbcCensus.queryForList(SQL);
-				options.put ("Carriers",new HashMap<String,Object>());
+				options.put ("Carriers",new LinkedHashMap<String,Object>());
 				//for (Map<String,Object> row : rows){
 					//options.get("Carriers").put(row.get("key").toString(),row.get("value"));
 				//}
@@ -357,7 +358,7 @@ public class jdbcCamel {
 					options.get("Relationships").put(row.get("key").toString(),row.get("value"));
 				}
 				*/
-				options.put ("Relationships",new HashMap<String,Object>());
+				options.put ("Relationships",new LinkedHashMap<String,Object>());
 				options.get("Relationships").put("M","Mother");
 				options.get("Relationships").put("F","Father");
 				options.get("Relationships").put("H","Step Parent");
