@@ -352,7 +352,7 @@ public class jdbcCamel {
 				//Relationships
 				SQL = "select peci_relt_code key, peci_relt_desc value from cc_gen_peci_relt_val_codes where peci_enabled = 'Y' order by peci_display_order";
 				rows = jdbcCensus.queryForList(SQL);
-				options.put ("Relationships",new HashMap<String,Object>());
+				options.put ("Relationships",new LinkedHashMap<String,Object>());
 				for (Map<String,Object> row : rows){
 					options.get("Relationships").put(row.get("key").toString(),row.get("value"));
 				}
