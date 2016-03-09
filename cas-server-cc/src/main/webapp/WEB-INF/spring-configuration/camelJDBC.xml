@@ -49,6 +49,7 @@
 		p:dataSource-ref="dataSourceCamel"
 		p:censusSource-ref="dataSourceCensus"
 		p:blackBSource-ref="dataSourceBlackB"
+		p:CASSource-ref="dataSourceCAS"
 		p:filter="sAMAccountName=%u"
 		p:vaultFilter="UId=%u"
 		p:ldapTemplate-ref="ldapTemplate"

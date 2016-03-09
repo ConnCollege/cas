@@ -71,6 +71,9 @@ public class jdbcCamel {
 	
 	@NotNull
     private JdbcTemplate jdbcBlackB;
+	
+	@NotNull
+    private JdbcTemplate jdbcCAS;
     
     @NotNull
     private DataSource dataSource;
@@ -80,6 +83,9 @@ public class jdbcCamel {
     
     @NotNull
     private DataSource BlackBSource;
+    
+    @NotNull
+    private DataSource CASSource;
     
 	@NotNull
 	private LdapTemplate ldapTemplate;
@@ -122,7 +128,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, PECIC, PECIE, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -156,6 +162,12 @@ public class jdbcCamel {
 		SqlParameterSource namedParameters = new MapSqlParameterSource("user", userName + "@conncoll.edu");
 		
 		log.debug("readFlow Preparing data for " + flag + " user is " + userName);
+		
+		String searchFilter;
+		List DN;
+		DirContextOperations ldapcontext;
+		String Attrib;
+		
 		
 		switch (Interrupts.toInt(flag)) {
 			case RST2:
@@ -284,9 +296,9 @@ public class jdbcCamel {
 				log.debug("Termcode returned by query " + termData.get("param_value").toString());
 				// term code termData.get("param_value").toString()
 				// get banner id from ldap
-				String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+				searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 				
-				List DN = this.ldapTemplate.search(
+				DN = this.ldapTemplate.search(
 					this.searchBase, searchFilter, 
 					new AbstractContextMapper(){
 						protected Object doMapFromContext(DirContextOperations ctx) {
@@ -295,9 +307,9 @@ public class jdbcCamel {
 					}
 				);
 				
-				DirContextOperations ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
 				
-				String Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+				Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
 				//Write to Census Table
 				try {
 					SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
@@ -322,42 +334,36 @@ public class jdbcCamel {
 				}
 			break;
 			case PECI:
-				Map<String,Map<String,Object>> options = new LinkedHashMap<String,Map<String,Object>>();
-				List<Map<String,Object>> rows;
-				//Countries
-				SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn order by value";
-				rows = jdbcCensus.queryForList(SQL);
-				options.put ("Countries",new LinkedHashMap<String,Object>());
-				options.get("Countries").put("US","United States");
-				for (Map<String,Object> row : rows){
-					options.get("Countries").put(row.get("key").toString(),row.get("value"));
-				}
 				
-				//States
-				SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat order by value";
-				rows = jdbcCensus.queryForList(SQL);
-				options.put ("States",new LinkedHashMap<String,Object>());
-				for (Map<String,Object> row : rows){
-					options.get("States").put(row.get("key").toString(),row.get("value"));
-				}
 				
-				//Carriers
-				SQL = "select vendor_code key, vendor_desc value from peci.cc_gen_peci_phone_carriers order by display_order";
-				rows = jdbcCensus.queryForList(SQL);
-				options.put ("Carriers",new LinkedHashMap<String,Object>());
-				for (Map<String,Object> row : rows){
-					options.get("Carriers").put(row.get("key").toString(),row.get("value"));
-				}
+				//Get PDIM
+				searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 				
-				//Relationships
-				SQL = "select peci_relt_code key, peci_relt_desc value from cc_gen_peci_relt_val_codes where peci_enabled = 'Y' order by peci_display_order";
-				rows = jdbcCensus.queryForList(SQL);
-				options.put ("Relationships",new LinkedHashMap<String,Object>());
-				for (Map<String,Object> row : rows){
-					options.get("Relationships").put(row.get("key").toString(),row.get("value"));
-				}
+				DN = this.ldapTemplate.search(
+					this.searchBase, searchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
+						}
+					}
+				);
 				
-				context.getFlowScope().put("options", options);
+				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				
+				 Attrib = ldapcontext.getStringAttribute("ccpidm");
+
+				//Pull PECI Data from Oracle and store in MySQL 
+				//Student Data
+				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=".Attrib;
+				Map<String,Object> studentData = jdbcCensus.queryForMap(SQL);
+				
+				copy2MySQL("cc_stu_peci_students_t",studentData);
+			break;
+			case PECIE:
+				loadPECIOptions(context);
+			break;
+			case PECIC:	
+				loadPECIOptions(context);
 			break;
 			default:
 				//No Special actions for interrupt
@@ -645,12 +651,67 @@ public class jdbcCamel {
 		log.debug("Writeflow completed successfully, returning saved.");
 		return "Saved";
 	}
+
+	void copy2MySQL(String tableName, Map<String,Object> sourceData) 
+			throws Exception{
+		String sql = "insert into " + tableName + "(" + sourceData.keySet().toString() + ") values (?";
+		for(int i=1; i<sourceData.size(); i++){
+			sql = sql +", ?";
+		}
+		sql = sql + ")";
+		log.debug(sql);
+		CASSource.update(sql,sourceData.values());
+	}
 	
-	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
-		throws Exception{
+	public void loadPECIOptions(RequestContext context)
+			throws Exception {
+		Map<String,Map<String,Object>> options = new LinkedHashMap<String,Map<String,Object>>();
+		List<Map<String,Object>> rows;
+		//Countries
+		SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn order by value";
+		rows = jdbcCensus.queryForList(SQL);
+		options.put ("Countries",new LinkedHashMap<String,Object>());
+		options.get("Countries").put("US","United States");
+		for (Map<String,Object> row : rows){
+			options.get("Countries").put(row.get("key").toString(),row.get("value"));
+		}
+		
+		//States
+		SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat order by value";
+		rows = jdbcCensus.queryForList(SQL);
+		options.put ("States",new LinkedHashMap<String,Object>());
+		for (Map<String,Object> row : rows){
+			options.get("States").put(row.get("key").toString(),row.get("value"));
+		}
+		
+		//Carriers
+		SQL = "select vendor_code key, vendor_desc value from peci.cc_gen_peci_phone_carriers order by display_order";
+		rows = jdbcCensus.queryForList(SQL);
+		options.put ("Carriers",new LinkedHashMap<String,Object>());
+		for (Map<String,Object> row : rows){
+			options.get("Carriers").put(row.get("key").toString(),row.get("value"));
+		}
+		
+		//Relationships
+		SQL = "select peci_relt_code key, peci_relt_desc value from cc_gen_peci_relt_val_codes where peci_enabled = 'Y' order by peci_display_order";
+		rows = jdbcCensus.queryForList(SQL);
+		options.put ("Relationships",new LinkedHashMap<String,Object>());
+		for (Map<String,Object> row : rows){
+			options.get("Relationships").put(row.get("key").toString(),row.get("value"));
+		}
+		
+		context.getFlowScope().put("options", options);
+	}
+	
+	public boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD)
+			throws Exception{
 		return setPassword (context,userName,newPass,setAD, true);
 	}
-	boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD, boolean enforce)
+	public boolean setPassword( String userName, String newPass, boolean setAD, boolean enforce ) 
+			throws Exception {
+		return this.setPassword(null, userName, newPass, setAD, enforce);
+	}
+	public boolean setPassword (final RequestContext context, String userName, String newPass, boolean setAD, boolean enforce)
 			throws Exception{
 		String searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
 		String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
@@ -861,11 +922,8 @@ public class jdbcCamel {
 			log.debug("Insert result " + check);
 		}
 		return true;
-	}
+	}	
 	
-	public boolean setPassword( String userName, String newPass, boolean setAD, boolean enforce ) throws Exception {
-		return this.setPassword(null, userName, newPass, setAD, enforce);
-	}
 	
 	public Map<String,Object> getUUID( String uuid ) {
 		UUIDRead uuidRead  = new UUIDRead(this.dataSource);
@@ -895,6 +953,11 @@ public class jdbcCamel {
         this.jdbcBlackB = new JdbcTemplate(dataSource);
         this.BlackBSource = dataSource;
     }
+
+    public final void setCASSource(final DataSource dataSource) {
+        this.jdbcCAS = new JdbcTemplate(dataSource);
+        this.CASSource = dataSource;
+    }
     
     protected final NamedParameterJdbcTemplate getJdbcTemplate() {
         return this.jdbcTemplate;
@@ -911,6 +974,10 @@ public class jdbcCamel {
     protected final DataSource getBlackBSource() {
         return this.BlackBSource;
     }	
+    
+    protected final DataSource getCASSource() {
+        return this.CASSource;
+    }
 		
 	public void setsearchBase (final String searchBase) {
 		this.searchBase = searchBase;
