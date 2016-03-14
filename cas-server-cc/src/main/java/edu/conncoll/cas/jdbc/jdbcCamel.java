@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.*;
 import java.lang.Character;
 import java.lang.Integer;
+import java.math.BigDecimal;
 import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -356,20 +357,22 @@ public class jdbcCamel {
 				String surName = vaultcontext.getStringAttribute("sn");
 				
 				Map<String,Object> studentData;
-				Map<String,Object> parentData;
-				Map<String,Object> addressData;
-				Map<String,Object> emailData;
-				Map<String,Object> phoneData;
-				Map<String,Object> emergData;
+				Map<String,Object> studentTrans;
+				List<Map<String,Object>> parentData;
+				List<Map<String,Object>> addressData;
+				List<Map<String,Object>> emailData;
+				List<Map<String,Object>> phoneData;
+				List<Map<String,Object>> emergData;
 				 
 				log.debug ("PDIM Attribute returned:" + ccPDIM);
 
 				//Check if data already loaded in MySQL
+				log.debug("Checking for eisting record in MySQL");
 				SQL = "select count(STUDENT_PIDM) ct from peci_trans_start where STUDENT_PIDM=:STUDENT_PIDM";
 				
 				namedParameters = new MapSqlParameterSource("STUDENT_PIDM", ccPDIM.toString() );
 				
-				Map<String,Object> studentTrans = jdbcCAS.queryForMap(SQL,namedParameters);
+				studentTrans = jdbcCAS.queryForMap(SQL,namedParameters);
 				
 				context.getFlowScope().put("Flag", "PECIE");
 				
@@ -377,12 +380,16 @@ public class jdbcCamel {
 					context.getFlowScope().put("Flag", "PECIC");
 				} else {
 					//Check for data in Oracle
-					SQL = "select count(PPID,STUDENT_PIDM) ct from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
+					log.debug("Checking for eisting record in Oracle");
+					SQL = "select count(STUDENT_PIDM) ct from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
 					
 					studentData = jdbcCensus.queryForMap(SQL);
 					
-					if ( (Long)studentTrans.get("ct") !=0 ){
+					BigDecimal ct = (BigDecimal)studentData.get("ct");
+					
+					if ( ct.intValue() !=0 ){
 						context.getFlowScope().put("Flag", "PECIC");
+						log.debug("Loading Data from Oracle to MySQL");
 					
 						//Pull PECI Data from Oracle and store in MySQL 
 						//Student Data
@@ -397,25 +404,45 @@ public class jdbcCamel {
 						//namedParameters.put("STUDENT_PPID", );
 						
 						//Parent Data
-						SQL="select STUDENT_PPID, PARENT_PPID, TEMP_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where STUDENT_PIDM=" + ccPDIM.toString();
-						parentData = jdbcCensus.queryForMap(SQL);
+						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where STUDENT_PIDM=" + ccPDIM.toString();
+						parentData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_adv_peci_parents_t",parentData);		
 						
 						//Address Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,TEMP_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,PECI_ADDR_DESC,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where STUDENT_PIDM=" + ccPDIM.toString();
-						addressData = jdbcCensus.queryForMap(SQL);
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						addressData = jdbcCensus.queryForList(SQL);
 						
-						copy2MySQL("cc_gen_peci_addr_data_t",addressData);		
+						copy2MySQL("cc_gen_peci_addr_data_t",addressData);	
+						
+						//Email Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						emailData = jdbcCensus.queryForList(SQL);
+						
+						copy2MySQL("cc_gen_peci_email_data_t",emailData);	
+						
+						//Phone Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						phoneData = jdbcCensus.queryForList(SQL);
+						
+						copy2MySQL("cc_gen_peci_phone_data_t",phoneData);	
+						
+						//Emergemcy Contact Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where STUDENT_PIDM=" + ccPDIM.toString();
+						emergData = jdbcCensus.queryForList(SQL);
+						
+						copy2MySQL("cc_gen_peci_emergs_t",emergData);	
 					} else {
-						//Brand new PECI record.						
+						//Brand new PECI record.		
+						log.debug("Brand new PECI Record starting MySQL Base record");				
 					}
 				}
 				
 				loadPECIOptions(context);
 				//Pull data from MySQL for the form.
+				log.debug("Populating form with MySQL data");
 				//Student Data
-				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=:STUDENT_PIDM";
+				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				
 				namedParameters = new MapSqlParameterSource("STUDENT_PIDM", ccPDIM.toString() );
 				
@@ -424,10 +451,34 @@ public class jdbcCamel {
 				context.getFlowScope().put("StudentBio",studentData);
 				
 				//Address Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,TEMP_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,PECI_ADDR_DESC,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
-				addressData = jdbcCAS.queryForMap(SQL,namedParameters);
+				SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+				addressData = jdbcCAS.queryForList(SQL,namedParameters);
 				
 				context.getFlowScope().put("StudentAddr",addressData);
+				
+				//email Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+				emailData = jdbcCAS.queryForList(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentEmail",emailData);
+				
+				//Phone Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+				phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentPhone",phoneData);
+				
+				//Parents
+				SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM";
+				parentData = jdbcCAS.queryForList(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentParents",parentData);
+				
+				//Emerency Contacts
+				SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM";
+				emergData = jdbcCAS.queryForList(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentParents",emergData);
 				
 			break;
 			default:
@@ -717,6 +768,16 @@ public class jdbcCamel {
 		return "Saved";
 	}
 
+	void copy2MySQL(String tableName, List<Map<String,Object>> sourceData) 
+			throws Exception{
+		//Cycle through the rows and send to MySQL
+		for (int i=0; i< sourceData.size(); i++){
+			Map<String,Object> row = sourceData.get(i);
+			copy2MySQL(tableName,row);
+		}
+		
+	}
+	
 	void copy2MySQL(String tableName, Map<String,Object> sourceData) 
 			throws Exception{
 		log.debug("Source data to copy to MySQL" + sourceData.toString());
