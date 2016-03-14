@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS `peci_trans_start`;
+DROP TABLE IF EXISTS `cc_adv_peci_parents_t`;
+DROP TABLE IF EXISTS `cc_gen_peci_addr_data_t`;
+DROP TABLE IF EXISTS `cc_gen_peci_email_data_t`;
+DROP TABLE IF EXISTS `cc_gen_peci_emergs_t`;
+DROP TABLE IF EXISTS `cc_gen_peci_phone_data_t`;
+DROP TABLE IF EXISTS `cc_stu_peci_students_t`;
+
 CREATE TABLE `peci_trans_start` (
   `STUDENT_PPID` int(11) NOT NULL,
   `STUDENT_PIDM` int(11) NOT NULL,

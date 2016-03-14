@@ -73,7 +73,7 @@ public class jdbcCamel {
     private JdbcTemplate jdbcBlackB;
 	
 	@NotNull
-    private JdbcTemplate jdbcCAS;
+    private NamedParameterJdbcTemplate jdbcCAS;
     
     @NotNull
     private DataSource dataSource;
@@ -296,7 +296,7 @@ public class jdbcCamel {
 				log.debug("Termcode returned by query " + termData.get("param_value").toString());
 				// term code termData.get("param_value").toString()
 				// get banner id from ldap
-				searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
+				searchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 				
 				DN = this.ldapTemplate.search(
 					this.searchBase, searchFilter, 
@@ -334,36 +334,101 @@ public class jdbcCamel {
 				}
 			break;
 			case PECI:
+			case PECIE:
+			case PECIC:	
+				//Get PDIM and Name from Vault
+				String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
+				log.debug("Vault search filter: " + vaultSearchFilter);
 				
-				
-				//Get PDIM
-				searchFilter = LdapUtils.getFilterWithValues(this.filter, userName);
-				
-				DN = this.ldapTemplate.search(
-					this.searchBase, searchFilter, 
+				List vaultDN = this.vaultTemplate.search(
+					this.vaultSearchBase, vaultSearchFilter, 
 					new AbstractContextMapper(){
 						protected Object doMapFromContext(DirContextOperations ctx) {
 							return ctx.getNameInNamespace();
 						}
 					}
 				);
+				log.debug("DN: "+ vaultDN.get(0).toString());
+				DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
 				
-				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				String ccPDIM = vaultcontext.getStringAttribute("ccpidm");
+				String givenName = vaultcontext.getStringAttribute("givenname");
+				String surName = vaultcontext.getStringAttribute("sn");
 				
-				 Attrib = ldapcontext.getStringAttribute("ccpidm");
+				Map<String,Object> studentData;
+				Map<String,Object> parentData;
+				Map<String,Object> addressData;
+				Map<String,Object> emailData;
+				Map<String,Object> phoneData;
+				Map<String,Object> emergData;
+				 
+				log.debug ("PDIM Attribute returned:" + ccPDIM);
 
-				//Pull PECI Data from Oracle and store in MySQL 
-				//Student Data
-				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=".Attrib;
-				Map<String,Object> studentData = jdbcCensus.queryForMap(SQL);
+				//Check if data already loaded in MySQL
+				SQL = "select count(STUDENT_PIDM) ct from peci_trans_start where STUDENT_PIDM=:STUDENT_PIDM";
 				
-				copy2MySQL("cc_stu_peci_students_t",studentData);
-			break;
-			case PECIE:
+				namedParameters = new MapSqlParameterSource("STUDENT_PIDM", ccPDIM.toString() );
+				
+				Map<String,Object> studentTrans = jdbcCAS.queryForMap(SQL,namedParameters);
+				
+				context.getFlowScope().put("Flag", "PECIE");
+				
+				if ( (Long)studentTrans.get("ct") !=0 && !flag.equals("PECIE") ){
+					context.getFlowScope().put("Flag", "PECIC");
+				} else {
+					//Check for data in Oracle
+					SQL = "select count(PPID,STUDENT_PIDM) ct from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
+					
+					studentData = jdbcCensus.queryForMap(SQL);
+					
+					if ( (Long)studentTrans.get("ct") !=0 ){
+						context.getFlowScope().put("Flag", "PECIC");
+					
+						//Pull PECI Data from Oracle and store in MySQL 
+						//Student Data
+						SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
+						
+						studentData = jdbcCensus.queryForMap(SQL);
+						
+						copy2MySQL("cc_stu_peci_students_t",studentData);
+											
+						//Enter transaction data in trans table
+						//SQL= "insert into peci_trans_start (STUDENT_PPID, STUDENT_PIDM, Trans_start) values (:STUDENT_PPID, :STUDENT_PIDM, :Trans_start)";
+						//namedParameters.put("STUDENT_PPID", );
+						
+						//Parent Data
+						SQL="select STUDENT_PPID, PARENT_PPID, TEMP_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where STUDENT_PIDM=" + ccPDIM.toString();
+						parentData = jdbcCensus.queryForMap(SQL);
+						
+						copy2MySQL("cc_adv_peci_parents_t",parentData);		
+						
+						//Address Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,TEMP_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,PECI_ADDR_DESC,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						addressData = jdbcCensus.queryForMap(SQL);
+						
+						copy2MySQL("cc_gen_peci_addr_data_t",addressData);		
+					} else {
+						//Brand new PECI record.						
+					}
+				}
+				
 				loadPECIOptions(context);
-			break;
-			case PECIC:	
-				loadPECIOptions(context);
+				//Pull data from MySQL for the form.
+				//Student Data
+				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=:STUDENT_PIDM";
+				
+				namedParameters = new MapSqlParameterSource("STUDENT_PIDM", ccPDIM.toString() );
+				
+				studentData = jdbcCAS.queryForMap(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentBio",studentData);
+				
+				//Address Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,TEMP_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,PECI_ADDR_DESC,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+				addressData = jdbcCAS.queryForMap(SQL,namedParameters);
+				
+				context.getFlowScope().put("StudentAddr",addressData);
+				
 			break;
 			default:
 				//No Special actions for interrupt
@@ -654,17 +719,35 @@ public class jdbcCamel {
 
 	void copy2MySQL(String tableName, Map<String,Object> sourceData) 
 			throws Exception{
-		String sql = "insert into " + tableName + "(" + sourceData.keySet().toString() + ") values (?";
-		for(int i=1; i<sourceData.size(); i++){
-			sql = sql +", ?";
+		log.debug("Source data to copy to MySQL" + sourceData.toString());
+		String sql = "insert into " + tableName + "(" + sourceData.keySet().toString().replace('[',' ').replace(']',' ') + ") values (";
+		List columns = new ArrayList(sourceData.keySet());
+		for(int i=0; i<sourceData.size(); i++){
+			
+			sql = sql +":"+columns.get(i);
+			if (i < sourceData.size() - 1 ){
+				sql = sql + ", ";
+			}
 		}
 		sql = sql + ")";
 		log.debug(sql);
-		CASSource.update(sql,sourceData.values());
+		Map<String,Object> namedParameters = new HashMap<String,Object>();
+		for(int i=0; i<sourceData.size(); i++){
+			if (sourceData.get(columns.get(i)) != null){
+				log.debug ("Passing "+ columns.get(i).toString() + " = " + sourceData.get(columns.get(i)).toString());
+				namedParameters.put(columns.get(i).toString(), sourceData.get(columns.get(i)).toString());
+			} else {
+				log.debug ("Passing "+ columns.get(i).toString() + " is null ");
+				namedParameters.put(columns.get(i).toString(), null);
+			}
+		}
+		log.debug("inserting");
+		jdbcCAS.update(sql,namedParameters);
 	}
 	
 	public void loadPECIOptions(RequestContext context)
 			throws Exception {
+		String SQL;
 		Map<String,Map<String,Object>> options = new LinkedHashMap<String,Map<String,Object>>();
 		List<Map<String,Object>> rows;
 		//Countries
@@ -955,7 +1038,7 @@ public class jdbcCamel {
     }
 
     public final void setCASSource(final DataSource dataSource) {
-        this.jdbcCAS = new JdbcTemplate(dataSource);
+        this.jdbcCAS = new NamedParameterJdbcTemplate(dataSource);
         this.CASSource = dataSource;
     }
     
