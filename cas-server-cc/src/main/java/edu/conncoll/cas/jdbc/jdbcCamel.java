@@ -400,8 +400,10 @@ public class jdbcCamel {
 						copy2MySQL("cc_stu_peci_students_t",studentData);
 											
 						//Enter transaction data in trans table
-						//SQL= "insert into peci_trans_start (STUDENT_PPID, STUDENT_PIDM, Trans_start) values (:STUDENT_PPID, :STUDENT_PIDM, :Trans_start)";
-						//namedParameters.put("STUDENT_PPID", );
+						SQL= "insert into peci_trans_start (STUDENT_PIDM, Trans_start) values ( :STUDENT_PIDM, now())";
+						log.debug("inserting transaction start");
+						jdbcCAS.update(SQL,namedParameters);
+						
 						
 						//Parent Data
 						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where STUDENT_PIDM=" + ccPDIM.toString();
@@ -443,9 +445,6 @@ public class jdbcCamel {
 				log.debug("Populating form with MySQL data");
 				//Student Data
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
-				
-				namedParameters = new MapSqlParameterSource("STUDENT_PIDM", ccPDIM.toString() );
-				
 				studentData = jdbcCAS.queryForMap(SQL,namedParameters);
 				
 				context.getFlowScope().put("StudentBio",studentData);
