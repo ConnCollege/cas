@@ -456,7 +456,7 @@ public class jdbcCamel {
 					addressData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//email Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_EMAIL_CODE='H'";
 					emailData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Phone Data
