@@ -155,7 +155,8 @@ public class jdbcCamel {
 	/** Global instance of the JSON factory. */
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	
-	public void readFlow (final String flag, final RequestContext context, final UsernamePasswordCredentials credentials) throws Exception {
+	public void readFlow (final String flag, final RequestContext context, final UsernamePasswordCredentials credentials) 
+			throws Exception {
 		String userName = credentials.getUsername();
 		
 		String SQL = "";
@@ -356,13 +357,13 @@ public class jdbcCamel {
 				String givenName = vaultcontext.getStringAttribute("givenname");
 				String surName = vaultcontext.getStringAttribute("sn");
 				
-				Map<String,Object> studentData;
-				Map<String,Object> studentTrans;
-				List<Map<String,Object>> parentData;
-				List<Map<String,Object>> addressData;
-				List<Map<String,Object>> emailData;
-				List<Map<String,Object>> phoneData;
-				List<Map<String,Object>> emergData;
+				Map<String,Object> studentData = new HashMap<String,Object>();
+				Map<String,Object> studentTrans = new HashMap<String,Object>();
+				List<Map<String,Object>> parentData = new ArrayList<Map<String,Object>>();
+				List<Map<String,Object>> addressData = new ArrayList<Map<String,Object>>();
+				List<Map<String,Object>> emailData = new ArrayList<Map<String,Object>>();
+				List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
+				List<Map<String,Object>> emergData = new ArrayList<Map<String,Object>>();
 				 
 				log.debug ("PDIM Attribute returned:" + ccPDIM);
 
@@ -443,41 +444,40 @@ public class jdbcCamel {
 				loadPECIOptions(context);
 				//Pull data from MySQL for the form.
 				log.debug("Populating form with MySQL data");
-				//Student Data
-				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
-				studentData = jdbcCAS.queryForMap(SQL,namedParameters);
+				try {
+					//Student Data
+					SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+					studentData = jdbcCAS.queryForMap(SQL,namedParameters);
+					
+					//Address Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+					addressData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					//email Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+					emailData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					//Phone Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					//Parents
+					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM";
+					parentData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					//Emerency Contacts
+					SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM";
+					emergData = jdbcCAS.queryForList(SQL,namedParameters);
+				} catch(Exception e) {
+					//No Student data in MySQL
+				}
 				
 				context.getFlowScope().put("StudentBio",studentData);
-				
-				//Address Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
-				addressData = jdbcCAS.queryForList(SQL,namedParameters);
-				
 				context.getFlowScope().put("StudentAddr",addressData);
-				
-				//email Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
-				emailData = jdbcCAS.queryForList(SQL,namedParameters);
-				
 				context.getFlowScope().put("StudentEmail",emailData);
-				
-				//Phone Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
-				phoneData = jdbcCAS.queryForList(SQL,namedParameters);
-				
 				context.getFlowScope().put("StudentPhone",phoneData);
-				
-				//Parents
-				SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM";
-				parentData = jdbcCAS.queryForList(SQL,namedParameters);
-				
 				context.getFlowScope().put("StudentParents",parentData);
-				
-				//Emerency Contacts
-				SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM";
-				emergData = jdbcCAS.queryForList(SQL,namedParameters);
-				
-				context.getFlowScope().put("StudentParents",emergData);
+				context.getFlowScope().put("StudentEMR",emergData);
 				
 			break;
 			default:
