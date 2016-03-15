@@ -828,7 +828,7 @@ public class jdbcCamel {
 		}
 		
 		//States
-		SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat order by value";
+		SQL = "select stvstat_code key, stvstat_desc value from saturn.stvstat where stvstat_code in ('AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','AS','GU','MP','PR','VI') order by value";
 		rows = jdbcCensus.queryForList(SQL);
 		options.put ("States",new LinkedHashMap<String,Object>());
 		for (Map<String,Object> row : rows){
