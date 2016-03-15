@@ -194,7 +194,7 @@
 	<div style="display:none;" class="form-group" id="group_student_intl_region">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="Province/Region" name="student_intl_region" class="form-control ccreq address_field" id="student_intl_region">
+			<input type="text" placeholder="Province/Region" name="student_intl_region" class="form-control ccreq address_field" id="student_intl_region" value="${StudentAddr[0]['ADDR_STAT_CODE']}">
 		</div>
 	</div>
 	

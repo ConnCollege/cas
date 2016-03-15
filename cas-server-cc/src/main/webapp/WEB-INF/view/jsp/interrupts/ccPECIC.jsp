@@ -147,7 +147,7 @@
 		      </div>
 		      <div class="col-xs-9">
 		          <div><c:out value="${i}" /></div>
-		      </div>
+		      </div> 
 		    </div>
 	    </c:forEach>
     </div>
