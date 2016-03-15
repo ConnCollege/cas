@@ -376,8 +376,8 @@ public class jdbcCamel {
 				
 				context.getFlowScope().put("Flag", "PECIE");
 				
-				if ( (Long)studentTrans.get("ct") !=0 && !flag.equals("PECIE") ){
-					context.getFlowScope().put("Flag", "PECIC");
+				if ( (Long)studentTrans.get("ct") !=0 ){
+					if ( !flag.equals("PECIE") ) context.getFlowScope().put("Flag", "PECIC");
 				} else {
 					//Check for data in Oracle
 					log.debug("Checking for eisting record in Oracle");
