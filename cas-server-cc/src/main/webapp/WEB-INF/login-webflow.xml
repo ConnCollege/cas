@@ -227,8 +227,13 @@
 		<transition to="showInterrupt" />
 	</action-state>
 	
+	<action-state id="showInterrupt">
+		<evaluate expression="jdbcCamel.readFlow(flowScope.Flag,flowRequestContext,flowScope.credentials)" />
+		<transition to="showInterrupt2" />
+	</action-state>	
+	
 	<!-- Show custom view that interrupts the login flow -->
-	<view-state id="showInterrupt" view="${flowScope.Flag}" model="IntData">
+	<view-state id="showInterrupt2" view="${flowScope.Flag}" model="IntData">
 		<var name="IntData" class="org.jasig.cas.web.support.IntData" />
 		<binder>
             <binding property="fields[1]" />
@@ -285,9 +290,6 @@
         <on-entry>
             <set name="viewScope.commandName" value="'IntData'" />
         </on-entry>
-		<on-render>
-			<evaluate expression="jdbcCamel.readFlow(flowScope.Flag,flowRequestContext,flowScope.credentials)" />
-		</on-render>
 		<transition on="submit" to="SaveInterrupt" bind="true">
 			<set name="flowScope.IntData" value="IntData" />
 		</transition>
