@@ -110,7 +110,7 @@
   <p>Please confirm your contact information, parent/guardian and emergency contact information below.</p> 
   
   <div id="step1">
-  	<h3>Step 1 Verify Your Permanent Mailing Address <small><a href="" class="edit_link">Edit My Info</a></small></h3>	
+  	<h3>Step 1 Verify Your Permanent Mailing Address <small><a href="?interrupt=PECIE" class="edit_link">Edit My Info</a></small></h3>	
   	<c:forEach var="i" items="Address 1,Address 2,Country,City,State,Zip,Home Phone">
 	  	<div class="row">
 	      <div class="col-xs-3">
@@ -137,7 +137,7 @@
   </div>
   
   <div id="step3">
-  	<h3>Step 3 Parent/Guardian Information <small><a href="" class="edit_link">Edit Parent/Guardian Info</a></small></h3>	
+  	<h3>Step 3 Parent/Guardian Information <small><a href="?interrupt=PECIE" class="edit_link">Edit Parent/Guardian Info</a></small></h3>	
   	<h4>Parent/Guardian 1</h4>
   	<div class="confirm_section">
 	  	<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip, Claims me as dependent">
@@ -147,14 +147,14 @@
 		      </div>
 		      <div class="col-xs-9">
 		          <div><c:out value="${i}" /></div>
-		      </div>
+		      </div> 
 		    </div>
 	    </c:forEach>
     </div>
   </div>
   
     <div id="step4">
-  	<h3>Step 4 Emergency Contacts <small><a href="" class="edit_link">Edit or Reorder Contacts</a></small></h3>
+  	<h3>Step 4 Emergency Contacts <small><a href="?interrupt=PECIE" class="edit_link">Edit or Reorder Contacts</a></small></h3>
   	<h4>Emergency Contact 1</h4>	
   	<div class="confirm_section">
 	  	<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip">

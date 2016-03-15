@@ -137,7 +137,7 @@
 	<div class="form-group" id="group_student_address1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address 1</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 1" name="student_address1" class="form-control ccreq address_field" id="student_address1">
+				<input type="text" placeholder="Address 1" name="student_address1" class="form-control ccreq address_field" id="student_address1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="student_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -194,7 +194,7 @@
 	<div style="display:none;" class="form-group" id="group_student_intl_region">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="Province/Region" name="student_intl_region" class="form-control ccreq address_field" id="student_intl_region">
+			<input type="text" placeholder="Province/Region" name="student_intl_region" class="form-control ccreq address_field" id="student_intl_region" value="${StudentAddr[0]['ADDR_STAT_CODE']}">
 		</div>
 	</div>
 	
