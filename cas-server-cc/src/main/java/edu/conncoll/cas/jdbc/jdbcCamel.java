@@ -443,6 +443,8 @@ public class jdbcCamel {
 				
 				loadPECIOptions(context);
 				//Pull data from MySQL for the form.
+				context.getFlowScope().put("StudentHomePhone", new HashMap<String,Object>());
+				context.getFlowScope().put("StudentCellPhone", new HashMap<String,Object>());
 				log.debug("Populating form with MySQL data");
 				try {
 					//Student Data
@@ -458,8 +460,15 @@ public class jdbcCamel {
 					emailData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Phone Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='C'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+
+					context.getFlowScope().put("StudentCellPhone",phoneData.get(0));
+					
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='H'";
+					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					context.getFlowScope().put("StudentHomePhone",phoneData.get(0));
 					
 					//Parents
 					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM";
@@ -475,7 +484,6 @@ public class jdbcCamel {
 				context.getFlowScope().put("StudentBio",studentData);
 				context.getFlowScope().put("StudentAddr",addressData.get(0));
 				context.getFlowScope().put("StudentEmail",emailData.get(0));
-				context.getFlowScope().put("StudentPhone",phoneData);
 				context.getFlowScope().put("StudentParents",parentData);
 				context.getFlowScope().put("StudentEMR",emergData);
 				
