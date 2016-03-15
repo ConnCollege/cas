@@ -473,8 +473,8 @@ public class jdbcCamel {
 				}
 				
 				context.getFlowScope().put("StudentBio",studentData);
-				context.getFlowScope().put("StudentAddr",addressData);
-				context.getFlowScope().put("StudentEmail",emailData);
+				context.getFlowScope().put("StudentAddr",addressData.get(0));
+				context.getFlowScope().put("StudentEmail",emailData.get(0));
 				context.getFlowScope().put("StudentPhone",phoneData);
 				context.getFlowScope().put("StudentParents",parentData);
 				context.getFlowScope().put("StudentEMR",emergData);
