@@ -445,6 +445,7 @@ public class jdbcCamel {
 				//Pull data from MySQL for the form.
 				context.getFlowScope().put("StudentHomePhone", new HashMap<String,Object>());
 				context.getFlowScope().put("StudentCellPhone", new HashMap<String,Object>());
+				context.getFlowScope().put("StudentEmrPhone", new HashMap<String,Object>());
 				log.debug("Populating form with MySQL data");
 				try {
 					//Student Data
@@ -470,12 +471,17 @@ public class jdbcCamel {
 					
 					context.getFlowScope().put("StudentHomePhone",phoneData.get(0));
 					
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PHONE_CODE='EP'";
+					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
+					
 					//Parents
-					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM";
+					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM order by PARENT_ORDER";
 					parentData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Emerency Contacts
-					SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM";
+					SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM order by EMERG_CONTACT_PRIORITY";
 					emergData = jdbcCAS.queryForList(SQL,namedParameters);
 				} catch(Exception e) {
 					//No Student data in MySQL
