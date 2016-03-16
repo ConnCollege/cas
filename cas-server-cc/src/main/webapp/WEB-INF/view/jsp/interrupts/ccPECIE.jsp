@@ -233,7 +233,7 @@
 	<div class="form-group" id="group_student_mobile_phone">
 		<label for="Phone" class="control-label col-sm-3 ccreq"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Mobile Phone" name="student_mobile_phone" class="form-control ccreq" id="student_mobile_phone" >
+				<input type="text" placeholder="Mobile Phone" name="student_mobile_phone" class="form-control ccreq" id="student_mobile_phone" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
 		</div>
 	</div> 		
 		<%
@@ -246,15 +246,15 @@
 			<select class="form-control" placeholder="Phone Carrier" name="student_phone_carrier" id="student_phone_carrier">
 				<option value="">Choose Phone Carrier</option>
 				<c:forEach items="${options['Carriers']}" var="carriers">
-					<option value="${carriers.key}">${carriers.value}</option>
+					<option value="${carriers.key}" <c:if test="${StudentCellPhone['CELL_PHONE_CARRIER'] == carriers.key }">selected="selected"</c:if>>${carriers.value}</option>
 				</c:forEach>
 			</select>
 		</div>
-	</div>
+	</div>${StudentCellPhone}
 	<div class="form-group" id="group_student_mobile_phone_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" name="student_mobile_phone_check" id="student_mobile_phone_check">I don't have a mobile phone</label>
+				<label><input type="checkbox" name="student_mobile_phone_check" id="student_mobile_phone_check" <c:if test="${StudentCellPhone['EMERG_NO_CELL_PHONE'] == 1}"> checked="checked"</c:if>>I don't have a mobile phone</label>
 			</div>
 		</div>
 	</div>
@@ -271,7 +271,7 @@
 	<div class="form-group" id="group_alert_text_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="alert_text_check" id="alert_text_check">Yes send me a text message in the event of an emergency</label>
+				<label><input type="checkbox" class="" name="alert_text_check" id="alert_text_check" <c:if test="${StudentCellPhone['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
 			</div>
 		</div>
 	</div>
@@ -280,7 +280,7 @@
 	<div class="form-group" id="group_tty_device_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="tty_device_check" id="tty_device_check">This phone is a TTY device</label>
+				<label><input type="checkbox" class="" name="tty_device_check" id="tty_device_check" <c:if test="${StudentCellPhone['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
 			</div>
 		</div>
 	</div>
@@ -289,7 +289,7 @@
 	<div class="form-group" id="group_alert_home_email_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="alert_home_email_check" id="alert_home_email_check">Opt out of automated campus alerts to my home email and cell phone</label>
+				<label><input type="checkbox" class="" name="alert_home_email_check" id="alert_home_email_check" <c:if test="${StudentCellPhone['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
 			</div>
 		</div>
 	</div>
@@ -309,8 +309,17 @@
 	    <p id="doc_message">You are required to name at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
 	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
 	
-		
+	${StudentParents}
+	<c:forEach items="${StudentParents}" var="parents">
 		<div class="panel panel-default">
+		  <div class="panel-body">
+		    ${parents.PARENT_PREF_FIRST_NAME } &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#parent_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="parent1" checked="checked" class="bootstrap-switch"></span>
+		  </div>
+		</div>
+	</c:forEach>
+	
+		
+		<%--<div class="panel panel-default">
 		  <div class="panel-body">
 		    Bob Smith &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#parent_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="parent1" checked="checked" class="bootstrap-switch"></span>
 		  </div>
@@ -319,7 +328,7 @@
 		  <div class="panel-body">
 		    John Jones &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#parent_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="John Jones" data-person-id="2"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="parent2" checked="checked" class="bootstrap-switch"></span>
 		  </div>
-		</div>
+		</div>--%>
 	    
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
@@ -330,9 +339,18 @@
     <div id="step4" class="form_section">
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <p id="doc_message">You must enter at least one emergency contact. Emergency contacts will be contacted in the order you specify below.<br><strong>If Connecticut College is a long way from home, and there is someone who can be contacted nearby in the event of an emergency, please add that person as one of your contacts.</strong></p>
+		${StudentEMR}
+		<ul id="draggablePanelList" class="list-unstyled">
+			<c:forEach items="${StudentEMR}" var="emr">
+				<li class="panel panel-info"> 
+		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
+		        	<div class="panel-body">${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME} &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#emergency_contact_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		    	</li>
+			</c:forEach>
+		</ul>
 		
 		<!-- Bootstrap 3 panel list. -->
-		<ul id="draggablePanelList" class="list-unstyled">
+		<%--<ul id="draggablePanelList" class="list-unstyled">
 		    <li class="panel panel-info"> 
 		        <div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
 		        <div class="panel-body">Bob Smith &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#emergency_contact_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
@@ -341,7 +359,7 @@
 		        <div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
 		        <div class="panel-body">John Jones &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#emergency_contact_modal"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="John Jones" data-person-id="2"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    </li>
-		</ul>
+		</ul> --%>
 	    
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
