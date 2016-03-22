@@ -392,7 +392,7 @@ public class jdbcCamel {
 						context.getFlowScope().put("Flag", "PECIC");
 						log.debug("Loading Data from Oracle to MySQL");
 					
-						//Pull PECI Data from Oracle and store in MySQL 
+						//Pull PECI Data from Oracle and store in MySQL TODO: Modify to pull only active data.
 						//Student Data
 						SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
 						
@@ -411,9 +411,9 @@ public class jdbcCamel {
 						parentData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_adv_peci_parents_t",parentData);		
-						
+												
 						//Address Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
 						addressData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_addr_data_t",addressData);	
@@ -425,12 +425,12 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_email_data_t",emailData);	
 						
 						//Phone Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
 						phoneData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_phone_data_t",phoneData);	
 						
-						//Emergemcy Contact Data
+						//Emergency Contact Data
 						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where STUDENT_PIDM=" + ccPDIM.toString();
 						emergData = jdbcCensus.queryForList(SQL);
 						
@@ -448,6 +448,12 @@ public class jdbcCamel {
 				context.getFlowScope().put("StudentEmrPhone", new HashMap<String,Object>());
 				log.debug("Populating form with MySQL data");
 				try {
+					//Update Pref Names in MySQL
+					SQL = "Update cc_adv_peci_parents_t set PARENT_PREF_FIRST_NAME = PARENT_LEGAL_FIRST_NAME, PARENT_PREF_MIDDLE_NAME = PARENT_LEGAL_MIDDLE_NAME, PARENT_PREF_LAST_NAME = PARENT_LEGAL_LAST_NAME where PARENT_PREF_FIRST_NAME is null and PARENT_PREF_MIDDLE_NAME is null and PARENT_PREF_LAST_NAME is null";
+					jdbcCAS.update(SQL, new HashMap<String,Object>());
+					SQL = "Update cc_adv_peci_parents_t set EMERG_PREF_FIRST_NAME = EMERG_LEGAL_FIRST_NAME, EMERG_PREF_MIDDLE_NAME = EMERG_LEGAL_MIDDLE_NAME, EMERG_PREF_LAST_NAME = EMERG_LEGAL_LAST_NAME where EMERG_PREF_FIRST_NAME is null and EMERG_PREF_MIDDLE_NAME is null and EMERG_PREF_LAST_NAME is null";
+					jdbcCAS.update(SQL, new HashMap<String,Object>());
+					
 					//Student Data
 					SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE,CONFIDENTIALITY_IND  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 					studentData = jdbcCAS.queryForMap(SQL,namedParameters);
@@ -476,6 +482,11 @@ public class jdbcCamel {
 					
 					context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
 					
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PECI_PHONE_CODE='E' order by PHONE_SEQUENCE_NO";
+					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+					
+					context.getFlowScope().put("EmmrgPhones",phoneData.get(0));
+					
 					//Parents
 					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM order by PARENT_ORDER";
 					parentData = jdbcCAS.queryForList(SQL,namedParameters);
@@ -488,8 +499,12 @@ public class jdbcCamel {
 				}
 				
 				context.getFlowScope().put("StudentBio",studentData);
-				context.getFlowScope().put("StudentAddr",addressData.get(0));
-				context.getFlowScope().put("StudentEmail",emailData.get(0));
+				if (addressData.size() >0 ){
+					context.getFlowScope().put("StudentAddr",addressData.get(0));
+				}
+				if (emailData.size() >0 ){
+					context.getFlowScope().put("StudentEmail",emailData.get(0));
+				}
 				context.getFlowScope().put("StudentParents",parentData);
 				context.getFlowScope().put("StudentEMR",emergData);
 				
@@ -1132,7 +1147,7 @@ public class jdbcCamel {
         return this.BlackBSource;
     }	
     
-    protected final DataSource getCASSource() {
+    public final DataSource getCASSource() {
         return this.CASSource;
     }
 		

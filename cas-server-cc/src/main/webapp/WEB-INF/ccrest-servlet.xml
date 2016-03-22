@@ -47,7 +47,7 @@
 				</entry>
 				<entry key="/peci/">
 					<bean class="org.restlet.ext.spring.SpringFinder">
-						<lookup-method name="createResource" bean="PECIResource" />
+						<lookup-method name="createResource" bean="peciResource" />
 					</bean>
 				</entry>
 			</map>
