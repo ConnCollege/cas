@@ -45,11 +45,17 @@
 						<lookup-method name="createResource" bean="restResource" />
 					</bean>
 				</entry>
+				<entry key="/peci/">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="createResource" bean="PECIResource" />
+					</bean>
+				</entry>
 			</map>
 		</property>
 	</bean>
 	
-	<!-- create a bean for the actual rest resource -->
+	<!-- create a bean for the actual rest resources -->
 	<bean id="restResource" class="edu.conncoll.cas.restlet.RestResource" scope="prototype" p:camelJdbc-ref="jdbcCamel" />
+	<bean id="peciResource" class="edu.conncoll.cas.restlet.PECIResource" scope="prototype" p:camelJdbc-ref="jdbcCamel" />
 	
 </beans>
