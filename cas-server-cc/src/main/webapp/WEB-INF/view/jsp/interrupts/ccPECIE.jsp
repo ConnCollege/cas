@@ -112,39 +112,39 @@
   <div id="step1" class="form_section">
 	<h3>Step 1 Verify Your Permanent Mailing Address</h3>
 	<p>Please do not enter your local or campus address. </p>
-
+${StudentAddr}
 	<p><span class="required">* </span>Required Field</p>  
 		
 	<div class="form-group" id="group_student_firstname">
 		<label for="country" class="control-label col-sm-3">(Preferred) First Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="First Name" name="student_first_name" class="form-control" id="student_first_name" value="${StudentBio['PREFERRED_FIRST_NAME']}">
+				<input type="text" disabled="disabled" placeholder="First Name" name="fields[1]" class="form-control" id="student_first_name" value="${StudentBio['PREFERRED_FIRST_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_middle_name">
 		<label for="country" class="control-label col-sm-3">(Preferred) Middle Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="Middle Name" name="student_middle_name" class="form-control" id="student_middle_name" value="${StudentBio['PREFERRED_MIDDLE_NAME']}">
+				<input type="text" disabled="disabled" placeholder="Middle Name" name="fields[2]" class="form-control" id="student_middle_name" value="${StudentBio['PREFERRED_MIDDLE_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_last_name">
 		<label for="country" class="control-label col-sm-3">(Preferred) Last Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="Last Name" name="student_last_name" class="form-control" id="student_last_name" value="${StudentBio['PREFERRED_LAST_NAME']}">
+				<input type="text" disabled="disabled" placeholder="Last Name" name="fields[3]" class="form-control" id="student_last_name" value="${StudentBio['PREFERRED_LAST_NAME']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="student_address1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address 1</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 1" name="student_address1" class="form-control ccreq address_field" id="student_address1" value="${StudentAddr['ADDR_STREET_LINE1']}">
+				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field" id="student_address1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="student_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address2">
 		<label for="country" class="control-label col-sm-3">Address 2</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 2" name="student_address2" class="form-control address_field" id="student_address2" value="${StudentAddr['ADDR_STREET_LINE2']}">
+				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field" id="student_address2" value="${StudentAddr['ADDR_STREET_LINE2']}">
 		</div>
 	</div>  
 		<%
@@ -158,10 +158,10 @@
 	<div class="form-group" id="group_student_country">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq country_field" placeholder="Country" name="student_country" id="student_country">
+			<select class="form-control address_field ccreq country_field" placeholder="Country" name="fields[6]" id="student_country">
 				<option value="">Choose Country </option>
 				<c:forEach items="${options['Countries']}" var="countries">
-					<option <c:if test="${countries.key == StudentAddr['ADDR_NATN_CODE']}">selected="selected"</c:if> value="${countries.key}">${countries.value}</option>
+					<option <c:if test="${countries.key == StudentAddr['ADDR_NATN_CODE'] || ((countries.key == 'US') && (StudentAddr['ADDR_NATN_CODE'] == null))}">selected="selected"</c:if> value="${countries.key}">${countries.value}</option>
 				</c:forEach>
 			</select>
 		</div>
@@ -170,7 +170,7 @@
 	<div class="form-group" id="group_student_city">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>City</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="City" name="student_city" class="form-control ccreq address_field" id="student_city" value="${StudentAddr['ADDR_CITY']}">
+				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field" id="student_city" value="${StudentAddr['ADDR_CITY']}">
 		</div>
 	</div>  
 	
@@ -181,7 +181,7 @@
 	<div class="form-group" id="group_student_state">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq" placeholder="State" name="student_state" id="student_state">
+			<select class="form-control address_field ccreq" placeholder="State" name="fields8]" id="student_state">
 				<option value="">Choose State</option>
 				<c:forEach items="${options['States']}" var="states">
 					<option <c:if test="${states.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${states.key}">${states.value}</option>
@@ -194,7 +194,7 @@
 	<div style="display:none;" class="form-group" id="group_student_intl_region">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="Province/Region" name="student_intl_region" class="form-control ccreq address_field" id="student_intl_region" value="${StudentAddr['ADDR_STAT_CODE']}">
+			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control ccreq address_field" id="student_intl_region" value="${StudentAddr['ADDR_STAT_CODE']}">
 		</div>
 	</div>
 	
@@ -202,7 +202,7 @@
 	<div class="form-group" id="group_student_postal_code">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Postal Code" name="student_postal_code" class="form-control ccreq address_field" id="student_postal_code" value="${StudentAddr['ADDR_ZIP']}">
+				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="student_postal_code" value="${StudentAddr['ADDR_ZIP']}">
 		</div>
 	</div> 
 	<div id='student_clnaddr_results' name='student_clnaddr_results'></div>
@@ -210,13 +210,13 @@
 	<div class="form-group" id="group_student_home_phone">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Home Phone" name="student_home_phone" class="form-control" id="student_home_phone" value="(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}">
+				<input type="text" placeholder="Home Phone" name="fields[11]" class="form-control" id="student_home_phone" value="(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}">
 		</div>
 	</div> 
 	<div class="form-group" id="group_student_non_college_email">
 		<label for="Email" class="control-label col-sm-3">Non-college email</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Non-college email" name="student_non_college_email" class="form-control" id="student_non_college_email" value="${StudentEmail['EMAIL_ADDRESS']}">
+				<input type="text" placeholder="Non-college email" name="fields[12]" class="form-control" id="student_non_college_email" value="${StudentEmail['EMAIL_ADDRESS']}">
 		</div>
 	</div> 
 	
@@ -233,7 +233,7 @@
 	<div class="form-group" id="group_student_mobile_phone">
 		<label for="Phone" class="control-label col-sm-3 ccreq"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Mobile Phone" name="student_mobile_phone" class="form-control ccreq" id="student_mobile_phone" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
+				<input type="text" placeholder="Mobile Phone" name="fields[13]" class="form-control ccreq" id="student_mobile_phone" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
 		</div>
 	</div> 		
 		<%
@@ -243,7 +243,7 @@
 	<div class="form-group" id="group_student_phone_carrier">
 		<label for="Phone Carrier" class="control-label col-sm-3">Phone Carrier</label>
 		<div class="col-sm-9">
-			<select class="form-control" placeholder="Phone Carrier" name="student_phone_carrier" id="student_phone_carrier">
+			<select class="form-control" placeholder="Phone Carrier" name="fields[14]" id="student_phone_carrier">
 				<option value="">Choose Phone Carrier</option>
 				<c:forEach items="${options['Carriers']}" var="carriers">
 					<option value="${carriers.key}" <c:if test="${StudentCellPhone['CELL_PHONE_CARRIER'] == carriers.key }">selected="selected"</c:if>>${carriers.value}</option>
@@ -254,7 +254,7 @@
 	<div class="form-group" id="group_student_mobile_phone_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" name="student_mobile_phone_check" id="student_mobile_phone_check" <c:if test="${StudentCellPhone['EMERG_NO_CELL_PHONE'] == 1}"> checked="checked"</c:if>>I don't have a mobile phone</label>
+				<label><input type="checkbox" name="fields[15]" id="student_mobile_phone_check" <c:if test="${StudentCellPhone['EMERG_NO_CELL_PHONE'] == 1}"> checked="checked"</c:if>>I don't have a mobile phone</label>
 			</div>
 		</div>
 	</div>
@@ -263,7 +263,7 @@
 	<div class="form-group" id="group_student_emergency_phone" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Emergency Phone" name="student_emergency_phone" class="form-control address_field" id="student_emergency_phone">
+				<input type="text" placeholder="Emergency Phone" name="fields[16]" class="form-control address_field" id="student_emergency_phone" value="(${StudentEmrPhone['AREA_CODE'] }) ${StudentEmrPhone['PHONE_NUMBER'] }">
 		</div>
 	</div> 
 	
@@ -271,7 +271,7 @@
 	<div class="form-group" id="group_alert_text_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="alert_text_check" id="alert_text_check" <c:if test="${StudentCellPhone['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
+				<label><input type="checkbox" class="" name="fields[17]" id="alert_text_check" <c:if test="${StudentCellPhone['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
 			</div>
 		</div>
 	</div>
@@ -280,7 +280,7 @@
 	<div class="form-group" id="group_tty_device_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="tty_device_check" id="tty_device_check" <c:if test="${StudentCellPhone['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
+				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentCellPhone['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
 			</div>
 		</div>
 	</div>
@@ -289,7 +289,7 @@
 	<div class="form-group" id="group_alert_home_email_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="alert_home_email_check" id="alert_home_email_check" <c:if test="${StudentCellPhone['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
+				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentCellPhone['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
 			</div>
 		</div>
 	</div>
@@ -395,85 +395,117 @@
 
   
   
-  <!-- Modal windows -->
+  <!-- Parent Modal -->
   
-  <c:forTokens items="parent,emergency_contact" delims="," var="modalType">
-  	<div class="modal fade" id="<c:out value="${modalType}"/>_modal" role="dialog">
-	  	<div class="modal-dialog">    
-		  	<!-- Modal content-->
-		  	<div class="modal-content">
-			  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>"  onsubmit="return formValidate(this.id)">
-				  	<div class="modal-header">
-				  		<button type="button" class="close" data-dismiss="modal">&times;</button>
-				  		<h4 class="modal-title">Enter <c:out value="${modalType}"/> Information</h4>
-				  	</div>
-				  	<div class="modal-body">	
-				  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_first_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-				  		<div class="form-group" id="group_<c:out value="${modalType}"/>_first_name">
-				  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
-				  			<div class="col-sm-6">
-				  				<input type="text" placeholder="First Name" name="<c:out value="${modalType}"/>_first_name" class="form-control  ccreq" id="<c:out value="${modalType}"/>_first_name">
-				  			</div>
-				  		</div>
-				  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_middle_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-				  		<div class="form-group" id="group_<c:out value="${modalType}"/>_middle_name">
-				  			<label for="text" class="control-label col-sm-4">Middle Name</label>
-				  			<div class="col-sm-6">
-				  				<input type="text" placeholder="Middle Name" name="<c:out value="${modalType}"/>_middle_name" class="form-control" id="<c:out value="${modalType}"/>_middle_name">
-				  			</div>
-				  		</div>	  	
-				  		
-				  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_last_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-				  		<div class="form-group" id="group_<c:out value="${modalType}"/>_last_name">
-				  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>Last Name</label>
-				  			<div class="col-sm-6">
-				  				<input type="text" placeholder="Last Name" name="<c:out value="${modalType}"/>_last_name" class="form-control  ccreq " id="<c:out value="${modalType}"/>_last_name">
-				  			</div>
-				  		</div>
-				  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_mobile_phone_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-				  		<div class="form-group" id="group_<c:out value="${modalType}"/>_mobile_phone">
-			  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
-			  				<div class="col-sm-6">
-			  					<input type="tel" placeholder="Mobile Phone" name="<c:out value="${modalType}"/>_mobile_phone" class="form-control  ccreq  " id="<c:out value="${modalType}"/>_mobile_phone">
-			  				</div>
+ <div class="modal fade" id="parent_modal" role="dialog">
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">
+		  	<form class="form-horizontal" role="form" id="parent"  onsubmit="return formValidate(this.id)">
+			  	<div class="modal-header">
+			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
+			  		<h4 class="modal-title">Enter Parent Information</h4>
+			  	</div>
+			  	<div class="modal-body">	
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="parent_first_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_parent_first_name">
+			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="First Name" name="fields[20]" class="form-control  ccreq" id="parent_first_name">
 			  			</div>
-			  			<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_phone_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_phone_carrier">
-							<label for="" class="control-label col-sm-4"><span class="required">* </span>Phone Carrier</label>
+			  		</div>
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="parent_middle_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_parent_middle_name">
+			  			<label for="text" class="control-label col-sm-4">Middle Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="Middle Name" name="fields[21]" class="form-control" id="parent_middle_name">
+			  			</div>
+			  		</div>	  	
+			  		
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="parent_last_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_parent_last_name">
+			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>Last Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="Last Name" name="fields[22]" class="form-control  ccreq " id="parent_last_name">
+			  			</div>
+			  		</div>
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="parent_mobile_phone_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_parent_mobile_phone">
+		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
+		  				<div class="col-sm-6">
+		  					<input type="tel" placeholder="Mobile Phone" name="fields[23]" class="form-control  ccreq  " id="parent_mobile_phone">
+		  				</div>
+		  			</div>
+		  			<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_phone_carrier">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Phone Carrier</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq" placeholder="Phone Carrier" name="fields[24]" id="parent_phone_carrier">
+								<option value="">Choose Phone Carrier</option>
+								<c:forEach items="${options['Carriers']}" var="carriers">
+									<option value="${carriers.key}">${carriers.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div class="form-group" id="group_parent_mobile_phone_check"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" class="" name="fields[25]" id="parent_mobile_phone_check">This person does not have a mobile phone</label></div></div></div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_addional_phone1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_addional_phone1">
+						<label for="tel" class="control-label col-sm-4">Additional Phone</label>
+						<div class="col-sm-6">
+							<input type="tel" placeholder="Additional Phone" name="fields[26]" class="form-control  ccreq  " id="parent_addional_phone1">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone1_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_phone1_type">
+						<label for="" class="control-label col-sm-4">Phone Type</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq phone_type" placeholder="Phone Type" name="fields[27]" id="parent_phone1_type" data-id="1">
+								<option value="">Choose Phone Type</option>
+								<option value="Mobile">Mobile</option>
+								<option value="Home">Home</option>
+								<option value="Business">Business</option>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone1_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div style="display:none;" class="form-group" id="group_parent_phone1_carrier">
+						<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq" placeholder="Phone Carrier" name="fields[28]" id="parent_phone1_carrier">
+								<option value="">Choose Phone Carrier</option>
+								<c:forEach items="${options['Carriers']}" var="carriers">
+									<option value="${carriers.key}">${carriers.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+																	
+					<div id="group_parent_phone2_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_addional_phone2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_addional_phone2" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 2</label>
 							<div class="col-sm-6">
-								<select class="form-control ccreq" placeholder="Phone Carrier" name="<c:out value="${modalType}"/>_phone_carrier" id="<c:out value="${modalType}"/>_phone_carrier">
-									<option value="">Choose Phone Carrier</option>
-									<c:forEach items="${options['Carriers']}" var="carriers">
-										<option value="${carriers.key}">${carriers.value}</option>
-									</c:forEach>
-								</select>
+								<input type="tel" placeholder="Additional Phone 2" name="fields[29]" class="form-control" id="parent_addional_phone2">
 							</div>
 						</div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_mobile_phone_check"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" class="" name="<c:out value="${modalType}"/>_mobile_phone_check" id="<c:out value="${modalType}"/>_mobile_phone_check">This person does not have a mobile phone</label></div></div></div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_addional_phone1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_addional_phone1">
-							<label for="tel" class="control-label col-sm-4">Additional Phone</label>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 2 Type</label>
 							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone" name="<c:out value="${modalType}"/>_addional_phone1" class="form-control  ccreq  " id="<c:out value="${modalType}"/>_addional_phone1">
-							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_phone1_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_phone1_type">
-							<label for="" class="control-label col-sm-4">Phone Type</label>
-							<div class="col-sm-6">
-								<select class="form-control ccreq phone_type" placeholder="Phone Type" name="<c:out value="${modalType}"/>_phone1_type" id="<c:out value="${modalType}"/>_phone1_type" data-id="1">
+								<select class="form-control ccreq phone_type" placeholder="Phone 2 Type" name="fields[30]" id="parent_phone2_type" data-id="2">
 									<option value="">Choose Phone Type</option>
 									<option value="Mobile">Mobile</option>
 									<option value="Home">Home</option>
 									<option value="Business">Business</option>
 								</select>
 							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_phone1_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div style="display:none;" class="form-group" id="group_<c:out value="${modalType}"/>_phone1_carrier">
-							<label for="" class="control-label col-sm-4">Phone <c:out value="${i}"/> Carrier</label>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone2_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone2_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 2 Carrier</label>
 							<div class="col-sm-6">
-								<select class="form-control ccreq" placeholder="Phone Carrier" name="<c:out value="${modalType}"/>_phone1_carrier" id="<c:out value="${modalType}"/>_phone1_carrier">
+								<select class="form-control ccreq" placeholder="Phone 2 Carrier" name="fields[31]" id="parent_phone2_carrier">
 									<option value="">Choose Phone Carrier</option>
 									<c:forEach items="${options['Carriers']}" var="carriers">
 										<option value="${carriers.key}">${carriers.value}</option>
@@ -481,156 +513,477 @@
 								</select>
 							</div>
 						</div>
-						
-						<c:forEach var="i" begin="2" end="4">							
-							<div id="group_<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_section" style="display:none;">
-								<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_addional_phone<c:out value="${i}"/>_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-								<div class="form-group" id="group_<c:out value="${modalType}"/>_addional_phone<c:out value="${i}"/>" >
-									<label for="tel" class="control-label col-sm-4">Additional Phone <c:out value="${i}"/></label>
-									<div class="col-sm-6">
-										<input type="tel" placeholder="Additional Phone <c:out value="${i}"/>" name="<c:out value="${modalType}"/>_addional_phone<c:out value="${i}"/>" class="form-control" id="<c:out value="${modalType}"/>_addional_phone<c:out value="${i}"/>">
-									</div>
-								</div>
-								<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-								<div class="form-group" id="group_<c:out value="${modalType}"/>_phone_type">
-									<label for="" class="control-label col-sm-4">Phone <c:out value="${i}"/> Type</label>
-									<div class="col-sm-6">
-										<select class="form-control ccreq phone_type" placeholder="Phone <c:out value="${i}"/> Type" name="<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_type" id="<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_type" data-id="<c:out value="${i}"/>">
-											<option value="">Choose Phone Type</option>
-											<option value="Mobile">Mobile</option>
-											<option value="Home">Home</option>
-											<option value="Business">Business</option>
-										</select>
-									</div>
-								</div>							
-								<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-								<div class="form-group" id="group_<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_carrier" style="display:none;">
-									<label for="" class="control-label col-sm-4">Phone <c:out value="${i}"/> Carrier</label>
-									<div class="col-sm-6">
-										<select class="form-control ccreq" placeholder="Phone <c:out value="${i}"/> Carrier" name="<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_carrier" id="<c:out value="${modalType}"/>_phone<c:out value="${i}"/>_carrier">
-											<option value="">Choose Phone Carrier</option>
-											<c:forEach items="${options['Carriers']}" var="carriers">
-												<option value="${carriers.key}">${carriers.value}</option>
-											</c:forEach>
-										</select>
-									</div>
-								</div>
-							</div>
-						</c:forEach>						
-						
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_add_phone">
-							<label for="" class="control-label col-sm-4"><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="addAnotherPhone" data-id="2">Add Another Phone</a></label>							
-						</div>
-						 						
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_preferred_email_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_preferred_email">
-							<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
+					</div>			
+					
+					<div id="group_parent_phone3_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_addional_phone3_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_addional_phone3" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 3</label>
 							<div class="col-sm-6">
-								<input type="email" placeholder="Preferred Email" name="<c:out value="${modalType}"/>_preferred_email" class="form-control  ccreq" id="<c:out value="${modalType}"/>_preferred_email">
+								<input type="tel" placeholder="Additional Phone 3" name="fields[32]" class="form-control" id="parent_addional_phone3">
 							</div>
 						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_relationship_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_relationship">
-							<label for="" class="control-label col-sm-4"><span class="required">* </span>Relationship</label>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 3 Type</label>
 							<div class="col-sm-6">
-								<select class="form-control ccreq " placeholder="Relationship" name="<c:out value="${modalType}"/>_relationship" id="<c:out value="${modalType}"/>_relationship">
-									<option value="">Choose Relationship</option>
-									<c:forEach items="${options['Relationships']}" var="relationships">
-										<option value="${relationships.key}">${relationships.value}</option>
+								<select class="form-control ccreq phone_type" placeholder="Phone 3 Type" name="fields[33]" id="parent_phone3_type" data-id="3">
+									<option value="">Choose Phone Type</option>
+									<option value="Mobile">Mobile</option>
+									<option value="Home">Home</option>
+									<option value="Business">Business</option>
+								</select>
+							</div>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone3_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone3_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq" placeholder="Phone 3 Carrier" name="fields[34]" id="parent_phone3_carrier">
+									<option value="">Choose Phone Carrier</option>
+									<c:forEach items="${options['Carriers']}" var="carriers">
+										<option value="${carriers.key}">${carriers.value}</option>
 									</c:forEach>
 								</select>
 							</div>
 						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_address1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_address1">
-							<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
+					</div>		
+					
+					<div id="group_parent_phone4_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_addional_phone4_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_addional_phone4" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 4</label>
 							<div class="col-sm-6">
-								<input type="text" placeholder="Address 1" name="<c:out value="${modalType}"/>_address1" class="form-control  ccreq address_field " id="<c:out value="${modalType}"/>_address1">
+								<input type="tel" placeholder="Additional Phone 4" name="fields[35]" class="form-control" id="parent_addional_phone4">
 							</div>
 						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_address2">
-							<label for="text" class="control-label col-sm-4">Address 2</label>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 4 Type</label>
 							<div class="col-sm-6">
-								<input type="text" placeholder="Address 2" name="<c:out value="${modalType}"/>_address2" class="form-control address_field " id="<c:out value="${modalType}"/>_address2">
+								<select class="form-control ccreq phone_type" placeholder="Phone 4 Type" name="fields[36]" id="parent_phone4_type" data-id="4">
+									<option value="">Choose Phone Type</option>
+									<option value="Mobile">Mobile</option>
+									<option value="Home">Home</option>
+									<option value="Business">Business</option>
+								</select>
 							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_country_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_country">
-							<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="parent_phone4_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_parent_phone4_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 4 Carrier</label>
 							<div class="col-sm-6">
-								<select class="form-control ccreq address_field country_field" placeholder="Country" name="<c:out value="${modalType}"/>_country" id="<c:out value="${modalType}"/>_country">
-									<option value="">Choose Country</option>
-									<c:forEach items="${options['Countries']}" var="countries">
-										<option value="${countries.key}">${countries.value}</option>
+								<select class="form-control ccreq" placeholder="Phone 4 Carrier" name="fields[37]" id="parent_phone4_carrier">
+									<option value="">Choose Phone Carrier</option>
+									<c:forEach items="${options['Carriers']}" var="carriers">
+										<option value="${carriers.key}">${carriers.value}</option>
 									</c:forEach>
 								</select>
 							</div>
 						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_city_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_city">
-							<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
-							<div class="col-sm-6">
-								<input type="text" placeholder="City" name="<c:out value="${modalType}"/>_city" class="form-control ccreq address_field" id="<c:out value="${modalType}"/>_city">
+					</div>									
+					
+					<div class="form-group" id="group_parent_add_phone">
+						<label for="" class="control-label col-sm-4"><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="addAnotherPhone" data-id="2">Add Another Phone</a></label>							
+					</div>
+					 						
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_preferred_email_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_preferred_email">
+						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
+						<div class="col-sm-6">
+							<input type="email" placeholder="Preferred Email" name="fields[38]" class="form-control  ccreq" id="parent_preferred_email">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_relationship_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_relationship">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Relationship</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq " placeholder="Relationship" name="fields[39]" id="parent_relationship">
+								<option value="">Choose Relationship</option>
+								<c:forEach items="${options['Relationships']}" var="relationships">
+									<option value="${relationships.key}">${relationships.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_address1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_address1">
+						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Address 1" name="fields[40]" class="form-control  ccreq address_field " id="parent_address1">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_address2">
+						<label for="text" class="control-label col-sm-4">Address 2</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Address 2" name="fields[41]" class="form-control address_field " id="parent_address2">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_country_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_country">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq address_field country_field" placeholder="Country" name="fields[42]" id="parent_country">
+								<option value="">Choose Country</option>
+								<c:forEach items="${options['Countries']}" var="countries">
+									<option value="${countries.key}">${countries.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_city_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_city">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="City" name="fields[43]" class="form-control ccreq address_field" id="parent_city">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_state_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_state">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>State</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq address_field" placeholder="State" name="fields[44]" id="parent_state">
+								<option value="">Choose State</option>
+								<c:forEach items="${options['States']}" var="states">
+									<option value="${states.key}">${states.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_intl_region_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div style="display:none;" class="form-group" id="group_parent_intl_region">
+						<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Province/Region" name="fields[45]" class="form-control ccreq address_field" id="parent_intl_region">
+						</div>
+					</div>
+					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_postal_code_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_postal_code">
+						<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Postal Code" name="fields[46]" class="form-control ccreq address_field " id="parent_postal_code">
+						</div>
+					</div>
+					
+					
+					<div id='parent_clnaddr_results' name='parent_clnaddr_results'></div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_dependent_check_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_parent_dependent_check">
+						<div class="col-sm-offset-1 col-sm-10">
+							<div class="checkbox">
+								<label><span class="emergency_contact_switch">&nbsp;<input type="checkbox" name="fields[47]" checked="checked" class="bootstrap-switch"></span> This parent claims me as a dependent</label>
+						
+						<a data-content="Please indicate whether your parents claim you as a tax dependent for federal income tax purposes. This is turned on by default. &lt;a href='http://www.conncoll.edu/academics/registrar/ferpa/' target='_blank'&gt; FERPA Information&lt;/a&gt;." data-placement="top" data-title="U.S. Tax Dependence Status Info" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a>
 							</div>
 						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_state_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_state">
-							<label for="" class="control-label col-sm-4"><span class="required">* </span>State</label>
+					</div>	
+					
+									  		
+			  		<div class="form-group">
+  						<div class="col-sm-offset-5 col-sm-9">
+  							<button type="submit" class="btn btn-primary">Save</button>
+  						</div>
+  					</div>  				
+  				</div>
+ 				</form>
+ 			</div>
+ 			<div class="modal-footer">
+ 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+ 			</div>
+ 		</div>
+ 	</div>
+ 	
+ 	<!-- Emergency Contact Modal -->
+ 	<div class="modal fade" id="emergency_contact_modal" role="dialog">
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">
+		  	<form class="form-horizontal" role="form" id="emergency_contact"  onsubmit="return formValidate(this.id)">
+			  	<div class="modal-header">
+			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
+			  		<h4 class="modal-title">Enter emergency_contact Information</h4>
+			  	</div>
+			  	<div class="modal-body">	
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_first_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_emergency_contact_first_name">
+			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="First Name" name="fields[48]" class="form-control  ccreq" id="emergency_contact_first_name">
+			  			</div>
+			  		</div>
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_middle_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_emergency_contact_middle_name">
+			  			<label for="text" class="control-label col-sm-4">Middle Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="Middle Name" name="fields[49]" class="form-control" id="emergency_contact_middle_name">
+			  			</div>
+			  		</div>	  	
+			  		
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_last_name_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_emergency_contact_last_name">
+			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>Last Name</label>
+			  			<div class="col-sm-6">
+			  				<input type="text" placeholder="Last Name" name="fields[50]" class="form-control  ccreq " id="emergency_contact_last_name">
+			  			</div>
+			  		</div>
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_mobile_phone_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="group_emergency_contact_mobile_phone">
+		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
+		  				<div class="col-sm-6">
+		  					<input type="tel" placeholder="Mobile Phone" name="fields[51]" class="form-control  ccreq  " id="emergency_contact_mobile_phone">
+		  				</div>
+		  			</div>
+		  			<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_phone_carrier">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Phone Carrier</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq" placeholder="Phone Carrier" name="fields[52]" id="emergency_contact_phone_carrier">
+								<option value="">Choose Phone Carrier</option>
+								<c:forEach items="${options['Carriers']}" var="carriers">
+									<option value="${carriers.key}">${carriers.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div class="form-group" id="group_emergency_contact_mobile_phone_check"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" class="" name="fields[53]" id="emergency_contact_mobile_phone_check">This person does not have a mobile phone</label></div></div></div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_addional_phone1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_addional_phone1">
+						<label for="tel" class="control-label col-sm-4">Additional Phone</label>
+						<div class="col-sm-6">
+							<input type="tel" placeholder="Additional Phone" name="fields[54]" class="form-control  ccreq  " id="emergency_contact_addional_phone1">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone1_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_phone1_type">
+						<label for="" class="control-label col-sm-4">Phone Type</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq phone_type" placeholder="Phone Type" name="fields[55]" id="emergency_contact_phone1_type" data-id="1">
+								<option value="">Choose Phone Type</option>
+								<option value="Mobile">Mobile</option>
+								<option value="Home">Home</option>
+								<option value="Business">Business</option>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone1_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div style="display:none;" class="form-group" id="group_emergency_contact_phone1_carrier">
+						<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq" placeholder="Phone Carrier" name="fields[56]" id="emergency_contact_phone1_carrier">
+								<option value="">Choose Phone Carrier</option>
+								<c:forEach items="${options['Carriers']}" var="carriers">
+									<option value="${carriers.key}">${carriers.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					
+						
+					<div id="group_emergency_contact_phone4_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_addional_phone4_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_addional_phone4" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 4</label>
 							<div class="col-sm-6">
-								<select class="form-control ccreq address_field" placeholder="State" name="<c:out value="${modalType}"/>_state" id="<c:out value="${modalType}"/>_state">
-									<option value="">Choose State</option>
-									<c:forEach items="${options['States']}" var="states">
-										<option value="${states.key}">${states.value}</option>
+								<input type="tel" placeholder="Additional Phone 4" name="fields[57]" class="form-control" id="emergency_contact_addional_phone4">
+							</div>
+						</div>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 4 Type</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq phone_type" placeholder="Phone 4 Type" name="fields[58]" id="emergency_contact_phone4_type" data-id="4">
+									<option value="">Choose Phone Type</option>
+									<option value="Mobile">Mobile</option>
+									<option value="Home">Home</option>
+									<option value="Business">Business</option>
+								</select>
+							</div>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone4_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone4_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 4 Carrier</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq" placeholder="Phone 4 Carrier" name="fields[59]" id="emergency_contact_phone4_carrier">
+									<option value="">Choose Phone Carrier</option>
+									<c:forEach items="${options['Carriers']}" var="carriers">
+										<option value="${carriers.key}">${carriers.value}</option>
 									</c:forEach>
 								</select>
 							</div>
 						</div>
-						
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_intl_region_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div style="display:none;" class="form-group" id="group_<c:out value="${modalType}"/>_intl_region">
-							<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
+					</div>
+					
+					<div id="group_emergency_contact_phone2_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_addional_phone2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_addional_phone2" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 2</label>
 							<div class="col-sm-6">
-								<input type="text" placeholder="Province/Region" name="<c:out value="${modalType}"/>_intl_region" class="form-control ccreq address_field" id="<c:out value="${modalType}"/>_intl_region">
+								<input type="tel" placeholder="Additional Phone 2" name="fields[60]" class="form-control" id="emergency_contact_addional_phone2">
 							</div>
 						</div>
-						
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_postal_code_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="group_<c:out value="${modalType}"/>_postal_code">
-							<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 2 Type</label>
 							<div class="col-sm-6">
-								<input type="text" placeholder="Postal Code" name="<c:out value="${modalType}"/>_postal_code" class="form-control ccreq address_field " id="<c:out value="${modalType}"/>_postal_code">
+								<select class="form-control ccreq phone_type" placeholder="Phone 2 Type" name="fields[61]" id="emergency_contact_phone2_type" data-id="2">
+									<option value="">Choose Phone Type</option>
+									<option value="Mobile">Mobile</option>
+									<option value="Home">Home</option>
+									<option value="Business">Business</option>
+								</select>
+							</div>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone2_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone2_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 2 Carrier</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq" placeholder="Phone 2 Carrier" name="fields[62]" id="emergency_contact_phone2_carrier">
+									<option value="">Choose Phone Carrier</option>
+									<c:forEach items="${options['Carriers']}" var="carriers">
+										<option value="${carriers.key}">${carriers.value}</option>
+									</c:forEach>
+								</select>
 							</div>
 						</div>
-						
-						<c:if test = "${modalType == 'parent'}">
-							<div id='<c:out value="${modalType}"/>_clnaddr_results' name='<c:out value="${modalType}"/>_clnaddr_results'></div>
-							<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_dependent_check_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-							<div class="form-group" id="group_<c:out value="${modalType}"/>_dependent_check">
-								<div class="col-sm-offset-1 col-sm-10">
-									<div class="checkbox">
-										<label><span class="emergency_contact_switch">&nbsp;<input type="checkbox" name="<c:out value="${modalType}"/>1" checked="checked" class="bootstrap-switch"></span> This <c:out value="${modalType}"/> claims me as a dependent</label>
-								
-								<a data-content="Please indicate whether your <c:out value="${modalType}"/>s claim you as a tax dependent for federal income tax purposes. This is turned on by default. &lt;a href='http://www.conncoll.edu/academics/registrar/ferpa/' target='_blank'&gt; FERPA Information&lt;/a&gt;." data-placement="top" data-title="U.S. Tax Dependence Status Info" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a>
-									</div>
-								</div>
-							</div>	
-						</c:if>
-										  		
-				  		<div class="form-group">
-	  						<div class="col-sm-offset-5 col-sm-9">
-	  							<button type="submit" class="btn btn-primary">Save</button>
-	  						</div>
-	  					</div>  				
-	  				</div>
-  				</form>
-  			</div>
-  			<div class="modal-footer">
-  				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-  			</div>
-  		</div>
-  	</div>
-  	</c:forTokens>
+					</div>
+					
+					<div id="group_emergency_contact_phone3_section" style="display:none;">
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_addional_phone3_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_addional_phone3" >
+							<label for="tel" class="control-label col-sm-4">Additional Phone 3</label>
+							<div class="col-sm-6">
+								<input type="tel" placeholder="Additional Phone 3" name="fields[63]" class="form-control" id="emergency_contact_addional_phone3">
+							</div>
+						</div>
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone_type_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone_type">
+							<label for="" class="control-label col-sm-4">Phone 3 Type</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq phone_type" placeholder="Phone 3 Type" name="fields[64]" id="emergency_contact_phone3_type" data-id="3">
+									<option value="">Choose Phone Type</option>
+									<option value="Mobile">Mobile</option>
+									<option value="Home">Home</option>
+									<option value="Business">Business</option>
+								</select>
+							</div>
+						</div>							
+						<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_phone3_carrier_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+						<div class="form-group" id="group_emergency_contact_phone3_carrier" style="display:none;">
+							<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
+							<div class="col-sm-6">
+								<select class="form-control ccreq" placeholder="Phone 3 Carrier" name="fields[65]" id="emergency_contact_phone3_carrier">
+									<option value="">Choose Phone Carrier</option>
+									<c:forEach items="${options['Carriers']}" var="carriers">
+										<option value="${carriers.key}">${carriers.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="form-group" id="group_emergency_contact_add_phone">
+						<label for="" class="control-label col-sm-4"><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="addAnotherPhone" data-id="2">Add Another Phone</a></label>							
+					</div>
+					 						
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_preferred_email_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_preferred_email">
+						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
+						<div class="col-sm-6">
+							<input type="email" placeholder="Preferred Email" name="fields[66]" class="form-control  ccreq" id="emergency_contact_preferred_email">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_relationship_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_relationship">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Relationship</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq " placeholder="Relationship" name="fields[67]" id="emergency_contact_relationship">
+								<option value="">Choose Relationship</option>
+								<c:forEach items="${options['Relationships']}" var="relationships">
+									<option value="${relationships.key}">${relationships.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_address1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_address1">
+						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Address 1" name="fields[68]" class="form-control  ccreq address_field " id="emergency_contact_address1">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_address2">
+						<label for="text" class="control-label col-sm-4">Address 2</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Address 2" name="fields[69]" class="form-control address_field " id="emergency_contact_address2">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_country_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_country">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq address_field country_field" placeholder="Country" name="fields[70]" id="emergency_contact_country">
+								<option value="">Choose Country</option>
+								<c:forEach items="${options['Countries']}" var="countries">
+									<option value="${countries.key}">${countries.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_city_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_city">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="City" name="fields[71]" class="form-control ccreq address_field" id="emergency_contact_city">
+						</div>
+					</div>
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_state_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_state">
+						<label for="" class="control-label col-sm-4"><span class="required">* </span>State</label>
+						<div class="col-sm-6">
+							<select class="form-control ccreq address_field" placeholder="State" name="fields[72]" id="emergency_contact_state">
+								<option value="">Choose State</option>
+								<c:forEach items="${options['States']}" var="states">
+									<option value="${states.key}">${states.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_intl_region_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div style="display:none;" class="form-group" id="group_emergency_contact_intl_region">
+						<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Province/Region" name="fields[73]" class="form-control ccreq address_field" id="emergency_contact_intl_region">
+						</div>
+					</div>
+					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="emergency_contact_postal_code_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="group_emergency_contact_postal_code">
+						<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="Postal Code" name="fields[74]" class="form-control ccreq address_field " id="emergency_contact_postal_code">
+						</div>
+					</div>
+									  		
+			  		<div class="form-group">
+  						<div class="col-sm-offset-5 col-sm-9">
+  							<button type="submit" class="btn btn-primary">Save</button>
+  						</div>
+  					</div>  				
+  				</div>
+ 				</form>
+ 			</div>
+ 			<div class="modal-footer">
+ 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+ 			</div>
+ 		</div>
+ 	</div>
+
   	
 
 
