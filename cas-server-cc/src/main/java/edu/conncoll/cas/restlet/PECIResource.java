@@ -136,20 +136,22 @@ public class PECIResource extends Resource
 					String SQL;
 					
 					if (dataMode.equals("READ")) {
+
+						Map<String,Object> parentData = new HashMap<String,Object>();
+						Map<String,Object> emrgData = new HashMap<String,Object>();
+						List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
+						List<Map<String,Object>> emailData = new ArrayList<Map<String,Object>>();
+						List<Map<String,Object>> addressData = new ArrayList<Map<String,Object>>();
 						if (dataType.equals("PARENT")) {
 							log.debug ("Sending Parent data for PPID: " + ppid);
 							if (ppid == ""){
 								//new Parent response
 								log.debug("New Temporaty Parent Record");
 							} else {
-								Map<String,Object> parentData = new HashMap<String,Object>();
-								List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
-								List<Map<String,Object>> emailData = new ArrayList<Map<String,Object>>();
-								List<Map<String,Object>> addressData = new ArrayList<Map<String,Object>>();
 								
 								
 								//Parent Data
-								SQL="select PARENT_PPID, PARENT_ORDER, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								SQL="select PARENT_PPID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 								
 								//phones
