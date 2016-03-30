@@ -111,16 +111,54 @@
   
   <div id="step1">
   	<h3>Step 1 Verify Your Permanent Mailing Address <small><a href="?interrupt=PECIE" class="edit_link">Edit My Info</a></small></h3>	
-  	<c:forEach var="i" items="Address 1,Address 2,Country,City,State,Zip,Home Phone">
-	  	<div class="row">
-	      <div class="col-xs-3">
-	          <div><c:out value="${i}" /></div>
-	      </div>
-	      <div class="col-xs-9">
-	          <div><c:out value="${i}" /></div>
-	      </div>
-	    </div>
-    </c:forEach>
+ 	<div class="row">
+      <div class="col-xs-3">
+          <div>Address 1</div>
+      </div>
+      <div class="col-xs-9">
+          <div>${StudentAddr['ADDR_STREET_LINE1']}</div>
+      </div>
+    </div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Address 2</div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentAddr['ADDR_STREET_LINE2']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Country </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentAddr['ADDR_NAT_CODE']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>City </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentAddr['ADDR_STAT_CODE']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Zip/Postal Code </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentAddr['ADDR_ZIP']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Home Phone </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}</div>
+	  	</div>
+	</div>
   </div>
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>	
@@ -134,6 +172,46 @@
 	      </div>
 	    </div>
     </c:forEach>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Mobile Phone </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Phone Carrier </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentCellPhone['CELL_PHONE_CARRIER']}</div>
+	  	</div>
+	</div>
+		<div class="row">
+		<div class="col-xs-3">
+	    	<div>Send Text </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentCellPhone['EMERG_SEND_TEXT']}</div>
+	  	</div>
+	</div>
+		<div class="row">
+		<div class="col-xs-3">
+	    	<div>TTY Device</div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentCellPhone['PHONE_TTY_DEVICE']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Non College Email</div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentEmail['EMAIL_ADDRESS']}</div>
+	  	</div>
+	</div>
   </div>
   
   <div id="step3">
