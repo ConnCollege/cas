@@ -315,7 +315,7 @@ $(document).ready(function() {
 		    	   $('#' + $ppid).append(output);
 		    	   
 		       	  //use first email: data.parent_email[0]?
-		       	  $.each(data.parent_email[0], function(index,element){
+		       	  $.each(data.email[0], function(index,element){
 		       		//console.log("-parent- index: " + index + " element:" + element);
 			       		var output = '';			       		
 			       		var loc = demoFields.indexOf(index); 		       		
@@ -330,7 +330,7 @@ $(document).ready(function() {
 		       	  $('#' + $ppid).append(output);
 		       	  
 		       	  //use first address: data.parent_address[0]?
-		       	  $.each(data.parent_address[0], function(index,element){
+		       	  $.each(data.address[0], function(index,element){
 		       		
 			       		var output = '';			       		
 			       		var loc = demoFields.indexOf(index); 		       		
@@ -346,7 +346,7 @@ $(document).ready(function() {
 	
 		          });
 		       	  
-		       	$.each(data.parent_phones, function(index1,element1){
+		       	$.each(data.phones, function(index1,element1){
 						console.log("index1: " + index1); 
 		    		  $.each(this, function(index2,element2){  
 		    			  

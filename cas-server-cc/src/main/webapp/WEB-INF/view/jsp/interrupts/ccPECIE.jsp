@@ -1161,12 +1161,12 @@ ${StudentAddr}
         	   	$('#' + index).val(element);
         	  });
         	  //use first email: data.parent_email[0]?
-        	  $.each(data.parent_email[0], function(index,element){
+        	  $.each(data.email[0], function(index,element){
         		 //console.log("-parent_email-index: " + index + " element:" + element);
         	  	$('#' + $modal_type + "_" + index).val(element); 		   
         	  });
         	  //use first address: data.parent_address[0]?
-        	  $.each(data.parent_address[0], function(index,element){
+        	  $.each(data.address[0], function(index,element){
         		  //console.log("index: " + index + " element:" + element);
         		  if(index == 'ADDR_NATN_CODE' && element == null){
         			$('#' + $modal_type + "_" + index).val('US');
@@ -1174,7 +1174,7 @@ ${StudentAddr}
           	  		$('#' + $modal_type + "_" + index).val(element);
         		  }
           	  });
-        	  $.each(data.parent_phones, function(index1,element1){
+        	  $.each(data.phones, function(index1,element1){
         		  //console.log("index: " + index1);
         		  $('#group_parent_phone' + index1 + '_section').show();
         		  
