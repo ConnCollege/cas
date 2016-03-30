@@ -162,16 +162,6 @@
   </div>
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>	
-  	<c:forEach var="i" items="Mobile Phone, Phone Carrier, Send Text, TTY, Non-college email">
-	  	<div class="row">
-	      <div class="col-xs-3">
-	          <div><c:out value="${i}" /></div>
-	      </div>
-	      <div class="col-xs-9">
-	          <div><c:out value="${i}" /></div>
-	      </div>
-	    </div>
-    </c:forEach>
 	<div class="row">
 		<div class="col-xs-3">
 	    	<div>Mobile Phone </div>
@@ -218,7 +208,7 @@
   	<h3>Step 3 Parent/Guardian Information <small><a href="?interrupt=PECIE" class="edit_link">Edit Parent/Guardian Info</a></small></h3>	
   	<h4>Parent/Guardian 1</h4>
   	<div class="confirm_section">
-	  	<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip, Claims me as dependent">
+	  	<!--<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip, Claims me as dependent">
 		  	<div class="row">
 		      <div class="col-xs-3">
 		          <div><c:out value="${i}" /></div>
@@ -227,7 +217,37 @@
 		          <div><c:out value="${i}" /></div>
 		      </div> 
 		    </div>
-	    </c:forEach>
+	    </c:forEach>-->
+	    
+	    <c:forEach items="${StudentParents}" var="parents">
+	    	<div class="parent_info" id="${parents.PARENT_PPID}">
+		    	<div class="row">
+			      <div class="col-xs-3">
+			          <div>First Name</div>
+			      </div>
+			      <div class="col-xs-9">
+			          <div>${parents.PARENT_PREF_FIRST_NAME }</div>
+			      </div> 
+			    </div>
+			    <div class="row">
+			      <div class="col-xs-3">
+			          <div>Middle Name</div>
+			      </div>
+			      <div class="col-xs-9">
+			          <div>${parents.PARENT_PREF_MIDDLE_NAME }</div>
+			      </div> 
+			    </div>
+			    <div class="row">
+			      <div class="col-xs-3">
+			          <div>Last Name</div>
+			      </div>
+			      <div class="col-xs-9">
+			          <div>${parents.PARENT_PREF_LAST_NAME }</div>
+			      </div> 
+			    </div>	
+		    </div>	    
+	    </c:forEach>    
+	    
     </div>
   </div>
   
@@ -250,6 +270,190 @@
 
 </div>
 
+<script type="text/javascript">
+
+$(document).ready(function() {	
+	
+	var demoFields = ["PARENT_LEGAL_PREFIX_NAME","PARENT_PREF_FIRST_NAME","PARENT_PREF_MIDDLE_NAME","PARENT_PREF_LAST_NAME","PARENT_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
+	var demoValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
+	var phoneFields = ["PECI_PHONE_CODE","PHONE_AREA_CODE","PHONE_NUMBER","CELL_PHONE_CARRIER"];
+	var phoneValues= ["Phone Type","Area Code","Phone Number","Phone Carrier"]
+	
+
+
+	var fruits = ["Banana", "Orange", "Apple", "Mango"];
+	var a = demoFields.indexOf("PARENT_PREF_FIRST_NAME"); 
+	console.log('a: ' + a);
+	console.log('value: ' + demoValues[a]);
+	
+	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
+	
+	$('.parent_info').each(function(){
+		$ppid = $(this).attr("id");
+		$.ajax({
+		       type: "POST",
+		       url: '/cas/cas-rest-api/peci/',
+		       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": $ppid, "DATA": "PARENT", "MODE": "READ"}),
+		       datatype: "json",
+		       contentType: "application/json",
+		       success: function(data)           
+		       {  
+		    	   var output = '';
+		    	   $.each(data.parent, function(index, element){
+		       		//console.log("-parent- index: " + index + " element:" + element);
+		       		 var output = '';
+		       		
+		       		var loc = demoFields.indexOf(index); 		       		
+		       		if(loc != -1){
+		       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+		       			if(element != null){
+		       				output += element;
+		       			}
+		       			output += '</div></div></div>';
+		       		}		       		
+		       	  });
+		    	   $('#' + $ppid).append(output);
+		    	   
+		       	  //use first email: data.parent_email[0]?
+		       	  $.each(data.parent_email[0], function(index,element){
+		       		//console.log("-parent- index: " + index + " element:" + element);
+			       		var output = '';			       		
+			       		var loc = demoFields.indexOf(index); 		       		
+			       		if(loc != -1){
+			       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+			       			if(element != null){
+			       				output += element;
+			       			}
+			       			output += '</div></div></div>';	 
+			       		}
+		       	  });
+		       	  $('#' + $ppid).append(output);
+		       	  
+		       	  //use first address: data.parent_address[0]?
+		       	  $.each(data.parent_address[0], function(index,element){
+		       		
+			       		var output = '';			       		
+			       		var loc = demoFields.indexOf(index); 		       		
+			       		if(loc != -1){
+			       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+			       			if(element != null){
+			       				output += element;
+			       			}
+			       			output += '</div></div></div>';
+			       		}      	
+
+		       		$('#' + $ppid).append(output);
+	
+		          });
+		       	  
+		       	$.each(data.parent_phones, function(index1,element1){
+						console.log("index1: " + index1); 
+		    		  $.each(this, function(index2,element2){  
+		    			  
+				       		var output = '';			       		
+				       		var loc = phoneFields.indexOf(index2);
+				       		console.log("loc: " + loc); 
+				       		var thisTitle = phoneValues[loc];
+				       		if(index1 == 1){
+				       			var thisTitle = "Additional " + thisTitle;
+				       		}else if(index1 != 0){
+				       			var thisTitle = "Additional " + thisTitle + " " + index1;
+				       		}
+				       		if(loc != -1){
+				       			output += '<div class="row"><div class="col-xs-3"><div>' + thisTitle + '</div></div><div class="col-xs-9"><div>';
+				       			if(index2 == 'PECI_PHONE_CODE'){
+					       			if(element2 == 'C'){
+					       				output += 'Mobile';
+					       			}else if(element2 == 'H'){
+					       				output += 'Home';
+					       			}else if(element2 == 'O'){
+					       				output += 'Office';					       			
+					       			}
+				       			}else if(element2 != null){
+				       				output += element2;
+				       			}
+				       			output += '</div></div></div>';	
+				       		}
+				       		$('#' + $ppid).append(output);
+		        		  
+		      			  //console.log(peci_phone_code);
+		    			  //console.log("peci phone code" +  index[element]);        			  
+		    		  });
+		    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
+		      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
+		      	  });
+		       	  
+	
+		       },
+		 		error: function (request, status, error) {
+	           console.log("ERROR: " + request.responseText);
+	       }
+	    });	
+	});
+	
+	
+	
+	
+	/*$.ajax({
+       type: "POST",
+       url: '/cas/cas-rest-api/peci/',
+       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": $PPID, "DATA": $modal_type, "MODE": "READ"}),
+       datatype: "json",
+       contentType: "application/json",
+       success: function(data)           
+       {           	   
+    	  $.each(data.parent, function(index, element){
+    		//console.log("-parent- index: " + index + " element:" + element);
+    	   	$('#' + index).val(element);
+    	  });
+    	  //use first email: data.parent_email[0]?
+    	  $.each(data.parent_email[0], function(index,element){
+    		 //console.log("-parent_email-index: " + index + " element:" + element);
+    	  	$('#' + $modal_type + "_" + index).val(element); 		   
+    	  });
+    	  //use first address: data.parent_address[0]?
+    	  $.each(data.parent_address[0], function(index,element){
+    		  //console.log("index: " + index + " element:" + element);
+    		  if(index == 'ADDR_NATN_CODE' && element == null){
+    			$('#' + $modal_type + "_" + index).val('US');
+    		  }else{
+      	  		$('#' + $modal_type + "_" + index).val(element);
+    		  }
+      	  });
+    	  $.each(data.parent_phones, function(index1,element1){
+    		  //console.log("index: " + index1);
+    		  $('#group_parent_phone' + index1 + '_section').show();
+    		  
+    		  $.each(this, function(index2,element2){        			  
+        		  if(index2 == 'PECI_PHONE_CODE'){
+        			  $('#' + $modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);
+        			  //peci_phone_code[index1] = element2;
+        			  //console.log("peci_phone_code [" + index1 + "]:" + peci_phone_code[index1]);
+        		  }else if(index2 == 'PHONE_AREA_CODE'){
+        			  $('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
+        			  //phone_area_code[index1] = element2;
+        			  //console.log("phone area code: " + phone_area_code[index1]);
+        		  }else if(index2 == 'PHONE_NUMBER'){
+        			  $('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
+        			  //phone_number[index1] = element2;
+        			  //console.log("phone number:" + phone_number[index1]);
+        		  } 		
+      			  //console.log(peci_phone_code);
+    			  //console.log("peci phone code" +  index[element]);        			  
+    		  });
+    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
+      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
+      	  });
+       },
+       error: function (request, status, error) {
+           console.log("ERROR: " + request.responseText);
+       }
+    });		    
+	
+	$('#' + $modal_type + "_MODAL").modal('show');*/
+});
+
+</script>
   	
 
 </body>
