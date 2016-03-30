@@ -148,8 +148,6 @@ public class PECIResource extends Resource
 								//new Parent response
 								log.debug("New Temporaty Parent Record");
 							} else {
-								
-								
 								//Parent Data
 								SQL="select PARENT_PPID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
@@ -168,9 +166,9 @@ public class PECIResource extends Resource
 								
 								jsonResponse.put("result", "success");
 								jsonResponse.put("parent",parentData );
-								jsonResponse.put("parent_phones",phoneData );
-								jsonResponse.put("parent_email",emailData );
-								jsonResponse.put("parent_address",addressData );
+								jsonResponse.put("phones",phoneData );
+								jsonResponse.put("email",emailData );
+								jsonResponse.put("address",addressData );
 								
 								getResponse().setStatus( Status.SUCCESS_OK );
 								getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
@@ -178,6 +176,30 @@ public class PECIResource extends Resource
 							
 						} else {
 							log.debug ("Sending Contact data for PPID: " + ppid);
+							//Parent Data
+							SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+							
+							//phones
+							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+							
+							//email
+							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							emailData = jdbcCAS.queryForList(SQL,namedParameters);
+							
+							//Address
+							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							addressData = jdbcCAS.queryForList(SQL,namedParameters);
+							
+							jsonResponse.put("result", "success");
+							jsonResponse.put("contact",parentData );
+							jsonResponse.put("phones",phoneData );
+							jsonResponse.put("email",emailData );
+							jsonResponse.put("address",addressData );
+							
+							getResponse().setStatus( Status.SUCCESS_OK );
+							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						}
 					} else {
 						log.debug("Saving Record");
