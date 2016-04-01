@@ -270,6 +270,20 @@
 
 </div>
 
+<form:form id="editForm" commandName="${commandName}" htmlEscape="true" method="post" >
+	<input type="hidden" name="lt" value="${loginTicket}" />
+	<input type="hidden" name="execution" value="${flowExecutionKey}" />
+	<input type="hidden" name="_eventId" value="submit" />
+	<input type="hidden" name="fields[1]" value="edit">	
+</form:form>
+
+<form:form id="confirmForm" commandName="${commandName}" htmlEscape="true" method="post" >
+	<input type="hidden" name="lt" value="${loginTicket}" />
+	<input type="hidden" name="execution" value="${flowExecutionKey}" />
+	<input type="hidden" name="_eventId" value="submit" />
+	<input type="hidden" name="fields[1]" value="confirm">	
+</form:form>
+
 <script type="text/javascript">
 
 $(document).ready(function() {	
@@ -388,7 +402,11 @@ $(document).ready(function() {
 		 		error: function (request, status, error) {
 	           console.log("ERROR: " + request.responseText);
 	       }
-	    });	
+	    });
+		
+		$('.edit_link').click(function{
+			$('#editForm').submit();
+		});
 	});
 	
 	
