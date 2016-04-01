@@ -447,7 +447,7 @@ public class jdbcCamel {
 				context.getFlowScope().put("StudentCellPhone", new HashMap<String,Object>());
 				context.getFlowScope().put("StudentEmrPhone", new HashMap<String,Object>());
 				log.debug("Populating form with MySQL data");
-				//try {
+				try {
 					//Update Pref Names in MySQL
 					SQL = "Update cc_adv_peci_parents_t set PARENT_PREF_FIRST_NAME = PARENT_LEGAL_FIRST_NAME, PARENT_PREF_MIDDLE_NAME = PARENT_LEGAL_MIDDLE_NAME, PARENT_PREF_LAST_NAME = PARENT_LEGAL_LAST_NAME where PARENT_PREF_FIRST_NAME is null and PARENT_PREF_MIDDLE_NAME is null and PARENT_PREF_LAST_NAME is null";
 					jdbcCAS.update(SQL, new HashMap<String,Object>());
@@ -494,11 +494,9 @@ public class jdbcCamel {
 					//Emergency Contacts
 					SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_LEGAL_PREFIX_NAME, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME, EMERG_LEGAL_SUFFIX_NAME from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM order by EMERG_CONTACT_PRIORITY";
 					emergData = jdbcCAS.queryForList(SQL,namedParameters);
-				//} catch(Exception e) {
-					//No Student data in MySQL
-				//}
-				
-				log.debug("Passomg Student info: " + studentData);
+				} catch(Exception e) {
+					log.info("No Student data in MySQL");
+				}
 				
 				context.getFlowScope().put("StudentBio",studentData);
 				if (addressData.size() >0 ){
@@ -791,7 +789,16 @@ public class jdbcCamel {
 			}
 		}
 
-		if (flag.equals("PECI")) {
+		if (flag.equals("PECIE")) {
+			//Save Main Form data to MySQL
+		}
+
+		if (flag.equals("PECIC")) {
+			if ( intData.getField(1).equals("EDIT"))	{
+				context.getFlowScope().put("Flag","PECIE");
+				return "Failed";
+			}
+			//Save PECI Data from MySQL to Banner
 			
 		}
 		log.debug("Writeflow completed successfully, returning saved.");
