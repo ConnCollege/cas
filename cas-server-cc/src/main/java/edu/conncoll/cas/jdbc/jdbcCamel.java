@@ -793,7 +793,7 @@ public class jdbcCamel {
 			//Save Main Form data to MySQL
 		}
 
-		if (flag.equals("PECIC")) {
+		if (flag.equals("PECIC") or flag.equals("PECI")) {
 			if ( intData.getField(1).equals("EDIT"))	{
 				context.getFlowScope().put("Flag","PECIE");
 				return "Failed";
