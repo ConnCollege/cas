@@ -101,6 +101,15 @@
 	.glyphicon-question-sign:hover,.glyphicon-question-sign:focus{
 		text-decoration: none;
 	}
+	.edit_link{
+		cursor: pointer;
+		color: #337ab7;
+	}
+	
+	.edit_link:hover{
+		color: #23527c;
+		text-decoration: underline;		
+	}
   </style>
 </head>
 <body>
@@ -110,7 +119,7 @@
   <p>Please confirm your contact information, parent/guardian and emergency contact information below.</p> 
   
   <div id="step1">
-  	<h3>Step 1 Verify Your Permanent Mailing Address <small><a href="?interrupt=PECIE" class="edit_link">Edit My Info</a></small></h3>	
+  	<h3>Step 1 Verify Your Permanent Mailing Address <small><span class="edit_link">Edit My Info</span></small></h3>	
  	<div class="row">
       <div class="col-xs-3">
           <div>Address 1</div>
@@ -205,7 +214,7 @@
   </div>
   
   <div id="step3">
-  	<h3>Step 3 Parent/Guardian Information <small><a href="?interrupt=PECIE" class="edit_link">Edit Parent/Guardian Info</a></small></h3>	
+  	<h3>Step 3 Parent/Guardian Information <small><span class="edit_link">Edit Parent/Guardian Info</span></small></h3>	
   	<h4>Parent/Guardian 1</h4>
   	<div class="confirm_section">
 	  	<!--<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip, Claims me as dependent">
@@ -252,7 +261,7 @@
   </div>
   
     <div id="step4">
-  	<h3>Step 4 Emergency Contacts <small><a href="?interrupt=PECIE" class="edit_link">Edit or Reorder Contacts</a></small></h3>
+  	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
   	<h4>Emergency Contact 1</h4>	
   	<div class="confirm_section">
 	  	<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip">
@@ -266,15 +275,21 @@
 		    </div>
 	    </c:forEach>
     </div>
+    <div class="row">
+    	<div class="col-sm-offset-4  col-xs-3">
+    		<button type="submit" class="btn btn-primary">Save</button>
+    	</div>
+    </div>
   </div>
 
 </div>
+
 
 <form:form id="editForm" commandName="${commandName}" htmlEscape="true" method="post" >
 	<input type="hidden" name="lt" value="${loginTicket}" />
 	<input type="hidden" name="execution" value="${flowExecutionKey}" />
 	<input type="hidden" name="_eventId" value="submit" />
-	<input type="hidden" name="fields[1]" value="edit">	
+	<input type="hidden" name="fields[1]" value="edit">		
 </form:form>
 
 <form:form id="confirmForm" commandName="${commandName}" htmlEscape="true" method="post" >
@@ -402,11 +417,12 @@ $(document).ready(function() {
 		 		error: function (request, status, error) {
 	           console.log("ERROR: " + request.responseText);
 	       }
-	    });
-		
-		$('.edit_link').click(function{
-			$('#editForm').submit();
-		});
+	    });		
+
+	});
+	
+	$('.edit_link').click(function(){
+		$('#editForm').submit();
 	});
 	
 	

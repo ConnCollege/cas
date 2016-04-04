@@ -108,7 +108,7 @@
 <div class="container">
   <h2>Update Your Contact Information</h2>
   <p>Please enter your contact information, parent/guardian and emergency contact information below.</p> 
-  <form class="form-horizontal" role="form" id="student" onsubmit="return formValidate(this.id)"> 
+  <form class="form-horizontal" role="form" id="STUDENT" onsubmit="return formValidate(this.id)"> 
   <div id="step1" class="form_section">
 	<h3>Step 1 Verify Your Permanent Mailing Address</h3>
 	<p>Please do not enter your local or campus address. </p>
@@ -118,33 +118,33 @@
 	<div class="form-group" id="group_student_firstname">
 		<label for="country" class="control-label col-sm-3">(Preferred) First Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="First Name" name="fields[1]" class="form-control" id="student_first_name" value="${StudentBio['PREFERRED_FIRST_NAME']}">
+				<input type="text" disabled="disabled" placeholder="First Name" name="fields[1]" class="form-control" id="STUDENT_PREF_FIRST_NAME" value="${StudentBio['PREFERRED_FIRST_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_middle_name">
 		<label for="country" class="control-label col-sm-3">(Preferred) Middle Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="Middle Name" name="fields[2]" class="form-control" id="student_middle_name" value="${StudentBio['PREFERRED_MIDDLE_NAME']}">
+				<input type="text" disabled="disabled" placeholder="Middle Name" name="fields[2]" class="form-control" id="STUDENT_PREF_]MIDDLE_NAME" value="${StudentBio['PREFERRED_MIDDLE_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_last_name">
 		<label for="country" class="control-label col-sm-3">(Preferred) Last Name</label>
 		<div class="col-sm-9">
-				<input type="text" disabled="disabled" placeholder="Last Name" name="fields[3]" class="form-control" id="student_last_name" value="${StudentBio['PREFERRED_LAST_NAME']}">
+				<input type="text" disabled="disabled" placeholder="Last Name" name="fields[3]" class="form-control" id="STUDENT_PREF_LAST_NAME" value="${StudentBio['PREFERRED_LAST_NAME']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="student_address1_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address 1</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field" id="student_address1" value="${StudentAddr['ADDR_STREET_LINE1']}">
+				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="student_address2_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address2">
 		<label for="country" class="control-label col-sm-3">Address 2</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field" id="student_address2" value="${StudentAddr['ADDR_STREET_LINE2']}">
+				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
 		</div>
 	</div>  
 		<%
@@ -158,7 +158,7 @@
 	<div class="form-group" id="group_student_country">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq country_field" placeholder="Country" name="fields[6]" id="student_country">
+			<select class="form-control address_field ccreq country_field" placeholder="Country" name="fields[6]" id="STUDENT_ADDR_NATN_CODE">
 				<option value="">Choose Country </option>
 				<c:forEach items="${options['Countries']}" var="countries">
 					<option <c:if test="${countries.key == StudentAddr['ADDR_NATN_CODE'] || ((countries.key == 'US') && (StudentAddr['ADDR_NATN_CODE'] == null))}">selected="selected"</c:if> value="${countries.key}">${countries.value}</option>
@@ -170,7 +170,7 @@
 	<div class="form-group" id="group_student_city">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>City</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field" id="student_city" value="${StudentAddr['ADDR_CITY']}">
+				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
 		</div>
 	</div>  
 	
@@ -181,7 +181,7 @@
 	<div class="form-group" id="group_student_state">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq" placeholder="State" name="fields8]" id="student_state">
+			<select class="form-control address_field ccreq" placeholder="State" name="fields8]" id="STUDENT_ADDR_STAT_CODE">
 				<option value="">Choose State</option>
 				<c:forEach items="${options['States']}" var="states">
 					<option <c:if test="${states.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${states.key}">${states.value}</option>
@@ -194,7 +194,7 @@
 	<div style="display:none;" class="form-group" id="group_student_intl_region">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control ccreq address_field" id="student_intl_region" value="${StudentAddr['ADDR_STAT_CODE']}">
+			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control ccreq address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
 		</div>
 	</div>
 	
@@ -202,21 +202,21 @@
 	<div class="form-group" id="group_student_postal_code">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="student_postal_code" value="${StudentAddr['ADDR_ZIP']}">
+				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
 		</div>
 	</div> 
-	<div id='student_clnaddr_results' name='student_clnaddr_results'></div>
+	<div id='STUDENT_CLNADDR_RESULTS' name='STUDENT_CLNADDR_RESULTS'></div>
 	<div id="suggestionListDiv" style="display: none;"></div>
 	<div class="form-group" id="group_student_home_phone">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Home Phone" name="fields[11]" class="form-control" id="student_home_phone" value="(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}">
+				<input type="text" placeholder="Home Phone" name="fields[11]" class="form-control" id="STUDENT_PHONE" value="(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}">
 		</div>
 	</div> 
 	<div class="form-group" id="group_student_non_college_email">
 		<label for="Email" class="control-label col-sm-3">Non-college email</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Non-college email" name="fields[12]" class="form-control" id="student_non_college_email" value="${StudentEmail['EMAIL_ADDRESS']}">
+				<input type="text" placeholder="Non-college email" name="fields[12]" class="form-control" id="STUDENT_EMAIL_ADDRESS" value="${StudentEmail['EMAIL_ADDRESS']}">
 		</div>
 	</div> 
 	
@@ -233,7 +233,7 @@
 	<div class="form-group" id="group_student_mobile_phone">
 		<label for="Phone" class="control-label col-sm-3 ccreq"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Mobile Phone" name="fields[13]" class="form-control ccreq" id="student_mobile_phone" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
+				<input type="text" placeholder="Mobile Phone" name="fields[13]" class="form-control ccreq" id="STUDENT_PHONE_NUMBER" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
 		</div>
 	</div> 		
 		<%
@@ -263,7 +263,7 @@
 	<div class="form-group" id="group_student_emergency_phone" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Emergency Phone" name="fields[16]" class="form-control address_field" id="student_emergency_phone" value="(${StudentEmrPhone['AREA_CODE'] }) ${StudentEmrPhone['PHONE_NUMBER'] }">
+				<input type="text" placeholder="Emergency Phone" name="fields[16]" class="form-control address_field" id="student_emergency_phone" value="${StudentEmrPhone['PHONE_NUMBER'] }">
 		</div>
 	</div> 
 	
@@ -350,7 +350,7 @@
 	    
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
-	        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#EMERGENCY_CONTACT_MODAL">Add Contact</button>
+	        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CONTACT_MODAL">Add Contact</button>
 	      </div>
 	    </div>
     </div>
@@ -388,7 +388,7 @@
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-		  	<form class="form-horizontal" role="form" id="parent"  onsubmit="return formValidate(this.id)">
+		  	<form class="form-horizontal" role="form" id="PARENT"  onsubmit="return formValidate(this.id)">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
 			  		<h4 class="modal-title">Enter Parent Information</h4>
@@ -681,7 +681,7 @@
 					</div>
 					
 					
-					<div id='parent_clnaddr_results' name='parent_clnaddr_results'></div>
+					<div id='PARENT_CLNADDR_RESULTS' name='PARENT_CLNADDR_RESULTS'></div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="parent_dependent_check_error"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="group_parent_dependent_check">
 						<div class="col-sm-offset-1 col-sm-10">
@@ -713,7 +713,7 @@
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-		  	<form class="form-horizontal" role="form" id="contact"  onsubmit="return formValidate(this.id)">
+		  	<form class="form-horizontal" role="form" id="CONTACT"  onsubmit="return formValidate(this.id)">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
 			  		<h4 class="modal-title">Enter Emergency Contact Information</h4>
@@ -1004,6 +1004,8 @@
 							<input type="text" placeholder="Postal Code" name="fields[76]" class="form-control ccreq address_field " id="CONTACT_ADDR_ZIP">
 						</div>
 					</div>
+					
+					<div id='CONTACT_CLNADDR_RESULTS' name='CONTACT_CLNADDR_RESULTS'></div>
 									  		
 			  		<div class="form-group">
   						<div class="col-sm-offset-5 col-sm-9">
@@ -1031,7 +1033,7 @@
 %>
 
 
- <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10081"></script>   
+ <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10100"></script>   
 
  <script type="text/javascript">
  
@@ -1118,10 +1120,10 @@
 	//state/province drop-down toggle based on country chosen
 	$('.country_field').change(function(){
 		$form_id = $(this).closest('form').attr("id");
-		console.log('form_id:' + $form_id);
-		console.log('thisVal:' + $(this).val());
+		//console.log('form_id:' + $form_id);
+		//console.log('thisVal:' + $(this).val());
 		$intlField = '#group_' + $form_id + '_intl_region';
-		console.log('intlField:' + $intlField)
+		//console.log('intlField:' + $intlField)
 		$stateField = '#group_' + $form_id + '_state';
 		if($(this).val() == 'United States' || $(this).val() == "US"){
 			$($stateField).show();
