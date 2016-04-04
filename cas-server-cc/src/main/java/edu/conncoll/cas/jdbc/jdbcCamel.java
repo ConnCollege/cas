@@ -789,12 +789,8 @@ public class jdbcCamel {
 			}
 		}
 
-		if (flag.equals("PECIE")) {
-			//Save Main Form data to MySQL
-		}
-
-		if (flag.equals("PECIC") || flag.equals("PECI")) {
-			if ( intData.getField(1).equals("EDIT"))	{
+		if (flag.equals("PECIC") || flag.equals("PECI") || flag.equals("PECIE")) {
+			if ( intData.getField(1).equals("edit"))	{
 				context.getFlowScope().put("Flag","PECIE");
 				return "Failed";
 			}
