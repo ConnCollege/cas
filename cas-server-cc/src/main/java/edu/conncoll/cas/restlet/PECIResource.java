@@ -208,17 +208,16 @@ public class PECIResource extends Resource
 									SQL = "UPDATE cc_adv_peci_parents_t SET "
 									List<String> columns = new ArrayList(testMap.keySet());
 									for(int i=0; i<columns.size(); i++) { 
-										if (i > 0) {
-											SQL = SQL + ", "
-										}
 								        String key = columns.get(i);
 								        Object newValue = updates.get(key);
 								        if (newValue.getClass().getName().equals("java.lang.String") {
-								        	SQL = SQL + key +" = '" +  newValue + "'";
+								        	SQL = SQL + key +" = '" +  newValue + "', ";
 								        } else {
-								        	SQL = SQL + key +" = " +  newValue;
+								        	SQL = SQL + key +" = " +  newValue + ", ";
 								        }
+								        changeCol = changeCol + key + ","
 								    } 
+									SQL = SQL + "CHANGE_COLS = '" + changeCol +"'"
 									SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									jdbcCAS.update(SQL,namedParameters);
 								}
