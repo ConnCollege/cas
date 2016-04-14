@@ -199,25 +199,25 @@ public class PECIResource extends Resource
 								//Find the values that have been updated
 								Map<String,Object> updates =  new HashMap<String,Object>();
 								//Parent Data
-								updates = compareMap(parentDataIn, parentData));
+								updates = compareMap(parentDataIn, parentData);
 								if (updates.size() > 0 ) {
 									//Write Parent Data changes
 									SQL="select CHANGE_COLS from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
-									String changeCol = parentData.get("CHANGE_COLS");
-									SQL = "UPDATE cc_adv_peci_parents_t SET "
+									String changeCol = (String) parentData.get("CHANGE_COLS");
+									SQL = "UPDATE cc_adv_peci_parents_t SET ";
 									List<String> columns = new ArrayList(testMap.keySet());
 									for(int i=0; i<columns.size(); i++) { 
 								        String key = columns.get(i);
 								        Object newValue = updates.get(key);
-								        if (newValue.getClass().getName().equals("java.lang.String") {
+								        if (newValue.getClass().getName().equals("java.lang.String")) {
 								        	SQL = SQL + key +" = '" +  newValue + "', ";
 								        } else {
 								        	SQL = SQL + key +" = " +  newValue + ", ";
 								        }
-								        changeCol = changeCol + key + ","
+								        changeCol = changeCol + key + ",";
 								    } 
-									SQL = SQL + "CHANGE_COLS = '" + changeCol +"'"
+									SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
 									SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									jdbcCAS.update(SQL,namedParameters);
 								}
