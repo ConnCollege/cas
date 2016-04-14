@@ -206,7 +206,7 @@ public class PECIResource extends Resource
 									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 									String changeCol = (String) parentData.get("CHANGE_COLS");
 									SQL = "UPDATE cc_adv_peci_parents_t SET ";
-									List<String> columns = new ArrayList(testMap.keySet());
+									List<String> columns = new ArrayList(updates.keySet());
 									for(int i=0; i<columns.size(); i++) { 
 								        String key = columns.get(i);
 								        Object newValue = updates.get(key);
