@@ -431,7 +431,7 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_phone_data_t",phoneData);	
 						
 						//Emergency Contact Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where PARENT_PPID is not null and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where PARENT_PPID is not null and STUDENT_PIDM=" + ccPDIM.toString();
 						emergData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_emergs_t",emergData);	
@@ -826,7 +826,7 @@ public class jdbcCamel {
 		sql = sql + ")";
 		log.debug(sql);
 		Map<String,Object> namedParameters = new HashMap<String,Object>();
-		for(int i=0; i<sourceData.size(); i++){
+		for(int i=0; i<columns.size(); i++){
 			if (sourceData.get(columns.get(i)) != null){
 				log.debug ("Passing "+ columns.get(i).toString() + " = " + sourceData.get(columns.get(i)).toString());
 				namedParameters.put(columns.get(i).toString(), sourceData.get(columns.get(i)).toString());

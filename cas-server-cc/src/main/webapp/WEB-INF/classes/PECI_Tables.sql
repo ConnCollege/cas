@@ -16,8 +16,9 @@ CREATE TABLE `peci_trans_start` (
 CREATE TABLE `cc_adv_peci_parents_t` (
   `STUDENT_PPID` int(11) NOT NULL DEFAULT '0',
   `STUDENT_PIDM` int(11) NOT NULL,
-  `PARENT_PPID` int(11) NOT NULL,
+  `PARENT_PPID` varchar(25) NOT NULL,
   `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'N',
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `PARENT_PIDM` int(11) DEFAULT NULL,
   `PARENT_CAMEL_NUMBER` varchar(9) DEFAULT NULL,
   `PARENT_CAMEL_ID` varchar(30) DEFAULT NULL,
@@ -49,8 +50,9 @@ CREATE TABLE `cc_adv_peci_parents_t` (
 CREATE TABLE `cc_gen_peci_addr_data_t` (
   `STUDENT_PPID` int(11) DEFAULT NULL,
   `STUDENT_PIDM` int(11) NOT NULL,
-  `PARENT_PPID` int(11) DEFAULT NULL,
-  `TEMP_PPID` varchar(1) NOT NULL DEFAULT '',
+  `PARENT_PPID` varchar(25) DEFAULT NULL,
+  `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'N',
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `PARENT_PIDM` varchar(45) DEFAULT NULL,
   `EMERG_CONTACT_PRIORITY` int(11) DEFAULT NULL,
   `PERSON_ROLE` varchar(20) DEFAULT NULL,
@@ -70,8 +72,9 @@ CREATE TABLE `cc_gen_peci_addr_data_t` (
 CREATE TABLE `cc_gen_peci_email_data_t` (
   `STUDENT_PPID` int(11) DEFAULT NULL,
   `STUDENT_PIDM` int(11) NOT NULL,
-  `PARENT_PPID` int(11) DEFAULT NULL,
-  `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'Y',
+  `PARENT_PPID` varchar(25) DEFAULT NULL,
+  `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'N',
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `PARENT_PIDM` int(11) DEFAULT '0',
   `PECI_EMAIL_CODE` varchar(5) DEFAULT NULL,
   `EMAIL_ADDRESS` varchar(128) DEFAULT NULL
@@ -80,8 +83,9 @@ CREATE TABLE `cc_gen_peci_email_data_t` (
 CREATE TABLE `cc_gen_peci_emergs_t` (
   `STUDENT_PPID` int(11) DEFAULT '0',
   `STUDENT_PIDM` varchar(9) NOT NULL,
-  `PARENT_PPID` int(11) DEFAULT '0',
-  `TEMP_PPID` varchar(1) DEFAULT '',
+  `PARENT_PPID` varchar(25) DEFAULT '0',
+  `TEMP_PPID` varchar(1) DEFAULT 'N',
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `PARENT_PIDM` varchar(45) DEFAULT '',
   `EMERG_LEGAL_PREFIX_NAME` varchar(20) DEFAULT NULL,
   `EMERG_LEGAL_FIRST_NAME` varchar(60) DEFAULT NULL,
@@ -107,8 +111,9 @@ CREATE TABLE `cc_gen_peci_emergs_t` (
 CREATE TABLE `cc_gen_peci_phone_data_t` (
   `STUDENT_PPID` int(11) DEFAULT NULL,
   `STUDENT_PIDM` int(11) NOT NULL,
-  `PARENT_PPID` int(11) DEFAULT NULL,
-  `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'Y',
+  `PARENT_PPID` varchar(25) DEFAULT NULL,
+  `TEMP_PPID` varchar(1) NOT NULL DEFAULT 'N',
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `PARENT_PIDM` int(11) DEFAULT '0',
   `PECI_PHONE_CODE` varchar(5) DEFAULT NULL,
   `PHONE_CODE` varchar(4) DEFAULT NULL,
@@ -128,6 +133,7 @@ CREATE TABLE `cc_gen_peci_phone_data_t` (
 CREATE TABLE `cc_stu_peci_students_t` (
   `STUDENT_PPID` int(11) DEFAULT '0',
   `STUDENT_PIDM` int(11) NOT NULL,
+  `CHANGE_COLS` varchar(400) DEFAULT NULL,
   `CAMEL_NUMBER` varchar(9) DEFAULT NULL,
   `CAMEL_ID` varchar(30) DEFAULT NULL,
   `CLASS_OF` varchar(30) DEFAULT NULL,
