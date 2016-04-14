@@ -110,6 +110,17 @@
 		color: #23527c;
 		text-decoration: underline;		
 	}
+	
+	.info_box{
+	   	border: 2px solid #d4e3fc;
+    	border-radius: 10px;
+    	margin: 0 0 10px;
+    	padding: 10px 10px;
+	}
+	
+	.info_box .row{
+		padding: 0 0 5px;
+	}
   </style>
 </head>
 <body>
@@ -215,46 +226,14 @@
   
   <div id="step3">
   	<h3>Step 3 Parent/Guardian Information <small><span class="edit_link">Edit Parent/Guardian Info</span></small></h3>	
-  	<h4>Parent/Guardian 1</h4>
+  	
   	<div class="confirm_section">
-	  	<!--<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip, Claims me as dependent">
-		  	<div class="row">
-		      <div class="col-xs-3">
-		          <div><c:out value="${i}" /></div>
-		      </div>
-		      <div class="col-xs-9">
-		          <div><c:out value="${i}" /></div>
-		      </div> 
-		    </div>
-	    </c:forEach>-->
-	    
+		<c:set var="x" value="1" scope="page" />	    
 	    <c:forEach items="${StudentParents}" var="parents">
-	    	<div class="parent_info" id="${parents.PARENT_PPID}">
-		    	<div class="row">
-			      <div class="col-xs-3">
-			          <div>First Name</div>
-			      </div>
-			      <div class="col-xs-9">
-			          <div>${parents.PARENT_PREF_FIRST_NAME }</div>
-			      </div> 
-			    </div>
-			    <div class="row">
-			      <div class="col-xs-3">
-			          <div>Middle Name</div>
-			      </div>
-			      <div class="col-xs-9">
-			          <div>${parents.PARENT_PREF_MIDDLE_NAME }</div>
-			      </div> 
-			    </div>
-			    <div class="row">
-			      <div class="col-xs-3">
-			          <div>Last Name</div>
-			      </div>
-			      <div class="col-xs-9">
-			          <div>${parents.PARENT_PREF_LAST_NAME }</div>
-			      </div> 
-			    </div>	
-		    </div>	    
+	    	<div class="contact_info info_box" id="PARENT_${parents.PARENT_PPID}" data-type-id="PARENT" data-ppid="${parents.PARENT_PPID}">
+				<h4>Parent/Guardian ${x}</h4>
+		    </div>	   
+		    <c:set var="x" value="${x + 1}" scope="page" /> 
 	    </c:forEach>    
 	    
     </div>
@@ -262,18 +241,15 @@
   
     <div id="step4">
   	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
-  	<h4>Emergency Contact 1</h4>	
+  	
   	<div class="confirm_section">
-	  	<c:forEach var="i" items="First Name, Middle Name, Last Name, Mobile Phone, Phone Carrier, Preferred Email, Relationship, Address 1, Address 2, Country, City, State, Zip">
-		  	<div class="row">
-		      <div class="col-xs-3">
-		          <div><c:out value="${i}" /></div>
-		      </div>
-		      <div class="col-xs-9">
-		          <div><c:out value="${i}" /></div>
-		      </div>
-		    </div>
-	    </c:forEach>
+  		<c:set var="x" value="1" scope="page" />	
+	  	 <c:forEach items="${StudentEMR}" var="contacts">
+	    	<div class="contact_info info_box" id="CONTACT_${contacts.PARENT_PPID}" data-type-id="CONTACT" data-ppid="${contacts.PARENT_PPID}">
+				<h4>Emergency Contact ${x}</h4>
+		    </div>	
+		    <c:set var="x" value="${x + 1}" scope="page" />	    
+	    </c:forEach>    
     </div>
     <div class="row">
     	<div class="col-sm-offset-4  col-xs-3">
@@ -303,31 +279,31 @@
 
 $(document).ready(function() {	
 	
-	var demoFields = ["PARENT_LEGAL_PREFIX_NAME","PARENT_PREF_FIRST_NAME","PARENT_PREF_MIDDLE_NAME","PARENT_PREF_LAST_NAME","PARENT_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
-	var demoValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
+	var demoFields = ["PARENT_LEGAL_PREFIX_NAME","PARENT_PREF_FIRST_NAME","PARENT_PREF_MIDDLE_NAME","PARENT_PREF_LAST_NAME","PARENT_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS","EMERG_LEGAL_PREFIX_NAME","EMERG_PREF_FIRST_NAME","EMERG_PREF_MIDDLE_NAME","EMERG_PREF_LAST_NAME","EMERG_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
+	var demoValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address","Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
+	var contactFields = ["EMERG_LEGAL_PREFIX_NAME","EMERG_PREF_FIRST_NAME","EMERG_PREF_MIDDLE_NAME","EMERG_PREF_LAST_NAME","EMERG_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
+	var contactValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
 	var phoneFields = ["PECI_PHONE_CODE","PHONE_AREA_CODE","PHONE_NUMBER","CELL_PHONE_CARRIER"];
 	var phoneValues= ["Phone Type","Area Code","Phone Number","Phone Carrier"]
 	
-
-
-	var fruits = ["Banana", "Orange", "Apple", "Mango"];
-	var a = demoFields.indexOf("PARENT_PREF_FIRST_NAME"); 
-	console.log('a: ' + a);
-	console.log('value: ' + demoValues[a]);
-	
 	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
+	x = 0;
+	y= 0;
 	
-	$('.parent_info').each(function(){
-		$ppid = $(this).attr("id");
+	/*$('.parent_info').each(function(){
+		var ppid = $(this).attr("data-ppid");
+		var type_id = $(this).attr("data-type-id");
 		$.ajax({
 		       type: "POST",
 		       url: '/cas/cas-rest-api/peci/',
-		       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": $ppid, "DATA": "PARENT", "MODE": "READ"}),
+		       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "READ"}),
 		       datatype: "json",
 		       contentType: "application/json",
 		       success: function(data)           
 		       {  
 		    	   var output = '';
+		    	   //x ++;
+		    	   //$('#parent_' + ppid).append('<h4>Parent/Guardian ' + x + '</h4>');
 		    	   $.each(data.parent, function(index, element){
 		       		//console.log("-parent- index: " + index + " element:" + element);
 		       		 var output = '';
@@ -339,9 +315,10 @@ $(document).ready(function() {
 		       				output += element;
 		       			}
 		       			output += '</div></div></div>';
-		       		}		       		
+		       		}	
+		       		$('#parent_' + ppid).append(output);
 		       	  });
-		    	   $('#' + $ppid).append(output);
+		    	   
 		    	   
 		       	  //use first email: data.parent_email[0]?
 		       	  $.each(data.email[0], function(index,element){
@@ -355,8 +332,9 @@ $(document).ready(function() {
 			       			}
 			       			output += '</div></div></div>';	 
 			       		}
+			       		$('#parent_' + ppid).append(output);
 		       	  });
-		       	  $('#' + $ppid).append(output);
+		       	  
 		       	  
 		       	  //use first address: data.parent_address[0]?
 		       	  $.each(data.address[0], function(index,element){
@@ -371,17 +349,17 @@ $(document).ready(function() {
 			       			output += '</div></div></div>';
 			       		}      	
 
-		       		$('#' + $ppid).append(output);
+		       		$('#parent_' + ppid).append(output);
 	
 		          });
 		       	  
 		       	$.each(data.phones, function(index1,element1){
-						console.log("index1: " + index1); 
+						//console.log("index1: " + index1); 
 		    		  $.each(this, function(index2,element2){  
 		    			  
 				       		var output = '';			       		
 				       		var loc = phoneFields.indexOf(index2);
-				       		console.log("loc: " + loc); 
+				       		//console.log("loc: " + loc); 
 				       		var thisTitle = phoneValues[loc];
 				       		if(index1 == 1){
 				       			var thisTitle = "Additional " + thisTitle;
@@ -403,7 +381,7 @@ $(document).ready(function() {
 				       			}
 				       			output += '</div></div></div>';	
 				       		}
-				       		$('#' + $ppid).append(output);
+				       		$('#parent_' + ppid).append(output);
 		        		  
 		      			  //console.log(peci_phone_code);
 		    			  //console.log("peci phone code" +  index[element]);        			  
@@ -419,6 +397,145 @@ $(document).ready(function() {
 	       }
 	    });		
 
+	});*/
+	
+	$('.contact_info').each(function(){
+		var ppid = $(this).attr("data-ppid");
+		var type_id = $(this).attr("data-type-id");
+		console.log('ppid: ' + ppid);
+		if(ppid != ''){
+			console.log('ppid2: ' + ppid);
+			$.ajax({
+			       type: "POST",
+			       url: '/cas/cas-rest-api/peci/',
+			       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": ppid, "DATA": type_id, "MODE": "READ"}),
+			       datatype: "json",
+			       contentType: "application/json",
+			       success: function(data)           
+			       {  
+			    	   var output = '';
+			    	   //y ++;
+			    	   //$('#contact_' + ppid).append('<h4>Emergency Contact ' + y + '</h4>');
+			    	   if(type_id == 'CONTACT'){
+				    	   $.each(data.contact, function(index, element){
+				       		
+				       		 var output = '';
+				       		
+				       		var loc = demoFields.indexOf(index); 	
+				       		
+				       		if(loc != -1){
+				       			
+				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+				       			if(element != null){
+				       				output += element;
+				       			}
+				       			output += '</div></div></div>';
+				       		}	
+				       		$('#' + type_id + '_' + ppid).append(output);
+				       	  });
+			    	   }else{
+			    		   $.each(data.parent, function(index, element){
+					       		//console.log("-parent- index: " + index + " element:" + element);
+					       		 var output = '';
+					       		
+					       		var loc = demoFields.indexOf(index); 		       		
+					       		if(loc != -1){
+					       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+					       			if(element != null){
+					       				output += element;
+					       			}
+					       			output += '</div></div></div>';
+					       		}	
+					       		$('#' + type_id + '_' + ppid).append(output);
+					       	  });
+			    	   }
+			    	   
+			    	   
+			       	  //use first email: data.parent_email[0]?
+			       	if (data.email[0] != undefined && data.email[0] != null && data.email[0].length != 0){
+			       	  $.each(data.email[0], function(index,element){
+			       		//console.log("-parent- index: " + index + " element:" + element);
+				       		var output = '';			       		
+				       		var loc = demoFields.indexOf(index); 	
+				       		//console.log("loc: " + loc + "ppid: " + ppid);
+				       		if(loc != -1){
+				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+				       			if(element != null){
+				       				output += element;
+				       			}
+				       			output += '</div></div></div>';	 
+				       		}
+				       		$('#' + type_id + '_' + ppid).append(output);
+			       	  });
+			       	}
+			       	  
+			       	  
+			       	  //use first address: data.parent_address[0]?
+			       	if (data.address[0] != undefined && data.address[0] != null && data.address[0].length != 0){
+			       	  $.each(data.address[0], function(index,element){
+			       		console.log("-contact- index: " + index + " element:" + element);
+				       		var output = '';			       		
+				       		var loc = demoFields.indexOf(index); 
+				       		console.log("Address: loc: " + loc + "ppid: " + ppid);
+				       		if(loc != -1){
+				       			console.log("Address: loc: " + loc);
+				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
+				       			if(element != null){
+				       				output += element;
+				       			}
+				       			output += '</div></div></div>';
+				       		}      	
+	
+				       		$('#' + type_id + '_' + ppid).append(output);
+		
+			          });
+			       	}
+			       	  
+			       	$.each(data.phones, function(index1,element1){
+							//console.log("index1: " + index1); 
+			    		  $.each(this, function(index2,element2){  
+			    			  
+					       		var output = '';			       		
+					       		var loc = phoneFields.indexOf(index2);
+					       		//console.log("loc: " + loc); 
+					       		var thisTitle = phoneValues[loc];
+					       		if(index1 == 1){
+					       			var thisTitle = "Additional " + thisTitle;
+					       		}else if(index1 != 0){
+					       			var thisTitle = "Additional " + thisTitle + " " + index1;
+					       		}
+					       		if(loc != -1){
+					       			output += '<div class="row"><div class="col-xs-3"><div>' + thisTitle + '</div></div><div class="col-xs-9"><div>';
+					       			if(index2 == 'PECI_PHONE_CODE'){
+						       			if(element2 == 'C'){
+						       				output += 'Mobile';
+						       			}else if(element2 == 'H'){
+						       				output += 'Home';
+						       			}else if(element2 == 'O'){
+						       				output += 'Office';					       			
+						       			}
+					       			}else if(element2 != null){
+					       				output += element2;
+					       			}
+					       			output += '</div></div></div>';	
+					       		}
+					       		$('#' + type_id + '_' + ppid).append(output);
+			        		  
+			      			  //console.log(peci_phone_code);
+			    			  //console.log("peci phone code" +  index[element]);        			  
+			    		  });
+			    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
+			      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
+			      	  });
+			       	  
+		
+			       },
+			 		error: function (request, status, error) {
+		           console.log("ERROR: " + request.responseText);
+		       }
+			});
+		}
+			
 	});
 	
 	$('.edit_link').click(function(){
