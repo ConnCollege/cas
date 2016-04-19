@@ -180,7 +180,7 @@
 			/*out.print(displayInput(true,"address_field","City",2,10,"student_city","city","",true,false));*/
 	%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_state">
+	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
 		<div class="col-sm-9">
 			<select class="form-control address_field ccreq" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
@@ -828,7 +828,7 @@
 		console.log('thisVal:' + $(this).val());
 		$intlField = '#GROUP_' + $form_id + '_INTL_REGION';
 		console.log('intlField:' + $intlField)
-		$stateField = '#GROUP_' + $form_id + '_STATE';
+		$stateField = '#GROUP_' + $form_id + '_ADDR_STAT_CODE';
 		if($(this).val() == 'United States' || $(this).val() == "US"){
 			$($stateField).show();
 			$($intlField).hide();
@@ -894,9 +894,10 @@
         		  }
           	  });
         	  $.each(data.phones, function(index1,element1){
-        		  console.log("modaltype:" + modal_type);
-        		  console.log('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION');
+        		  //console.log("modaltype:" + modal_type);
+        		  //console.log('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION');
         		  newIndex = parseInt(index1) + 1;
+        		  //add number to the "Add Another Phone" link for the .addAnotherPhone click function
         		  $('#' + modal_type + '_ADD_ANOTHER_PHONE').attr('data-id',newIndex);
         		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();        		  
         		  $.each(this, function(index2,element2){     
