@@ -419,7 +419,7 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_addr_data_t",addressData);	
 						
 						//Email Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_v where PECI_EMAIL_CODE='H' and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_v where (PECI_EMAIL_CODE='H' or PECI_EMAIL_CODE='P') and STUDENT_PIDM=" + ccPDIM.toString();
 						emailData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_email_data_t",emailData);	

@@ -139,8 +139,8 @@ public class PECIResource extends Resource
 					Map<String,Object> parentData = new HashMap<String,Object>();
 					Map<String,Object> emrgData = new HashMap<String,Object>();
 					List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
-					List<Map<String,Object>> emailData = new ArrayList<Map<String,Object>>();
-					List<Map<String,Object>> addressData = new ArrayList<Map<String,Object>>();
+					Map<String,Object> emailData =new HashMap<String,Object>();
+					Map<String,Object> addressData = new HashMap<String,Object>();
 					if (dataType.equals("PARENT")) {
 						if (ppid == ""){
 							//new Parent response
@@ -156,11 +156,11 @@ public class PECIResource extends Resource
 							
 							//email
 							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							emailData = jdbcCAS.queryForList(SQL,namedParameters);
+							emailData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//Address
 							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							addressData = jdbcCAS.queryForList(SQL,namedParameters);
+							addressData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							if (dataMode.equals("READ")) {
 							
@@ -234,7 +234,7 @@ public class PECIResource extends Resource
 							log.debug("New Temporaty Contact Record");
 						} else {
 							//Contact Data
-							SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME.EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 							parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//phones
@@ -243,11 +243,11 @@ public class PECIResource extends Resource
 							
 							//email
 							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							emailData = jdbcCAS.queryForList(SQL,namedParameters);
+							emailData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//Address
 							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							addressData = jdbcCAS.queryForList(SQL,namedParameters);
+							addressData = jdbcCAS.queryForMap(SQL,namedParameters);
 						}
 						if (dataMode.equals("READ")) {
 						
