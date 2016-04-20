@@ -394,6 +394,8 @@
 	  	<div class="modal-content">
 		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="return formValidate(this.id);return false;">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PPID" id="<c:out value="${modalType}"/>_STUDENT_PPID" value="">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PIIDM" id="<c:out value="${modalType}"/>_PARENT_PIDM" value="">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -437,19 +439,19 @@
 			  				<input type="text" placeholder="Jr., Sr., IV" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			</div>
 			  		</div>
-			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_0_PHONE_SEQUENCE_NO" id="<c:out value="${modalType}"/>_PHONE_0">
+			  		<input type="hidden" name="PHONE_0_PHONE_SEQUENCE_NO" id="PHONE_0_PHONE_SEQUENCE_NO">
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_0_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_0_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="tel" placeholder="Mobile Phone" name="<c:out value="${modalType}"/>_PHONE_0_NUMBER" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_0_NUMBER">
+		  					<input type="tel" placeholder="Mobile Phone" name="PHONE_0_NUMBER" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_0_NUMBER">
 		  				</div>
 		  			</div>
-		  			<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_0_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+		  			<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_0_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_0_CARRIER">
 						<label for="" class="control-label col-sm-4">Phone Carrier</label>
 						<div class="col-sm-6">
-							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="<c:out value="${modalType}"/>_PHONE_0_CARRIER" id="<c:out value="${modalType}"/>_PHONE_0_CARRIER">
+							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="PHONE_0_CARRIER" id="PHONE_0_CARRIER">
 								<option value="">Choose Phone Carrier</option>
 								<c:forEach items="${options['Carriers']}" var="carriers">
 									<option value="${carriers.key}">${carriers.value}</option>
@@ -457,14 +459,14 @@
 							</select>
 						</div>
 					</div>
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" id="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="EMERG_NO_CELL_PHONE" id="EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERGENCY_PHONE" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
-								<input type="text" placeholder="Emergency Phone" name="<c:out value="${modalType}"/>_EMERGENCY_PHONE" class="form-control address_field <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_EMERGENCY_PHONE" value="">
+								<input type="text" placeholder="Emergency Phone" name="EMERGENCY_PHONE" class="form-control address_field <c:out value="${modalType}"/>_PHONE_FIELD" id="EMERGENCY_PHONE" value="">
 						</div>
 					</div>
 					
@@ -473,14 +475,14 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_1_NUMBER">
 						<label for="tel" class="control-label col-sm-4">Additional Phone</label>
 						<div class="col-sm-6">
-							<input type="tel" placeholder="Additional Phone" name="<c:out value="${modalType}"/>_PHONE_1_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_1_NUMBER">
+							<input type="tel" placeholder="Additional Phone" name="PHONE_1_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_1_NUMBER">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_1_TYPE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_1_TYPE">
 						<label for="" class="control-label col-sm-4">Phone Type</label>
 						<div class="col-sm-6">
-							<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Type" name="<c:out value="${modalType}"/>_PHONE_1_TYPE" id="<c:out value="${modalType}"/>_PHONE_1_TYPE" data-id="1">
+							<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Type" name="PHONE_1_TYPE" id="PHONE_1_TYPE" data-id="1">
 								<option value="">Choose Phone Type</option>
 								<option value="C">Mobile</option>
 								<option value="H">Home</option>
@@ -492,7 +494,7 @@
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_1_CARRIER">
 						<label for="" class="control-label col-sm-4">Phone Carrier</label>
 						<div class="col-sm-6">
-							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="<c:out value="${modalType}"/>_PHONE_1_CARRIER" id="<c:out value="${modalType}"/>_PHONE_1_CARRIER">
+							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="PHONE_1_CARRIER" id="PHONE_1_CARRIER">
 								<option value="">Choose Phone Carrier</option>
 								<c:forEach items="${options['Carriers']}" var="carriers">
 									<option value="${carriers.key}">${carriers.value}</option>
@@ -507,14 +509,14 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_2_NUMBER" >
 							<label for="tel" class="control-label col-sm-4">Additional Phone 2</label>
 							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 2" name="<c:out value="${modalType}"/>_PHONE_2_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_2_NUMBER">
+								<input type="tel" placeholder="Additional Phone 2" name="PHONE_2_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_2_NUMBER">
 							</div>
 						</div>
 						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_2_TYPE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_2_TYPE">
 							<label for="" class="control-label col-sm-4">Phone 2 Type</label>
 							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Type" name="<c:out value="${modalType}"/>_PHONE_2_TYPE" id="<c:out value="${modalType}"/>_PHONE_2_TYPE" data-id="2">
+								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Type" name="PHONE_2_TYPE" id="PHONE_2_TYPE" data-id="2">
 									<option value="">Choose Phone Type</option>
 									<option value="C">Mobile</option>
 									<option value="H">Home</option>
@@ -526,7 +528,7 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_2_CARRIER"r" style="display:none;">
 							<label for="" class="control-label col-sm-4">Phone 2 Carrier</label>
 							<div class="col-sm-6">
-								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Carrier" name="<c:out value="${modalType}"/>_PHONE_2_CARRIER" id="<c:out value="${modalType}"/>_PHONE_2_CARRIER">
+								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Carrier" name="PHONE_2_CARRIER" id="PHONE_2_CARRIER">
 									<option value="">Choose Phone Carrier</option>
 									<c:forEach items="${options['Carriers']}" var="carriers">
 										<option value="${carriers.key}">${carriers.value}</option>
@@ -542,14 +544,14 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_3_NUMBER" >
 							<label for="tel" class="control-label col-sm-4">Additional Phone 3</label>
 							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 3" name="<c:out value="${modalType}"/>_PHONE_3_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_3_NUMBER">
+								<input type="tel" placeholder="Additional Phone 3" name="PHONE_3_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_3_NUMBER">
 							</div>
 						</div>
 						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_3_TYPE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_3_TYPE">
 							<label for="" class="control-label col-sm-4">Phone 3 Type</label>
 							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Type" name="<c:out value="${modalType}"/>_PHONE_3_TYPE" id="<c:out value="${modalType}"/>_PHONE_3_TYPE" data-id="3">
+								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Type" name="PHONE_3_TYPE" id="PHONE_3_TYPE" data-id="3">
 									<option value="">Choose Phone Type</option>
 									<option value="C">Mobile</option>
 									<option value="H">Home</option>
@@ -561,7 +563,7 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_3_CARRIER" style="display:none;">
 							<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
 							<div class="col-sm-6">
-								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Carrier" name="<c:out value="${modalType}"/>_PHONE_3_CARRIER" id="<c:out value="${modalType}"/>_PHONE_3_CARRIER">
+								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Carrier" name="PHONE_3_CARRIER" id="PHONE_3_CARRIER">
 									<option value="">Choose Phone Carrier</option>
 									<c:forEach items="${options['Carriers']}" var="carriers">
 										<option value="${carriers.key}">${carriers.value}</option>
@@ -577,14 +579,14 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_4_NUMBER" >
 							<label for="tel" class="control-label col-sm-4">Additional Phone 4</label>
 							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 4" name="<c:out value="${modalType}"/>_PHONE_4_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_4_NUMBER">
+								<input type="tel" placeholder="Additional Phone 4" name="PHONE_4_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_4_NUMBER">
 							</div>
 						</div>
 						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_4_TYPE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_4_TYPE">
 							<label for="" class="control-label col-sm-4">Phone 4 Type</label>
 							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Type" name="<c:out value="${modalType}"/>_PHONE_4_TYPE" id="<c:out value="${modalType}"/>_PHONE_4_TYPE" data-id="4">
+								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Type" name="PHONE_4_TYPE" id="PHONE_4_TYPE" data-id="4">
 									<option value="">Choose Phone Type</option>
 									<option value="C">Mobile</option>
 									<option value="H">Home</option>
@@ -596,7 +598,7 @@
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_4_CARRIER" style="display:none;">
 							<label for="" class="control-label col-sm-4">Phone 4 Carrier</label>
 							<div class="col-sm-6">
-								<select class="form-contro <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Carrier" name="<c:out value="${modalType}"/>_PHONE_4_CARRIER" id="<c:out value="${modalType}"/>_PHONE_4_CARRIER">
+								<select class="form-contro <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Carrier" name="PHONE_4_CARRIER" id="PHONE_4_CARRIER">
 									<option value="">Choose Phone Carrier</option>
 									<c:forEach items="${options['Carriers']}" var="carriers">
 										<option value="${carriers.key}">${carriers.value}</option>
@@ -614,7 +616,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMAIL_ADDRESS">
 						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
 						<div class="col-sm-6">
-							<input type="email" placeholder="Preferred Email" name="<c:out value="${modalType}"/>_EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS">
+							<input type="email" placeholder="Preferred Email" name="EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="EMAIL_ADDRESS">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_RELT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -633,21 +635,21 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
 						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 1" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
+							<input type="text" placeholder="Address 1" name="ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STREET_LINE1">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
 						<label for="text" class="control-label col-sm-4">Address 2</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 2" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
+							<input type="text" placeholder="Address 2" name="ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STREET_LINE2">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
 						<div class="col-sm-6">
-							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="<c:out value="${modalType}"/>_ADDR_NATN_CODE" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE">
+							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="ADDR_NATN_CODE" id="ADDR_NATN_CODE">
 								<option value="">Choose Country</option>
 								<c:forEach items="${options['Countries']}" var="countries">
 									<option value="${countries.key}">${countries.value}</option>
@@ -659,14 +661,14 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_CITY">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="City" name="<c:out value="${modalType}"/>_ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_CITY">
+							<input type="text" placeholder="City" name="ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_CITY">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STAT_CODE">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>State</label>
 						<div class="col-sm-6">
-							<select class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
+							<select class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="ADDR_STAT_CODE" id="ADDR_STAT_CODE">
 								<option value="">Choose State</option>
 								<c:forEach items="${options['States']}" var="states">
 									<option value="${states.key}">${states.value}</option>
@@ -679,7 +681,7 @@
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_INTL_REGION">
 						<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Province/Region" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
+							<input type="text" placeholder="Province/Region" name="ADDR_STAT_CODE" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STAT_CODE">
 						</div>
 					</div>
 					
@@ -687,7 +689,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_ZIP">
 						<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Zip/Postal Code" name="<c:out value="${modalType}"/>_ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_ZIP">
+							<input type="text" placeholder="Zip/Postal Code" name="ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_ZIP">
 						</div>
 					</div>
 					
@@ -870,27 +872,41 @@
            contentType: "application/json",
            success: function(data)           
            {   
-        	  $('#' + modal_type + '_PPID').val(PPID);
-        	  $('#' + modal_type + '_PIDM').val(student_PIDM);
+        	   console.log("data: " + data);
+        	  $('#' + modal_type + '_STUDENT_PPID').val();
+        	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
+        	  $('#' + modal_type + '_PARENT_PPID').val(PPID);
+        	  $('#' + modal_type + '_PARENT_PIDM').val();
         	  if(modal_type == 'PARENT'){
-	        	  $.each(data.parent, function(index, element){	        		
-	        	   	$('#' + index).val(element);
+	        	  $.each(data.parent, function(index, element){	       
+	        		  console.log("parent index: " + index + " val: " + element);
+	        		  $('form#' + modal_type + ' #' + index).val(element);
+	        		  
+	        	   	//$('#' + index).val(element);
 	        	  });
         	  }else{
-        		  $.each(data.contact, function(index, element){  	        		
-  	        	   	$('#' + index).val(element);
+        		  $.each(data.contact, function(index, element){  	 
+        			  //console.log("contact index: " + index + " val: " + element);
+        			  $('form#' + modal_type + ' #' + index).val(element);
+  	        	   	//$('#' + index).val(element);
   	        	  });
         	  }
-        	  //use first email: data.parent_email[0]?
-        	  $.each(data.email, function(index,element){        		 
-        	  	$('#' + modal_type + "_" + index).val(element); 		   
+
+        	  $.each(data.email, function(index,element){        
+        		 $('form#' + modal_type + ' #' + index).val(element);
+        	  	 //$('#' + modal_type + "_" + index).val(element); 	
+        	  	 //console.log("email index: " + index + " val: " + element);
         	  });
-        	  //use first address: data.parent_address[0]?
+
         	  $.each(data.address, function(index,element){        		 
         		  if(index == 'ADDR_NATN_CODE' && element == null){
-        			$('#' + modal_type + "_" + index).val('US');
+        			  $('form#' + modal_type + ' #' + index).val('US');
+        			//$('#' + modal_type + "_" + index).val('US');
+        			 //console.log("address index: " + index + " val: " + element);
         		  }else{
-          	  		$('#' + modal_type + "_" + index).val(element);
+        			  $('form#' + modal_type + ' #' + index).val(element);
+          	  		//$('#' + modal_type + "_" + index).val(element);
+          	  	 //console.log("address index: " + index + " val: " + element);
         		  }
           	  });
         	  $.each(data.phones, function(index1,element1){
@@ -901,13 +917,17 @@
         		  $('#' + modal_type + '_ADD_ANOTHER_PHONE').attr('data-id',newIndex);
         		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();        		  
         		  $.each(this, function(index2,element2){     
-        			  //console.log(index2 + ":" + element2);
+        			  
             		  if(index2 == 'PECI_PHONE_CODE'){
-            			  $('#' + modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);         			  
+            			  console.log('form#' + modal_type + ' input[name="PHONE_' + index1 + '_TYPE"]' + " element2: " + element2);
+            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_TYPE').val(element2);
+            			  //$('#' + modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);         			  
             		  }else if(index2 == 'PHONE_AREA_CODE'){
-            			  $('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
+            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val(element2);
+            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
             		  }else if(index2 == 'PHONE_NUMBER'){
-            			  $('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
+            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val($('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val() + element2);
+            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
             		  } 		
         			  //console.log("4 peci phone code" +  element2);        			  
         		  });        		 
@@ -988,12 +1008,15 @@
 		 return false;		 
 	 }else{
 		 //close any former error messages
-		 update_url = "";
 		 $(".alert_danger").hide();
+		 parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
+		 parent_pidm = $('#' + form_id + '_PARENT_PIDM').val();
+		 student_ppid = $('#' + form_id + '_STUDENT_PPID').val();
+		 student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
 		 //submit via ajax
 		
 		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
-		 formData = '{"PIDM" : "' + $('#PARENT_STUDENT_PIDM').val() + '","PPID" : "' + $('#' + form_id + '_PPID').val() + '","DATA" : "' + form_id + '","MODE" : "WRITE",';
+		 formData = '{"PIDM" : "' + student_pidm + '","PPID" : "' + parent_ppid + '","DATA" : "' + form_id + '","MODE" : "WRITE",';
 		 
 		 var typeArray = ["DEMO","EMAIL","ADDRESS","PHONE"];
 		 
@@ -1009,9 +1032,14 @@
 			}else{
 				formData = formData + '"' + typeArray[i].toLowerCase() + '": {';
 			}
-				
-			formData = formData + '"PARENT_PPID": ' + '"' + $('#' + form_id + '_PARENT_PPID').val() + '",';
-			formData = formData + '"STUDENT_PIDM": ' + '"' + $('#' + form_id + '_STUDENT_PIDM').val() + '",';
+			
+			if(form_id == 'PARENT'){
+				formData = formData + '"PARENT_PPID": ' + '"' + parent_ppid + '",';
+			}else{
+				formData = formData + '"PARENT_PPID": ' + '"' + parent_ppid + '",';
+				formData = formData + '"STUDENT_PIDM": ' + '"' + student_pidm + '",';
+			}
+			
 			x=0;
 			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){
 				 if($(this).is(':visible')){
@@ -1021,7 +1049,7 @@
 					 if(x == 0){						
 						x = x + 1;						
 					 }else{
-						 formData = formData + " , ";
+						 formData = formData + ",";
 					 }
 					 addToFormData(val,name);
 				}
@@ -1033,6 +1061,8 @@
 			 }
 			 
 		 } 
+				
+		formData = formData + "}";
 		 
 
 		 
