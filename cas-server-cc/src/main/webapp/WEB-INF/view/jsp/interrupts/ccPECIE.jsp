@@ -394,8 +394,6 @@
 	  	<div class="modal-content">
 		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="return formValidate(this.id);return false;">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PPID" id="<c:out value="${modalType}"/>_STUDENT_PPID" value="">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PIIDM" id="<c:out value="${modalType}"/>_PARENT_PIDM" value="">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -1010,8 +1008,6 @@
 		 //close any former error messages
 		 $(".alert_danger").hide();
 		 parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
-		 parent_pidm = $('#' + form_id + '_PARENT_PIDM').val();
-		 student_ppid = $('#' + form_id + '_STUDENT_PPID').val();
 		 student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
 		 //submit via ajax
 		
@@ -1031,13 +1027,6 @@
 				formData = formData + '"phones": [ {';				
 			}else{
 				formData = formData + '"' + typeArray[i].toLowerCase() + '": {';
-			}
-			
-			if(form_id == 'PARENT'){
-				formData = formData + '"PARENT_PPID": ' + '"' + parent_ppid + '",';
-			}else{
-				formData = formData + '"PARENT_PPID": ' + '"' + parent_ppid + '",';
-				formData = formData + '"STUDENT_PIDM": ' + '"' + student_pidm + '",';
 			}
 			
 			x=0;
