@@ -19,10 +19,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import edu.conncoll.cas.jdbc.jdbcCamel;
 
@@ -174,6 +171,9 @@ public class PECIResource extends Resource
 								getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							} else{
 								Map<String,Object> parentDataIn = toMap(json.getJSONObject("parent"));
+								Map<String,Object> emailDataIn = toMap(json.getJSONObject("email"));
+								Map<String,Object> addressDataIn = toMap(json.getJSONObject("address"));
+								
 								List<Object> phoneDataList = toList(json.getJSONArray("phones"));
 								List<Map<String,Object>> phoneDataIn = new ArrayList<Map<String,Object>>();
 								for (Object phone : phoneDataList){
@@ -182,20 +182,6 @@ public class PECIResource extends Resource
 									}
 								}
 								
-								List<Object> emailDataList = toList(json.getJSONArray("email"));
-								List<Map<String,Object>> emailDataIn = new ArrayList<Map<String,Object>>();
-								for (Object email : emailDataList){
-									if (email.getClass().getName() == "java.util.HashMap") {
-										emailDataIn.add((Map<String,Object>)email);
-									}
-								}
-								List<Object> AdressDataList = toList(json.getJSONArray("address"));
-								List<Map<String,Object>> AddressDataIn = new ArrayList<Map<String,Object>>();
-								for (Object address : AdressDataList){
-									if (address.getClass().getName() == "java.util.HashMap") {
-										AddressDataIn.add((Map<String,Object>)address);
-									}
-								}
 								//Find the values that have been updated
 								Map<String,Object> updates =  new HashMap<String,Object>();
 								//Parent Data
@@ -222,8 +208,53 @@ public class PECIResource extends Resource
 									jdbcCAS.update(SQL,namedParameters);
 								}
 								//email
-								//phones
+								updates = compareMap(emailDataIn, emailData);
+								if (updates.size() > 0 ) {
+									//Write Parent Data changes
+									SQL="select CHANGE_COLS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+									String changeCol = (String) parentData.get("CHANGE_COLS");
+									SQL = "UPDATE cc_gen_peci_email_data_t SET ";
+									List<String> columns = new ArrayList(updates.keySet());
+									for(int i=0; i<columns.size(); i++) { 
+								        String key = columns.get(i);
+								        Object newValue = updates.get(key);
+								        if (newValue.getClass().getName().equals("java.lang.String")) {
+								        	SQL = SQL + key +" = '" +  newValue + "', ";
+								        } else {
+								        	SQL = SQL + key +" = " +  newValue + ", ";
+								        }
+								        changeCol = changeCol + key + ",";
+								    } 
+									SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+									SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									jdbcCAS.update(SQL,namedParameters);
+								}
 								//adresses
+								updates = compareMap(addressDataIn, addressData);
+								if (updates.size() > 0 ) {
+									//Write Parent Data changes
+									SQL="select CHANGE_COLS from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+									String changeCol = (String) parentData.get("CHANGE_COLS");
+									SQL = "UPDATE cc_gen_peci_addr_data_t SET ";
+									List<String> columns = new ArrayList(updates.keySet());
+									for(int i=0; i<columns.size(); i++) { 
+								        String key = columns.get(i);
+								        Object newValue = updates.get(key);
+								        if (newValue.getClass().getName().equals("java.lang.String")) {
+								        	SQL = SQL + key +" = '" +  newValue + "', ";
+								        } else {
+								        	SQL = SQL + key +" = " +  newValue + ", ";
+								        }
+								        changeCol = changeCol + key + ",";
+								    } 
+									SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+									SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									jdbcCAS.update(SQL,namedParameters);
+								}
+
+								//phones
 								getResponse().setStatus( Status.SUCCESS_OK );
 								getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							}
@@ -235,7 +266,7 @@ public class PECIResource extends Resource
 						} else {
 							//Contact Data
 							SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+							emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//phones
 							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
@@ -252,7 +283,7 @@ public class PECIResource extends Resource
 						if (dataMode.equals("READ")) {
 						
 							jsonResponse.put("result", "success");
-							jsonResponse.put("contact",parentData );
+							jsonResponse.put("contact",emrgData );
 							jsonResponse.put("phones",phoneData );
 							jsonResponse.put("email",emailData );
 							jsonResponse.put("address",addressData );
@@ -260,6 +291,93 @@ public class PECIResource extends Resource
 							getResponse().setStatus( Status.SUCCESS_OK );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						} else {
+							Map<String,Object> emrgDataIn = toMap(json.getJSONObject("contact"));
+							Map<String,Object> emailDataIn = toMap(json.getJSONObject("email"));
+							Map<String,Object> addressDataIn = toMap(json.getJSONObject("address"));
+							
+							List<Object> phoneDataList = toList(json.getJSONArray("phones"));
+							List<Map<String,Object>> phoneDataIn = new ArrayList<Map<String,Object>>();
+							for (Object phone : phoneDataList){
+								if (phone.getClass().getName() == "java.util.HashMap") {
+									phoneDataIn.add((Map<String,Object>)phone);
+								}
+							}
+							
+							//Find the values that have been updated
+							Map<String,Object> updates =  new HashMap<String,Object>();
+							//contact Data
+							updates = compareMap(emrgDataIn, emrgData);
+							if (updates.size() > 0 ) {
+								//Write Parent Data changes
+								SQL="select CHANGE_COLS from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+								String changeCol = (String) parentData.get("CHANGE_COLS");
+								SQL = "UPDATE cc_gen_peci_emergs_t SET ";
+								List<String> columns = new ArrayList(updates.keySet());
+								for(int i=0; i<columns.size(); i++) { 
+							        String key = columns.get(i);
+							        Object newValue = updates.get(key);
+							        if (newValue.getClass().getName().equals("java.lang.String")) {
+							        	SQL = SQL + key +" = '" +  newValue + "', ";
+							        } else {
+							        	SQL = SQL + key +" = " +  newValue + ", ";
+							        }
+							        changeCol = changeCol + key + ",";
+							    } 
+								SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+								SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								jdbcCAS.update(SQL,namedParameters);
+							}
+							//email
+							updates = compareMap(emailDataIn, emailData);
+							if (updates.size() > 0 ) {
+								//Write Parent Data changes
+								SQL="select CHANGE_COLS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+								String changeCol = (String) parentData.get("CHANGE_COLS");
+								SQL = "UPDATE cc_gen_peci_email_data_t SET ";
+								List<String> columns = new ArrayList(updates.keySet());
+								for(int i=0; i<columns.size(); i++) { 
+							        String key = columns.get(i);
+							        Object newValue = updates.get(key);
+							        if (newValue.getClass().getName().equals("java.lang.String")) {
+							        	SQL = SQL + key +" = '" +  newValue + "', ";
+							        } else {
+							        	SQL = SQL + key +" = " +  newValue + ", ";
+							        }
+							        changeCol = changeCol + key + ",";
+							    } 
+								SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+								SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								jdbcCAS.update(SQL,namedParameters);
+							}
+							//adresses
+							updates = compareMap(addressDataIn, addressData);
+							if (updates.size() > 0 ) {
+								//Write Parent Data changes
+								SQL="select CHANGE_COLS from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+								String changeCol = (String) parentData.get("CHANGE_COLS");
+								SQL = "UPDATE cc_gen_peci_addr_data_t SET ";
+								List<String> columns = new ArrayList(updates.keySet());
+								for(int i=0; i<columns.size(); i++) { 
+							        String key = columns.get(i);
+							        Object newValue = updates.get(key);
+							        if (newValue.getClass().getName().equals("java.lang.String")) {
+							        	SQL = SQL + key +" = '" +  newValue + "', ";
+							        } else {
+							        	SQL = SQL + key +" = " +  newValue + ", ";
+							        }
+							        changeCol = changeCol + key + ",";
+							    } 
+								SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+								SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								jdbcCAS.update(SQL,namedParameters);
+							}
+
+							//phones
+							getResponse().setStatus( Status.SUCCESS_OK );
+							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							
 						}
 					}
