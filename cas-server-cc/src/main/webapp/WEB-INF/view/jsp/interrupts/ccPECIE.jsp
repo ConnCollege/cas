@@ -19,12 +19,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script src="https://www.conncoll.edu/scripts/jqueryUI/touch-punch/jquery.ui.touch-punch.min.js"></script>
-  <link rel="stylesheet" href="https://www.conncoll.edu/scripts/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.css">
-  <script src="https://www.conncoll.edu/scripts/bootstrap-switch-master/dist/js/bootstrap-switch.js"></script>  
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//www.conncoll.edu/scripts/jqueryUI/touch-punch/jquery.ui.touch-punch.min.js"></script>
+  <link rel="stylesheet" href="//www.conncoll.edu/scripts/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.css">
+  <script src="//www.conncoll.edu/scripts/bootstrap-switch-master/dist/js/bootstrap-switch.js"></script>  
   
   <script type="text/javascript">
   jQuery(function($) {
@@ -392,9 +392,9 @@
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="return formValidate(this.id)">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_PIDM" id="<c:out value="${modalType}"/>_PIDM" value="">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_PPID" id="<c:out value="${modalType}"/>_PPID" value="">
+		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="return formValidate(this.id);return false;">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
 
@@ -882,11 +882,11 @@
   	        	  });
         	  }
         	  //use first email: data.parent_email[0]?
-        	  $.each(data.email[0], function(index,element){        		 
+        	  $.each(data.email, function(index,element){        		 
         	  	$('#' + modal_type + "_" + index).val(element); 		   
         	  });
         	  //use first address: data.parent_address[0]?
-        	  $.each(data.address[0], function(index,element){        		 
+        	  $.each(data.address, function(index,element){        		 
         		  if(index == 'ADDR_NATN_CODE' && element == null){
         			$('#' + modal_type + "_" + index).val('US');
         		  }else{
@@ -932,7 +932,7 @@
 	 document.getElementById("PARENT").reset();
  });
  
- function formValidate(form_id) {
+ function formValidate(form_id) { 
 	 showMainError = 0;
 	 $("#" + form_id + " .ccreq").each(function(){
 		 var field_value = $(this).val();
@@ -993,67 +993,52 @@
 		 //submit via ajax
 		
 		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
-		 formData = '{"PIDM" : "' + $('#PARENT_PIDM').val() + '","PPID" : "' + $('#PARENT_PPID').val() + '","DATA" : "' + form_id + '","MODE" : "WRITE",';
-		 if(form_id == 'PARENT'){
-		 	formData = formData + '"parent" : {';
-		 }else{
-			 formData = formData + '"contact" : {';
-		 }
-		 //get demo fields
-		 $('.' + form_id + '_DEMO_FIELD').each(function(){
-			 val = $(this).val();
-			 formData = formData + '"' + $(this).attr("name") + '"';
-			 formData = formData + " : ";
-			 if(val.length != 0){
-			 	formData = formData + '"' + val + '",';
+		 formData = '{"PIDM" : "' + $('#PARENT_STUDENT_PIDM').val() + '","PPID" : "' + $('#' + form_id + '_PPID').val() + '","DATA" : "' + form_id + '","MODE" : "WRITE",';
+		 
+		 var typeArray = ["DEMO","EMAIL","ADDRESS","PHONE"];
+		 
+		 for (var i = 0; i < typeArray.length; i++) {
+			if(typeArray[i] == "DEMO"){
+				if(form_id == 'PARENT'){
+					 formData = formData + '"parent" : {';
+				}else{
+					formData = formData + '"contact" : {';
+				}
+			}else if(typeArray[i] == 'PHONE'){
+				formData = formData + '"phones": [ {';				
+			}else{
+				formData = formData + '"' + typeArray[i].toLowerCase() + '": {';
+			}
+				
+			formData = formData + '"PARENT_PPID": ' + '"' + $('#' + form_id + '_PARENT_PPID').val() + '",';
+			formData = formData + '"STUDENT_PIDM": ' + '"' + $('#' + form_id + '_STUDENT_PIDM').val() + '",';
+			x=0;
+			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){
+				 if($(this).is(':visible')){
+					 val = $(this).val();
+					 name = $(this).attr("name");
+					 console.log("val: " + val + " name: " + name + " x: " + x);
+					 if(x == 0){						
+						x = x + 1;						
+					 }else{
+						 formData = formData + " , ";
+					 }
+					 addToFormData(val,name);
+				}
+			 });
+			 if(typeArray[i] == "PHONE"){
+				 formData = formData + " } ]";
 			 }else{
-				 formData = formData + "null,"
+				 formData = formData + "},";
 			 }
-		 });
-		 formData = formData + "},";
-		 //get email fields
-		 formData = formData + '"email": [ {'
-		 $('.' + form_id + '_EMAIL_FIELD').each(function(){
-			 val = $(this).val();
-			 formData = formData + '"' + $(this).attr("name") + '"';
-			 formData = formData + " : ";
-			 if(val.length != 0){
-			 	formData = formData + '"' + val + '",';
-			 }else{
-				 formData = formData + "nul,l"
-			 }
-		 });
-		 formData = formData + "} ],";
-		 //get address fields
-		 formData = formData + '"address": [ {'
-		 $('.' + form_id + '_ADDRESS_FIELD').each(function(){
-			 val = $(this).val();
-			 formData = formData + '"' + $(this).attr("name") + '"';
-			 formData = formData + " : ";
-			 if(val.length != 0){
-			 	formData = formData + '"' + val + '",';
-			 }else{
-				 formData = formData + "null,"
-			 }
-		 });
-		 formData = formData + "} ],";
-		 //get phone fields
-		 formData = formData + '"address": [ {'
-		 $('.' + form_id + '_PHONE_FIELD').each(function(){
-			 val = $(this).val();
-			 formData = formData + '"' + $(this).attr("name") + '"';
-			 formData = formData + " : ";
-			 if(val.length != 0){
-			 	formData = formData + '"' + val + '",';
-			 }else{
-				 formData = formData + "null,"
-			 }
-		 });
-		 formData = formData + "} ],";
+			 
+		 } 
+		 
 
 		 
 		 console.log(formData);
-			$.ajax({
+		 
+			/*$.ajax({
 		           type: "POST",
 		           url: ajaxurl,
 		           //data: JSON.stringify($('#' + form_id).serialize()),
@@ -1070,11 +1055,21 @@
 		        	   console.log(e);
 		        	   return false;
 		           }
-			    });	 
+			    });	 */
 		 return false;
 		 
 	 }	 	
 
+	}
+		 
+	function addToFormData(val,name){
+		formData = formData + '"' + name + '" : ';
+		 if(val.length != 0){
+		 	formData = formData + '"' + val + '"';
+		 }else{
+			 formData = formData + "null"
+		 }
+		 return formData;
 	}
  
 	
