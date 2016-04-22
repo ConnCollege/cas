@@ -199,7 +199,48 @@ public class PECIResource extends Resource
 								writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
 
 								//phones
-								
+								for (int i=0;i<phoneDataIn.size();i++){
+									Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
+									for (int x=0;x<phoneData.size();x++) {
+										if ( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) {
+											//Add a phone to the parent TODO Add insert Phone.
+										} else {
+											Map<String,Object> phoneRecord = phoneData.get(x);
+											if ( (phoneRecordIn.get("PHONE_CODE").equals(phoneRecord.get("PHONE_CODE"))) &&
+												 (phoneRecordIn.get("PHONE_SEQUENCE_NO").equals(phoneRecord.get("PHONE_SEQUENCE_NO")))	){
+												// compare
+												updates = compareMap(phoneRecordIn, phoneRecord);
+												log.debug("Phone Record changed: " + updates);
+												if (updates.size() > 0 ) {
+													Map<String,Object> phoneParameters = namedParameters;
+													phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
+													phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
+													//Write Parent Data changes
+													SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+													Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
+													String changeCol = (String) sourceData.get("CHANGE_COLS");
+													if (changeCol == null) changeCol="";
+													SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
+													List<String> columns = new ArrayList(updates.keySet());
+													for(int y=0; y<columns.size(); y++) { 
+												        String key = columns.get(y);
+												        Object newValue = updates.get(key);
+												        if (newValue.getClass().getName().equals("java.lang.String")) {
+												        	SQL = SQL + key +" = '" +  newValue + "', ";
+												        } else {
+												        	SQL = SQL + key +" = " +  newValue + ", ";
+												        }
+												        changeCol = changeCol + key + ",";
+												    } 
+													SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+													SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+													SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+													jdbcCAS.update(SQL,phoneParameters);
+												}
+											}
+										}
+									}
+								}
 								
 								
 								getResponse().setStatus( Status.SUCCESS_OK );
@@ -273,6 +314,48 @@ public class PECIResource extends Resource
 							writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
 
 							//phones
+							for (int i=0;i<phoneDataIn.size();i++){
+								Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
+								for (int x=0;x<phoneData.size();x++) {
+									if ( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) {
+										//Add a phone to the parent TODO Add insert Phone.
+									} else {
+										Map<String,Object> phoneRecord = phoneData.get(x);
+										if ( (phoneRecordIn.get("PHONE_CODE").equals(phoneRecord.get("PHONE_CODE"))) &&
+											 (phoneRecordIn.get("PHONE_SEQUENCE_NO").equals(phoneRecord.get("PHONE_SEQUENCE_NO")))	){
+											// compare
+											updates = compareMap(phoneRecordIn, phoneRecord);
+											log.debug("Phone Record changed: " + updates);
+											if (updates.size() > 0 ) {
+												Map<String,Object> phoneParameters = namedParameters;
+												phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
+												phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
+												//Write Parent Data changes
+												SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+												Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
+												String changeCol = (String) sourceData.get("CHANGE_COLS");
+												if (changeCol == null) changeCol="";
+												SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
+												List<String> columns = new ArrayList(updates.keySet());
+												for(int y=0; y<columns.size(); y++) { 
+											        String key = columns.get(y);
+											        Object newValue = updates.get(key);
+											        if (newValue.getClass().getName().equals("java.lang.String")) {
+											        	SQL = SQL + key +" = '" +  newValue + "', ";
+											        } else {
+											        	SQL = SQL + key +" = " +  newValue + ", ";
+											        }
+											        changeCol = changeCol + key + ",";
+											    } 
+												SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+												SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+												SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+												jdbcCAS.update(SQL,phoneParameters);
+											}
+										}
+									}
+								}
+							}
 							getResponse().setStatus( Status.SUCCESS_OK );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							
