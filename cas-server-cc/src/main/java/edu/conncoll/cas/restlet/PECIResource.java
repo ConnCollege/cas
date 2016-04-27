@@ -149,7 +149,7 @@ public class PECIResource extends Resource
 							parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//phones
-							SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 							phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 							
 							//email
@@ -208,34 +208,55 @@ public class PECIResource extends Resource
 											Map<String,Object> phoneRecord = phoneData.get(x);
 											if ( (phoneRecordIn.get("PHONE_CODE").equals(phoneRecord.get("PHONE_CODE"))) &&
 												 (phoneRecordIn.get("PHONE_SEQUENCE_NO").equals(phoneRecord.get("PHONE_SEQUENCE_NO")))	){
-												// compare
-												updates = compareMap(phoneRecordIn, phoneRecord);
-												log.debug("Phone Record changed: " + updates);
-												if (updates.size() > 0 ) {
-													Map<String,Object> phoneParameters = namedParameters;
-													phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
-													phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
-													//Write Parent Data changes
-													SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
-													Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
-													String changeCol = (String) sourceData.get("CHANGE_COLS");
-													if (changeCol == null) changeCol="";
+												Map<String,Object> phoneParameters = namedParameters;
+												phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
+												phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
+												
+												String phoneNumber = "";
+												if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
+													phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
+												
+												String phoneNumberIntl = "";
+												if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
+													phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
+												
+												log.debug("Phone Number: " + phoneNumber + " International Phone: " + phoneNumberIntl);
+												if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
+													log.debug ("Marking Phone as deleted");
+													//Inactivate the phone record
 													SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
-													List<String> columns = new ArrayList(updates.keySet());
-													for(int y=0; y<columns.size(); y++) { 
-												        String key = columns.get(y);
-												        Object newValue = updates.get(key);
-												        if (newValue.getClass().getName().equals("java.lang.String")) {
-												        	SQL = SQL + key +" = '" +  newValue + "', ";
-												        } else {
-												        	SQL = SQL + key +" = " +  newValue + ", ";
-												        }
-												        changeCol = changeCol + key + ",";
-												    } 
-													SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+													SQL = SQL + " CHANGE_COLS = 'DELETE', ";
+													SQL = SQL + " PHONE_STATUS_IND = 'I' ";
 													SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 													SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
 													jdbcCAS.update(SQL,phoneParameters);
+												}else{
+													// compare
+													updates = compareMap(phoneRecordIn, phoneRecord);
+													log.debug("Phone Record changed: " + updates);
+													if (updates.size() > 0 ) {
+														//Write Parent Data changes
+														SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+														Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
+														String changeCol = (String) sourceData.get("CHANGE_COLS");
+														if (changeCol == null) changeCol="";
+														SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
+														List<String> columns = new ArrayList(updates.keySet());
+														for(int y=0; y<columns.size(); y++) { 
+													        String key = columns.get(y);
+													        Object newValue = updates.get(key);
+													        if (newValue.getClass().getName().equals("java.lang.String")) {
+													        	SQL = SQL + key +" = '" +  newValue + "', ";
+													        } else {
+													        	SQL = SQL + key +" = " +  newValue + ", ";
+													        }
+													        changeCol = changeCol + key + ",";
+													    } 
+														SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+														SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+														SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+														jdbcCAS.update(SQL,phoneParameters);
+													}
 												}
 											}
 										}
@@ -257,7 +278,7 @@ public class PECIResource extends Resource
 							emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
 							
 							//phones
-							SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 							phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 							
 							try {
@@ -323,34 +344,55 @@ public class PECIResource extends Resource
 										Map<String,Object> phoneRecord = phoneData.get(x);
 										if ( (phoneRecordIn.get("PHONE_CODE").equals(phoneRecord.get("PHONE_CODE"))) &&
 											 (phoneRecordIn.get("PHONE_SEQUENCE_NO").equals(phoneRecord.get("PHONE_SEQUENCE_NO")))	){
-											// compare
-											updates = compareMap(phoneRecordIn, phoneRecord);
-											log.debug("Phone Record changed: " + updates);
-											if (updates.size() > 0 ) {
-												Map<String,Object> phoneParameters = namedParameters;
-												phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
-												phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
-												//Write Parent Data changes
-												SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
-												Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
-												String changeCol = (String) sourceData.get("CHANGE_COLS");
-												if (changeCol == null) changeCol="";
+											Map<String,Object> phoneParameters = namedParameters;
+											phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
+											phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
+											
+											String phoneNumber = "";
+											if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
+												phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
+											
+											String phoneNumberIntl = "";
+											if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
+												phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
+											
+											log.debug("Phone Number: " + phoneNumber + " International Phone: " + phoneNumberIntl);
+											if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
+												log.debug ("Marking Phone as deleted");
+												//Inactivate the phone record
 												SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
-												List<String> columns = new ArrayList(updates.keySet());
-												for(int y=0; y<columns.size(); y++) { 
-											        String key = columns.get(y);
-											        Object newValue = updates.get(key);
-											        if (newValue.getClass().getName().equals("java.lang.String")) {
-											        	SQL = SQL + key +" = '" +  newValue + "', ";
-											        } else {
-											        	SQL = SQL + key +" = " +  newValue + ", ";
-											        }
-											        changeCol = changeCol + key + ",";
-											    } 
-												SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+												SQL = SQL + " CHANGE_COLS = 'DELETE', ";
+												SQL = SQL + " PHONE_STATUS_IND = 'I' ";
 												SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 												SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
 												jdbcCAS.update(SQL,phoneParameters);
+											}else{
+												// compare
+												updates = compareMap(phoneRecordIn, phoneRecord);
+												log.debug("Phone Record changed: " + updates);
+												if (updates.size() > 0 ) {
+													//Write Parent Data changes
+													SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+													Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
+													String changeCol = (String) sourceData.get("CHANGE_COLS");
+													if (changeCol == null) changeCol="";
+													SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
+													List<String> columns = new ArrayList(updates.keySet());
+													for(int y=0; y<columns.size(); y++) { 
+												        String key = columns.get(y);
+												        Object newValue = updates.get(key);
+												        if (newValue.getClass().getName().equals("java.lang.String")) {
+												        	SQL = SQL + key +" = '" +  newValue + "', ";
+												        } else {
+												        	SQL = SQL + key +" = " +  newValue + ", ";
+												        }
+												        changeCol = changeCol + key + ",";
+												    } 
+													SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+													SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+													SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+													jdbcCAS.update(SQL,phoneParameters);
+												}
 											}
 										}
 									}
@@ -358,7 +400,6 @@ public class PECIResource extends Resource
 							}
 							getResponse().setStatus( Status.SUCCESS_OK );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
-							
 						}
 					}
 				}
