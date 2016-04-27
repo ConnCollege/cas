@@ -437,20 +437,21 @@
 			  				<input type="text" placeholder="Jr., Sr., IV" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			</div>
 			  		</div>
-			  		<input type="hidden" name="PHONE_0_SEQUENCE_NO" id="PHONE_0_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
-			  		<input type="hidden" name="PHONE_0_CODE" id="PHONE_0_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value=""> 
-			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_0_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_0_NUMBER">
+			  		
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="tel" placeholder="Mobile Phone" name="PHONE_0_NUMBER" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_0_NUMBER">
+		  					<input type="tel" placeholder="Mobile Phone" name="PHONE_CP_NUMBER" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_CP_NUMBER">
+		  					<input type="hidden" name="PHONE_CP_SEQUENCE_NO" id="PHONE_CP_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
+			  				<input type="hidden" name="PHONE_CP_CODE" id="PHONE_CP_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value=""> 
 		  				</div>
 		  			</div>
-		  			<div style="display:none;" role="alert" class="alert alert-danger" id="CELL_PHONE_0_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_CELL_PHONE_0_CARRIER">
+		  			<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_CP_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_CARRIER">
 						<label for="" class="control-label col-sm-4">Phone Carrier</label>
 						<div class="col-sm-6">
-							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="CELL_PHONE_0_CARRIER" id="PHONE_0_CARRIER">
+							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="PHONE_CP_CARRIER" id="PHONE_CP_CARRIER">
 								<option value="">Choose Phone Carrier</option>
 								<c:forEach items="${options['Carriers']}" var="carriers">
 									<option value="${carriers.key}">${carriers.value}</option>
@@ -458,163 +459,42 @@
 							</select>
 						</div>
 					</div>
+					
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="EMERG_NO_CELL_PHONE" id="EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERGENCY_PHONE" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
 								<input type="text" placeholder="Emergency Phone" name="EMERGENCY_PHONE" class="form-control address_field  <c:out value="${modalType}"/>_PHONE_FIELD" id="EMERGENCY_PHONE" value="">
 						</div>
 					</div>
-					
-					<input type="hidden" name="PHONE_1_SEQUENCE_NO" id="PHONE_1_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">
-					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_1_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_1_NUMBER">
-						<label for="tel" class="control-label col-sm-4">Additional Phone</label>
+										
+					<div role="alert" style="display:none;" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER">
+						<label for="tel" class="control-label col-sm-4">Home Phone</label>
 						<div class="col-sm-6">
-							<input type="tel" placeholder="Additional Phone" name="PHONE_1_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_1_NUMBER">
+							<input type="tel" placeholder="Additional Phone" name="PHONE_MA_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_NUMBER">
+							<input type="hidden" name="PHONE_MA_SEQUENCE_NO" id="PHONE_MA_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">
+							<input type="hidden" name="PHONE_MA_CODE" id="PHONE_MA_CODE" value="MA" class="<c:out value="${modalType}"/>_PHONE_FIELD">
 						</div>
-					</div>
-					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_1_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_1_TYPE">
-						<label for="" class="control-label col-sm-4">Phone Type</label>
+					</div>				
+																					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER" >
+						<label for="tel" class="control-label col-sm-4">Office Phone</label>
 						<div class="col-sm-6">
-							<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Type" name="PHONE_1_CODE" id="PHONE_1_CODE" data-id="1">
-								<option value="">Choose Phone Type</option>
-								<option value="C">Mobile</option>
-								<option value="H">Home</option>
-								<option value="O">Office</option>
-							</select>
+							<input type="tel" placeholder="Additional Phone 2" name="PHONE_BU_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_NUMBER">
+							<input type="hidden" name="PHONE_BU_SEQUENCE_NO" id="PHONE_BU_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">	
+							<input type="hidden" name="PHONE_BU_CODE" id="PHONE_BU_CODE" value="BU" class="<c:out value="${modalType}"/>_PHONE_FIELD">
 						</div>
-					</div>
-					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_CELL_PHONE_1_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_CELL_PHONE_1_CARRIER">
-						<label for="" class="control-label col-sm-4">Phone Carrier</label>
-						<div class="col-sm-6">
-							<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone Carrier" name="CELL_PHONE_1_CARRIER" id="PHONE_1_CARRIER">
-								<option value="">Choose Phone Carrier</option>
-								<c:forEach items="${options['Carriers']}" var="carriers">
-									<option value="${carriers.key}">${carriers.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-					</div>
-						
-					<input type="hidden" name="PHONE_2_SEQUENCE_NO" id="PHONE_2_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">											
-					<div id="GROUP_<c:out value="${modalType}"/>_PHONE2_SECTION" style="display:none;">
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_2_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_2_NUMBER" >
-							<label for="tel" class="control-label col-sm-4">Additional Phone 2</label>
-							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 2" name="PHONE_2_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_2_NUMBER">
-							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_2_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_2_TYPE">
-							<label for="" class="control-label col-sm-4">Phone 2 Type</label>
-							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Type" name="PHONE_2_CODE" id="PHONE_2_CODE" data-id="2">
-									<option value="">Choose Phone Type</option>
-									<option value="C">Mobile</option>
-									<option value="H">Home</option>
-									<option value="O">Office</option>
-								</select>
-							</div>
-						</div>							
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_2_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_CELL_PHONE_2_CARRIER"r" style="display:none;">
-							<label for="" class="control-label col-sm-4">Phone 2 Carrier</label>
-							<div class="col-sm-6">
-								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 2 Carrier" name="CELL_PHONE_2_CARRIER" id="PHONE_2_CARRIER">
-									<option value="">Choose Phone Carrier</option>
-									<c:forEach items="${options['Carriers']}" var="carriers">
-										<option value="${carriers.key}">${carriers.value}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-					</div>			
-					
-					<input type="hidden" name="PHONE_3_SEQUENCE_NO" id="PHONE_3_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">
-					<div id="GROUP_<c:out value="${modalType}"/>_PHONE3_SECTION" style="display:none;">
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_3_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_3_NUMBER" >
-							<label for="tel" class="control-label col-sm-4">Additional Phone 3</label>
-							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 3" name="PHONE_3_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_3_NUMBER">
-							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_3_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_3_TYPE">
-							<label for="" class="control-label col-sm-4">Phone 3 Type</label>
-							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Type" name="PHONE_3_CODE" id="PHONE_3_CODE" data-id="3">
-									<option value="">Choose Phone Type</option>
-									<option value="C">Mobile</option>
-									<option value="H">Home</option>
-									<option value="O">Office</option>
-								</select>
-							</div>
-						</div>							
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_3_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_CELL_PHONE_3_CARRIER" style="display:none;">
-							<label for="" class="control-label col-sm-4">Phone 3 Carrier</label>
-							<div class="col-sm-6">
-								<select class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 3 Carrier" name="CELL_PHONE_3_CARRIER" id="PHONE_3_CARRIER">
-									<option value="">Choose Phone Carrier</option>
-									<c:forEach items="${options['Carriers']}" var="carriers">
-										<option value="${carriers.key}">${carriers.value}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-					</div>		
-					
-					<input type="hidden" name="PHONE_4_SEQUENCE_NO" id="PHONE_4_SEQUENCE_NO" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="">
-					<div id="GROUP_<c:out value="${modalType}"/>_PHONE4_SECTION" style="display:none;">
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_4_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_4_NUMBER" >
-							<label for="tel" class="control-label col-sm-4">Additional Phone 4</label>
-							<div class="col-sm-6">
-								<input type="tel" placeholder="Additional Phone 4" name="PHONE_4_NUMBER" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_4_NUMBER">
-							</div>
-						</div>
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_4_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_4_CODE">
-							<label for="" class="control-label col-sm-4">Phone 4 Type</label>
-							<div class="col-sm-6">
-								<select class="form-control phone_type <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Type" name="PHONE_4_CODE" id="PHONE_4_CODE" data-id="4">
-									<option value="">Choose Phone Type</option>
-									<option value="C">Mobile</option>
-									<option value="H">Home</option>
-									<option value="O">Office</option>
-								</select>
-							</div>
-						</div>							
-						<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_4_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_CELL_PHONE_4_CARRIER" style="display:none;">
-							<label for="" class="control-label col-sm-4">Phone 4 Carrier</label>
-							<div class="col-sm-6">
-								<select class="form-contro <c:out value="${modalType}"/>_PHONE_FIELD" placeholder="Phone 4 Carrier" name="CELL_PHONE_4_CARRIER" id="PHONE_4_CARRIER">
-									<option value="">Choose Phone Carrier</option>
-									<c:forEach items="${options['Carriers']}" var="carriers">
-										<option value="${carriers.key}">${carriers.value}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-					</div>									
-					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADD_PHONE">
-						<label for="" class="control-label col-sm-4"><span style="cursor:pointer;color: #23527c;text-decoration: underline;" id="<c:out value="${modalType}"/>_ADD_ANOTHER_PHONE" class="addAnotherPhone" data-id="2">Add Another Phone</a></label>							
-					</div>
-					 						
+					</div>								
+										 						
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMAIL_ADDRESS">
 						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
 						<div class="col-sm-6">
+							<input type="hidden" name="PECI_EMAIL_CODE" id="PECI_EMAIL_CODE" value="" class="<c:out value="${modalType}"/>_EMAIL_FIELD">
 							<input type="email" placeholder="Preferred Email" name="EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="EMAIL_ADDRESS">
 						</div>
 					</div>
@@ -748,7 +628,6 @@
  
 	$(".mobile_phone_check").change(function(){
 		$thisType = $(this).attr("data-mobile-type");
-		console.log($thisType);
 		if(this.checked) {
 			$("#GROUP_" + $thisType + "_EMERGENCY_PHONE").show();
 			$("#" + $thisType + "_emergency_phone").addClass("ccreq");
@@ -756,7 +635,7 @@
 			$("#" + $thisType + "_mobile_phone_error").hide();
 			$("#group_" + $thisType + "_mobile_phone").removeClass("has-error");
 			//remove requirement for mobile phone
-			$("#GROUP_" + $thisType + "_PHONE_0_NUMBER .required").hide();				
+			$("#GROUP_" + $thisType + "_PHONE_0_NUMBER .requ_MA_d").hide();				
 			$("#" + $thisType + "_mobile_phone").removeClass("ccreq");
 			//remove requirement for phone carrier
 			$("#group_" + $thisType + "_phone_carrier .required").hide();	
@@ -785,50 +664,10 @@
 	    }		
 	}); 
 	
-	//add phone
-	$('.addAnotherPhone').click(function (){
-		$form_id = $(this).closest('form').attr("id");
-		$current_id = $(this).attr("data-id");
-		$next_id = parseInt($current_id) + 1;
-		console.log("current_id: " + $current_id);	
-		console.log('#GROUP_' + $form_id + '_PHONE' + $current_id + '_SECTION');
-		if ($('#GROUP_' + $form_id + '_PHONE' + $current_id + '_SECTION').css('display') == 'none') {
-			$('#GROUP_' + $form_id + '_PHONE' + $current_id + '_SECTION').fadeIn();	
-			$(this).attr("data-id",$next_id);
-			//alert("next ID: " + $next_id);	
-		}	
-
-		if($next_id == 5){
-			$('#GROUP_' + $form_id + '_ADD_PHONE').hide();
-		}else{
-			$('#GROUP_' + $form_id + '_ADD_PHONE').show();
-		}
-	});
-	
-	//phone carrier display
-	$('.phone_type').change(function(){
-		$form_id = $(this).closest('form').attr("id");
-		//C==Cell/Mobile
-		if($(this).val() == 'C'){
-			$data_id = $(this).attr("data-id");
-			if($('#GROUP_' + $form_id + '_PHONE_' + $data_id + '_CARRIER').css('display') == 'none'){
-				$('#GROUP_' + $form_id + '_PHONE_' + $data_id + '_CARRIER').fadeIn();
-			}
-		}else{
-			$data_id = $(this).attr("data-id");
-			if($('#GROUP_' + $form_id + '_PHONE_' + $data_id + '_CARRIER').css('display') != 'none'){
-				$('#GROUP_' + $form_id + '_PHONE_' + $data_id + '_CARRIER').hide();
-			}
-		}
-	});
-	
 	//state/province drop-down toggle based on country chosen
 	$('.country_field').change(function(){
 		$form_id = $(this).closest('form').attr("id");
-		console.log('form_id:' + $form_id);
-		console.log('thisVal:' + $(this).val());
 		$intlField = '#GROUP_' + $form_id + '_INTL_REGION';
-		console.log('intlField:' + $intlField)
 		$stateField = '#GROUP_' + $form_id + '_ADDR_STAT_CODE';
 		if($(this).val() == 'United States' || $(this).val() == "US"){
 			$($stateField).show();
@@ -862,7 +701,6 @@
 		modal_type = $(this).attr("data-modal-type");
 		student_PIDM = ${StudentBio['STUDENT_PIDM']};
 		PPID = $(this).attr("data-ppid");		
-		console.log(modal_type);
 		$.ajax({
            type: "POST",
            url: ajaxurl,
@@ -871,21 +709,18 @@
            contentType: "application/json",
            success: function(data)           
            {   
-        	   console.log("data: " + data);
         	  $('#' + modal_type + '_STUDENT_PPID').val();
         	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
         	  $('#' + modal_type + '_PARENT_PPID').val(PPID);
         	  $('#' + modal_type + '_PARENT_PIDM').val();
         	  if(modal_type == 'PARENT'){
 	        	  $.each(data.parent, function(index, element){	       
-	        		  console.log("parent index: " + index + " val: " + element);
 	        		  $('form#' + modal_type + ' #' + index).val(element);
 	        		  
 	        	   	//$('#' + index).val(element);
 	        	  });
         	  }else{
         		  $.each(data.contact, function(index, element){  	 
-        			  //console.log("contact index: " + index + " val: " + element);
         			  $('form#' + modal_type + ' #' + index).val(element);
   	        	   	//$('#' + index).val(element);
   	        	  });
@@ -894,30 +729,38 @@
         	  $.each(data.email, function(index,element){        
         		 $('form#' + modal_type + ' #' + index).val(element);
         	  	 //$('#' + modal_type + "_" + index).val(element); 	
-        	  	 //console.log("email index: " + index + " val: " + element);
         	  });
 
         	  $.each(data.address, function(index,element){        		 
         		  if(index == 'ADDR_NATN_CODE' && element == null){
         			  $('form#' + modal_type + ' #' + index).val('US');
         			//$('#' + modal_type + "_" + index).val('US');
-        			 //console.log("address index: " + index + " val: " + element);
         		  }else{
         			  $('form#' + modal_type + ' #' + index).val(element);
           	  		//$('#' + modal_type + "_" + index).val(element);
-          	  	 //console.log("address index: " + index + " val: " + element);
-        		  }
+         		  }
           	  });
-        	  $.each(data.phones, function(index1,element1){
+        	  //phones
+        	  for(i=0;i<data.phones.length;i++){
+          		  var phone_code = data.phones[i].PHONE_CODE;
+        		  var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
+        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
+        		  var phone_carrier = data.phones[i].PHONE_CARRIER;
+        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CODE').val(phone_code);
+        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER').val(phone_number);
+        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
+        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CARRIER').val(phone_carrier);    
+        	  }
+        	  
+        	  /*$.each(data.phones, function(index1,element1){
         		  //console.log("modaltype:" + modal_type);
         		  //console.log('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION');
-        		  newIndex = parseInt(index1) + 1;
-        		  //add number to the "Add Another Phone" link for the .addAnotherPhone click function
-        		  $('#' + modal_type + '_ADD_ANOTHER_PHONE').attr('data-id',newIndex);
-        		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();        		  
+        		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();       
+        		  //console.log("index1: " + index1['PHONE_CODE']);
+        		  //console.log("element1: " + element1);
         		  $.each(this, function(index2,element2){     
-        			  console.log("index2: " + index2 + " element2: " + element2);
-            		  if(index2 == 'PECI_PHONE_CODE'){
+        			  //console.log("index2: " + index2 + " element2: " + element2);
+            		  if(index2 == 'PHONE_CODE'){
             			  //console.log('form#' + modal_type + ' input[name="PHONE_' + index1 + '_TYPE"]' + " element2: " + element2);
             			  $('form#' + modal_type + ' #PHONE_' + index1 + '_CODE').val(element2);
             			  //$('#' + modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);         			  
@@ -933,7 +776,7 @@
         			  //console.log("4 peci phone code" +  element2);        			  
         		  });        		 
           	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-          	  });
+          	  });*/
            },
            error: function (request, status, error) {
                console.log("ERROR: " + request.responseText);
@@ -1032,16 +875,16 @@
 				}
 			}else{							
 				formData = formData + '"' + typeArray[i].toLowerCase() + '": {';
-			}
+
+			}							
 			
 			x=0;
 			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){
-				 if($(this).is(':visible')){					
-					 
-				 	 test = $(this).is(':visible');
+				 if($(this).is(':visible') || ($(this).attr("name","PECI_EMAIL_CODE") && typeArray[i] == 'EMAIL')){
+					 //test = $(this).is(':visible');
 					 val = $(this).val();
 					 name = $(this).attr("name");
-					 console.log("val: " + val + " name: " + name + " x: " + x + "test: " + test);
+					 //console.log("val: " + val + " name: " + name + " x: " + x + "test: " + test);
 					 if(x == 0){						
 						x = x + 1;						
 					 }else{
@@ -1051,14 +894,33 @@
 				}
 			 });
 
-			formData = formData + "},";
-			
+			formData = formData + "},";			
 		 }
 
 		//loop phones separately as array
 		formData = formData + '"phones": [ {';
-		for (var i = 0; i < 5; i++) {
-			if($('form#' + form_id + ' #PHONE_' + i + '_NUMBER').is(':visible')){
+		var phoneCodeArray = ["CP","MA","BU"];		 
+		 for (var j = 0; j < phoneCodeArray.length; j++) {
+			if(phoneCodeArray[j] != "CP"){
+				formData = formData + "},{";
+			}
+			var phone_sequence_no = $('form#' + form_id + ' #PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
+			var phone_number = $('form#' + form_id + ' #PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+			var phone_carrier = $('form#' + form_id + ' #PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
+			var phone_code = $('form#' + form_id + ' #PHONE_' + phoneCodeArray[j] + '_CODE').val();;
+			formData = formData + '"PHONE_SEQUENCE_NO" : "' + phone_sequence_no + '",';
+			formData = formData + '"PHONE_NUMBER" : "' + phone_number + '",';
+			formData = formData + '"PHONE_CODE" : "' + phone_code + '",';
+			if(phone_carrier == undefined){
+				formData = formData + '"PHONE_CARRIER" : null';
+			}else{
+				formData = formData + '"PHONE_CARRIER" : "' + phone_carrier + '"';
+			}
+			
+		 }	
+		
+		
+		/*for (var i = 0; i < 5; i++) {
 				if(i != 0){
 					formData = formData + "},{";
 				}
@@ -1068,10 +930,9 @@
 				var phone_code = $('form#' + form_id + ' #PHONE_' + i + '_CODE').val();;
 				formData = formData + '"PHONE_SEQUENCE_NO" : "' + phone_sequence_no + '",';
 				formData = formData + '"PHONE_NUMBER" : "' + phone_number + '",';
-				formData = formData + '"PECI_PHONE_CODE" : "' + phone_code + '",';
+				formData = formData + '"PHONE_CODE" : "' + phone_code + '",';
 				formData = formData + '"PHONE_CARRIER" : "' + phone_carrier + '"';
-			}
-		}
+		}*/
 		formData = formData + "}]";		
 				
 		formData = formData + "}";
