@@ -416,12 +416,16 @@ public class PECIResource extends Resource
 						phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
 						
 						String phoneNumber = "";
-						if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
-							phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
+						if (phoneRecordIn.containsKey("PHONE_NUMBER")){
+							if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
+								phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
+						}
 						
 						String phoneNumberIntl = "";
-						if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
-							phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
+						if (phoneRecordIn.containsKey("PHONE_NUMBER_INTL")) {
+							if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
+								phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
+						}
 						
 						//TODO insert new phone when PHONE_SEQUENCE_NO is null
 						
