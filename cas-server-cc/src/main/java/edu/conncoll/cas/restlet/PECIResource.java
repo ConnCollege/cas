@@ -379,11 +379,11 @@ public class PECIResource extends Resource
 		List<String> columns = new ArrayList(testMap.keySet());
 		for(int i=0; i<columns.size(); i++) { 
 	        String key = columns.get(i);
-	        log.debug("Comparing column: " + key);
+	        //log.debug("Comparing column: " + key);
 	        Object testValue = testMap.get(key);
 	        if (origMap.containsKey(key)) {
 	        	Object origValue = origMap.get(key);
-	        	log.debug(testValue +  " vs " + origValue + " and test value class " + testValue.getClass().getName());
+	        	//log.debug(testValue +  " vs " + origValue + " and test value class " + testValue.getClass().getName());
         		if (origValue != null) {
 			        if (origValue.getClass().getName().equals("java.lang.String") || origValue.getClass().getName().equals("java.lang.Integer")) {
 		        		if (!(origValue.equals(testValue))){
@@ -404,10 +404,47 @@ public class PECIResource extends Resource
 		String SQL;
 		for (int i=0;i<phoneDataIn.size();i++){
 			Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
-			for (int x=0;x<phoneData.size();x++) {
-				if ( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) {
-					//Add a phone to the parent TODO Add insert Phone.
+			if ( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) {
+				//Add a phone to the parent TODO Add insert Phone.
+				//Find an Alpha Seq No
+				Map<String,Object> maxData = new HashMap<String, Object>();
+				char seqNo;
+				try{
+					SQL="select max(PHONE_SEQUENCE_NO)  seq from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+					maxData = jdbcCAS.queryForMap(SQL,namedParameters);
+				} catch (EmptyResultDataAccessException e){
+					// dataset empty 
+				}
+				if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
+					seqNo = 'A';
 				} else {
+					seqNo = maxData.get("seq").toString().charAt(0);
+					seqNo = (char)((int)seqNo + 1);
+				}
+				log.debug ("New Phone record to create Seq No: " + String.valueOf(seqNo));
+				SQL = "INSERT cc_gen_peci_phone_data_t SET ";
+				List<String> columns = new ArrayList(phoneRecordIn.keySet());
+				for(int y=0; y<columns.size(); y++) { 
+			        String key = columns.get(y);
+			        if (!key.equals("PHONE_SEQUENCE_NO")) {
+				        Object newValue = phoneRecordIn.get(key);
+				        if (newValue.getClass().getName().equals("java.lang.String")) {
+				        	SQL = SQL + key +" = '" +  newValue + "', ";
+				        } else {
+				        	SQL = SQL + key +" = " +  newValue + ", ";
+				        }
+			        }
+			    } 
+				SQL = SQL + "CHANGE_COLS = 'NEW', ";
+				
+				SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
+				SQL = SQL + "PARENT_PPID=:PARENT_PPID, "; 
+				SQL = SQL + "PHONE_SEQUENCE_NO='" + seqNo + "'";
+				
+				jdbcCAS.update(SQL,namedParameters);
+			} else {
+				for (int x=0;x<phoneData.size();x++) {
+				
 					Map<String,Object> phoneRecord = phoneData.get(x);
 					if ( (phoneRecordIn.get("PHONE_CODE").equals(phoneRecord.get("PHONE_CODE"))) &&
 						 (phoneRecordIn.get("PHONE_SEQUENCE_NO").equals(phoneRecord.get("PHONE_SEQUENCE_NO")))	){
@@ -426,8 +463,6 @@ public class PECIResource extends Resource
 							if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
 								phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
 						}
-						
-						//TODO insert new phone when PHONE_SEQUENCE_NO is null
 						
 						log.debug("Phone Number: " + phoneNumber + " International Phone: " + phoneNumberIntl);
 						if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
