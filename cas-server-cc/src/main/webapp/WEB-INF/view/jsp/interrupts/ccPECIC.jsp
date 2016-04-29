@@ -121,13 +121,23 @@
 	.info_box .row{
 		padding: 0 0 5px;
 	}
+	
+	.message {
+		background: #D7EED7;
+		border: 3px solid #99CC99;
+		text-align:center;
+		padding-bottom: 8px;
+	}
   </style>
 </head>
 <body>
 
 <div class="container">
   <h2>Confirm Contact Information</h2>
-  <p>Please confirm your contact information, parent/guardian and emergency contact information below.</p> 
+  <div class="message">
+  	<h3>Almost Done!</h3>
+  	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the Confirm button below.</p>
+  </div> 
   
   <div id="step1">
   	<h3>Step 1 Verify Your Permanent Mailing Address <small><span class="edit_link">Edit My Info</span></small></h3>	
@@ -253,7 +263,7 @@
     </div>
     <div class="row">
     	<div class="col-sm-offset-4  col-xs-3">
-    		<button type="submit" class="btn btn-primary">Save</button>
+    		<button type="submit" class="btn btn-primary">Confirm</button>
     	</div>
     </div>
   </div>
@@ -276,6 +286,11 @@
 </form:form>
 
 <script type="text/javascript">
+
+window.onbeforeunload = confirmExit;
+function confirmExit() {
+    return "You will need to click Confirm to save your information, otherwise all of your data will be lost. Are you sure you want to close this window?";
+}
 
 $(document).ready(function() {	
 	
@@ -497,7 +512,6 @@ $(document).ready(function() {
 			    			  
 					       		var output = '';			       		
 					       		var loc = phoneFields.indexOf(index2);
-					       		//console.log("loc: " + loc); 
 					       		var thisTitle = phoneValues[loc];
 					       		if(index1 == 1){
 					       			var thisTitle = "Additional " + thisTitle;
