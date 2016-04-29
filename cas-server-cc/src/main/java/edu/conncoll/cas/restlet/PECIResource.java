@@ -312,26 +312,48 @@ public class PECIResource extends Resource
 	public void writeUpdates (Map<String,Object> namedParameters, Map<String, Object> updates, String tableName) {
 		Map<String, Object> sourceData = new HashMap<String, Object>();
 		if (updates.size() > 0 ) {
-			//Write Parent Data changes
-			String SQL="select CHANGE_COLS from "+ tableName +" where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+			//Write Data changes
+			String SQL="select count(*) ct from "+ tableName +" where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 			sourceData = jdbcCAS.queryForMap(SQL,namedParameters);
-			String changeCol = (String) sourceData.get("CHANGE_COLS");
-			if (changeCol == null) changeCol="";
-			SQL = "UPDATE "+ tableName +" SET ";
-			List<String> columns = new ArrayList(updates.keySet());
-			for(int i=0; i<columns.size(); i++) { 
-		        String key = columns.get(i);
-		        Object newValue = updates.get(key);
-		        if (newValue.getClass().getName().equals("java.lang.String")) {
-		        	SQL = SQL + key +" = '" +  newValue + "', ";
-		        } else {
-		        	SQL = SQL + key +" = " +  newValue + ", ";
-		        }
-		        changeCol = changeCol + key + ",";
-		    } 
-			SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
-			SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-			jdbcCAS.update(SQL,namedParameters);
+			int ct = Integer.valueOf(sourceData.get("ct").toString());
+			if (ct == 0){
+				SQL = "Insert "+ tableName +" SET ";
+				List<String> columns = new ArrayList(updates.keySet());
+				for(int i=0; i<columns.size(); i++) { 
+			        String key = columns.get(i);
+			        Object newValue = updates.get(key);
+			        if (newValue.getClass().getName().equals("java.lang.String")) {
+			        	SQL = SQL + key +" = '" +  newValue + "', ";
+			        } else {
+			        	SQL = SQL + key +" = " +  newValue + ", ";
+			        }
+			    } 
+				SQL = SQL + "CHANGE_COLS = 'NEW', ";
+				SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
+				SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+				jdbcCAS.update(SQL,namedParameters);
+			} else{
+				SQL="select CHANGE_COLS from "+ tableName +" where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+				sourceData = jdbcCAS.queryForMap(SQL,namedParameters);
+				String changeCol = (String) sourceData.get("CHANGE_COLS");
+				if (changeCol == null) changeCol="";
+				SQL = "UPDATE "+ tableName +" SET ";
+				List<String> columns = new ArrayList(updates.keySet());
+				for(int i=0; i<columns.size(); i++) { 
+			        String key = columns.get(i);
+			        Object newValue = updates.get(key);
+			        if (newValue.getClass().getName().equals("java.lang.String")) {
+			        	SQL = SQL + key +" = '" +  newValue + "', ";
+			        } else {
+			        	SQL = SQL + key +" = " +  newValue + ", ";
+			        }
+			        changeCol = changeCol + key + ",";
+			    } 
+				SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+				SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+				jdbcCAS.update(SQL,namedParameters);
+				
+			}
 		}
 	}
 	
@@ -381,7 +403,7 @@ public class PECIResource extends Resource
 	        String key = columns.get(i);
 	        //log.debug("Comparing column: " + key);
 	        Object testValue = testMap.get(key);
-	        if (origMap.containsKey(key)) {
+	        if (origMap.containsKey(key) || origMap.size() == 0) {
 	        	Object origValue = origMap.get(key);
 	        	//log.debug(testValue +  " vs " + origValue + " and test value class " + testValue.getClass().getName());
         		if (origValue != null) {
@@ -397,6 +419,7 @@ public class PECIResource extends Resource
 	        	} 
 	        }
 	    }    
+		log.debug ("Compare returning: " + map);
 	    return map;   
 	}
 	
