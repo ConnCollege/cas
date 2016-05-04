@@ -140,53 +140,203 @@ public class PECIResource extends Resource
 					Map<String,Object> emailData =new HashMap<String,Object>();
 					Map<String,Object> addressData = new HashMap<String,Object>();
 					if (dataType.equals("PARENT")) {
-						if (ppid == ""){
-							//new Parent response
-							log.debug("New Temporaty Parent Record");
-						} else {
-							try {
-								//Parent Data
-								SQL="select  PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								parentData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
+						if (dataMode.equals("DELETE")){
+							SQL="update cc_adv_peci_parents_t set CHANGE_COLS='DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							jdbcCAS.update(SQL,namedParameters);
+						}else{
+							if (ppid == ""){
+								//new Parent response
+								log.debug("New Temporaty Parent Record");
+							} else {
+								try {
+									//Parent Data
+									SQL="select  PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								try {
+									//phones
+									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								try {
+									//email
+									SQL="select PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									emailData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								try {
+									//Address
+									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									addressData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								if (dataMode.equals("READ")) {
+								
+									jsonResponse.put("result", "success");
+									jsonResponse.put("parent",parentData );
+									jsonResponse.put("phones",phoneData );
+									jsonResponse.put("email",emailData );
+									jsonResponse.put("address",addressData );
+									
+									getResponse().setStatus( Status.SUCCESS_OK );
+									getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
+								} else{
+									Map<String,Object> parentDataIn = toMap(json.getJSONObject("parent"));
+									Map<String,Object> emailDataIn = toMap(json.getJSONObject("email"));
+									Map<String,Object> addressDataIn = toMap(json.getJSONObject("address"));
+									
+									List<Object> phoneDataList = toList(json.getJSONArray("phones"));
+									List<Map<String,Object>> phoneDataIn = new ArrayList<Map<String,Object>>();
+									for (Object phone : phoneDataList){
+										if (phone.getClass().getName() == "java.util.HashMap") {
+											phoneDataIn.add((Map<String,Object>)phone);
+										}
+									}
+									
+									//Find the values that have been updated
+									Map<String,Object> updates =  new HashMap<String,Object>();
+	
+									if (ppid.equals("null")){
+										log.debug("Creating new parent record.");
+										//Add a parent 
+										//Find an Alpha Seq No
+										Map<String,Object> maxData = new HashMap<String, Object>();
+										char seqNo;
+										try{
+											SQL="select max(PARENT_PPID)  seq from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
+											maxData = jdbcCAS.queryForMap(SQL,namedParameters);
+										} catch (EmptyResultDataAccessException e){
+											// dataset empty 
+										}
+										if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
+											seqNo = 'A';
+										} else {
+											seqNo = maxData.get("seq").toString().charAt(0);
+											seqNo = (char)((int)seqNo + 1);
+										}
+										log.debug ("New parent record to create PPID: " + String.valueOf(seqNo));
+										SQL = "INSERT cc_adv_peci_parents_t SET ";
+										List<String> columns = new ArrayList(parentDataIn.keySet());
+										for(int y=0; y<columns.size(); y++) { 
+									        String key = columns.get(y);
+									        if (!key.equals("PARENT_PPID")) {
+										        Object newValue = parentDataIn.get(key);
+										        if (newValue.getClass().getName().equals("java.lang.String")) {
+										        	SQL = SQL + key +" = '" +  newValue + "', ";
+										        } else {
+										        	SQL = SQL + key +" = " +  newValue + ", ";
+										        }
+									        }
+									    } 
+										SQL = SQL + "CHANGE_COLS = 'NEW', ";
+										
+										SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
+										SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
+										jdbcCAS.update(SQL,namedParameters);
+										jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
+									} else {
+										//Parent Data
+										updates = compareMap(parentDataIn, parentData);
+										writeUpdates(namedParameters,updates,"cc_adv_peci_parents_t");
+										//ensure that Contact data i.e. name is updated in sync with Parent
+										SQL="UPDATE cc_gen_peci_emergs_t e ";
+										SQL = SQL + " INNER JOIN cc_adv_peci_parents_t p ";
+										SQL = SQL + "  ON p.STUDENT_PIDM = e.STUDENT_PIDM ";
+										SQL = SQL + " AND p.PARENT_PPID = e.PARENT_PPID ";
+										SQL = SQL + " SET EMERG_LEGAL_PREFIX_NAME = PARENT_LEGAL_PREFIX_NAME, ";
+										SQL = SQL + " EMERG_LEGAL_FIRST_NAME = PARENT_LEGAL_FIRST_NAME, ";
+										SQL = SQL + " EMERG_LEGAL_MIDDLE_NAME = PARENT_LEGAL_MIDDLE_NAME, ";
+										SQL = SQL + " EMERG_LEGAL_LAST_NAME = PARENT_LEGAL_LAST_NAME, ";
+										SQL = SQL + " EMERG_LEGAL_SUFFIX_NAME = PARENT_LEGAL_SUFFIX_NAME, ";
+										SQL = SQL + " EMERG_PREF_FIRST_NAME = PARENT_PREF_FIRST_NAME, ";
+										SQL = SQL + " EMERG_PREF_MIDDLE_NAME  = PARENT_PREF_MIDDLE_NAME, ";
+										SQL = SQL + " EMERG_PREF_LAST_NAME = PARENT_PREF_LAST_NAME,";
+										SQL = SQL + " EMERG_RELT_CODE = PARENT_RELT_CODE";
+										SQL = SQL + " WHERE p.STUDENT_PIDM=:STUDENT_PIDM ";
+										SQL = SQL + " AND p.PARENT_PPID=:PARENT_PPID";
+										jdbcCAS.update(SQL,namedParameters);
+									}
+									//email
+									updates = compareMap(emailDataIn, emailData);
+									writeUpdates(namedParameters,updates,"cc_gen_peci_email_data_t");
+									
+									//adresses
+									updates = compareMap(addressDataIn, addressData);
+									writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
+	
+									//phones
+									phoneUpdate (phoneDataIn, phoneData, namedParameters);
+									
+									
+									getResponse().setStatus( Status.SUCCESS_OK );
+									getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
+								}
 							}
+						}
+					} else {
+						if (dataMode.equals("DELETE")){
+							SQL="update cc_gen_peci_emergs_t set CHANGE_COLS='DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							jdbcCAS.update(SQL,namedParameters);
 							
-							try {
-								//phones
-								SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								phoneData = jdbcCAS.queryForList(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
+						}else{
+							if (ppid == ""){
+								//new Contact response
+								log.debug("New Temporaty Contact Record");
+							} else {
+								try {
+									//Contact Data
+									SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								try {
+									//phones
+									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								try {
+									//email
+									SQL="select PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									emailData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
+								
+								try{
+									//Address
+									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									addressData = jdbcCAS.queryForMap(SQL,namedParameters);
+								} catch (EmptyResultDataAccessException e){
+									// dataset empty 
+								}
 							}
-							
-							try {
-								//email
-								SQL="select PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								emailData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-							try {
-								//Address
-								SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								addressData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-							
 							if (dataMode.equals("READ")) {
 							
 								jsonResponse.put("result", "success");
-								jsonResponse.put("parent",parentData );
+								jsonResponse.put("contact",emrgData );
 								jsonResponse.put("phones",phoneData );
 								jsonResponse.put("email",emailData );
 								jsonResponse.put("address",addressData );
 								
 								getResponse().setStatus( Status.SUCCESS_OK );
 								getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
-							} else{
-								Map<String,Object> parentDataIn = toMap(json.getJSONObject("parent"));
+							} else {
+								Map<String,Object> emrgDataIn = toMap(json.getJSONObject("contact"));
 								Map<String,Object> emailDataIn = toMap(json.getJSONObject("email"));
 								Map<String,Object> addressDataIn = toMap(json.getJSONObject("address"));
 								
@@ -200,15 +350,15 @@ public class PECIResource extends Resource
 								
 								//Find the values that have been updated
 								Map<String,Object> updates =  new HashMap<String,Object>();
-
+								//contact Data
 								if (ppid.equals("null")){
 									log.debug("Creating new parent record.");
-									//Add a parent 
+									//Add a contact 
 									//Find an Alpha Seq No
 									Map<String,Object> maxData = new HashMap<String, Object>();
 									char seqNo;
 									try{
-										SQL="select max(PARENT_PPID)  seq from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
+										SQL="select max(PARENT_PPID)  seq from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM ";
 										maxData = jdbcCAS.queryForMap(SQL,namedParameters);
 									} catch (EmptyResultDataAccessException e){
 										// dataset empty 
@@ -219,13 +369,13 @@ public class PECIResource extends Resource
 										seqNo = maxData.get("seq").toString().charAt(0);
 										seqNo = (char)((int)seqNo + 1);
 									}
-									log.debug ("New parent record to create PPID: " + String.valueOf(seqNo));
-									SQL = "INSERT cc_adv_peci_parents_t SET ";
-									List<String> columns = new ArrayList(parentDataIn.keySet());
+									log.debug ("New contact record to create PPID: " + String.valueOf(seqNo));
+									SQL = "INSERT cc_gen_peci_emergs_t SET ";
+									List<String> columns = new ArrayList(emrgDataIn.keySet());
 									for(int y=0; y<columns.size(); y++) { 
 								        String key = columns.get(y);
 								        if (!key.equals("PARENT_PPID")) {
-									        Object newValue = parentDataIn.get(key);
+									        Object newValue = emrgDataIn.get(key);
 									        if (newValue.getClass().getName().equals("java.lang.String")) {
 									        	SQL = SQL + key +" = '" +  newValue + "', ";
 									        } else {
@@ -241,11 +391,27 @@ public class PECIResource extends Resource
 									jdbcCAS.update(SQL,namedParameters);
 									jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
 								} else {
-									//Parent Data
-									updates = compareMap(parentDataIn, parentData);
-									writeUpdates(namedParameters,updates,"cc_adv_peci_parents_t");
-									//TODO ensure that Contact data i.e. name is updated in sync with Parent
+									updates = compareMap(emrgDataIn, emrgData);
+									writeUpdates(namedParameters,updates,"cc_gen_peci_emergs_t");
+									//ensure that Parent data i.e. name is updated in sync with contact
+									SQL="UPDATE cc_adv_peci_parents_t p ";
+									SQL = SQL + " INNER JOIN cc_gen_peci_emergs_t e";
+									SQL = SQL + "  ON p.STUDENT_PIDM = e.STUDENT_PIDM";
+									SQL = SQL + " AND p.PARENT_PPID = e.PARENT_PPID";
+									SQL = SQL + " SET PARENT_LEGAL_PREFIX_NAME=EMERG_LEGAL_PREFIX_NAME, ";
+									SQL = SQL + " PARENT_LEGAL_FIRST_NAME=EMERG_LEGAL_FIRST_NAME, ";
+									SQL = SQL + " PARENT_LEGAL_MIDDLE_NAME=EMERG_LEGAL_MIDDLE_NAME, ";
+									SQL = SQL + " PARENT_LEGAL_LAST_NAME=EMERG_LEGAL_LAST_NAME, ";
+									SQL = SQL + " PARENT_LEGAL_SUFFIX_NAME=EMERG_LEGAL_SUFFIX_NAME, ";
+									SQL = SQL + " PARENT_PREF_FIRST_NAME=EMERG_PREF_FIRST_NAME, ";
+									SQL = SQL + " PARENT_PREF_MIDDLE_NAME=EMERG_PREF_MIDDLE_NAME, ";
+									SQL = SQL + " PARENT_PREF_LAST_NAME=EMERG_PREF_LAST_NAME,";
+									SQL = SQL + " PARENT_RELT_CODE=EMERG_RELT_CODE";
+									SQL = SQL + " WHERE p.STUDENT_PIDM=:STUDENT_PIDM ";
+									SQL = SQL + " AND p.PARENT_PPID=:PARENT_PPID";
+									jdbcCAS.update(SQL,namedParameters);		   		
 								}
+								
 								//email
 								updates = compareMap(emailDataIn, emailData);
 								writeUpdates(namedParameters,updates,"cc_gen_peci_email_data_t");
@@ -253,136 +419,13 @@ public class PECIResource extends Resource
 								//adresses
 								updates = compareMap(addressDataIn, addressData);
 								writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
-
+	
 								//phones
 								phoneUpdate (phoneDataIn, phoneData, namedParameters);
-								
 								
 								getResponse().setStatus( Status.SUCCESS_OK );
 								getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							}
-						}
-					} else {
-						if (ppid == ""){
-							//new Contact response
-							log.debug("New Temporaty Contact Record");
-						} else {
-							try {
-								//Contact Data
-								SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-							
-							try {
-								//phones
-								SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								phoneData = jdbcCAS.queryForList(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-							
-							try {
-								//email
-								SQL="select PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								emailData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-							
-							try{
-								//Address
-								SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								addressData = jdbcCAS.queryForMap(SQL,namedParameters);
-							} catch (EmptyResultDataAccessException e){
-								// dataset empty 
-							}
-						}
-						if (dataMode.equals("READ")) {
-						
-							jsonResponse.put("result", "success");
-							jsonResponse.put("contact",emrgData );
-							jsonResponse.put("phones",phoneData );
-							jsonResponse.put("email",emailData );
-							jsonResponse.put("address",addressData );
-							
-							getResponse().setStatus( Status.SUCCESS_OK );
-							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
-						} else {
-							Map<String,Object> emrgDataIn = toMap(json.getJSONObject("contact"));
-							Map<String,Object> emailDataIn = toMap(json.getJSONObject("email"));
-							Map<String,Object> addressDataIn = toMap(json.getJSONObject("address"));
-							
-							List<Object> phoneDataList = toList(json.getJSONArray("phones"));
-							List<Map<String,Object>> phoneDataIn = new ArrayList<Map<String,Object>>();
-							for (Object phone : phoneDataList){
-								if (phone.getClass().getName() == "java.util.HashMap") {
-									phoneDataIn.add((Map<String,Object>)phone);
-								}
-							}
-							
-							//Find the values that have been updated
-							Map<String,Object> updates =  new HashMap<String,Object>();
-							//contact Data
-							if (ppid.equals("null")){
-								log.debug("Creating new parent record.");
-								//Add a contact 
-								//Find an Alpha Seq No
-								Map<String,Object> maxData = new HashMap<String, Object>();
-								char seqNo;
-								try{
-									SQL="select max(PARENT_PPID)  seq from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM ";
-									maxData = jdbcCAS.queryForMap(SQL,namedParameters);
-								} catch (EmptyResultDataAccessException e){
-									// dataset empty 
-								}
-								if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
-									seqNo = 'A';
-								} else {
-									seqNo = maxData.get("seq").toString().charAt(0);
-									seqNo = (char)((int)seqNo + 1);
-								}
-								log.debug ("New contact record to create PPID: " + String.valueOf(seqNo));
-								SQL = "INSERT cc_gen_peci_emergs_t SET ";
-								List<String> columns = new ArrayList(emrgDataIn.keySet());
-								for(int y=0; y<columns.size(); y++) { 
-							        String key = columns.get(y);
-							        if (!key.equals("PARENT_PPID")) {
-								        Object newValue = parentDataIn.get(key);
-								        if (newValue.getClass().getName().equals("java.lang.String")) {
-								        	SQL = SQL + key +" = '" +  newValue + "', ";
-								        } else {
-								        	SQL = SQL + key +" = " +  newValue + ", ";
-								        }
-							        }
-							    } 
-								SQL = SQL + "CHANGE_COLS = 'NEW', ";
-								
-								SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
-								SQL = SQL + "PARENT_PPID=:PARENT_PPID";
-								namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
-								jdbcCAS.update(SQL,namedParameters);
-								jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
-							} else {
-								updates = compareMap(emrgDataIn, emrgData);
-								writeUpdates(namedParameters,updates,"cc_gen_peci_emergs_t");
-								//TODO ensure that Parent data i.e. name is updated in sync with contact
-							}
-							
-							//email
-							updates = compareMap(emailDataIn, emailData);
-							writeUpdates(namedParameters,updates,"cc_gen_peci_email_data_t");
-							
-							//adresses
-							updates = compareMap(addressDataIn, addressData);
-							writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
-
-							//phones
-							phoneUpdate (phoneDataIn, phoneData, namedParameters);
-							
-							getResponse().setStatus( Status.SUCCESS_OK );
-							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 						}
 					}
 				}
