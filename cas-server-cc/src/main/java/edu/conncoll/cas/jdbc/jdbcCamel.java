@@ -467,22 +467,22 @@ public class jdbcCamel {
 					emailData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Phone Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='C'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='C'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentCellPhone",phoneData.get(0));
 					
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='H'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PECI_PHONE_CODE='H'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentHomePhone",phoneData.get(0));
 					
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PHONE_CODE='EP'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID is null and PHONE_CODE='EP'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
 					
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PECI_PHONE_CODE='E' order by PHONE_SEQUENCE_NO";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PECI_PHONE_CODE='E' order by PHONE_SEQUENCE_NO";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					context.getFlowScope().put("EmmrgPhones",phoneData);
@@ -813,7 +813,7 @@ public class jdbcCamel {
 	
 	void copy2MySQL(String tableName, Map<String,Object> sourceData) 
 			throws Exception{
-		log.debug("Source data to copy to MySQL" + sourceData.toString());
+		//log.debug("Source data to copy to MySQL" + sourceData.toString());
 		String sql = "insert into " + tableName + "(" + sourceData.keySet().toString().replace('[',' ').replace(']',' ') + ") values (";
 		List columns = new ArrayList(sourceData.keySet());
 		for(int i=0; i<sourceData.size(); i++){
@@ -824,18 +824,18 @@ public class jdbcCamel {
 			}
 		}
 		sql = sql + ")";
-		log.debug(sql);
+		//log.debug(sql);
 		Map<String,Object> namedParameters = new HashMap<String,Object>();
 		for(int i=0; i<columns.size(); i++){
 			if (sourceData.get(columns.get(i)) != null){
-				log.debug ("Passing "+ columns.get(i).toString() + " = " + sourceData.get(columns.get(i)).toString());
+				//log.debug ("Passing "+ columns.get(i).toString() + " = " + sourceData.get(columns.get(i)).toString());
 				namedParameters.put(columns.get(i).toString(), sourceData.get(columns.get(i)).toString());
 			} else {
-				log.debug ("Passing "+ columns.get(i).toString() + " is null ");
+				//log.debug ("Passing "+ columns.get(i).toString() + " is null ");
 				namedParameters.put(columns.get(i).toString(), null);
 			}
 		}
-		log.debug("inserting");
+		//log.debug("inserting");
 		jdbcCAS.update(sql,namedParameters);
 	}
 	
