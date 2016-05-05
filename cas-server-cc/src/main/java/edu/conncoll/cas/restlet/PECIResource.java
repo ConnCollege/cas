@@ -223,7 +223,7 @@ public class PECIResource extends Resource
 											seqNo = maxData.get("seq").toString().charAt(0);
 											seqNo = (char)((int)seqNo + 1);
 										}
-										log.debug ("New parent record to create PPID: " + String.valueOf(seqNo));
+										log.debug ("New parent record to create PPID: " + Character.toString(seqNo));
 										SQL = "INSERT cc_adv_peci_parents_t SET ";
 										List<String> columns = new ArrayList(parentDataIn.keySet());
 										for(int y=0; y<columns.size(); y++) { 
@@ -369,7 +369,7 @@ public class PECIResource extends Resource
 										seqNo = maxData.get("seq").toString().charAt(0);
 										seqNo = (char)((int)seqNo + 1);
 									}
-									log.debug ("New contact record to create PPID: " + String.valueOf(seqNo));
+									log.debug ("New contact record to create PPID: " + Character.toString(seqNo));
 									SQL = "INSERT cc_gen_peci_emergs_t SET ";
 									List<String> columns = new ArrayList(emrgDataIn.keySet());
 									for(int y=0; y<columns.size(); y++) { 
