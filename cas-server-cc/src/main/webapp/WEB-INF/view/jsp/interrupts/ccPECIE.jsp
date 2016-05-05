@@ -100,8 +100,7 @@
 	}
 	.glyphicon-question-sign:hover,.glyphicon-question-sign:focus{
 		text-decoration: none;
-	}
-	
+	}	
 	.intl_number_switch{
 		font-size: 12px;
 		margin: -10px;
@@ -236,19 +235,36 @@
 			out.print(displayInput(false,"","Non-college email",2,10,"student_non_college_email","email","",true,false));*/			
 		%>   	
 	</div>
+	${StudentCellPhone} 
 	<div id="step2" class="form_section">
 	<h3>Step 2 Your Emergency Phone Number</h3>
-	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_PHONE_0_NUMBER">
-		<label for="Phone" class="control-label col-sm-3 ccreq"><span class="required">* </span>Mobile Phone</label>
-		<div class="col-sm-9">
-				<input type="text" placeholder="Mobile Phone" name="fields[13]" class="form-control ccreq" id="STUDENT_PHONE_NUMBER" value="(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}">
+	<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+	<div class="form-group" id="GROUP_PHONE_CP_NUMBER">
+		<label for="Phone" class="control-label col-sm-3 ccreq"><span class="required">* </span>Mobile Phone</label>		
+		<div class="col-xs-2">
+			<input type="tel" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_AREA_CODE" size="3" class="form-control ccreq area_code" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
-	</div> 		
+		<div class="col-xs-4">
+			<input type="tel" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_NUMBER" size="7" class="form-control ccreq" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+		</div>
+	</div> 	
+		
+	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
+	<div style="display:none;" class="form-group" id="GROUP_PHONE_CP_NUMBER_INTL">
+		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
+		<div class="col-sm-9">
+			<input type="tel" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+		</div>
+	</div>		
+	
+	<div class="form-group" id="group_student_intl_phone_switch">
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="CP" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+	</div>		  			
+		  				
 		<%
 			/*out.print(displayInput(true,"","Mobile Phone",2,10,"student_mobile_phone","tel","",true,false));*/
 		%>
-		
+		${StudentEmrPhone}
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CARRIER">
 		<label for="Phone Carrier" class="control-label col-sm-3">Phone Carrier</label>
 		<div class="col-sm-9">
@@ -269,7 +285,7 @@
 	</div>
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_EMERGENCY_PHONE" style="display:none;">
+	<div class="form-group" id="GROUP_EMERGENCY_PHONE" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Emergency Phone" name="fields[16]" class="form-control address_field" id="STUDENT_EMERGENCY_PHONE" value="${StudentEmrPhone['PHONE_NUMBER'] }">
@@ -315,18 +331,18 @@
     </div>
     <div id="step3" class="form_section">
 	    <h3>Step 3 Parent/Guardian Information</h3>
+	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu</span></div>
 	    <p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
 	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
 	
  	<c:forEach items="${StudentParents}" var="parents">
 		<div class="panel panel-default">
 		  <div class="panel-body">
-		    <strong>${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="popModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME }" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="parent" checked="checked" class="bootstrap-switch" data-off-text="No" data-on-text="Yes"></span>
+		    <strong>${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="popModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME }" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
 		  </div>
 		</div>
 	</c:forEach>	
-
-	    
+	 
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
 	        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#PARENT_MODAL" data-parent-ppid="0">Add Parent</button>
@@ -337,9 +353,10 @@
     <div id="step4" class="form_section">
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <p id="doc_message">You must have at least one emergency contact. Emergency contacts will be contacted in the order you specify below. Parent/Guardian contacts designated as Emergency Contacts above will appear automatically below. You may also add additional contacts.<br><strong>If Connecticut College is a long way from home, and there is someone who can be contacted nearby in the event of an emergency, please add that person as one of your contacts.</strong></p>
+	    <input type="hidden" name="fields[26]" id="emr_order">
 		<ul id="draggablePanelList" class="list-unstyled">
 			<c:forEach items="${StudentEMR}" var="emr">
-				<li class="panel panel-info"> 
+				<li class="panel panel-info" id="emr_contact_${emr.PARENT_PPID}"> 
 		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
 		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="popModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    	</li>
@@ -367,8 +384,14 @@
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
+	    [Emerg Phones: ${EmmrgPhones}  ]
 	    
-
+	    <ul>
+		    <c:forEach items="${EmmrgPhones}" var="emmrg">
+		    	 <li class="list-unstyled"><input type="checkbox" value="${emmrg.PHONE_SEQUENCE_NO}" name="fields[25]">&nbsp;(${emmrg.PHONE_AREA_CODE}) ${emmrg.PHONE_NUMBER}</li>
+		    </c:forEach>
+		</ul>
+		
 	</div>
 	
 	<div>	   
@@ -399,8 +422,8 @@
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
 		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="return formValidate(this.id);return false;">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="">
-		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="${StudentBio['STUDENT_PIDM']}">
+		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="0">
 			  	<div class="modal-header">
 			  		<button type="button" class="close" data-dismiss="modal">&times;</button>
 
@@ -444,29 +467,30 @@
 			  			</div>
 			  		</div>
 			  		
-			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
+			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>	  		
 			  		<div class="form-group" id="GROUP_PHONE_CP_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
-		  				<div class="col-sm-2">
-		  					<input type="tel" placeholder="Area Code" name="PHONE_CP_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_CP_AREA_CODE">
+		  				<div class="col-sm-3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="PHONE_CP_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_CP_NUMBER">
+		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">
 		  					<input type="hidden" name="PHONE_CP_SEQUENCE_NO" id="PHONE_CP_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
 			  				<input type="hidden" name="PHONE_CP_CODE" id="PHONE_CP_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value=""> 
 		  				</div>
 		  			</div>
-		  			
+		  			 
 		  			<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_CP_INTL_NUMBER">
+			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_CP_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="tel" placeholder="International Number" name="PHONE_CP_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_CP_NUMBER_INTL">
+		  					<input type="tel" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				</div>
 		  			</div>
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="CP"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</a>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="CP"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
 					</div>
 		  			
 		  			<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_CP_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -485,7 +509,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="EMERG_NO_CELL_PHONE" id="EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERGENCY_PHONE" style="display:none;">
+					<div class="form-group" id="GROUP_EMERGENCY_PHONE" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
 								<input type="text" placeholder="Emergency Phone" name="EMERGENCY_PHONE" class="form-control address_field  <c:out value="${modalType}"/>_PHONE_FIELD" id="EMERGENCY_PHONE" value="">
@@ -495,18 +519,18 @@
 					<div role="alert" style="display:none;" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_PHONE_MA_NUMBER">
 						<label for="tel" class="control-label col-sm-4">Home Phone</label>
-						<div class="col-sm-2">
-		  					<input type="tel" placeholder="Area Code" name="PHONE_MA_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_AREA_CODE">
+						<div class="col-sm-3">
+		  					<input type="tel" placeholder="Area Code" name="PHONE_MA_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="PHONE_MA_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_NUMBER">
+		  					<input type="tel" placeholder="Mobile Phone Number" name="PHONE_MA_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_NUMBER" maxlength="7">
 		  					<input type="hidden" name="PHONE_MA_SEQUENCE_NO" id="PHONE_MA_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
 			  				<input type="hidden" name="PHONE_MA_CODE" id="PHONE_MA_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value=""> 
 		  				</div>
 					</div>	
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_MA_INTL_NUMBER">
+			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_MA_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Home Phone</label>
 		  				<div class="col-sm-6">
 		  					<input type="tel" placeholder="International Number" name="PHONE_MA_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_MA_NUMBER_INTL">
@@ -514,24 +538,24 @@
 		  			</div>	
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="MA" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</a>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="MA" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
 					</div>		
 																					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_PHONE_BU_NUMBER" >
 						<label for="tel" class="control-label col-sm-4">Office Phone</label>
-						<div class="col-sm-2">
-		  					<input type="tel" placeholder="Area Code" name="PHONE_BU_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_AREA_CODE">
+						<div class="col-sm-3">
+		  					<input type="tel" placeholder="Area Code" name="PHONE_BU_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="PHONE_BU_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_NUMBER">
+		  					<input type="tel" placeholder="Mobile Phone Number" name="PHONE_BU_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_NUMBER" maxlength="7">
 		  					<input type="hidden" name="PHONE_BU_SEQUENCE_NO" id="PHONE_BU_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
 			  				<input type="hidden" name="PHONE_BU_CODE" id="PHONE_BU_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value=""> 
 		  				</div>
 					</div>	
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclaBUtion-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_BU_INTL_NUMBER">
+			  		<div style="display:none;" class="form-group" id="GROUP_PHONE_BU_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Office Phone</label>
 		  				<div class="col-sm-6">
 		  					<input type="tel" placeholder="International Number" name="PHONE_BU_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="PHONE_BU_NUMBER_INTL">
@@ -539,15 +563,15 @@
 		  			</div>		
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="BU"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</a>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="BU"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
 					</div>						
 										 						
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMAIL_ADDRESS">
 						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
 						<div class="col-sm-6">
-							<input type="hidden" name="PECI_EMAIL_CODE" id="PECI_EMAIL_CODE" value="" class="<c:out value="${modalType}"/>_EMAIL_FIELD">
-							<input type="email" placeholder="Preferred Email" name="EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="EMAIL_ADDRESS">
+							<input type="hidden" name="PECI_EMAIL_CODE" id="PECI_EMAIL_CODE" value="P" class="<c:out value="${modalType}"/>_EMAIL_FIELD">
+							<input type="email" placeholder="Preferred Email" name="<c:out value="${modalType}"/>_EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_RELT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -566,21 +590,21 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
 						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 1" name="ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STREET_LINE1">
+							<input type="text" placeholder="Address 1" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
 						<label for="text" class="control-label col-sm-4">Address 2</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 2" name="ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STREET_LINE2">
+							<input type="text" placeholder="Address 2" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
 						<div class="col-sm-6">
-							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="ADDR_NATN_CODE" id="ADDR_NATN_CODE">
+							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="<c:out value="${modalType}"/>_ADDR_NATN_CODE" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 								<option value="">Choose Country</option>
 								<c:forEach items="${options['Countries']}" var="countries">
 									<option value="${countries.key}">${countries.value}</option>
@@ -592,14 +616,14 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_CITY">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="City" name="ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_CITY">
+							<input type="text" placeholder="City" name="<c:out value="${modalType}"/>_ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_CITY">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STAT_CODE">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>State</label>
 						<div class="col-sm-6">
-							<select class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="ADDR_STAT_CODE" id="ADDR_STAT_CODE">
+							<select class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
 								<option value="">Choose State</option>
 								<c:forEach items="${options['States']}" var="states">
 									<option value="${states.key}">${states.value}</option>
@@ -612,7 +636,7 @@
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_INTL_REGION">
 						<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Province/Region" name="ADDR_STAT_CODE" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_STAT_CODE">
+							<input type="text" placeholder="Province/Region" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
 						</div>
 					</div>
 					
@@ -620,7 +644,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_ZIP">
 						<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Zip/Postal Code" name="ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="ADDR_ZIP">
+							<input type="text" placeholder="Zip/Postal Code" name="<c:out value="${modalType}"/>_ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_ZIP">
 						</div>
 					</div>
 					
@@ -650,11 +674,32 @@
  				</form>
  			</div>
  			<div class="modal-footer">
- 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+ 				<button type="button" id="<c:out value="${modalType}"/>_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button>
  			</div>
  		</div>
  	</div>
 </c:forTokens>
+
+<div class="modal fade" id="CONFIRMATION_MODAL" role="dialog">
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">
+	  		<div class="modal-header">
+			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+			  	<h4 class="modal-title">Changes Saved</h4>
+			  </div>
+			  <div class="modal-body">	
+				<p><strong>Your changes have been saved</strong></p>
+				<p>You can edit any of your parent/guardians or contacts by clicking the edit icon next to their name below.</p>
+			  </div>
+			</div>
+			<div class="modal-footer">
+ 				<button type="button" id="CONFIRMATION_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button>
+ 			</div>
+		</div>
+	</div>
+</div>
  	
   	
 <%
@@ -679,62 +724,70 @@
 	 $("[data-toggle=tooltip]").tooltip();
  
 	$(".mobile_phone_check").change(function(){
-		$thisType = $(this).attr("data-mobile-type");
+		var form_id = $(this).closest('form').attr("id");
+		var phone_type = $(this).attr("data-id");
 		if(this.checked) {
-			$("#GROUP_" + $thisType + "_EMERGENCY_PHONE").show();
-			$("#" + $thisType + "_emergency_phone").addClass("ccreq");
+			$('form#' + form_id + ' #GROUP_EMERGENCY_PHONE').show();
+			$('#' + form_id + '_EMERGENCY_PHONE').addClass('ccreq');
 			//remove error if it is already displaying
-			$("#" + $thisType + "_mobile_phone_error").hide();
-			$("#group_" + $thisType + "_mobile_phone").removeClass("has-error");
+			$('form#' + form_id + ' PHONE_CP_NUMBER_ERROR').hide();
+			$('form#' + form_id + ' #GROUP_PHONE_CP_NUMBER').removeClass('has-error');
 			//remove requirement for mobile phone
-			$("#GROUP_" + $thisType + "_PHONE_0_NUMBER .required").hide();				
-			$("#" + $thisType + "_mobile_phone").removeClass("ccreq");
+			$('form#' + form_id + ' #GROUP_PHONE_CP_NUMBER .required').hide();				
+			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
+			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
 			//remove requirement for phone carrier
-			$("#group_" + $thisType + "_phone_carrier .required").hide();	
-			$("#" + $thisType + "_phone_carrier").removeClass("ccreq");
-			if($thisType == 'student'){
+			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').hide();	
+			if(form_id == 'STUDENT'){
 				//remove text alerts checkbox
-				$("#paragraph_alert_text_check").hide();
-				$("#group_alert_text_check").hide();	
-				$("#paragraph_tty_device_check").html('If your emergency phone is a TTY device (for the hearing impaired) please indicate below:');
+				$('#paragraph_alert_text_check').hide();
+				$('#group_alert_text_check').hide();	
+				$('#paragraph_tty_device_check').html('If your emergency phone is a TTY device (for the hearing impaired) please indicate below:');
 			}
 	    }else{
-	    	$("#GROUP_" + $thisType + "_EMERGENCY_PHONE").hide();	
-	    	$("#" + $thisType + "_emergency_phone").removeClass("ccreq");
+	    	$('form#' + form_id + ' #GROUP_EMERGENCY_PHONE').hide();	
+	    	$('#' + form_id + '_EMERGENCY_PHONE').removeClass('ccreq');
 	    	//add requirement for mobile phone
-	    	$("#GROUP_" + $thisType + "_PHONE_0_NUMBER .required").show();	
-	    	$("#" + $thisType + "_mobile_phone").addClass("ccreq");
+	    	$('form#' + form_id + ' #GROUP_PHONE_CP_NUMBER .required').show();	
+	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addclass('ccreq');
+			$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
 	    	//add requirement for phone carrier
-			$("#group_" + $thisType + "_phone_carrier .required").show();	
-			$("#" + $thisType + "_phone_carrier").addClass("ccreq");
-			if($thisType == 'student'){
+			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').show();	
+			if(form_id == 'student'){
 				//show text alerts checkbox
-				$("#paragraph_alert_text_check").show();
-				$("#group_alert_text_check").show();	
-				$("#paragraph_tty_device_check").html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
+				$('#paragraph_alert_text_check').show();
+				$('#group_alert_text_check').show();	
+				$('#paragraph_tty_device_check').html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
 			}
 	    }		
 	}); 
 	
-	//add phone
+	//switch to international phone
 	$('.intl_number_switch').click(function (){		
 		var form_id = $(this).closest('form').attr("id");
 		var phone_type = $(this).attr("data-id");
-		var intl_group = 'form#' + form_id + ' #GROUP_PHONE_' + phone_type + '_INTL_NUMBER';
-		console.log(intl_group);
-		var phone_group = 'form#' + form_id + ' #GROUP_PHONE_' + phone_type + '_NUMBER';		
+		var intl_group = 'form#' + form_id + ' #GROUP_PHONE_' + phone_type + '_NUMBER_INTL';
+		//console.log("intl_group: " + intl_group);
+		var phone_group = 'form#' + form_id + ' #GROUP_PHONE_' + phone_type + '_NUMBER';	
+		//console.log("phone group: " + phone_group);
+		displayed = $(intl_group).css('display');
+		//console.log(displayed);
 		if($(intl_group).css('display') == 'none'){
+			//console.log("display none");
 			$(phone_group).hide();		
 			//show international number
 			$(intl_group).show();
 			if(phone_type == 'CP'){
 				//change required fields
-				$(intl_group + ' #PHONE_' + phone_type + '_NUMBER_INTL').removeClass("ccreq");
-				$(phone_group + ' #PHONE_' + phone_type + '_NUMBER').addClass("ccreq");
+				$(intl_group + ' #PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
+				$(phone_group + ' #PHONE_' + phone_type + '_NUMBER').removeClass("ccreq");
+				$('#' + form_id + '_PHONE_AREA_CODE').addClass('ccreq');
+				$('#' + form_id + '_PHONE_NUMBER').addClass('ccreq');
 			}
 			//change text of link
 			$(this).html('Enter U.S. Number');
 		}else{
+			//console.log("displayed");
 			$(phone_group).show();			
 			$(intl_group).hide();
 			if(phone_type = 'CP'){
@@ -745,6 +798,61 @@
 		}		
 
 	});
+	
+	//switching off emergency contacts
+	$('input[name="PARENT"]').on('switchChange.bootstrapSwitch', function(event, state) {
+		//$('#PARENT_ERROR').hide();
+		var ppid = $(this).attr("data-ppid");
+		var form_id = $(this).closest('form').attr("id");
+		var x = 0;
+		var removeParent = false;
+		$('.parent-bootstrap-switch').each(function(){
+			if ($(this).is(":checked")){
+				x++;
+			}
+		});
+		if(state == false){
+			//turning parent off
+			if(x < 1){
+				//turn back on
+				$(this).bootstrapSwitch('state',true);
+				//then show error message "you need to have at least one parent as an emergency contact", even though this should be taken care of by making it read-only below 
+				//$('#PARENT_ERROR').show();
+			}else if(x == 1){
+				$('.parent-bootstrap-switch').each(function(){
+					if ($(this).is(":checked")){
+						$(this).closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
+					}
+				});
+				removeParent = true;
+			}else{
+				$('.parent-bootstrap-switch').each(function(){
+					if ($(this).is(":checked")){
+						$(this).closest(".bootstrap-switch-wrapper").removeClass("bootstrap-switch-readonly");
+					}
+				});
+				removeParent = true;
+			}
+			
+			if(removeParent){
+				$('#emr_contact_'+ppid).fadeOut();
+			}
+		}else{
+			//turning parent on
+			//show in emerg contacts list
+			$('#emr_contact_'+ppid).fadeIn();
+			//change read-only state
+			if(x > 1){
+				$('.bootstrap-switch-wrapper').removeClass("bootstrap-switch-readonly");
+			}
+		}		
+
+		  //console.log("ppid: " + ppid);
+		  //console.log("form_id: " + form_id);
+		  //console.log(this); // DOM element
+		  //console.log(event); // jQuery event
+		  //console.log(state); // true | false
+		});
 	
 	//state/province drop-down toggle based on country chosen
 	$('.country_field').change(function(){
@@ -791,34 +899,35 @@
            contentType: "application/json",
            success: function(data)           
            {   
-        	  $('#' + modal_type + '_STUDENT_PPID').val();
+        	  //$('#' + modal_type + '_STUDENT_PPID').val();
         	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
         	  $('#' + modal_type + '_PARENT_PPID').val(PPID);
-        	  $('#' + modal_type + '_PARENT_PIDM').val();
+        	  //$('#' + modal_type + '_PARENT_PIDM').val();
         	  if(modal_type == 'PARENT'){
 	        	  $.each(data.parent, function(index, element){	       
-	        		  $('form#' + modal_type + ' #' + index).val(element);
-	        		  
+	        		  $('form#' + modal_type + ' #' + index).val(element);	        		  
 	        	   	//$('#' + index).val(element);
 	        	  });
         	  }else{
-        		  $.each(data.contact, function(index, element){  	 
-        			  $('form#' + modal_type + ' #' + index).val(element);
+        		  $.each(data.contact, function(index, element){
+        			  var new_index = index;
+        			  var new_index = new_index.replace('EMERG','CONTACT')
+        			  $('form#' + modal_type + ' #' + new_index).val(element);
   	        	   	//$('#' + index).val(element);
   	        	  });
         	  }
 
         	  $.each(data.email, function(index,element){        
-        		 $('form#' + modal_type + ' #' + index).val(element);
+        		 $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
         	  	 //$('#' + modal_type + "_" + index).val(element); 	
         	  });
 
         	  $.each(data.address, function(index,element){        		 
         		  if(index == 'ADDR_NATN_CODE' && element == null){
-        			  $('form#' + modal_type + ' #' + index).val('US');
+        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val('US');
         			//$('#' + modal_type + "_" + index).val('US');
         		  }else{
-        			  $('form#' + modal_type + ' #' + index).val(element);
+        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
           	  		//$('#' + modal_type + "_" + index).val(element);
          		  }
           	  });
@@ -834,7 +943,7 @@
         		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CODE').val(phone_code);
         		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
         		  if(phone_number_intl != "" && phone_number_intl != null){
-        			  console.log(phone_number_intl);
+        			  //console.log(phone_number_intl);
         			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER').hide();
         			  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
         			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
@@ -882,8 +991,35 @@
 		$('#' + modal_type + "_MODAL").modal('show');
 	});
 	
-
- 
+	
+	
+	//check to see if parents are emerg contacts, turn off switch if not
+	$('.parent-bootstrap-switch').each(function(){
+		var ppid = $(this).attr("data-ppid");
+		var student_PIDM = ${StudentBio['STUDENT_PIDM']};
+		$.ajax({
+	           type: "POST",
+	           url: ajaxurl,
+	           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "CONTACT", "MODE": "READ"}),
+	           datatype: "json",
+	           contentType: "application/json",
+	           success: function(data)           
+	           {  
+	        	   //IS A CONTACT
+	        	   //console.log("is a contact: " + ppid);
+	           },
+	           error: function (request, status, error) {
+	               //console.log("ERROR: " + request.responseText);
+	               //console.log("is NOT a contact: " + ppid);
+	               var this_parent_switch = $('.parent-bootstrap-switch').attr("data-ppid",ppid);
+	               $(this_parent_switch).bootstrapSwitch('state',false);
+	               
+	           }
+		    });		 
+	});	
+	
+	
+	
 	 $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("CONTACT").reset();
 	 });
@@ -894,6 +1030,7 @@
  
  });
  
+ //save modal
  function formValidate(form_id) { 
 	 showMainError = 0;
 	 //required fields
@@ -906,6 +1043,7 @@
 			 $("#" + field_id + "_ERROR" + " .custom-error").html('Please Enter ' + field_label);	
 			 $("#" + field_id + "_ERROR").show();		
 			 $("#group_" + field_id).addClass("has-error");
+			 console.log("error on: " + field_label);
 			 showMainError = 1
 		 }else{
 			 $("#" + field_id + "_ERROR").hide();		
@@ -948,17 +1086,25 @@
 	 });*/
 	 if(showMainError){
 		 window.scrollTo(0,0);
-		 $('#' + modal_type + '_MODAL').animate({ scrollTop: 0 }, 'fast');
+		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast');
 		 return false;		 
 	 }else{
 		 //close any former error messages
 		 $(".alert_danger").hide();
 		 parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
+		 console.log("parent_ppid: " + parent_ppid);
 		 student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
+		 console.log("student_pidm: " + student_pidm);
 		 //submit via ajax
 		
 		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
-		 formData = '{"PIDM" : "' + student_pidm + '","PPID" : "' + parent_ppid + '","DATA" : "' + form_id + '","MODE" : "WRITE",';
+		 formData = '{"PIDM" : "' + student_pidm + '",';
+		 if(parent_ppid == 0){
+			 formData = formData + '"PPID" : null,';
+		 }else{
+			 formData = formData + '"PPID" :  "' + parent_ppid + '",';
+		 }
+		 formData = formData + '"DATA" : "' + form_id + '","MODE" : "WRITE",';
 		 
 		 var typeArray = ["DEMO","EMAIL","ADDRESS"];
 		 
@@ -978,9 +1124,21 @@
 			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){
 				 if($(this).is(':visible') || ($(this).attr("name","PECI_EMAIL_CODE") && typeArray[i] == 'EMAIL')){
 					 //test = $(this).is(':visible');
-					 val = $(this).val();
-					 name = $(this).attr("name");
-					 //console.log("val: " + val + " name: " + name + " x: " + x + "test: " + test);
+					 var val = $(this).val();
+					 var name = $(this).attr("name");
+					 if(typeArray[i] != "DEMO"){					 	
+					 	var name = name.replace("PARENT_","");
+					 	var name = name.replace("EMERG_","");
+					 }
+					 if(name == 'DEPENDENT'){
+						dependent_field = 'form#' + form_id + ' #DEPENDENT';
+					 	if ($(dependent_field).is(":checked")){
+							var val = "Y";
+						}else{
+							var val = "N";
+						}					 
+					 }
+					 //console.log("val: " + val + " name: " + name);
 					 if(x == 0){						
 						x = x + 1;						
 					 }else{
@@ -1012,7 +1170,7 @@
 			if(phone_carrier == undefined){
 				formData = formData + '"PHONE_CARRIER" : null';
 			}else{
-				formData = formData + '"PHONE_CARRIER" : "' + phone_carrier + '"';
+				formData = formData + '"CELL_PHONE_CARRIER" : "' + phone_carrier + '"';
 			}
 			
 		 }	
@@ -1035,7 +1193,7 @@
 				
 		formData = formData + "}";
 		 		 
-		console.log(formData);
+		//console.log(formData);
 		 
 		$.ajax({
 	           type: "POST",
@@ -1046,7 +1204,10 @@
 	           contentType: "application/json",
 	           success: function(data)
 	           {   
-	        	   console.log(data);
+	        	   //console.log(data);
+	        	   $('#'+ form_id + '_MODAL').hide();
+	        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
+	        	   $('#CONFIRMATION_MODAL').modal('show');
 		           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
 	              
 	           },
