@@ -28,7 +28,7 @@
   
   <script type="text/javascript">
   jQuery(function($) {
-      var panelList = $('#draggablePanelList');
+      var panelList = $('.draggablePanelList');
 
       panelList.sortable({
           // Only make the .panel-heading child elements support dragging.
@@ -85,7 +85,7 @@
 		font-size: 1.1em;
 	}
 	/* show the move cursor as the user moves the mouse over the panel header.*/
-    #draggablePanelList .panel-heading {
+    .draggablePanelList .panel-heading {
         cursor: move;
     }
     .modal .modal-body {
@@ -335,13 +335,15 @@
 	    <p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
 	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
 	
- 	<c:forEach items="${StudentParents}" var="parents">
-		<div class="panel panel-default">
-		  <div class="panel-body">
-		    <strong>${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="popModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${parents.PARENT_PREF_FIRST_NAME } &nbsp; ${parents.PARENT_PREF_LAST_NAME }" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
-		  </div>
-		</div>
-	</c:forEach>	
+	<div id="PARENT_LIST">
+	 	<c:forEach items="${StudentParents}" var="parents">
+			<div class="panel panel-default">
+			  <div class="panel-body">
+			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
+			  </div>
+			</div>
+		</c:forEach>	
+	</div>
 	 
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
@@ -354,11 +356,11 @@
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <p id="doc_message">You must have at least one emergency contact. Emergency contacts will be contacted in the order you specify below. Parent/Guardian contacts designated as Emergency Contacts above will appear automatically below. You may also add additional contacts.<br><strong>If Connecticut College is a long way from home, and there is someone who can be contacted nearby in the event of an emergency, please add that person as one of your contacts.</strong></p>
 	    <input type="hidden" name="fields[26]" id="emr_order">
-		<ul id="draggablePanelList" class="list-unstyled">
+		<ul id="CONTACT_LIST" class="draggablePanelList list-unstyled">
 			<c:forEach items="${StudentEMR}" var="emr">
 				<li class="panel panel-info" id="emr_contact_${emr.PARENT_PPID}"> 
 		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="popModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    	</li>
 			</c:forEach>
 		</ul>
@@ -506,7 +508,7 @@
 						</div>
 					</div>
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="EMERG_NO_CELL_PHONE" id="EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" value="Y" name="EMERG_NO_CELL_PHONE" id="EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_EMERGENCY_PHONE" style="display:none;">
@@ -691,7 +693,7 @@
 			  </div>
 			  <div class="modal-body">	
 				<p><strong>Your changes have been saved</strong></p>
-				<p>You can edit any of your parent/guardians or contacts by clicking the edit icon next to their name below.</p>
+				<p>You can edit any of your parent/guardians or contacts by clicking the edit icon next to their name.</p>
 			  </div>
 			</div>
 			<div class="modal-footer">
@@ -749,7 +751,7 @@
 	    	$('#' + form_id + '_EMERGENCY_PHONE').removeClass('ccreq');
 	    	//add requirement for mobile phone
 	    	$('form#' + form_id + ' #GROUP_PHONE_CP_NUMBER .required').show();	
-	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addclass('ccreq');
+	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
 	    	//add requirement for phone carrier
 			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').show();	
@@ -887,111 +889,11 @@
 		$('#PARENT_MODAL .form-group, #CONTACT_MODAL .form-group, #DELETE_MODAL .form-group').removeClass('has-error');
 	});
 	
-	$('.popModal').click(function() {		
-		modal_type = $(this).attr("data-modal-type");
-		student_PIDM = ${StudentBio['STUDENT_PIDM']};
-		PPID = $(this).attr("data-ppid");		
-		$.ajax({
-           type: "POST",
-           url: ajaxurl,
-           data: JSON.stringify({"PIDM": student_PIDM, "PPID": PPID, "DATA": modal_type, "MODE": "READ"}),
-           datatype: "json",
-           contentType: "application/json",
-           success: function(data)           
-           {   
-        	  //$('#' + modal_type + '_STUDENT_PPID').val();
-        	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
-        	  $('#' + modal_type + '_PARENT_PPID').val(PPID);
-        	  //$('#' + modal_type + '_PARENT_PIDM').val();
-        	  if(modal_type == 'PARENT'){
-	        	  $.each(data.parent, function(index, element){	       
-	        		  $('form#' + modal_type + ' #' + index).val(element);	        		  
-	        	   	//$('#' + index).val(element);
-	        	  });
-        	  }else{
-        		  $.each(data.contact, function(index, element){
-        			  var new_index = index;
-        			  var new_index = new_index.replace('EMERG','CONTACT')
-        			  $('form#' + modal_type + ' #' + new_index).val(element);
-  	        	   	//$('#' + index).val(element);
-  	        	  });
-        	  }
-
-        	  $.each(data.email, function(index,element){        
-        		 $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
-        	  	 //$('#' + modal_type + "_" + index).val(element); 	
-        	  });
-
-        	  $.each(data.address, function(index,element){        		 
-        		  if(index == 'ADDR_NATN_CODE' && element == null){
-        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val('US');
-        			//$('#' + modal_type + "_" + index).val('US');
-        		  }else{
-        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
-          	  		//$('#' + modal_type + "_" + index).val(element);
-         		  }
-          	  });
-        	  //phones
-        	  for(i=0;i<data.phones.length;i++){
-          		  var phone_code = data.phones[i].PHONE_CODE;
-        		  //var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
-        		  var phone_area_code = data.phones[i].PHONE_AREA_CODE;
-        		  var phone_number = data.phones[i].PHONE_NUMBER;
-        		  var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
-        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
-        		  var phone_carrier = data.phones[i].PHONE_CARRIER;
-        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CODE').val(phone_code);
-        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
-        		  if(phone_number_intl != "" && phone_number_intl != null){
-        			  //console.log(phone_number_intl);
-        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER').hide();
-        			  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
-        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
-        		  }else{
-        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER_INTL').hide();
-        			  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER').val(phone_number);
-        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER').show();        			 
-        		  }       		  
-        		  
-        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
-        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CARRIER').val(phone_carrier);    
-        	  }
-        	  
-        	  /*$.each(data.phones, function(index1,element1){
-        		  //console.log("modaltype:" + modal_type);
-        		  //console.log('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION');
-        		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();       
-        		  //console.log("index1: " + index1['PHONE_CODE']);
-        		  //console.log("element1: " + element1);
-        		  $.each(this, function(index2,element2){     
-        			  //console.log("index2: " + index2 + " element2: " + element2);
-            		  if(index2 == 'PHONE_CODE'){
-            			  //console.log('form#' + modal_type + ' input[name="PHONE_' + index1 + '_TYPE"]' + " element2: " + element2);
-            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_CODE').val(element2);
-            			  //$('#' + modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);         			  
-            		  }else if(index2 == 'PHONE_AREA_CODE'){
-            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val(element2);
-            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
-            		  }else if(index2 == 'PHONE_NUMBER'){
-            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val($('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val() + element2);
-            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
-            		  }else if(index2 == 'PHONE_SEQUENCE_NO'){
-               			  $('form#' + modal_type + ' #PHONE_' + index1 + '_SEQUENCE_NO').val(element2);
-            		  }		
-        			  //console.log("4 peci phone code" +  element2);        			  
-        		  });        		 
-          	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-          	  });*/
-           },
-           error: function (request, status, error) {
-               console.log("ERROR: " + request.responseText);
-           }
-	    });		    
-		
-		$('#' + modal_type + "_MODAL").modal('show');
-	});
-	
-	
+	$('.showModal').click(function() {		
+		modal_type = $(this).attr("data-modal-type");		
+		ppid = $(this).attr("data-ppid");		
+		populateModal(modal_type,ppid);
+	});		
 	
 	//check to see if parents are emerg contacts, turn off switch if not
 	$('.parent-bootstrap-switch').each(function(){
@@ -1095,6 +997,7 @@
 		 console.log("parent_ppid: " + parent_ppid);
 		 student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
 		 console.log("student_pidm: " + student_pidm);
+		 new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
 		 //submit via ajax
 		
 		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
@@ -1129,6 +1032,7 @@
 					 if(typeArray[i] != "DEMO"){					 	
 					 	var name = name.replace("PARENT_","");
 					 	var name = name.replace("EMERG_","");
+					 	var name = name.replace("CONTACT","EMERG");
 					 }
 					 if(name == 'DEPENDENT'){
 						dependent_field = 'form#' + form_id + ' #DEPENDENT';
@@ -1204,7 +1108,9 @@
 	           contentType: "application/json",
 	           success: function(data)
 	           {   
-	        	   //console.log(data);
+	        	   console.log(data);
+	        	   console.log(data.PARENT_PPID);
+	        	   addToList(form_id,new_contact_name,data.PARENT_PPID);
 	        	   $('#'+ form_id + '_MODAL').hide();
 	        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 	        	   $('#CONFIRMATION_MODAL').modal('show');
@@ -1231,6 +1137,130 @@
 		 }
 		 return formData;
 	}
+	
+	function addToList(type,new_contact_name,ppid){
+		if(type == 'PARENT'){
+			var parent_info = '<div class="panel panel-default" id="' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="' + new_contact_name + '"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
+			$('#PARENT_LIST').append(parent_info);
+			$('.bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
+			}
+			$('.bootstrap-switch').bootstrapSwitch('state', true);
+			$(document).on('click','.showModal',function(){
+				populateModal(type,ppid);
+			});
+
+		}else{
+			var contact_info = '<li class="panel panel-info" id="' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="' + new_contact_name + '" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
+			$('#CONTACT_LIST').append(contact_info);
+			$(document).on('click','.showModal',function(){
+				populateModal(type,ppid);
+			});
+
+		}
+	}
+	
+	function populateModal(modal_type,ppid){
+		student_PIDM = ${StudentBio['STUDENT_PIDM']};
+		$.ajax({
+	           type: "POST",
+	           url: ajaxurl,
+	           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": modal_type, "MODE": "READ"}),
+	           datatype: "json",
+	           contentType: "application/json",
+	           success: function(data)           
+	           {   
+	        	  //$('#' + modal_type + '_STUDENT_PPID').val();
+	        	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
+	        	  $('#' + modal_type + '_PARENT_PPID').val(ppid);
+	        	  //$('#' + modal_type + '_PARENT_PIDM').val();
+	        	  if(modal_type == 'PARENT'){
+		        	  $.each(data.parent, function(index, element){	       
+		        		  $('form#' + modal_type + ' #' + index).val(element);	        		  
+		        	   	//$('#' + index).val(element);
+		        	  });
+	        	  }else{
+	        		  $.each(data.contact, function(index, element){
+	        			  var new_index = index;
+	        			  var new_index = new_index.replace('EMERG','CONTACT')
+	        			  $('form#' + modal_type + ' #' + new_index).val(element);
+	  	        	   	//$('#' + index).val(element);
+	  	        	  });
+	        	  }
+
+	        	  $.each(data.email, function(index,element){        
+	        		 $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
+	        	  	 //$('#' + modal_type + "_" + index).val(element); 	
+	        	  });
+
+	        	  $.each(data.address, function(index,element){        		 
+	        		  if(index == 'ADDR_NATN_CODE' && element == null){
+	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val('US');
+	        			//$('#' + modal_type + "_" + index).val('US');
+	        		  }else{
+	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
+	          	  		//$('#' + modal_type + "_" + index).val(element);
+	         		  }
+	          	  });
+	        	  //phones
+	        	  for(i=0;i<data.phones.length;i++){
+	          		  var phone_code = data.phones[i].PHONE_CODE;
+	        		  //var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
+	        		  var phone_area_code = data.phones[i].PHONE_AREA_CODE;
+	        		  var phone_number = data.phones[i].PHONE_NUMBER;
+	        		  var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
+	        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
+	        		  var phone_carrier = data.phones[i].PHONE_CARRIER;
+	        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CODE').val(phone_code);
+	        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
+	        		  if(phone_number_intl != "" && phone_number_intl != null){
+	        			  //console.log(phone_number_intl);
+	        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER').hide();
+	        			  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
+	        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
+	        		  }else{
+	        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER_INTL').hide();
+	        			  $('form#' + modal_type + ' #PHONE_' + phone_code + '_NUMBER').val(phone_number);
+	        			  $('form#' + modal_type + ' #GROUP_PHONE_' + phone_code + '_NUMBER').show();        			 
+	        		  }       		  
+	        		  
+	        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
+	        		  $('form#' + modal_type + ' #PHONE_' + phone_code + '_CARRIER').val(phone_carrier);    
+	        	  }
+	        	  
+	        	  /*$.each(data.phones, function(index1,element1){
+	        		  //console.log("modaltype:" + modal_type);
+	        		  //console.log('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION');
+	        		  $('#GROUP_' + modal_type + '_PHONE' + index1 + '_SECTION').show();       
+	        		  //console.log("index1: " + index1['PHONE_CODE']);
+	        		  //console.log("element1: " + element1);
+	        		  $.each(this, function(index2,element2){     
+	        			  //console.log("index2: " + index2 + " element2: " + element2);
+	            		  if(index2 == 'PHONE_CODE'){
+	            			  //console.log('form#' + modal_type + ' input[name="PHONE_' + index1 + '_TYPE"]' + " element2: " + element2);
+	            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_CODE').val(element2);
+	            			  //$('#' + modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);         			  
+	            		  }else if(index2 == 'PHONE_AREA_CODE'){
+	            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val(element2);
+	            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
+	            		  }else if(index2 == 'PHONE_NUMBER'){
+	            			  $('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val($('form#' + modal_type + ' #PHONE_' + index1 + '_NUMBER').val() + element2);
+	            			  //$('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
+	            		  }else if(index2 == 'PHONE_SEQUENCE_NO'){
+	               			  $('form#' + modal_type + ' #PHONE_' + index1 + '_SEQUENCE_NO').val(element2);
+	            		  }		
+	        			  //console.log("4 peci phone code" +  element2);        			  
+	        		  });        		 
+	          	  	//$('#' + $modal_type + "_" + index).val(element); 		   
+	          	  });*/
+	           },
+	           error: function (request, status, error) {
+	               console.log("ERROR: " + request.responseText);
+	           }
+		    });		    
+			
+			$('#' + modal_type + "_MODAL").modal('show');
+	}
+
  
 	
  </script>
