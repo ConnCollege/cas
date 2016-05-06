@@ -334,7 +334,7 @@
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu</span></div>
 	    <p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
 	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
-	
+	Parents: ${StudentParents}
 	<div id="PARENT_LIST">
 	 	<c:forEach items="${StudentParents}" var="parents">
 			<div class="panel panel-default">
@@ -351,7 +351,7 @@
 	      </div>
 	    </div>  
     </div>
-   
+   Contacts: ${StudentEMR}
     <div id="step4" class="form_section">
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <p id="doc_message">You must have at least one emergency contact. Emergency contacts will be contacted in the order you specify below. Parent/Guardian contacts designated as Emergency Contacts above will appear automatically below. You may also add additional contacts.<br><strong>If Connecticut College is a long way from home, and there is someone who can be contacted nearby in the event of an emergency, please add that person as one of your contacts.</strong></p>
@@ -653,7 +653,7 @@
 					
 					<div id='<c:out value="${modalType}"/>_CLNADDR_RESULTS' name='<c:out value="${modalType}"/>_CLNADDR_RESULTS'></div>
 					
-					
+					<c:if test="${modalType == 'PARENT'}">
 						<div style="display:none;" role="alert" class="alert alert-danger" id="DEPENDENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 						<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_DEPENDENT_CHECK">
 							<div class="col-sm-offset-1 col-sm-10">
@@ -664,7 +664,7 @@
 								</div>
 							</div>
 						</div>	
-					
+					</c:if>
 					
 									  		
 			  		<div class="form-group">
@@ -1031,8 +1031,10 @@
 					 var name = $(this).attr("name");
 					 if(typeArray[i] != "DEMO"){					 	
 					 	var name = name.replace("PARENT_","");
-					 	var name = name.replace("EMERG_","");
-					 	var name = name.replace("CONTACT","EMERG");
+					 	var name = name.replace("EMERG_","");	
+					 	var name = name.replace("CONTACT_","");
+					 }else{
+						var name = name.replace("CONTACT","EMERG");
 					 }
 					 if(name == 'DEPENDENT'){
 						dependent_field = 'form#' + form_id + ' #DEPENDENT';
@@ -1140,23 +1142,29 @@
 	
 	function addToList(type,new_contact_name,ppid){
 		if(type == 'PARENT'){
-			var parent_info = '<div class="panel panel-default" id="' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="' + new_contact_name + '"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
-			$('#PARENT_LIST').append(parent_info);
-			$('.bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
-			}
-			$('.bootstrap-switch').bootstrapSwitch('state', true);
-			$(document).on('click','.showModal',function(){
-				populateModal(type,ppid);
-			});
-
+			//always add parents as emergency contacts
+			addParent(type,ppid,new_contact_name);
+			addContact(type,ppid,new_contact_name);
 		}else{
-			var contact_info = '<li class="panel panel-info" id="' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="' + new_contact_name + '" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
-			$('#CONTACT_LIST').append(contact_info);
-			$(document).on('click','.showModal',function(){
-				populateModal(type,ppid);
-			});
-
+			addContact(type,ppid,new_contact_name);
 		}
+	}
+	
+	function addParent(type,ppid,new_contact_name){
+		var parent_info = '<div class="panel panel-default" id="' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="' + new_contact_name + '"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
+		$('#PARENT_LIST').append(parent_info);
+		$('.bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
+		$(document).on('click','.showModal',function(){
+			populateModal(type,ppid);
+		});
+	}
+	
+	function addContact(type,ppid,new_contact_name){
+		var contact_info = '<li class="panel panel-info" id="' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="' + new_contact_name + '" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
+		$('#CONTACT_LIST').append(contact_info);
+		$(document).on('click','.showModal',function(){
+			populateModal(type,ppid);
+		});
 	}
 	
 	function populateModal(modal_type,ppid){
