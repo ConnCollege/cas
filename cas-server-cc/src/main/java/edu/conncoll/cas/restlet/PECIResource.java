@@ -244,6 +244,27 @@ public class PECIResource extends Resource
 										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
 										jdbcCAS.update(SQL,namedParameters);
 										jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
+										//Per Tonm's requst on 5/6/2016 adding a new parent automatically adds them as an emergency Contact
+										SQL = "INSERT cc_gen_peci_emergs_t SET ";
+										for(int y=0; y<columns.size(); y++) { 
+									        String key = columns.get(y);
+									        if (!key.equals("PARENT_PPID")) {
+										        Object newValue = parentDataIn.get(key);
+										        key = key.replace("PARENT_","EMERG_");
+										        if (newValue.getClass().getName().equals("java.lang.String")) {
+										        	SQL = SQL + key +" = '" +  newValue + "', ";
+										        } else {
+										        	SQL = SQL + key +" = " +  newValue + ", ";
+										        }
+									        }
+									    } 
+										SQL = SQL + "CHANGE_COLS = 'NEW', ";
+										
+										SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
+										SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
+										jdbcCAS.update(SQL,namedParameters);
+																				
 									} else {
 										//Parent Data
 										updates = compareMap(parentDataIn, parentData);
