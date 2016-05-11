@@ -482,7 +482,7 @@ public class jdbcCamel {
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
 					
-					SQL="select distinct PECI_PHONE_CODE, PHONE_CODE, concat_ws(' ', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
+					SQL="select distinct PECI_PHONE_CODE, PHONE_CODE, concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
 							+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,"				
 							+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
 							+"  from cc_gen_peci_phone_data_t phone"
