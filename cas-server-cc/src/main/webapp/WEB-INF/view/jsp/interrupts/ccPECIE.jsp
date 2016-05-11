@@ -106,6 +106,10 @@
 		margin: -10px;
 		padding: 0;
 	}
+	/*stop scroll to top of page when modal opens*/
+	body.modal-open {
+    	overflow: visible;
+	}
   </style>
 </head>
 <body>
@@ -302,7 +306,7 @@
 	</div>
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_EMERGENCY_PHONE" style="display:none;">
+	<div class="form-group" id="GROUP_STUDENT_EMERGENCY_PHONE" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Emergency Phone" name="fields[16]" class="form-control address_field" id="STUDENT_EMERGENCY_PHONE" value="${StudentEmrPhone['PHONE_NUMBER'] }">
@@ -356,7 +360,7 @@
 	 	<c:forEach items="${StudentParents}" var="parents">
 			<div class="panel panel-default" id="parent_${parents.PARENT_PPID}">
 			  <div class="panel-body">
-			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
+			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
 			  </div>
 			</div>
 		</c:forEach>	
@@ -377,7 +381,7 @@
 			<c:forEach items="${StudentEMR}" var="emr">
 				<li class="panel panel-info" id="emr_contact_${emr.PARENT_PPID}"> 
 		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    	</li>
 			</c:forEach>
 		</ul>
@@ -386,11 +390,11 @@
 		<%--<ul id="draggablePanelList" class="list-unstyled">
 		    <li class="panel panel-info"> 
 		        <div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        <div class="panel-body">Bob Smith &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#EMERGENCY_CONTACT_MODAL"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		        <div class="panel-body">Bob Smith &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#EMERGENCY_CONTACT_MODAL"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-name="Bob Smith" data-person-id="1"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    </li>
 		    <li class="panel panel-info">
 		        <div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        <div class="panel-body">John Jones &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#EMERGENCY_CONTACT_MODAL"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="John Jones" data-person-id="2"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		        <div class="panel-body">John Jones &nbsp; <a href="#" title="Edit" data-toggle="modal" data-target="#EMERGENCY_CONTACT_MODAL"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-name="John Jones" data-person-id="2"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    </li>
 		</ul> --%>
 	    
@@ -736,7 +740,7 @@
 			  		<h4 class="modal-title">Confirm Deletion</h4>
 			  	</div>
 			  	<div class="modal-body">		
-					<p>Are you sure you want to delete this individual?</p>
+					<p>Are you sure you want to delete this <strong><span id="type"></span></strong>?</p>
 					<p><strong><span class="name_block"></span></strong></p>				
 					<input type="hidden" name="ppid" value="" id="ppid_to_delete" class="ccreq">
 					<input type="hidden" name="type" value="" id="type_to_delete" class="ccreq">
@@ -749,7 +753,7 @@
 		  	</form>
 		</div>
 	  	<div class="modal-footer">
-	  		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	  		<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 	  	</div>
   	</div>
 </div>
@@ -927,7 +931,7 @@
 	});
 	
 	//triggered when modal is about to be shown
-	$('#DELETE_MODAL').on('show.bs.modal', function(e) {
+	/* $('#DELETE_MODAL').on('show.bs.modal', function(e) {
 
 	    //get data-id attribute of the clicked element
 	    var person_name = $(e.relatedTarget).data('person-name');
@@ -938,7 +942,7 @@
 	    $(e.currentTarget).find('.name_block').html(person_name);
 	    $(e.currentTarget).find('#ppid_to_delete').val(person_id);
 	    $(e.currentTarget).find('#type_to_delete').val(type);
-	});
+	}); */
 	
 	$('#PARENT_MODAL, #CONTACT_MODAL, #DELETE_MODAL').on('hidden.bs.modal', function () {
 		//on modal close, hide all modal error messages
@@ -952,6 +956,16 @@
 		populateModal(modal_type,ppid);
 	});		
 	
+	$('.deleteModal').click(function(){
+		type = $(this).attr("data-modal-type");
+		console.log("type: " + type);
+		ppid = $(this).attr("data-ppid");
+		console.log("data-ppid: " + ppid);
+		name = $(this).attr("data-name");
+		console.log("data-name: " + name);
+		showDeleteModal(type,ppid,name);
+	});		 
+
 	//check to see if parents are emerg contacts, turn off switch if not
 	$('.parent-bootstrap-switch').each(function(){
 		var ppid = $(this).attr("data-ppid");
@@ -988,6 +1002,15 @@
 	 });
  
  });
+ 
+function showDeleteModal(type,ppid,name){	
+	$('#DELETE_MODAL').modal();
+	console.log("showDeleteModal, name: " + name + "ppid: " + ppid + "type: " + type);
+	$('#delete_form').find('#type').html(type.toLowerCase());
+	$('#delete_form').find('.name_block').html(name);
+	$('#delete_form').find('#ppid_to_delete').val(ppid);
+	$('#delete_form').find('#type_to_delete').val(type);	
+}
 
  function deleteIndividual(){
 	 ppid_to_delete = $('#delete_form #ppid_to_delete').val();
@@ -1002,12 +1025,12 @@
          contentType: "application/json",
          success: function(data)           
          {   
+        	 $('#DELETE_MODAL').modal('hide');
         	 if(type == 'CONTACT'){
         		 $('#emr_contact_'+ppid_to_delete).fadeOut();
         	 }else{
         		 $('#parent_'+ppid_to_delete).fadeOut();
-        	 }
-        	 $('#DELETE_MODAL').modal('hide');
+        	 }        	 
          },
          error: function (request, status, error) {
              console.log("ERROR: " + request.responseText);
@@ -1055,6 +1078,7 @@
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
 	 });
+	 //telephone validation
 	 $("#" + form_id + " input[type=tel]").each(function(){
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
@@ -1154,6 +1178,9 @@
 							var val = "N";
 						}					 
 					 }
+					 if(name.substr(name.length - 19) == 'EMERG_NO_CELL_PHONE'){
+						 name = "EMERG_NO_CELL_PHONE";
+					 }
 					 //console.log("val: " + val + " name: " + name);
 					 if(x == 0){						
 						x = x + 1;						
@@ -1209,7 +1236,12 @@
 			if($.inArray(phone_number,all_emergency_phones) == -1){
 				//add number to campus alert phone number list
 				console.log("add this num: " + phone_number);
-				addCampusAlertNumber(phone_area_code, phone_number, new_contact_name);				
+				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
+					var alert_phone_number = phone_intl;					
+				}else{					
+					var alert_phone_number = "" + phone_area_code + phone_number;
+				}
+				addCampusAlertNumber(alert_phone_number, new_contact_name);
 			}else{
 				console.log("DONT ADD: " + phone_number);
 			}
@@ -1270,29 +1302,34 @@
 			addContact(type,ppid,new_contact_name);
 		}else{
 			addContact(type,ppid,new_contact_name);
-		}
+		}		
 	}
 	
 	function addParent(type,ppid,new_contact_name){
-		var parent_info = '<div class="panel panel-default" id="parent_' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#DELETE_MODAL" data-person-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
+		var parent_info = '<div class="panel panel-default" id="parent_' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
-		$('.bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
-		$(document).on('click','.showModal',function(){
+		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
+		$('#PARENT_LIST #parent_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
+		});
+		$('#PARENT_LIST #parent_' + ppid).on('click','.deleteModal',function(){
+			showDeleteModal(type,ppid,new_contact_name);
 		});
 	}
 	
 	function addContact(type,ppid,new_contact_name){
-		var contact_info = '<li class="panel panel-info" id="' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" data-toggle="modal" data-target="#delete_modal" data-person-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
+		var contact_info = '<li class="panel panel-info" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
 		$('#CONTACT_LIST').append(contact_info);
-		$(document).on('click','.showModal',function(){
+		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
+		});
+		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.deleteModal',function(){
+			showDeleteModal(type,ppid,new_contact_name);
 		});
 	}
 	
-	function addCampusAlertNumber(phone_area_code, phone_number, new_contact_name){
-		var new_phone_number = '(' + phone_area_code + ') ' + phone_number
-		var campusAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + seq_num + '" name="fields[25]">&nbsp;(' + area_code + ') ' + phone_number + '</li>';
+	function addCampusAlertNumber(alert_phone_number, new_contact_name){
+		var campusAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">' + alert_phone_number + '(' + new_contact_name + ')</li>';
 	}
 	
 	function populateModal(modal_type,ppid){
