@@ -117,7 +117,7 @@
 <div class="container">
   <h2>Update Your Contact Information</h2>
   <p>Please enter your personal, parent/guardian and emergency contact information below.</p> 
-  <form class="form-horizontal" role="form" id="STUDENT" onsubmit="submitMainForm(this.id);return false;"> 
+  <form class="form-horizontal" method="post" role="form" id="STUDENT" onsubmit="submitMainForm(this.id);"> 
  
   <div id="step1" class="form_section">
 	<h3>Step 1 Verify Your Permanent Mailing Address</h3>
@@ -411,8 +411,8 @@
 	    
 	    <ul ID="CAMPUS_ALERT_NUMBERS">
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
-		    	 <li class="list-unstyled"><input type="checkbox" value="${emmrg.PHONE_SEQUENCE_NO}" name="fields[25]">&nbsp;(${emmrg.PHONE_AREA_CODE}) ${emmrg.PHONE_NUMBER}</li>
-		    	 <input type="hidden" name="all_emergency_phone_numbers" value="${emmrg.PHONE_NUMBER}">
+		    	 <li class="list-unstyled"><input type="checkbox" value="${emmrg.PHONE_NUM}" name="fields[25]" <c:if test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }"> checked="checked"</c:if>>&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>
+		    	 <input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
 		    </c:forEach>
 		</ul>
 		
@@ -426,6 +426,9 @@
 	    </div>  
 	</div>      	
 
+	    <input type="hidden" name="lt" value="${loginTicket}" />
+        <input type="hidden" name="execution" value="${flowExecutionKey}" />
+        <input type="hidden" name="_eventId" value="submit" />  
   </form>
 </div>
 
@@ -775,8 +778,8 @@
  
  $(document).ready( function(){
 	 
-	 all_emergency_phones = $("input[name=all_emergency_phone_numbers]").map(function(i,c){ return c.value; });
-	 console.log(all_emergency_phones);	 
+	 all_phone_numbers = $("input[name=all_phone_numbers]").map(function(i,c){ return c.value; });
+	 console.log(all_phone_numbers);	 
 
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 
@@ -858,6 +861,14 @@
  			$(this).html('Enter International Number');
 		}		
 
+	});
+	
+	$('#STUDENT_PHONE_NUMBER').focusout(function(){
+		phone_number = "" + $('#STUDENT_AREA_CODE').val() + $('#STUDENT_PHONE_NUMBER').val();
+		if($.inArray(phone_number,all_phone_numbers) == -1){
+			//add number to campus alert phone number list
+			addCampusAlertNumber(phone_number, '', 'STUDENT');
+		}
 	});
 	
 	//switching off emergency contacts
@@ -1233,7 +1244,7 @@ function showDeleteModal(type,ppid,name){
 				formData = formData + '"CELL_PHONE_CARRIER" : "' + phone_carrier + '"';
 			}			
 			//show number in step 5
-			if($.inArray(phone_number,all_emergency_phones) == -1){
+			if($.inArray(phone_number,all_phone_numbers) == -1){
 				//add number to campus alert phone number list
 				console.log("add this num: " + phone_number);
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
@@ -1241,7 +1252,7 @@ function showDeleteModal(type,ppid,name){
 				}else{					
 					var alert_phone_number = "" + phone_area_code + phone_number;
 				}
-				addCampusAlertNumber(alert_phone_number, new_contact_name);
+				addCampusAlertNumber(alert_phone_number, new_contact_name,form_id);
 			}else{
 				console.log("DONT ADD: " + phone_number);
 			}
@@ -1328,8 +1339,17 @@ function showDeleteModal(type,ppid,name){
 		});
 	}
 	
-	function addCampusAlertNumber(alert_phone_number, new_contact_name){
-		var campusAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">' + alert_phone_number + '(' + new_contact_name + ')</li>';
+	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
+		if(type == 'STUDENT'){
+			var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER">' + alert_phone_number + ' (Your phone number will always be contacted)</li>';			
+			$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+		}else{
+			var newAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">' + alert_phone_number + '(' + new_contact_name + ')</li>';
+			$('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);
+		}	
+		//push to all phone number array
+		all_phone_numbers = all_phone_numbers.push(alert_phone_number);
+		console.log("New all phone numbers: " + all_phone_numbers);
 	}
 	
 	function populateModal(modal_type,ppid){
