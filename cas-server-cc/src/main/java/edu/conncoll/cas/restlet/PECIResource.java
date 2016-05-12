@@ -209,20 +209,7 @@ public class PECIResource extends Resource
 										log.debug("Creating new parent record.");
 										//Add a parent 
 										//Find an Alpha Seq No
-										Map<String,Object> maxData = new HashMap<String, Object>();
-										char seqNo;
-										try{
-											SQL="select max(PARENT_PPID)  seq from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
-											maxData = jdbcCAS.queryForMap(SQL,namedParameters);
-										} catch (EmptyResultDataAccessException e){
-											// dataset empty 
-										}
-										if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
-											seqNo = 'A';
-										} else {
-											seqNo = maxData.get("seq").toString().charAt(0);
-											seqNo = (char)((int)seqNo + 1);
-										}
+										char seqNo = Parent_PPID(namedParameters);
 										log.debug ("New parent record to create PPID: " + Character.toString(seqNo));
 										SQL = "INSERT cc_adv_peci_parents_t SET ";
 										List<String> columns = new ArrayList(parentDataIn.keySet());
@@ -377,19 +364,7 @@ public class PECIResource extends Resource
 									//Add a contact 
 									//Find an Alpha Seq No
 									Map<String,Object> maxData = new HashMap<String, Object>();
-									char seqNo;
-									try{
-										SQL="select max(PARENT_PPID)  seq from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM ";
-										maxData = jdbcCAS.queryForMap(SQL,namedParameters);
-									} catch (EmptyResultDataAccessException e){
-										// dataset empty 
-									}
-									if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
-										seqNo = 'A';
-									} else {
-										seqNo = maxData.get("seq").toString().charAt(0);
-										seqNo = (char)((int)seqNo + 1);
-									}
+									char seqNo = Parent_PPID(namedParameters);
 									log.debug ("New contact record to create PPID: " + Character.toString(seqNo));
 									SQL = "INSERT cc_gen_peci_emergs_t SET ";
 									List<String> columns = new ArrayList(emrgDataIn.keySet());
@@ -545,6 +520,37 @@ public class PECIResource extends Resource
 	        list.add(value);
 	    }
 	    return list;
+	}
+	
+	public char Parent_PPID (Map<String, Object> namedParameters){		
+		Map<String,Object> maxData = new HashMap<String, Object>();
+		String SQL;
+		char seqNo;
+		try{
+			SQL="select max(PARENT_PPID)  seq from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
+			maxData = jdbcCAS.queryForMap(SQL,namedParameters);
+		} catch (EmptyResultDataAccessException e){
+			// dataset empty 
+		}
+		if ((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) ){
+			seqNo = 'A';
+		} else {
+			seqNo = maxData.get("seq").toString().charAt(0);
+			seqNo = (char)((int)seqNo + 1);
+		}
+		try{
+			SQL="select max(PARENT_PPID)  seq from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM ";
+			maxData = jdbcCAS.queryForMap(SQL,namedParameters);
+		} catch (EmptyResultDataAccessException e){
+			// dataset empty 
+		}
+		if (!((maxData.get("seq") == null) || (maxData.get("seq").toString().matches("^-?\\d+$")) )){
+			if (maxData.get("seq").toString().charAt(0) >= seqNo){
+				seqNo = maxData.get("seq").toString().charAt(0);
+				seqNo = (char)((int)seqNo + 1);
+			}
+		}
+		return seqNo;
 	}
 	
 	public Map<String, Object> compareMap(Map<String, Object> testMap, Map<String, Object> origMap) throws Exception {

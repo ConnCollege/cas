@@ -832,11 +832,61 @@ public class jdbcCamel {
 		}
 
 		if (flag.equals("PECIC") || flag.equals("PECI") || flag.equals("PECIE")) {
+
+			log.debug ("Context: " + context.getFlowScope());
+			log.debug ("intData: " + intData.toString());	
 			if ( intData.getField(1).equals("edit"))	{
 				context.getFlowScope().put("Flag","PECIE");
 				return "Failed";
 			}
-			//Save PECI Data from MySQL to Banner
+			if ( intData.getField(1).equals("confirm"))	{				
+				//Save PECI Data from MySQL to Banner
+				return "Saved";
+			}
+			if ( intData.getField(1).equals("update"))	{
+				//Save PECI Main Form data to MySQL
+				/*
+				EMERG_NO_CELL_PHONE
+				EMERG_PHONE_NUMBER_TYPE_CODE
+				EMERG_CELL_PHONE_CARRIER
+				EMERG_PHONE_TTY_DEVICE
+				EMERG_AUTO_OPT_OUT
+				EMERG_SEND_TEXT
+				
+				PERSON_ROLE,
+				PECI_ADDR_CODE,
+				ADDR_CODE,
+				ADDR_SEQUENCE_NO,
+				ADDR_STREET_LINE1,
+				ADDR_STREET_LINE2,
+				ADDR_STREET_LINE3,
+				ADDR_CITY,
+				ADDR_STAT_CODE,
+				ADDR_ZIP,
+				ADDR_NATN_CODE,
+				ADDR_STATUS_IND
+				
+				PECI_EMAIL_CODE,
+				EMAIL_ADDRESS
+				
+				PECI_PHONE_CODE,
+				PHONE_CODE,
+				PHONE_AREA_CODE,
+				PHONE_NUMBER,
+				PHONE_NUMBER_INTL,
+				PHONE_SEQUENCE_NO,
+				PHONE_STATUS_IND,
+				PHONE_PRIMARY_IND,
+				CELL_PHONE_CARRIER,
+				PHONE_TTY_DEVICE,E
+				MERG_AUTO_OPT_OUT,
+				EMERG_SEND_TEXT,
+				EMERG_NO_CELL_PHONE
+				*/
+				context.getFlowScope().put("Flag","PECIC");
+			}
+			
+			return "Failed";
 			
 		}
 		log.debug("Writeflow completed successfully, returning saved.");
