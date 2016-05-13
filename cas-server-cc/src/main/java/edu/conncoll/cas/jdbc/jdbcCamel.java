@@ -62,6 +62,8 @@ import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.util.LdapUtils;
 import org.jasig.cas.web.support.IntData;
 
+import edu.conncoll.cas.restlet.PECIResource;
+
 
 public class jdbcCamel {
 	@NotNull
@@ -437,7 +439,16 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_emergs_t",emergData);	
 					} else {
 						//Brand new PECI record.		
-						log.debug("Brand new PECI Record starting MySQL Base record");				
+						log.debug("Brand new PECI Record starting MySQL Base record");			
+						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
+						studentData = jdbcCensus.queryForMap(SQL);
+						
+						copy2MySQL("cc_stu_peci_students_t",studentData);
+						
+						//Enter transaction data in trans table
+						SQL= "insert into peci_trans_start (STUDENT_PIDM, Trans_start) values ( :STUDENT_PIDM, now())";
+						log.debug("inserting transaction start");
+						jdbcCAS.update(SQL,namedParameters);
 					}
 				}
 				
@@ -845,44 +856,122 @@ public class jdbcCamel {
 			}
 			if ( intData.getField(1).equals("update"))	{
 				//Save PECI Main Form data to MySQL
-				/*
-				EMERG_NO_CELL_PHONE
-				EMERG_PHONE_NUMBER_TYPE_CODE
-				EMERG_CELL_PHONE_CARRIER
-				EMERG_PHONE_TTY_DEVICE
-				EMERG_AUTO_OPT_OUT
-				EMERG_SEND_TEXT
 				
-				PERSON_ROLE,
-				PECI_ADDR_CODE,
-				ADDR_CODE,
-				ADDR_SEQUENCE_NO,
-				ADDR_STREET_LINE1,
-				ADDR_STREET_LINE2,
-				ADDR_STREET_LINE3,
-				ADDR_CITY,
-				ADDR_STAT_CODE,
-				ADDR_ZIP,
-				ADDR_NATN_CODE,
-				ADDR_STATUS_IND
+				String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 				
-				PECI_EMAIL_CODE,
-				EMAIL_ADDRESS
+				List vaultDN = this.vaultTemplate.search(
+					this.vaultSearchBase, vaultSearchFilter, 
+					new AbstractContextMapper(){
+						protected Object doMapFromContext(DirContextOperations ctx) {
+							return ctx.getNameInNamespace();
+						}
+					}
+				);
+				DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
 				
-				PECI_PHONE_CODE,
-				PHONE_CODE,
-				PHONE_AREA_CODE,
-				PHONE_NUMBER,
-				PHONE_NUMBER_INTL,
-				PHONE_SEQUENCE_NO,
-				PHONE_STATUS_IND,
-				PHONE_PRIMARY_IND,
-				CELL_PHONE_CARRIER,
-				PHONE_TTY_DEVICE,E
-				MERG_AUTO_OPT_OUT,
-				EMERG_SEND_TEXT,
-				EMERG_NO_CELL_PHONE
-				*/
+				String ccPDIM = vaultcontext.getStringAttribute("ccpidm");
+
+				Map<String,Object> PECIParameters = new HashMap<String,Object>();
+				
+				PECIParameters.put("STUDENT_PIDM",ccPDIM);
+				PECIParameters.put("PARENT_PPID",0);
+				
+				
+				Map<String,Object> studentData = new HashMap<String,Object>();
+				Map<String,Object> addressData = new HashMap<String,Object>();
+				Map<String,Object> emailData = new HashMap<String,Object>();
+				List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
+				
+				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
+
+				//Address Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_ADDR_CODE='H'";
+				addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				
+				//email Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_EMAIL_CODE='H'";
+				emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				
+				//Phone Data
+				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0";
+				phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+				
+				Map<String,Object> studentDataIn = new HashMap<String,Object>();
+				Map<String,Object> addressDataIn = new HashMap<String,Object>();
+				Map<String,Object> emailDataIn = new HashMap<String,Object>();
+				List<Map<String,Object>> phoneDataIn = new ArrayList<Map<String,Object>>();
+				
+				
+				Map<String,Object> phoneRecord = new HashMap<String,Object>();
+				Map<String,Object> updates = new HashMap<String,Object>();
+				addressDataIn.put("ADDR_STREET_LINE1",intData.getField(4));
+				addressDataIn.put("ADDR_STREET_LINE2",intData.getField(5));
+				addressDataIn.put("ADDR_NATN_CODE",intData.getField(6));
+				addressDataIn.put("ADDR_CITY",intData.getField(7));
+				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8));
+				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
+				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
+				
+				updates = PECIResource.compareMap(addressDataIn,addressData);
+				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_addr_data_t", jdbcCAS);
+				
+				//Home email
+				if (intData.getField(12) != ""){
+					emailDataIn.put("PECI_EMAIL_CODE","MA");
+					emailDataIn.put("EMAIL_ADDRESS",intData.getField(12));
+				}				
+				
+				updates = PECIResource.compareMap(emailDataIn,emailData);
+				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_email_data_t", jdbcCAS);
+
+				//Mobile Phone
+				if (intData.getField(13) != "" || intData.getField(24) != "") {		
+					phoneRecord.put("PECI_PHONE_CODE","C");
+					phoneRecord.put("PHONE_CODE","CP");
+					phoneRecord.put("PHONE_STATUS_IND","A");
+					phoneRecord.put("PHONE_NUMBER",intData.getField(13));
+					phoneRecord.put("PHONE_AREA_CODE",intData.getField(23));
+					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(24));
+					phoneRecord.put("CELL_PHONE_CARRIER",intData.getField(14));
+					phoneDataIn.add(phoneRecord);
+				}		
+
+				//Home Phone
+				if (intData.getField(11) != "" || intData.getField(28) != "") {		
+					phoneRecord.put("PECI_PHONE_CODE","H");
+					phoneRecord.put("PHONE_CODE","MA");
+					phoneRecord.put("PHONE_STATUS_IND","A");
+					phoneRecord.put("PHONE_NUMBER",intData.getField(11));
+					phoneRecord.put("PHONE_AREA_CODE",intData.getField(27));
+					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(28));
+					phoneDataIn.add(phoneRecord);
+				}
+
+				//Emergency Phone
+				if (intData.getField(16) != "" || intData.getField(30) != "") {		
+					phoneRecord.put("PECI_PHONE_CODE","E");
+					phoneRecord.put("PHONE_CODE","EP");
+					phoneRecord.put("PHONE_STATUS_IND","A");
+					phoneRecord.put("PHONE_NUMBER",intData.getField(16));
+					phoneRecord.put("PHONE_AREA_CODE",intData.getField(29));
+					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(30));
+					phoneDataIn.add(phoneRecord);
+				}
+				
+				PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
+				
+				studentDataIn.put("EMERG_NO_CELL_PHONE",intData.getField(15));	
+				studentDataIn.put("EMERG_SEND_TEXT",intData.getField(17));	
+				studentDataIn.put("EMERG_PHONE_TTY_DEVICE",intData.getField(18));	
+			    studentDataIn.put("EMERG_AUTO_OPT_OUT",intData.getField(19));
+				
+				updates = PECIResource.compareMap(studentDataIn,studentData);
+				PECIResource.writeUpdates(PECIParameters,updates,"cc_stu_peci_students_t", jdbcCAS);
+				
+				String EMERG_ORDER = intData.getField(26);
+				String PHONE_ORDER = intData.getField(25);
+				
 				context.getFlowScope().put("Flag","PECIC");
 			}
 			

@@ -439,7 +439,13 @@ public class PECIResource extends Resource
 	}
 	
 	public void writeUpdates (Map<String,Object> namedParameters, Map<String, Object> updates, String tableName) {
+		writeUpdates (namedParameters, updates,  tableName,  jdbcCAS);
+	}
+	
+	
+	public static void writeUpdates (Map<String,Object> namedParameters, Map<String, Object> updates, String tableName, NamedParameterJdbcTemplate jdbcCAS) {
 		Map<String, Object> sourceData = new HashMap<String, Object>();
+		
 		if (updates.size() > 0 ) {
 			//Write Data changes
 			String SQL="select count(*) ct from "+ tableName +" where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
@@ -553,37 +559,34 @@ public class PECIResource extends Resource
 		return seqNo;
 	}
 	
-	public Map<String, Object> compareMap(Map<String, Object> testMap, Map<String, Object> origMap) throws Exception {
+	public static Map<String, Object> compareMap(Map<String, Object> testMap, Map<String, Object> origMap) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
-
-		log.debug(testMap.toString());
 		
 		List<String> columns = new ArrayList(testMap.keySet());
 		for(int i=0; i<columns.size(); i++) { 
 	        String key = columns.get(i);
-	        //log.debug("Comparing column: " + key);
 	        Object testValue = testMap.get(key);
 	        if (origMap.containsKey(key) || origMap.size() == 0) {
 	        	Object origValue = origMap.get(key);
-	        	//log.debug(testValue +  " vs " + origValue + " and test value class " + testValue.getClass().getName());
         		if (origValue != null) {
 			        if (origValue.getClass().getName().equals("java.lang.String") || origValue.getClass().getName().equals("java.lang.Integer")) {
 		        		if (!(origValue.equals(testValue))){
-		        			log.debug ("Change value for " + key);
 		    	        	map.put(key,testValue);
 		    	        }
 		        	}
         		} else if (!(testValue.getClass().getName().equals("org.json.JSONObject$Null"))) {
-        			log.debug ("Replacing Null value for " + key + " With "+ testValue);
 	        		map.put(key,testValue);
 	        	} 
 	        }
 	    }    
-		log.debug ("Compare returning: " + map);
 	    return map;   
 	}
 	
-	public  void phoneUpdate (List<Map<String,Object>> phoneDataIn, List<Map<String,Object>> phoneData, Map<String,Object> namedParameters ) throws Exception {
+	public void phoneUpdate (List<Map<String,Object>> phoneDataIn, List<Map<String,Object>> phoneData, Map<String,Object> namedParameters) throws Exception {
+		phoneUpdate (phoneDataIn, phoneData, namedParameters, jdbcCAS);
+	}
+	
+	public static void phoneUpdate (List<Map<String,Object>> phoneDataIn, List<Map<String,Object>> phoneData, Map<String,Object> namedParameters, NamedParameterJdbcTemplate jdbcCAS) throws Exception {
 		String SQL;
 		for (int i=0;i<phoneDataIn.size();i++){
 			Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
@@ -604,7 +607,6 @@ public class PECIResource extends Resource
 					seqNo = maxData.get("seq").toString().charAt(0);
 					seqNo = (char)((int)seqNo + 1);
 				}
-				log.debug ("New Phone record to create Seq No: " + String.valueOf(seqNo));
 				SQL = "INSERT cc_gen_peci_phone_data_t SET ";
 				List<String> columns = new ArrayList(phoneRecordIn.keySet());
 				for(int y=0; y<columns.size(); y++) { 
@@ -647,9 +649,7 @@ public class PECIResource extends Resource
 								phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
 						}
 						
-						log.debug("Phone Number: " + phoneNumber + " International Phone: " + phoneNumberIntl);
 						if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
-							log.debug ("Marking Phone as deleted");
 							//Inactivate the phone record
 							SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
 							SQL = SQL + " CHANGE_COLS = 'DELETE', ";
@@ -660,7 +660,6 @@ public class PECIResource extends Resource
 						}else{
 							// compare
 							Map<String,Object> updates = compareMap(phoneRecordIn, phoneRecord);
-							log.debug("Phone Record changed: " + updates);
 							if (updates.size() > 0 ) {
 								//Write Parent Data changes
 								SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
