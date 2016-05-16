@@ -220,7 +220,7 @@
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_INTL_REGION">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="Province/Region" name="fields[8]" class="form-control address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
+			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
 		</div>
 	</div>
 	
