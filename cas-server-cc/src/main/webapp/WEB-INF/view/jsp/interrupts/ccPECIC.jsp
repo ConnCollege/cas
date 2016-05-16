@@ -128,17 +128,28 @@
 		text-align:center;
 		padding-bottom: 8px;
 	}
+	
+	.errorMessage {
+		background: #FFDAD9;
+		border: 2px solid #FF9999;
+		text-align:center;
+		padding: 2px;
+		padding-bottom: 8px;
+		clear:both;
+	}
   </style>
 </head>
 <body>
 
 <div class="container">
   <h2>Confirm Contact Information</h2>
-  <div class="message">
+  <div class="errorMessage">
   	<h3>Almost Done!</h3>
-  	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the Confirm button below.</p>
+  	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
   </div> 
-  
+  StudentAddr: ${StudentAddr}
+  <br>
+  StudentHomePhone: ${StudentHomePhone}
   <div id="step1">
   	<h3>Step 1 Verify Your Permanent Mailing Address <small><span class="edit_link">Edit My Info</span></small></h3>	
  	<div class="row">
@@ -161,13 +172,21 @@
 		<div class="col-xs-3">
 	    	<div>Country </div>
 	 	</div>
-	 	<div class="col-xs-9">
-	     	<div>${StudentAddr['ADDR_NAT_CODE']}</div>
+	 	<div class="col-xs-9">	 		
+	     	<div><c:out value="${StudentAddr['ADDR_NAT_CODE'] == null ? 'U.S.' : StudentAddr['ADDR_NAT_CODE']}" /></div>
 	  	</div>
 	</div>
 	<div class="row">
 		<div class="col-xs-3">
 	    	<div>City </div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentAddr['ADDR_CITY']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>State </div>
 	 	</div>
 	 	<div class="col-xs-9">
 	     	<div>${StudentAddr['ADDR_STAT_CODE']}</div>
@@ -186,10 +205,20 @@
 	    	<div>Home Phone </div>
 	 	</div>
 	 	<div class="col-xs-9">
-	     	<div>(${StudentHomePhone['PHONE_AREA_CODE']}) ${StudentHomePhone['PHONE_NUMBER']}</div>
+	     	<div>${StudentHomePhone['PHONE_AREA_CODE']}&nbsp;${StudentHomePhone['PHONE_NUMBER']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Non College Email</div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentEmail['EMAIL_ADDRESS']}</div>
 	  	</div>
 	</div>
   </div>
+  <br>
+  StudentCellPhone: ${StudentCellPhone}
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>	
 	<div class="row">
@@ -197,7 +226,7 @@
 	    	<div>Mobile Phone </div>
 	 	</div>
 	 	<div class="col-xs-9">
-	     	<div>(${StudentCellPhone['PHONE_AREA_CODE']}) ${StudentCellPhone['PHONE_NUMBER']}</div>
+	     	<div>${StudentCellPhone['PHONE_AREA_CODE']}&nbsp;${StudentCellPhone['PHONE_NUMBER']}</div>
 	  	</div>
 	</div>
 	<div class="row">
@@ -224,28 +253,22 @@
 	     	<div>${StudentCellPhone['PHONE_TTY_DEVICE']}</div>
 	  	</div>
 	</div>
-	<div class="row">
-		<div class="col-xs-3">
-	    	<div>Non College Email</div>
-	 	</div>
-	 	<div class="col-xs-9">
-	     	<div>${StudentEmail['EMAIL_ADDRESS']}</div>
-	  	</div>
-	</div>
   </div>
   
   <div id="step3">
   	<h3>Step 3 Parent/Guardian Information <small><span class="edit_link">Edit Parent/Guardian Info</span></small></h3>	
   	
-  	<div class="confirm_section">
-		<c:set var="x" value="1" scope="page" />	    
+  	<div class="confirm_section"> 
+		<c:set var="x" value="0" scope="page" />	    
 	    <c:forEach items="${StudentParents}" var="parents">
+	    	<c:set var="x" value="${x + 1}" scope="page" /> 
 	    	<div class="contact_info info_box" id="PARENT_${parents.PARENT_PPID}" data-type-id="PARENT" data-ppid="${parents.PARENT_PPID}">
 				<h4>Parent/Guardian ${x}</h4>
-		    </div>	   
-		    <c:set var="x" value="${x + 1}" scope="page" /> 
+		    </div>	   		    
 	    </c:forEach>    
-	    
+	    <c:if test="${x == 0 }">
+	    	<p><em>None Entered</em></p>
+	    </c:if>
     </div>
   </div>
   
@@ -253,13 +276,30 @@
   	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
   	
   	<div class="confirm_section">
-  		<c:set var="x" value="1" scope="page" />	
+  		<c:set var="y" value="0" scope="page" />	
 	  	 <c:forEach items="${StudentEMR}" var="contacts">
+	  	 	<c:set var="y" value="${y + 1}" scope="page" />	
 	    	<div class="contact_info info_box" id="CONTACT_${contacts.PARENT_PPID}" data-type-id="CONTACT" data-ppid="${contacts.PARENT_PPID}">
 				<h4>Emergency Contact ${x}</h4>
-		    </div>	
-		    <c:set var="x" value="${x + 1}" scope="page" />	    
-	    </c:forEach>    
+		    </div>			        
+	    </c:forEach> 
+	    <c:if test="${y == 0 }">
+	    	<p><em>None Entered</em></p>
+	    </c:if>   
+    </div>
+  </div>
+  
+   <div id="step5">
+  	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
+  	EmmergPhones: ${EmmrgPhones}
+  	<div class="confirm_section">
+  		<ul>
+		    <c:forEach items="${EmmrgPhones}" var="emmrg">
+		    	 <c:if test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
+		    	 	<li class="list-unstyled">&nbsp;${emmrg.PHONE_AREA_CODE}&nbsp;${emmrg.PHONE_NUMBER}&nbsp;(${emmrg.PREF_NAME })</li>
+		    	 </c:if>
+		    </c:forEach>
+		</ul>
     </div>
     <div class="row">
     	<div class="col-sm-offset-4  col-xs-3">
@@ -287,10 +327,10 @@
 
 <script type="text/javascript">
 
-window.onbeforeunload = confirmExit;
+/*window.onbeforeunload = confirmExit;
 function confirmExit() {
     return "You will need to click Confirm to save your information, otherwise all of your data will be lost. Are you sure you want to close this window?";
-}
+}*/
 
 $(document).ready(function() {	
 	
@@ -304,122 +344,13 @@ $(document).ready(function() {
 	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
 	x = 0;
 	y= 0;
-	
-	/*$('.parent_info').each(function(){
-		var ppid = $(this).attr("data-ppid");
-		var type_id = $(this).attr("data-type-id");
-		$.ajax({
-		       type: "POST",
-		       url: '/cas/cas-rest-api/peci/',
-		       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "READ"}),
-		       datatype: "json",
-		       contentType: "application/json",
-		       success: function(data)           
-		       {  
-		    	   var output = '';
-		    	   //x ++;
-		    	   //$('#parent_' + ppid).append('<h4>Parent/Guardian ' + x + '</h4>');
-		    	   $.each(data.parent, function(index, element){
-		       		//console.log("-parent- index: " + index + " element:" + element);
-		       		 var output = '';
-		       		
-		       		var loc = demoFields.indexOf(index); 		       		
-		       		if(loc != -1){
-		       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-		       			if(element != null){
-		       				output += element;
-		       			}
-		       			output += '</div></div></div>';
-		       		}	
-		       		$('#parent_' + ppid).append(output);
-		       	  });
-		    	   
-		    	   
-		       	  //use first email: data.parent_email[0]?
-		       	  $.each(data.email[0], function(index,element){
-		       		//console.log("-parent- index: " + index + " element:" + element);
-			       		var output = '';			       		
-			       		var loc = demoFields.indexOf(index); 		       		
-			       		if(loc != -1){
-			       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-			       			if(element != null){
-			       				output += element;
-			       			}
-			       			output += '</div></div></div>';	 
-			       		}
-			       		$('#parent_' + ppid).append(output);
-		       	  });
-		       	  
-		       	  
-		       	  //use first address: data.parent_address[0]?
-		       	  $.each(data.address[0], function(index,element){
-		       		
-			       		var output = '';			       		
-			       		var loc = demoFields.indexOf(index); 		       		
-			       		if(loc != -1){
-			       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-			       			if(element != null){
-			       				output += element;
-			       			}
-			       			output += '</div></div></div>';
-			       		}      	
-
-		       		$('#parent_' + ppid).append(output);
-	
-		          });
-		       	  
-		       	$.each(data.phones, function(index1,element1){
-						//console.log("index1: " + index1); 
-		    		  $.each(this, function(index2,element2){  
-		    			  
-				       		var output = '';			       		
-				       		var loc = phoneFields.indexOf(index2);
-				       		//console.log("loc: " + loc); 
-				       		var thisTitle = phoneValues[loc];
-				       		if(index1 == 1){
-				       			var thisTitle = "Additional " + thisTitle;
-				       		}else if(index1 != 0){
-				       			var thisTitle = "Additional " + thisTitle + " " + index1;
-				       		}
-				       		if(loc != -1){
-				       			output += '<div class="row"><div class="col-xs-3"><div>' + thisTitle + '</div></div><div class="col-xs-9"><div>';
-				       			if(index2 == 'PECI_PHONE_CODE'){
-					       			if(element2 == 'C'){
-					       				output += 'Mobile';
-					       			}else if(element2 == 'H'){
-					       				output += 'Home';
-					       			}else if(element2 == 'O'){
-					       				output += 'Office';					       			
-					       			}
-				       			}else if(element2 != null){
-				       				output += element2;
-				       			}
-				       			output += '</div></div></div>';	
-				       		}
-				       		$('#parent_' + ppid).append(output);
-		        		  
-		      			  //console.log(peci_phone_code);
-		    			  //console.log("peci phone code" +  index[element]);        			  
-		    		  });
-		    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
-		      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-		      	  });
-		       	  
-	
-		       },
-		 		error: function (request, status, error) {
-	           console.log("ERROR: " + request.responseText);
-	       }
-	    });		
-
-	});*/
-	
+			
 	$('.contact_info').each(function(){
 		var ppid = $(this).attr("data-ppid");
 		var type_id = $(this).attr("data-type-id");
 		console.log('ppid: ' + ppid);
 		if(ppid != ''){
-			console.log('ppid2: ' + ppid);
+			//console.log('ppid2: ' + ppid);
 			$.ajax({
 			       type: "POST",
 			       url: '/cas/cas-rest-api/peci/',
@@ -486,8 +417,8 @@ $(document).ready(function() {
 			       	  
 			       	  
 			       	  //use first address: data.parent_address[0]?
-			       	if (data.address[0] != undefined && data.address[0] != null && data.address[0].length != 0){
-			       	  $.each(data.address[0], function(index,element){
+
+			       	  $.each(data.address, function(index,element){
 			       		console.log("-contact- index: " + index + " element:" + element);
 				       		var output = '';			       		
 				       		var loc = demoFields.indexOf(index); 
@@ -504,7 +435,7 @@ $(document).ready(function() {
 				       		$('#' + type_id + '_' + ppid).append(output);
 		
 			          });
-			       	}
+
 			       	  
 			       	$.each(data.phones, function(index1,element1){
 							//console.log("index1: " + index1); 
@@ -536,6 +467,7 @@ $(document).ready(function() {
 					       		$('#' + type_id + '_' + ppid).append(output);
 			        		  
 			      			  //console.log(peci_phone_code);
+			      			  //console.log(peci_phone_code);
 			    			  //console.log("peci phone code" +  index[element]);        			  
 			    		  });
 			    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
@@ -554,68 +486,8 @@ $(document).ready(function() {
 	
 	$('.edit_link').click(function(){
 		$('#editForm').submit();
-	});
+	});	
 	
-	
-	
-	
-	/*$.ajax({
-       type: "POST",
-       url: '/cas/cas-rest-api/peci/',
-       data: JSON.stringify({"PIDM": $student_PIDM, "PPID": $PPID, "DATA": $modal_type, "MODE": "READ"}),
-       datatype: "json",
-       contentType: "application/json",
-       success: function(data)           
-       {           	   
-    	  $.each(data.parent, function(index, element){
-    		//console.log("-parent- index: " + index + " element:" + element);
-    	   	$('#' + index).val(element);
-    	  });
-    	  //use first email: data.parent_email[0]?
-    	  $.each(data.parent_email[0], function(index,element){
-    		 //console.log("-parent_email-index: " + index + " element:" + element);
-    	  	$('#' + $modal_type + "_" + index).val(element); 		   
-    	  });
-    	  //use first address: data.parent_address[0]?
-    	  $.each(data.parent_address[0], function(index,element){
-    		  //console.log("index: " + index + " element:" + element);
-    		  if(index == 'ADDR_NATN_CODE' && element == null){
-    			$('#' + $modal_type + "_" + index).val('US');
-    		  }else{
-      	  		$('#' + $modal_type + "_" + index).val(element);
-    		  }
-      	  });
-    	  $.each(data.parent_phones, function(index1,element1){
-    		  //console.log("index: " + index1);
-    		  $('#group_parent_phone' + index1 + '_section').show();
-    		  
-    		  $.each(this, function(index2,element2){        			  
-        		  if(index2 == 'PECI_PHONE_CODE'){
-        			  $('#' + $modal_type + '_PHONE_' + index1 + '_TYPE').val(element2);
-        			  //peci_phone_code[index1] = element2;
-        			  //console.log("peci_phone_code [" + index1 + "]:" + peci_phone_code[index1]);
-        		  }else if(index2 == 'PHONE_AREA_CODE'){
-        			  $('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val(element2);
-        			  //phone_area_code[index1] = element2;
-        			  //console.log("phone area code: " + phone_area_code[index1]);
-        		  }else if(index2 == 'PHONE_NUMBER'){
-        			  $('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val($('#' + $modal_type + '_PHONE_' + index1 + '_NUMBER').val() + element2);
-        			  //phone_number[index1] = element2;
-        			  //console.log("phone number:" + phone_number[index1]);
-        		  } 		
-      			  //console.log(peci_phone_code);
-    			  //console.log("peci phone code" +  index[element]);        			  
-    		  });
-    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
-      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-      	  });
-       },
-       error: function (request, status, error) {
-           console.log("ERROR: " + request.responseText);
-       }
-    });		    
-	
-	$('#' + $modal_type + "_MODAL").modal('show');*/
 });
 
 </script>

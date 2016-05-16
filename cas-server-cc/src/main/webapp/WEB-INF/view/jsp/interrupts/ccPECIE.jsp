@@ -231,7 +231,7 @@
 				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
 		</div>
 	</div> 
-	StudentHomePhone: ${StudentHomePhone}
+
 	<div id='STUDENT_CLNADDR_RESULTS' name='STUDENT_CLNADDR_RESULTS'></div>	
 	<div id="suggestionListDiv" style="display: none;"></div>
 	
@@ -247,7 +247,7 @@
 			<input type="tel" placeholder="Mobile Phone" name="fields[11]" id="STUDENT_MA_PHONE_NUMBER" size="7" class="form-control" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
 		</div>
 	</div> 
-	StudentCellPhone: ${StudentCellPhone}
+
 		<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
@@ -274,7 +274,7 @@
 			out.print(displayInput(false,"","Non-college email",2,10,"student_non_college_email","email","",true,false));*/			
 		%>   	
 	</div>
-	StudentCellPhone: ${StudentCellPhone} 
+ 
 	<div id="step2" class="form_section">
 	<h3>Step 2 Your Emergency Phone Number</h3>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -304,7 +304,7 @@
 		<%
 			/*out.print(displayInput(true,"","Mobile Phone",2,10,"student_mobile_phone","tel","",true,false));*/
 		%>
-		${StudentEmrPhone}
+
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CARRIER">
 		<label for="Phone Carrier" class="control-label col-sm-3">Phone Carrier</label>
 		<div class="col-sm-9">
@@ -390,7 +390,7 @@
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu</span></div>
 	    <p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
 	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
-	Parents: ${StudentParents}
+
 	<div id="PARENT_LIST">
 	 	<c:forEach items="${StudentParents}" var="parents">
 			<div class="panel panel-default PARENT-LISTED" id="parent_${parents.PARENT_PPID}">
@@ -408,7 +408,7 @@
 	      </div>
 	    </div>  
     </div>
-   Contacts: ${StudentEMR}
+
     <div id="step4" class="form_section">
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="CONTACT_NUM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to enter at least one emergency contact</span></div>
@@ -435,7 +435,6 @@
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
-	    [Emerg Phones: ${EmmrgPhones}  ]
 	    
 	    <ul ID="CAMPUS_ALERT_NUMBERS">
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
@@ -1223,13 +1222,13 @@ function showDeleteModal(type,ppid,name){
 	 
 	 
 	 if(form_id == 'STUDENT'){
-		 if(checkNum('parent') == 0){
+		 if(checkNum('PARENT') == 0){
 			 $('#PARENT_NUM_ERROR').show();
 			 showMainError = 1;
 		 }else{
 			 $('#PARENT_NUM_ERROR').hide();
 		 }
-		 if(checkNum('contact') == 0){
+		 if(checkNum('CONTACT') == 0){
 			 $('#CONTACT_NUM_ERROR').show();
 			 showMainError = 1;
 		 }else{
@@ -1243,7 +1242,7 @@ function showDeleteModal(type,ppid,name){
 	 formValidate(form_id);
 	 if(showMainError){
 		 window.scrollTo(0,0);
-		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast');
+		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast'); 
 		 $('#STUDENT_FORM_ERROR').show();
 		 //$('#' + form_id + '_MODAL').scrollTop(0);
 		 return false;	
