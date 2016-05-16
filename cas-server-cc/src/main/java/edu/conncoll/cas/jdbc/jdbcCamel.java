@@ -1048,7 +1048,7 @@ public class jdbcCamel {
 		options.put ("States",new LinkedHashMap<String,Object>());
 		options.put ("Regions",new LinkedHashMap<String,Object>());
 		for (Map<String,Object> row : rows){
-			if (row.get("US") == "1") {
+			if (row.get("US").toString().equals("1")) {
 				options.get("States").put(row.get("key").toString(),row.get("value"));
 			}else{
 				options.get("Regions").put(row.get("key").toString(),row.get("value"));
