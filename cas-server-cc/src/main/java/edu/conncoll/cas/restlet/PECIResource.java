@@ -590,7 +590,8 @@ public class PECIResource extends Resource
 		String SQL;
 		for (int i=0;i<phoneDataIn.size();i++){
 			Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
-			if ( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) {
+			
+			if (( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) || phoneRecordIn.get("PHONE_SEQUENCE_NO")=="") {
 				//Add a phone to the parent 
 				//Find an Alpha Seq No
 				Map<String,Object> maxData = new HashMap<String, Object>();
