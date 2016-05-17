@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -440,7 +441,7 @@ public class jdbcCamel {
 					} else {
 						//Brand new PECI record.		
 						log.debug("Brand new PECI Record starting MySQL Base record");			
-						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
+						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME, 1 as  EMERG_SEND_TEXT from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
 						studentData = jdbcCensus.queryForMap(SQL);
 						
 						copy2MySQL("cc_stu_peci_students_t",studentData);
@@ -884,18 +885,30 @@ public class jdbcCamel {
 				
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
-
-				//Address Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_ADDR_CODE='H'";
-				addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
 				
-				//email Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_EMAIL_CODE='H'";
-				emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				try {
+					//Address Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_ADDR_CODE='H'";
+					addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				} catch (EmptyResultDataAccessException e){
+					// dataset empty 
+				}
 				
-				//Phone Data
-				SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0";
-				phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+				try {					
+					//email Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0 and PECI_EMAIL_CODE='H'";
+					emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				} catch (EmptyResultDataAccessException e){
+					// dataset empty 
+				}
+				
+				try {					
+					//Phone Data
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = 0";
+					phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+				} catch (EmptyResultDataAccessException e){
+					// dataset empty 
+				}
 				
 				Map<String,Object> studentDataIn = new HashMap<String,Object>();
 				Map<String,Object> addressDataIn = new HashMap<String,Object>();
@@ -905,6 +918,7 @@ public class jdbcCamel {
 				
 				Map<String,Object> phoneRecord = new HashMap<String,Object>();
 				Map<String,Object> updates = new HashMap<String,Object>();
+				
 				addressDataIn.put("ADDR_STREET_LINE1",intData.getField(4));
 				addressDataIn.put("ADDR_STREET_LINE2",intData.getField(5));
 				addressDataIn.put("ADDR_NATN_CODE",intData.getField(6));
@@ -912,6 +926,7 @@ public class jdbcCamel {
 				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8));
 				//addressDataIn.put("Province",intData.getField(9));
 				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
+				addressDataIn.put("PARENT_PPID",0);	
 				
 				updates = PECIResource.compareMap(addressDataIn,addressData);
 				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_addr_data_t", jdbcCAS);
@@ -920,6 +935,7 @@ public class jdbcCamel {
 				if (intData.getField(12) != ""){
 					emailDataIn.put("PECI_EMAIL_CODE","MA");
 					emailDataIn.put("EMAIL_ADDRESS",intData.getField(12));
+					emailDataIn.put("PARENT_PPID",0);
 				}				
 				
 				updates = PECIResource.compareMap(emailDataIn,emailData);
@@ -1032,7 +1048,7 @@ public class jdbcCamel {
 		Map<String,Map<String,Object>> options = new LinkedHashMap<String,Map<String,Object>>();
 		List<Map<String,Object>> rows;
 		//Countries
-		SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn order by value";
+		SQL = "select stvnatn_code key, stvnatn_nation value from saturn.stvnatn where stvnatn_nation not like '%DONOT USE%' order by value";
 		rows = jdbcCensus.queryForList(SQL);
 		options.put ("Countries",new LinkedHashMap<String,Object>());
 		options.get("Countries").put("US","United States");
