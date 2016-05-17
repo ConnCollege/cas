@@ -235,7 +235,7 @@
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	${StudentHomePhone}
+	<%-- ${StudentHomePhone} --%>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-xs-2">
@@ -246,7 +246,7 @@
 			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 
- Student Home Phone: ${StudentHomePhone}
+ <%-- Student Home Phone: ${StudentHomePhone} --%>
 		<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
@@ -323,7 +323,7 @@
 			</div>
 		</div>
 	</div>
-	EmrPhone: ${StudentEmrPhone}
+	<%-- EmrPhone: ${StudentEmrPhone} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
@@ -352,7 +352,7 @@
 	<div class="form-group" id="group_alert_text_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[17]" id="alert_text_check" <c:if test="${StudentCellPhone['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
+				<label><input type="checkbox" class="" name="fields[17]" id="alert_text_check" <c:if test="${StudentBio['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
 			</div>
 		</div>
 	</div>
@@ -361,7 +361,7 @@
 	<div class="form-group" id="group_tty_device_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentCellPhone['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
+				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentBio['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
 			</div>
 		</div>
 	</div>
@@ -370,7 +370,7 @@
 	<div class="form-group" id="group_alert_home_email_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentCellPhone['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
+				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentBio['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
 			</div>
 		</div>
 	</div>
@@ -1062,12 +1062,12 @@
 	
 	
 	//reset the modal form fields if modal is closed
-	 $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
+	 /* $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("CONTACT").reset();
 	 });	 
 	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("PARENT").reset();
-	 });
+	 }); */
 	 
 	//hide all modal error messages if modal is closed 
 	$('#PARENT_MODAL, #CONTACT_MODAL, #DELETE_MODAL').on('hidden.bs.modal', function () {		
@@ -1086,7 +1086,7 @@
  
 function checkNum(type){	
 	var num = $('.' + type + '-LISTED:visible').length;
-	console.log(type + " num: " + num);
+	//console.log(type + " num: " + num);
 	return num;
 }
 
@@ -1292,23 +1292,44 @@ function showDeleteModal(type,ppid,name){
 	        		  var phone_number = data.phones[i].PHONE_NUMBER;
 	        		  var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
 	        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
-	        		  var phone_carrier = data.phones[i].PHONE_CARRIER;
-	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CODE').val(phone_code);
-	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
-	        		  if(phone_number_intl != "" && phone_number_intl != null){
-	        			  //console.log(phone_number_intl);
-	        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').hide();
-	        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
-	        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
-	        		  }else{
-	        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();
-	        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
-	        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show();        			 
-	        		  }       		  
+	        		  var phone_carrier = data.phones[i].PHONE_CARRIER;     
 	        		  
+	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CODE').val(phone_code);
+	        		  
+	        		 if(phone_code == 'CP'){
+	        			 //handle emergency number
+	        			 if($('#' + modal_type + '_' + 'EMERG_NO_CELL_PHONE').is(':checked')){
+		        			  if(phone_number_intl != "" && phone_number_intl != null){
+		   	        			  //console.log(phone_number_intl);
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').hide();
+		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').val(phone_number_intl);
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').show();        			  
+		   	        		  }else{
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').hide();
+		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').val(phone_area_code);
+		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').val(phone_number);
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').show();        			 
+		   	        		  } 
+	        			 }else{
+	        				 $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
+	        				 $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
+	        			 }
+	        		 }else{
+	        		  	$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
+		        		  if(phone_number_intl != "" && phone_number_intl != null){
+		        			  //console.log(phone_number_intl);
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').hide();
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
+		        		  }else{
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show();        			 
+		        		  }   
+	        		 }	        		  
 	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
-	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CARRIER').val(phone_carrier);    
-	        	  }	        	  
+	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CARRIER').val(phone_carrier);   
+	        	  }
 	        	  
 	           },
 	           error: function (request, status, error) {
@@ -1411,24 +1432,35 @@ function showDeleteModal(type,ppid,name){
 				formData = formData + "},{";
 			}
 			phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
-			if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
-				emerg_no_cell_phone = 'Y';
-				phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
-				phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
-				phone_intl = '';
-			}else{
-				var emerg_no_cell_phone = 'N';
-				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-					phone_area_code = '';
-					phone_number = '';
-					phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
+			if(phoneCodeArray[j] == "CP"){
+				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
+					emerg_no_cell_phone = 'Y';					
+					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
+						phone_area_code = '';
+						phone_number = '';
+						phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
+					}else{
+						phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
+						phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
+						phone_intl = '';
+					}	
 				}else{
-					phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
-					phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
-					phone_intl = '';
-				}		
+					var emerg_no_cell_phone = 'N';
+					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
+						phone_area_code = '';
+						phone_number = '';
+						phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
+					}else{
+						phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+						phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+						phone_intl = '';
+					}		
+				}
+			}else{
+				phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+				phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+				phone_intl = '';
 			}
-				
 			phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
 			phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 			if(phone_sequence_no.length == 0){
