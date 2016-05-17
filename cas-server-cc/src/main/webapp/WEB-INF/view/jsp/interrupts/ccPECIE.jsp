@@ -199,10 +199,8 @@
 				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
 		</div>
 	</div>  
-	
-	<% 
-			/*out.print(displayInput(true,"address_field","City",2,10,"student_city","city","",true,false));*/
-	%>
+	<%-- ${options} --%>
+<%-- States: ${options['States']}  --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
@@ -215,7 +213,7 @@
 			</select>
 		</div>
 	</div>
-	
+	<%-- Regions: ${options['Regions']}  --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_INTL_REGION">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
@@ -237,17 +235,18 @@
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	
+	${StudentHomePhone}
 	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-xs-2">
-			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_MA_PHONE_AREA_CODE" size="3" class="form-control area_code" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_MA_PHONE_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
-			<input type="tel" placeholder="Mobile Phone" name="fields[11]" id="STUDENT_MA_PHONE_NUMBER" size="7" class="form-control" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_MA_PHONE_NUMBER" size="7" class="form-control num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 
-
+ Student Home Phone: ${StudentHomePhone}
 		<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
@@ -282,13 +281,14 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
 		<label for="Phone" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>		
 		<div class="col-xs-2">
-			<input type="tel" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq area_code" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
-			<input type="tel" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control ccreq" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control ccreq num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="hidden" name="fields[33]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
-		
+	<%-- Student Cell Phone: ${StudentCellPhone} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
@@ -323,15 +323,16 @@
 			</div>
 		</div>
 	</div>
-	
+	EmrPhone: ${StudentEmrPhone}
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-xs-2">
-			<input type="tel" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
-			<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="hidden" name="fields[33]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
 	</div> 
 	
@@ -542,10 +543,10 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
+		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
 		  				</div>
 		  			</div>
 		  			
@@ -584,10 +585,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>		
 						<div class="col-xs-3">
-							<input type="tel" placeholder="Area Code" name="fields[29]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code" value="" maxlength="3">
+							<input type="tel" placeholder="Area Code" name="fields[29]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="" maxlength="3">
 						</div>
 						<div class="col-xs-4">
-							<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control" value="" maxlength="7">
+							<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only" value="" maxlength="7">
 						</div>
 					</div> 
 					
@@ -608,10 +609,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER">
 						<label for="tel" class="control-label col-sm-4">Home Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
+		  					<input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -635,10 +636,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER" >
 						<label for="tel" class="control-label col-sm-4">Office Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
+		  					<input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -863,52 +864,21 @@
 	 		 
 	 $("[data-toggle=popover]").popover();
 	 $("[data-toggle=tooltip]").tooltip();	 
+	 
+	$('mobile_phone_check').each(function(){
+		if(this.checked){
+			var checked = 1;
+			var form_id = $(this).closest('form').attr("id"); 
+			emergencyNumberToggle(form_id, checked);
+		}
+	});
+	
  
-	$(".mobile_phone_check").change(function(){
+	$('.mobile_phone_check').change(function(){
 		var form_id = $(this).closest('form').attr("id");
-		var phone_type = $(this).attr("data-id");
-		if(this.checked) {
-			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER').show();
-			$('#' + form_id + '_EMERGENCY_PHONE').addClass('ccreq');
-			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').show();
-			//remove error if it is already displaying
-			$('form#' + form_id + ' PHONE_CP_NUMBER_ERROR').hide();
-			//$('#GROUP_' + form_id + '_PHONE_CP_NUMBER').removeClass('has-error');
-			//remove requirement for mobile phone
-			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();				
-			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
-			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
-			//add requirement for emergency phone
-			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
-			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');
-			//remove requirement for phone carrier
-			$('#GROUP_' + form_id + '_PHONE_CARRIER .required').hide();	
-			if(form_id == 'STUDENT'){
-				//remove text alerts checkbox
-				$('#paragraph_alert_text_check').hide();
-				$('#group_alert_text_check').hide();	
-				$('#paragraph_tty_device_check').html('If your emergency phone is a TTY device (for the hearing impaired) please indicate below:');
-			}
-	    }else{
-	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER').hide();	
-	    	$('#' + form_id + '_EMERGENCY_PHONE').removeClass('ccreq');
-	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').hide();
-	    	//add requirement for mobile phone
-	    	$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').show();	
-	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addClass('ccreq');
-			$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
-			//add requirement for emergency phone
-			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
-			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
-	    	//add requirement for phone carrier
-			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').show();	
-			if(form_id == 'STUDENT'){
-				//show text alerts checkbox
-				$('#paragraph_alert_text_check').show();
-				$('#group_alert_text_check').show();	
-				$('#paragraph_tty_device_check').html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
-			}
-	    }		
+		//var thisValue = $(this.checked);	
+		var checked = this.checked ? 1 : 0;
+		emergencyNumberToggle(form_id, checked);
 	}); 
 	
 	//switch to international phone
@@ -1047,13 +1017,23 @@
 	
 	$('.deleteModal').click(function(){
 		type = $(this).attr("data-modal-type");
-		//console.log("type: " + type);
 		ppid = $(this).attr("data-ppid");
-		//console.log("data-ppid: " + ppid);
 		name = $(this).attr("data-name");
-		//console.log("data-name: " + name);
 		showDeleteModal(type,ppid,name);
-	});		 
+	});		
+	
+	//don't allow any special characters in phone number fields, only 0-9, backspace, delete
+	$(".num_only").keypress(function (e) {
+		if (/^\d+$/.test(e.key) ){
+			//console.log("character accepted: " + e.key)
+		} else {
+			//console.log("illegal character detected: "+ e.key)
+			var charCode = (e.which) ? e.which : event.keyCode
+			if (charCode > 31 && (charCode < 48 || charCode > 57)){
+				return false;
+			}
+		}
+	});
 
 	//check to see if parents are emerg contacts, turn off switch if not
 	$('.parent-bootstrap-switch').each(function(){
@@ -1269,7 +1249,16 @@ function showDeleteModal(type,ppid,name){
 	        	  //$('#' + modal_type + '_PARENT_PIDM').val();
 	        	  if(modal_type == 'PARENT'){
 		        	  $.each(data.parent, function(index, element){	       
-		        		  $('form#' + modal_type + ' #' + index).val(element);	        		  
+		        		  $('form#' + modal_type + ' #' + index).val(element);	 
+		        		  if(index == 'EMERG_NO_CELL_PHONE'){
+		        			  console.log('Emerg_no_cell_phone: ' + index);
+		        			  if(element == 'Y'){
+		        				  console.log('element: ' + element);
+		        				  console.log('modal_type: ' + modal_type);
+		        				  $('#' + modal_type + '_' + index).attr('checked','checked');
+		        				  emergencyNumberToggle(modal_type, 1);
+		        			  }
+		        		  }
 		        	   	//$('#' + index).val(element);
 		        	  });
 	        	  }else{
@@ -1421,25 +1410,27 @@ function showDeleteModal(type,ppid,name){
 			if(phoneCodeArray[j] != "CP"){
 				formData = formData + "},{";
 			}
-			var phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
+			phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
 			if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
-				var emerg_no_cell_phone = 'Y';
-				var phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_EMERGENCY_PHONE').val();
+				emerg_no_cell_phone = 'Y';
+				phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
+				phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
+				phone_intl = '';
 			}else{
 				var emerg_no_cell_phone = 'N';
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-					var phone_area_code = '';
-					var phone_number = '';
-					var phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
+					phone_area_code = '';
+					phone_number = '';
+					phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
 				}else{
-					var phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
-					var phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
-					var phone_intl = '';
+					phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+					phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+					phone_intl = '';
 				}		
 			}
 				
-			var phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
-			var phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+			phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
+			phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 			if(phone_sequence_no.length == 0){
 				formData = formData + '"PHONE_SEQUENCE_NO" : null,';
 			}else{
@@ -1572,6 +1563,51 @@ function showDeleteModal(type,ppid,name){
 		//push to all phone number array
 		all_phone_numbers.push(alert_phone_number);
 		//console.log("New all phone numbers: " + all_phone_numbers);
+	}
+	
+	function emergencyNumberToggle(form_id, checked){
+		if(checked) {
+			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER').show();
+			$('#' + form_id + '_EMERGENCY_PHONE').addClass('ccreq');
+			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').show();
+			//remove error if it is already displaying
+			$('form#' + form_id + ' PHONE_CP_NUMBER_ERROR').hide();
+			//$('#GROUP_' + form_id + '_PHONE_CP_NUMBER').removeClass('has-error');
+			//remove requirement for mobile phone
+			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();				
+			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
+			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
+			//add requirement for emergency phone
+			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
+			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');
+			//remove requirement for phone carrier
+			$('#GROUP_' + form_id + '_PHONE_CARRIER .required').hide();	
+			if(form_id == 'STUDENT'){
+				//remove text alerts checkbox
+				$('#paragraph_alert_text_check').hide();
+				$('#group_alert_text_check').hide();	
+				$('#paragraph_tty_device_check').html('If your emergency phone is a TTY device (for the hearing impaired) please indicate below:');
+			}
+	    }else{
+	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER').hide();	
+	    	$('#' + form_id + '_EMERGENCY_PHONE').removeClass('ccreq');
+	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').hide();
+	    	//add requirement for mobile phone
+	    	$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').show();	
+	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addClass('ccreq');
+			$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
+			//add requirement for emergency phone
+			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
+			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
+	    	//add requirement for phone carrier
+			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').show();	
+			if(form_id == 'STUDENT'){
+				//show text alerts checkbox
+				$('#paragraph_alert_text_check').show();
+				$('#group_alert_text_check').show();	
+				$('#paragraph_tty_device_check').html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
+			}
+	    }	
 	}
 	
 	
