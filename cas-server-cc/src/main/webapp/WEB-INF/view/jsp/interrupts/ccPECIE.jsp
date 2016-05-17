@@ -361,7 +361,7 @@
 	<div class="form-group" id="group_tty_device_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentBio['PHONE_TTY_DEVICE'] == 'Y'}" value="Y">checked="checked"</c:if>>This phone is a TTY device</label>
+				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentBio['PHONE_TTY_DEVICE'] == 'Y'}" >checked="checked"</c:if> value="Y">This phone is a TTY device</label>
 			</div>
 		</div>
 	</div>
