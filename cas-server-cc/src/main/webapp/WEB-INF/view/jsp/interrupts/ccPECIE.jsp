@@ -349,10 +349,10 @@
 	</div>	
 	
 	<p class="q_check" id="paragraph_alert_text_check">Connecticut College will contact this number in the case of a campus emergency. Do you wish to also receive a text message at this number in the case of a campus emergency?</p>
-	<div class="form-group" id="group_alert_text_check">
+	<div class="form-group" id="group_alert_text_check"> 
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[17]" id="alert_text_check" <c:if test="${StudentBio['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if>>Yes send me a text message in the event of an emergency</label>
+				<label><input type="checkbox" class="" name="fields[17]" id="alert_text_check" <c:if test="${StudentBio['EMERG_SEND_TEXT'] == 'Y'}">checked="checked"</c:if> value="Y">Yes send me a text message in the event of an emergency</label>
 			</div>
 		</div>
 	</div>
@@ -361,7 +361,7 @@
 	<div class="form-group" id="group_tty_device_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentBio['PHONE_TTY_DEVICE'] == 'Y'}">checked="checked"</c:if>>This phone is a TTY device</label>
+				<label><input type="checkbox" class="" name="fields[18]" id="tty_device_check" <c:if test="${StudentBio['PHONE_TTY_DEVICE'] == 'Y'}" value="Y">checked="checked"</c:if>>This phone is a TTY device</label>
 			</div>
 		</div>
 	</div>
@@ -370,7 +370,7 @@
 	<div class="form-group" id="group_alert_home_email_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentBio['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if>>Opt out of automated campus alerts to my home email and cell phone</label>
+				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentBio['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if> value="Y">Opt out of automated campus alerts to my home email and cell phone</label>
 			</div>
 		</div>
 	</div>
@@ -925,6 +925,11 @@
 			addCampusAlertNumber(phone_number, '', 'STUDENT');
 		}
 	});
+	
+	/* emr_switch_count = $('.bootstrap-switch-wrapper').length;
+	if(emr_switch_count == 1){
+		$('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
+	} */	
 	
 	//switching off emergency contacts
 	$('input[name="PARENT"]').on('switchChange.bootstrapSwitch', function(event, state) {
