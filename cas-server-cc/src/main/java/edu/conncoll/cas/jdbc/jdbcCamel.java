@@ -10,11 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -441,7 +443,7 @@ public class jdbcCamel {
 					} else {
 						//Brand new PECI record.		
 						log.debug("Brand new PECI Record starting MySQL Base record");			
-						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME, 1 as  EMERG_SEND_TEXT from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
+						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME, 'Y' as  EMERG_SEND_TEXT, 'NEW. as CHANGE_COLS from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
 						studentData = jdbcCensus.queryForMap(SQL);
 						
 						copy2MySQL("cc_stu_peci_students_t",studentData);
@@ -986,7 +988,23 @@ public class jdbcCamel {
 			    studentDataIn.put("EMERG_AUTO_OPT_OUT",intData.getField(19));
 				
 				updates = PECIResource.compareMap(studentDataIn,studentData);
-				PECIResource.writeUpdates(PECIParameters,updates,"cc_stu_peci_students_t", jdbcCAS);
+				
+				Map<String, Object> sourceData = new HashMap<String, Object>();
+				SQL="select CHANGE_COLS from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+				sourceData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				String changeCol = (String) sourceData.get("CHANGE_COLS");
+				if (changeCol == null) changeCol="";
+				SQL = "UPDATE cc_stu_peci_students_t SET ";
+				List<String> columns = new ArrayList(updates.keySet());
+				for(int i=0; i<columns.size(); i++) { 
+			        String key = columns.get(i);
+			        Object newValue = updates.get(key);
+			        SQL = SQL + key +" = '" +  newValue + "', ";
+			        changeCol = changeCol + key + ",";
+			    } 
+				SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
+				SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM";
+				jdbcCAS.update(SQL,PECIParameters);
 				
 				String EMERG_ORDER = intData.getField(26);
 				String PHONE_ORDER = intData.getField(25);
