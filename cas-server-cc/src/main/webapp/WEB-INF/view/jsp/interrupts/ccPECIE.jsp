@@ -296,7 +296,7 @@
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
@@ -921,20 +921,17 @@
 		var intl_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL';
 		//console.log("intl_group: " + intl_group);
 		var phone_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER';	
-		//console.log("phone group: " + phone_group);
-		displayed = $(intl_group).css('display');
-		//console.log(displayed);
+		//console.log("phone group: " + phone_group);		
 		if($(intl_group).css('display') == 'none'){
 			//console.log("display none");
 			$(phone_group).hide();		
 			//show international number
 			$(intl_group).show();
-			if(phone_type == 'CP'){
+			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
 				//change required fields
-				$(intl_group + ' #' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
-				$(phone_group + ' #' + form_id + '_PHONE_' + phone_type + '_NUMBER').removeClass("ccreq");
-				$('#' + form_id + '_PHONE_AREA_CODE').addClass('ccreq');
-				$('#' + form_id + '_PHONE_NUMBER').addClass('ccreq');
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
+				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').removeClass('ccreq');
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').removeClass('ccreq');			
 			}
 			//change text of link
 			$(this).html('Enter U.S. Number');
@@ -942,12 +939,17 @@
 			//console.log("displayed");
 			$(phone_group).show();			
 			$(intl_group).hide();
-			if(phone_type = 'CP'){
-				$(phone_group + ' #' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').removeClass("ccreq");
-				$(intl_group + ' #' + form_id + '_PHONE_' + phone_type + '_NUMBER').addClass("ccreq");
+			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
+				//change required fields
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').removeClass("ccreq");
+				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').addClass('ccreq');
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').addClass('ccreq');			
 			}
  			$(this).html('Enter International Number');
-		}		
+		}	
+		if(form_id == 'STUDENT'){
+			addCampusAlertNumber($(this).val(), '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
+		}
 
 	});
 	
@@ -1145,6 +1147,7 @@ function showDeleteModal(type,ppid,name){
  
  function formValidate(form_id){
 	 showMainError = 0;
+	 $('.alert').hide();
 	 //required fields
 	 $("#" + form_id + " .ccreq").each(function(){
 		 //console.log($(this));
