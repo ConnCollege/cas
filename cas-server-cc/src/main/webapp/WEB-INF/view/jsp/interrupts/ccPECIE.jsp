@@ -276,7 +276,7 @@
 			out.print(displayInput(false,"","Non-college email",2,10,"student_non_college_email","email","",true,false));*/			
 		%>   	
 	</div>
- 
+ ${StudentCellPhone}
 	<div id="step2" class="form_section">
 	<h3>Step 2 Your Emergency Phone Number</h3>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -284,11 +284,11 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
 		<label for="Phone" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>		
 		<div class="col-xs-2">
-			<input type="tel" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
-			<input type="tel" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control ccreq num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
-			<input type="hidden" name="fields[33]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
+			<input type="tel" data-phone-type="CP" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control ccreq num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
 	<%-- Student Cell Phone: ${StudentCellPhone} --%>
@@ -296,7 +296,7 @@
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
@@ -332,11 +332,11 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-xs-2">
-			<input type="tel" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="EMERGENCY" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
-			<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
-			<input type="hidden" name="fields[33]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
+			<input type="tel" data-phone-type="EMERGENCY" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="hidden" name="fields[34]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
 	</div> 
 	
@@ -344,7 +344,7 @@
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[30]" size="7" class="form-control" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="EMERGENCY_INTL" placeholder="International Number" name="fields[30]" size="7" class="form-control" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -448,7 +448,7 @@
 		    	 	<c:when test="${emmrg.PHONE_CODE == 'EP' }">
 		    	 		<!-- Student's emergency number, grey out, check it off and disable it -->
 		    	 		<li class="list-unstyled greyed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
-		    	 <input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
+		    	 		<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
 		    	 	</c:when>
 		    	 	<c:when test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
 		    	 		<!-- This number is has been previously checked off as a campus alert number, check it off by default -->
@@ -952,7 +952,14 @@
 	});
 	
 	$('#STUDENT_PHONE_CP_NUMBER, #STUDENT_PHONE_CP_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER, #STUDENT_PHONE_EMERGENCY_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER_INTL').focusout(function(){
-		phone_number = '' + $('#STUDENT_PHONE_CP_AREA_CODE').val() + ' ' + $('#STUDENT_PHONE_CP_NUMBER').val();
+		var thisType = $(this).attr('data-phone-type');
+		if(thisType == 'CP'){
+			phone_number = $('#STUDENT_PHONE_CP_AREA_CODE').val() + '' + $('#STUDENT_PHONE_CP_NUMBER').val();
+		}else if(thisType == 'EMERGENCY'){
+			phone_number = $('#STUDENT_PHONE_EMERGENCY_AREA_CODE').val() + '' + $('#STUDENT_PHONE_EMERGENCY_NUMBER').val();
+		}else if(thisType == 'EMERGENCY_INTL'){
+			phone_number = $('#STUDENT_PHONE_EMERGENCY_NUMBER_INTL').val();
+		}		
 		if($.inArray(phone_number,all_phone_numbers) == -1){
 			//add number to campus alert phone number list
 			addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
