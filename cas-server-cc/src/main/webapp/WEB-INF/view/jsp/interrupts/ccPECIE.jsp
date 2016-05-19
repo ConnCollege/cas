@@ -120,7 +120,7 @@
 	body.modal-open {
     	overflow: visible;
 	}
-	.greyed-out{
+	.grayed-out{
 		color: #9F9F9F;
 	}
   </style>
@@ -447,7 +447,7 @@
 		    	 <c:choose>
 		    	 	<c:when test="${emmrg.PHONE_CODE == 'EP' }">
 		    	 		<!-- Student's emergency number, grey out, check it off and disable it -->
-		    	 		<li class="list-unstyled greyed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
+		    	 		<li class="list-unstyled grayed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
 		    	 		<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
 		    	 	</c:when>
 		    	 	<c:when test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
@@ -1066,12 +1066,12 @@
 	
 	
 	//reset the modal form fields if modal is closed
-	 /* $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
+	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("CONTACT").reset();
 	 });	 
 	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("PARENT").reset();
-	 }); */
+	 });
 	 
 	//hide all modal error messages if modal is closed 
 	$('#PARENT_MODAL, #CONTACT_MODAL, #DELETE_MODAL').on('hidden.bs.modal', function () {		
@@ -1389,7 +1389,6 @@ function showDeleteModal(type,ppid,name){
 				}
 			}else{							
 				formData = formData + '"' + typeArray[i].toLowerCase() + '": {';
-
 			}							
 			
 			x=0;
@@ -1415,6 +1414,11 @@ function showDeleteModal(type,ppid,name){
 					 }
 					 if(name.substr(name.length - 19) == 'EMERG_NO_CELL_PHONE'){
 						 name = "EMERG_NO_CELL_PHONE";
+						 if($(this).is(':checked')){
+							 var val = 'Y';
+						 }else{
+							 var val = 'N';
+						 }
 					 }
 					 //console.log("val: " + val + " name: " + name);
 					 if(x == 0){						
@@ -1484,7 +1488,44 @@ function showDeleteModal(type,ppid,name){
 				formData = formData + '"CELL_PHONE_CARRIER" : "' + phone_carrier + '"';
 			}			
 			//show number in step 5
-			if(phone_number.length != 0){				
+			
+								
+			if(phoneCodeArray[j] == "CP"){
+				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
+					emerg_no_cell_phone = 'Y';					
+					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
+						var alert_phone_number = phone_intl;
+					}else{
+						var alert_phone_number = "" + phone_area_code + phone_number;
+					}	
+				}else{
+					var emerg_no_cell_phone = 'N';
+					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
+						var alert_phone_number = phone_intl;
+					}else{
+						var alert_phone_number = "" + phone_area_code + phone_number;
+					}		
+				}
+			}else{
+				var alert_phone_number = "" + phone_area_code + phone_number;
+			}
+			
+			if($.inArray(alert_phone_number,all_phone_numbers) == -1){
+				//add number to campus alert phone number list
+				console.log("add this num: " + alert_phone_number);
+				addCampusAlertNumber(alert_phone_number, new_contact_name, form_id);
+			}else{
+				console.log("DONT ADD: " + phone_number);
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			/* if(phone_number.length != 0){				
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
 					var alert_phone_number = phone_intl;					
 				}else{					
@@ -1499,7 +1540,7 @@ function showDeleteModal(type,ppid,name){
 				}
 			}else{
 				console.log("DONT ADD blank number: " + phone_number);
-			}
+			} */
 			
 		 }			
 
@@ -1523,6 +1564,7 @@ function showDeleteModal(type,ppid,name){
 	        	   if(parent_ppid == 0){
 	        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
 	        	   }
+	        	   document.getElementById(form_id).reset();
 	        	   $('#'+ form_id + '_MODAL').hide();
 	        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 	        	   $('#CONFIRMATION_MODAL').modal('show');
@@ -1531,7 +1573,7 @@ function showDeleteModal(type,ppid,name){
 	        	   }else{
 	        		   enableModalEnter(form_id);
 	        	   }
-	        	   document.getElementById(form_id).reset();
+	        	   
 		           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
 	              
 	           },
@@ -1599,7 +1641,7 @@ function showDeleteModal(type,ppid,name){
 				$('#STUDENT_EP_NUMBER').val(alert_phone_number);
 				$('#STUDENT_EP_NUMBER_TEXT').html('&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)');
 			}else{
-				var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER"><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)</span></li>';			
+				var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER"><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)</span></li>';			
 				$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
 			}			
 		}else{
