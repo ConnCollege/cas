@@ -139,18 +139,88 @@ public class PECIResource extends Resource
 					List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
 					Map<String,Object> emailData =new HashMap<String,Object>();
 					Map<String,Object> addressData = new HashMap<String,Object>();
-					if (dataType.equals("PARENT")) {
+					if (dataType.equals("PHONES")) {
+						SQL="select distinct PECI_PHONE_CODE, PHONE_CODE, concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
+								+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,"				
+								+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
+								+"  from cc_gen_peci_phone_data_t phone"
+								+"  left join (select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"
+								+"			        Group_Concat(concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME"
+								+"			  from cc_gen_peci_phone_data_t p"
+								+"			 inner join cc_adv_peci_parents_t par"
+								+"			    on p.PARENT_PPID = par.PARENT_PPID"
+								+"			 group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents"
+								+"   on ((phone.PHONE_AREA_CODE = parents.PHONE_AREA_CODE"
+								+"  and phone.PHONE_NUMBER = parents.PHONE_NUMBER)"
+								+"   or phone.PHONE_NUMBER_INTL = parents.PHONE_NUMBER_INTL)"
+								+"  and phone.STUDENT_PIDM = parents.STUDENT_PIDM"
+								+" left join (select p.STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL,  "
+								+"			        Group_Concat(concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME"
+								+"			   from cc_gen_peci_phone_data_t p"
+								+"			   left join cc_gen_peci_emergs_t EMERG"
+								+"			     on p.PARENT_PPID = EMERG.PARENT_PPID"
+								+"			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+								+"			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=p.STUDENT_PIDM)"
+								+"			  group by PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) EMERG"
+								+"   on ((phone.PHONE_AREA_CODE = EMERG.PHONE_AREA_CODE"
+								+"  and phone.PHONE_NUMBER = EMERG.PHONE_NUMBER)"
+								+"    or phone.PHONE_NUMBER_INTL = EMERG.PHONE_NUMBER_INTL)"
+								+"   and phone.STUDENT_PIDM = EMERG.STUDENT_PIDM"
+								+"  left join (Select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"  
+								+"				    concat(PREFERRED_FIRST_NAME,' ',PREFERRED_LAST_NAME) STUDENT_PREF_NAME"
+								+"			   from cc_gen_peci_phone_data_t p"
+								+"			  inner join cc_stu_peci_students_t s"
+								+"                 on p.STUDENT_PIDM = s.STUDENT_PIDM"
+								+"			    and p.PARENT_PPID = 0"
+								+"			  where PHONE_CODE Not Like 'EP_'"
+								+"			  group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) student"
+								+"    on ((phone.PHONE_AREA_CODE = student.PHONE_AREA_CODE"
+								+"   and phone.PHONE_NUMBER = student.PHONE_NUMBER)"
+								+"    or phone.PHONE_NUMBER_INTL = student.PHONE_NUMBER_INTL)"
+								+"   and phone.STUDENT_PIDM = student.STUDENT_PIDM"
+								+" where (concat_ws(',',phone.PHONE_AREA_CODE,phone.PHONE_NUMBER,phone.PHONE_NUMBER_INTL,phone.STUDENT_PIDM) not in "
+								+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
+								+"						from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
+								+"		or phone.PHONE_CODE like 'EP%')"
+								+"  and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
+						phoneData = jdbcCAS.queryForList(SQL,namedParameters);
+						jsonResponse.put("result", "success");
+						jsonResponse.put("phones",phoneData );
+					
+					} else if (dataType.equals("PARENT")) {
 						if (dataMode.equals("DELETE")){
 							SQL="update cc_adv_peci_parents_t set CHANGE_COLS='DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 							jdbcCAS.update(SQL,namedParameters);
-						}else{
+						}else if (dataMode.equals("PROMOTE")){
+							//Make a parent into an emergency contact as well
+							SQL = "SELECT COUNT(*) ct FROM cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+							emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
+							if (Integer.parseInt(emrgData.get("ct").toString()) > 0) {
+								//remove the "DELETE" text from CHANGE_COLS
+								SQL="update cc_gen_peci_emergs_t set CHANGE_COLS='NEW' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								jdbcCAS.update(SQL,namedParameters);
+							} else {
+								// Add a new record to the contacts table
+								SQL="insert into cc_gen_peci_emergs_t ( STUDENT_PIDM, PARENT_PPID,  CHANGE_COLS,  EMERG_LEGAL_PREFIX_NAME, EMERG_LEGAL_FIRST_NAME,"
+										+ " EMERG_LEGAL_MIDDLE_NAME, EMERG_LEGAL_LAST_NAME, EMERG_LEGAL_SUFFIX_NAME, EMERG_PREF_FIRST_NAME, EMERG_PREF_MIDDLE_NAME,"
+										+ " EMERG_PREF_LAST_NAME, EMERG_RELT_CODE) "
+										+ " SELECT STUDENT_PIDM, PARENT_PPID,  'NEW' CHANGE_COLS, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, "
+										+ " PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, "
+										+ " PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE"
+										+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+								jdbcCAS.update(SQL,namedParameters);
+							}
+						}else {
 							if (ppid == ""){
 								//new Parent response
 								log.debug("New Temporaty Parent Record");
 							} else {
 								try {
 									//Parent Data
-									SQL="select  PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE  from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select  PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME,"
+											+ " PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER,"
+											+ " EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE  from cc_adv_peci_parents_t"
+											+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -158,7 +228,9 @@ public class PECIResource extends Resource
 								
 								try {
 									//phones
-									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
+											+ " CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t"
+											+ " where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -173,7 +245,9 @@ public class PECIResource extends Resource
 								}
 								try {
 									//Address
-									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,"
+											+ " ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t "
+											+ " where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									addressData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -245,10 +319,9 @@ public class PECIResource extends Resource
 										        }
 									        }
 									    } 
-										SQL = SQL + "CHANGE_COLS = 'NEW', ";
-										
-										SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
-										SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+										SQL = SQL + "CHANGE_COLS = 'NEW', "										
+											+ "STUDENT_PIDM=:STUDENT_PIDM, "
+											+ "PARENT_PPID=:PARENT_PPID";
 										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
 										jdbcCAS.update(SQL,namedParameters);
 																				
@@ -257,21 +330,21 @@ public class PECIResource extends Resource
 										updates = compareMap(parentDataIn, parentData);
 										writeUpdates(namedParameters,updates,"cc_adv_peci_parents_t");
 										//ensure that Contact data i.e. name is updated in sync with Parent
-										SQL="UPDATE cc_gen_peci_emergs_t e ";
-										SQL = SQL + " INNER JOIN cc_adv_peci_parents_t p ";
-										SQL = SQL + "  ON p.STUDENT_PIDM = e.STUDENT_PIDM ";
-										SQL = SQL + " AND p.PARENT_PPID = e.PARENT_PPID ";
-										SQL = SQL + " SET EMERG_LEGAL_PREFIX_NAME = PARENT_LEGAL_PREFIX_NAME, ";
-										SQL = SQL + " EMERG_LEGAL_FIRST_NAME = PARENT_LEGAL_FIRST_NAME, ";
-										SQL = SQL + " EMERG_LEGAL_MIDDLE_NAME = PARENT_LEGAL_MIDDLE_NAME, ";
-										SQL = SQL + " EMERG_LEGAL_LAST_NAME = PARENT_LEGAL_LAST_NAME, ";
-										SQL = SQL + " EMERG_LEGAL_SUFFIX_NAME = PARENT_LEGAL_SUFFIX_NAME, ";
-										SQL = SQL + " EMERG_PREF_FIRST_NAME = PARENT_PREF_FIRST_NAME, ";
-										SQL = SQL + " EMERG_PREF_MIDDLE_NAME  = PARENT_PREF_MIDDLE_NAME, ";
-										SQL = SQL + " EMERG_PREF_LAST_NAME = PARENT_PREF_LAST_NAME,";
-										SQL = SQL + " EMERG_RELT_CODE = PARENT_RELT_CODE";
-										SQL = SQL + " WHERE p.STUDENT_PIDM=:STUDENT_PIDM ";
-										SQL = SQL + " AND p.PARENT_PPID=:PARENT_PPID";
+										SQL="UPDATE cc_gen_peci_emergs_t e "
+											+ " INNER JOIN cc_adv_peci_parents_t p "
+											+ "  ON p.STUDENT_PIDM = e.STUDENT_PIDM "
+											+ " AND p.PARENT_PPID = e.PARENT_PPID "
+											+ " SET EMERG_LEGAL_PREFIX_NAME = PARENT_LEGAL_PREFIX_NAME, "
+											+ " EMERG_LEGAL_FIRST_NAME = PARENT_LEGAL_FIRST_NAME, "
+											+ " EMERG_LEGAL_MIDDLE_NAME = PARENT_LEGAL_MIDDLE_NAME, "
+											+ " EMERG_LEGAL_LAST_NAME = PARENT_LEGAL_LAST_NAME, "
+											+ " EMERG_LEGAL_SUFFIX_NAME = PARENT_LEGAL_SUFFIX_NAME, "
+											+ " EMERG_PREF_FIRST_NAME = PARENT_PREF_FIRST_NAME, "
+											+ " EMERG_PREF_MIDDLE_NAME  = PARENT_PREF_MIDDLE_NAME, "
+											+ " EMERG_PREF_LAST_NAME = PARENT_PREF_LAST_NAME,"
+											+ " EMERG_RELT_CODE = PARENT_RELT_CODE"
+											+ " WHERE p.STUDENT_PIDM=:STUDENT_PIDM "
+											+ " AND p.PARENT_PPID=:PARENT_PPID";
 										jdbcCAS.update(SQL,namedParameters);
 									}
 									//email
@@ -303,7 +376,9 @@ public class PECIResource extends Resource
 							} else {
 								try {
 									//Contact Data
-									SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,"
+											+ "EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,"
+											+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -311,7 +386,9 @@ public class PECIResource extends Resource
 								
 								try {
 									//phones
-									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
+											+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t "
+											+ "where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -327,7 +404,9 @@ public class PECIResource extends Resource
 								
 								try{
 									//Address
-									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+									SQL="select EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,"
+											+ "ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where (ADDR_STATUS_IND is null or "
+											+ " ADDR_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									addressData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -379,10 +458,9 @@ public class PECIResource extends Resource
 									        }
 								        }
 								    } 
-									SQL = SQL + "CHANGE_COLS = 'NEW', ";
-									
-									SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
-									SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+									SQL = SQL + "CHANGE_COLS = 'NEW', "
+										+ "STUDENT_PIDM=:STUDENT_PIDM, "
+										+ "PARENT_PPID=:PARENT_PPID";
 									namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
 									jdbcCAS.update(SQL,namedParameters);
 									jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
@@ -390,21 +468,21 @@ public class PECIResource extends Resource
 									updates = compareMap(emrgDataIn, emrgData);
 									writeUpdates(namedParameters,updates,"cc_gen_peci_emergs_t");
 									//ensure that Parent data i.e. name is updated in sync with contact
-									SQL="UPDATE cc_adv_peci_parents_t p ";
-									SQL = SQL + " INNER JOIN cc_gen_peci_emergs_t e";
-									SQL = SQL + "  ON p.STUDENT_PIDM = e.STUDENT_PIDM";
-									SQL = SQL + " AND p.PARENT_PPID = e.PARENT_PPID";
-									SQL = SQL + " SET PARENT_LEGAL_PREFIX_NAME=EMERG_LEGAL_PREFIX_NAME, ";
-									SQL = SQL + " PARENT_LEGAL_FIRST_NAME=EMERG_LEGAL_FIRST_NAME, ";
-									SQL = SQL + " PARENT_LEGAL_MIDDLE_NAME=EMERG_LEGAL_MIDDLE_NAME, ";
-									SQL = SQL + " PARENT_LEGAL_LAST_NAME=EMERG_LEGAL_LAST_NAME, ";
-									SQL = SQL + " PARENT_LEGAL_SUFFIX_NAME=EMERG_LEGAL_SUFFIX_NAME, ";
-									SQL = SQL + " PARENT_PREF_FIRST_NAME=EMERG_PREF_FIRST_NAME, ";
-									SQL = SQL + " PARENT_PREF_MIDDLE_NAME=EMERG_PREF_MIDDLE_NAME, ";
-									SQL = SQL + " PARENT_PREF_LAST_NAME=EMERG_PREF_LAST_NAME,";
-									SQL = SQL + " PARENT_RELT_CODE=EMERG_RELT_CODE";
-									SQL = SQL + " WHERE p.STUDENT_PIDM=:STUDENT_PIDM ";
-									SQL = SQL + " AND p.PARENT_PPID=:PARENT_PPID";
+									SQL="UPDATE cc_adv_peci_parents_t p "
+										+ " INNER JOIN cc_gen_peci_emergs_t e"
+										+ "  ON p.STUDENT_PIDM = e.STUDENT_PIDM"
+										+ " AND p.PARENT_PPID = e.PARENT_PPID"
+										+ " SET PARENT_LEGAL_PREFIX_NAME=EMERG_LEGAL_PREFIX_NAME, "
+										+ " PARENT_LEGAL_FIRST_NAME=EMERG_LEGAL_FIRST_NAME, "
+										+ " PARENT_LEGAL_MIDDLE_NAME=EMERG_LEGAL_MIDDLE_NAME, "
+										+ " PARENT_LEGAL_LAST_NAME=EMERG_LEGAL_LAST_NAME, "
+										+ " PARENT_LEGAL_SUFFIX_NAME=EMERG_LEGAL_SUFFIX_NAME, "
+										+ " PARENT_PREF_FIRST_NAME=EMERG_PREF_FIRST_NAME, "
+										+ " PARENT_PREF_MIDDLE_NAME=EMERG_PREF_MIDDLE_NAME, "
+										+ " PARENT_PREF_LAST_NAME=EMERG_PREF_LAST_NAME,"
+										+ " PARENT_RELT_CODE=EMERG_RELT_CODE"
+										+ " WHERE p.STUDENT_PIDM=:STUDENT_PIDM "
+										+ " AND p.PARENT_PPID=:PARENT_PPID";
 									jdbcCAS.update(SQL,namedParameters);		   		
 								}
 								
@@ -463,9 +541,9 @@ public class PECIResource extends Resource
 			        	SQL = SQL + key +" = " +  newValue + ", ";
 			        }
 			    } 
-				SQL = SQL + "CHANGE_COLS = 'NEW', ";
-				SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
-				SQL = SQL + "PARENT_PPID=:PARENT_PPID";
+				SQL = SQL + "CHANGE_COLS = 'NEW', "
+					+ "STUDENT_PIDM=:STUDENT_PIDM, "
+					+ "PARENT_PPID=:PARENT_PPID";
 				jdbcCAS.update(SQL,namedParameters);
 			} else{
 				SQL="select CHANGE_COLS from "+ tableName +" where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
@@ -484,8 +562,8 @@ public class PECIResource extends Resource
 			        }
 			        changeCol = changeCol + key + ",";
 			    } 
-				SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
-				SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+				SQL = SQL + "CHANGE_COLS = '" + changeCol +"'"
+					+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 				jdbcCAS.update(SQL,namedParameters);
 				
 			}
@@ -621,11 +699,10 @@ public class PECIResource extends Resource
 				        }
 			        }
 			    } 
-				SQL = SQL + "CHANGE_COLS = 'NEW', ";
-				
-				SQL = SQL + "STUDENT_PIDM=:STUDENT_PIDM, ";
-				SQL = SQL + "PARENT_PPID=:PARENT_PPID, "; 
-				SQL = SQL + "PHONE_SEQUENCE_NO='" + seqNo + "'";
+				SQL = SQL + "CHANGE_COLS = 'NEW', "
+					+ "STUDENT_PIDM=:STUDENT_PIDM, "
+					+ "PARENT_PPID=:PARENT_PPID, "
+					+ "PHONE_SEQUENCE_NO='" + seqNo + "'";
 				
 				jdbcCAS.update(SQL,namedParameters);
 			} else {
@@ -652,18 +729,19 @@ public class PECIResource extends Resource
 						
 						if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
 							//Inactivate the phone record
-							SQL = "UPDATE cc_gen_peci_phone_data_t SET ";
-							SQL = SQL + " CHANGE_COLS = 'DELETE', ";
-							SQL = SQL + " PHONE_STATUS_IND = 'I' ";
-							SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-							SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+							SQL = "UPDATE cc_gen_peci_phone_data_t SET "
+								+ " CHANGE_COLS = 'DELETE', "
+								+ " PHONE_STATUS_IND = 'I' "
+								+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID"
+								+ " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
 							jdbcCAS.update(SQL,phoneParameters);
 						}else{
 							// compare
 							Map<String,Object> updates = compareMap(phoneRecordIn, phoneRecord);
 							if (updates.size() > 0 ) {
 								//Write Parent Data changes
-								SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+								SQL="select CHANGE_COLS from cc_gen_peci_phone_data_t where STUDENT_PIDM=:STUDENT_PIDM and " 
+										+ "PARENT_PPID=:PARENT_PPID and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
 								Map<String,Object> sourceData = jdbcCAS.queryForMap(SQL,phoneParameters);
 								String changeCol = (String) sourceData.get("CHANGE_COLS");
 								if (changeCol == null) changeCol="";
@@ -679,9 +757,9 @@ public class PECIResource extends Resource
 							        }
 							        changeCol = changeCol + key + ",";
 							    } 
-								SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
-								SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
-								SQL = SQL + " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
+								SQL = SQL + "CHANGE_COLS = '" + changeCol +"'"
+									+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID"
+									+ " and PHONE_CODE=:PHONE_CODE and PHONE_SEQUENCE_NO=:PHONE_SEQUENCE_NO";
 								jdbcCAS.update(SQL,phoneParameters);
 							}
 						}
