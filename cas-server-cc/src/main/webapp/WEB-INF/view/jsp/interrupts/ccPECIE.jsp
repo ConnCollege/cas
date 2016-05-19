@@ -141,19 +141,19 @@
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_FORM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">There was an error with your form submission. Please fix the areas indicated in red below.</span></div>
 		
 	<div class="form-group" id="group_student_firstname">
-		<label for="country" class="control-label col-sm-3">(Preferred) First Name</label>
+		<label for="country" class="control-label col-sm-3">First Name</label>
 		<div class="col-sm-9">
 				<input type="text" disabled="disabled" placeholder="First Name" name="" class="form-control" id="STUDENT_PREF_FIRST_NAME" value="${StudentBio['PREFERRED_FIRST_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_middle_name">
-		<label for="country" class="control-label col-sm-3">(Preferred) Middle Name</label>
+		<label for="country" class="control-label col-sm-3">Middle Name</label>
 		<div class="col-sm-9">
 				<input type="text" disabled="disabled" placeholder="Middle Name" name="" class="form-control" id="STUDENT_PREF_MIDDLE_NAME" value="${StudentBio['PREFERRED_MIDDLE_NAME']}">
 		</div>
 	</div>
 	<div class="form-group" id="group_student_last_name">
-		<label for="country" class="control-label col-sm-3">(Preferred) Last Name</label>
+		<label for="country" class="control-label col-sm-3">Last Name</label>
 		<div class="col-sm-9">
 				<input type="text" disabled="disabled" placeholder="Last Name" name="" class="form-control" id="STUDENT_PREF_LAST_NAME" value="${StudentBio['PREFERRED_LAST_NAME']}">
 		</div>
@@ -173,13 +173,7 @@
 				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
 		</div>
 	</div>  
-		<%
-			/*out.print(displayInput(false,"","First Name",2,10,"student_first_name","text","",true,true));
-			out.print(displayInput(false,"","Middle Name",2,10,"student_middle_name","text","",true,true));
-			out.print(displayInput(false,"","Last Name",2,10,"student_last_name","text","",true,true));
-			out.print(displayInput(true,"address_field","Address 1",2,10,"student_address1","text","",true,false));
-			out.print(displayInput(false,"address_field","Address 2",2,10,"student_address2","text","",true,false));*/
-	%>
+
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_country">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
@@ -213,17 +207,26 @@
 			</select>
 		</div>
 	</div>
-	<%-- Regions: ${options['Regions']}  --%>
+	<%-- Regions: ${options['Regions']}
+	StudentAddr: ${StudentAddr} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_INTL_REGION">
-		<label for="state" class="control-label col-sm-3"><span class="required">* </span>Province/Region</label>
-		<div class="col-sm-9">
+		<label for="state" class="control-label col-sm-3">Province/Region</label>
+		<%-- <div class="col-sm-9">
 			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
+		</div> --%>
+		<div class="col-sm-9">
+			<select class="form-control address_field" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
+				<option value="">Choose Province/Region</option>
+				<c:forEach items="${options['Regions']}" var="regions">
+					<option <c:if test="${regions.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${regions.key}">${regions.value}</option>
+				</c:forEach>
+			</select>
 		</div>
 	</div>
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_ZIP_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_postal_code">
+	<div class="form-group" id="GROUP_STUDENT_ADDR_ZIP">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
@@ -324,7 +327,8 @@
 		</div>
 	</div>
 	<%-- EmrPhone: ${StudentEmrPhone} --%>
-	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMERGENCY_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
+	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="display:none;">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-xs-2">
@@ -396,7 +400,7 @@
 	 	<c:forEach items="${StudentParents}" var="parents">
 			<div class="panel panel-default PARENT-LISTED" id="parent_${parents.PARENT_PPID}">
 			  <div class="panel-body">
-			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
+			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
 			  </div>
 			</div>
 		</c:forEach>	
@@ -443,18 +447,22 @@
 		    	 <c:choose>
 		    	 	<c:when test="${emmrg.PHONE_CODE == 'EP' }">
 		    	 		<!-- Student's emergency number, grey out, check it off and disable it -->
-		    	 		<li class="list-unstyled greyed-out"><input type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" >
+		    	 		<li class="list-unstyled greyed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
+		    	 <input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
 		    	 	</c:when>
 		    	 	<c:when test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
 		    	 		<!-- This number is has been previously checked off as a campus alert number, check it off by default -->
 		    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number" value="${emmrg.PHONE_NUM}" name="fields[25]" checked="checked">
+		    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
+		    	 		<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
 		    	 	</c:when>
 		    	 	<c:otherwise>
 		    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number value="${emmrg.PHONE_NUM}" name="fields[25]">
+		    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
+		    			<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
 		    	 	</c:otherwise>		    	 
 		    	 </c:choose>
-		    	 &nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
-		    	 <input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
+		    	 
 		    </c:forEach>
 		</ul>
 		
@@ -726,10 +734,16 @@
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_INTL_REGION">
-						<label for="state" class="control-label col-sm-4"><span class="required">* </span>Province/Region</label>
+						<label for="state" class="control-label col-sm-4">Province/Region</label>						
 						<div class="col-sm-6">
-							<input type="text" placeholder="Province/Region" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
-						</div>
+							<select class="form-control address_field" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
+								<option value="">Choose Province/Region</option>
+								<c:forEach items="${options['Regions']}" var="regions">
+									<option value="${regions.key}">${regions.value}</option>
+								</c:forEach>
+							</select>
+						</div>				
+						
 					</div>
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_ZIP_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -851,6 +865,7 @@
     }); */
 	 
 	 all_phone_numbers = $("input[name=all_phone_numbers]").map(function(i,c){ return c.value; });
+    console.log(all_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 
@@ -863,16 +878,34 @@
 	 }
 	 		 
 	 $("[data-toggle=popover]").popover();
-	 $("[data-toggle=tooltip]").tooltip();	 
+	 $("[data-toggle=tooltip]").tooltip(); 
 	 
+	 //only select Yes on parents that are listed as emergency contacts on page load
+	 $('#CONTACT_LIST li').each(function(){
+		 var thisID = $(this).attr("id");
+		 thisID = thisID.replace('emr_contact_','');
+		 console.log("thisID: " + thisID);
+		 if($('#PARENT_LIST #parent_' + thisID).length){
+			 //this contact is also a parent, flip emr switch on
+			 console.log('Turn this user on with: ' + '#parent_' + thisID + ' .parent-bootstrap-switch');
+			 $('#parent_' + thisID + ' .parent-bootstrap-switch').bootstrapSwitch('state',true);
+		 }
+		//console.log("contact_listed: " + thisID); 
+	 });	 
+	
+	//get count of number of emr switches that are "On". If only 1, make it read-only since at least 1 parent needs to be checked
+	emr_switch_count = $('.parent-bootstrap-switch:checked').length;
+	if(emr_switch_count == 1){
+		$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
+	}	
+	 	 
 	$('mobile_phone_check').each(function(){
 		if(this.checked){
 			var checked = 1;
 			var form_id = $(this).closest('form').attr("id"); 
 			emergencyNumberToggle(form_id, checked);
 		}
-	});
-	
+	});	
  
 	$('.mobile_phone_check').change(function(){
 		var form_id = $(this).closest('form').attr("id");
@@ -918,84 +951,41 @@
 
 	});
 	
-	$('#STUDENT_PHONE_NUMBER').focusout(function(){
-		phone_number = "" + $('#STUDENT_AREA_CODE').val() + $('#STUDENT_PHONE_NUMBER').val();
+	$('#STUDENT_PHONE_CP_NUMBER, #STUDENT_PHONE_CP_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER, #STUDENT_PHONE_EMERGENCY_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER_INTL').focusout(function(){
+		phone_number = '' + $('#STUDENT_PHONE_CP_AREA_CODE').val() + ' ' + $('#STUDENT_PHONE_CP_NUMBER').val();
 		if($.inArray(phone_number,all_phone_numbers) == -1){
 			//add number to campus alert phone number list
-			addCampusAlertNumber(phone_number, '', 'STUDENT');
+			addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
 		}
 	});
-	
-	/* emr_switch_count = $('.bootstrap-switch-wrapper').length;
-	if(emr_switch_count == 1){
-		$('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
-	} */	
 	
 	//switching off emergency contacts
 	$('input[name="PARENT"]').on('switchChange.bootstrapSwitch', function(event, state) {
 		//$('#PARENT_ERROR').hide();
 		var ppid = $(this).attr("data-ppid");
-		var form_id = $(this).closest('form').attr("id");
-		var x = 0;
-		var removeParent = false;
-		$('.parent-bootstrap-switch').each(function(){
-			if ($(this).is(":checked")){
-				x++;
-			}
-		});
-		if(state == false){
-			//turning parent off
-			if(x < 1){
-				//turn back on
-				$(this).bootstrapSwitch('state',true);
-				//then show error message "you need to have at least one parent as an emergency contact", even though this should be taken care of by making it read-only below 
-				//$('#PARENT_ERROR').show();
-			}else if(x == 1){
-				$('.parent-bootstrap-switch').each(function(){
-					if ($(this).is(":checked")){
-						$(this).closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
-					}
-				});
-				removeParent = true;
-			}else{
-				$('.parent-bootstrap-switch').each(function(){
-					if ($(this).is(":checked")){
-						$(this).closest(".bootstrap-switch-wrapper").removeClass("bootstrap-switch-readonly");
-					}
-				});
-				removeParent = true;
-			}			
-			if(removeParent){
-				$('#emr_contact_'+ppid).fadeOut();
-			}
-		}else{
-			//turning parent on
-			//show in emerg contacts list
-			$('#emr_contact_'+ppid).fadeIn();
-			//change read-only state
-			if(x > 1){
-				$('.bootstrap-switch-wrapper').removeClass("bootstrap-switch-readonly");
-			}
-		}		
-
-		  //console.log("ppid: " + ppid);
-		  //console.log("form_id: " + form_id);
-		  //console.log(this); // DOM element
-		  //console.log(event); // jQuery event
-		  //console.log(state); // true | false
-		});
+		emergencySwitchToggle(ppid,event,state);
+	});
 	
 	//state/province drop-down toggle based on country chosen
 	$('.country_field').change(function(){
-		$form_id = $(this).closest('form').attr("id");
-		$intlField = '#GROUP_' + $form_id + '_INTL_REGION';
-		$stateField = '#GROUP_' + $form_id + '_ADDR_STAT_CODE';
+		var form_id = $(this).closest('form').attr("id");
+		var intlFieldGroup = '#GROUP_' + form_id + '_INTL_REGION';
+		var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
+		var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';
+		var stateField = '#' + form_id + '_ADDR_STAT_CODE';
+		var zipField = '#' + form_id + '_ADDR_ZIP';
 		if($(this).val() == 'United States' || $(this).val() == "US"){
-			$($stateField).show();
-			$($intlField).hide();
+			$(stateFieldGroup).show();
+			$(stateField).addClass('ccreq');
+			$(zipField).addClass('ccreq');
+			$(zipFieldGroup + ' .required').show();
+			$(intlFieldGroup).hide();
 		}else{
-			$($stateField).hide();
-			$($intlField).show();
+			$(stateFieldGroup).hide();
+			$(stateField).removeClass('ccreq');
+			$(zipField).removeClass('ccreq');
+			$(zipFieldGroup + ' .required').hide();
+			$(intlFieldGroup).show();
 		}
 		
 	});
@@ -1033,7 +1023,7 @@
 			//console.log("character accepted: " + e.key)
 		} else {
 			//console.log("illegal character detected: "+ e.key)
-			var charCode = (e.which) ? e.which : event.keyCode
+			var charCode = (e.which) ? e.which : e.keyCode
 			if (charCode > 31 && (charCode < 48 || charCode > 57)){
 				return false;
 			}
@@ -1531,6 +1521,7 @@ function showDeleteModal(type,ppid,name){
 	        	   }else{
 	        		   enableModalEnter(form_id);
 	        	   }
+	        	   document.getElementById(form_id).reset();
 		           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
 	              
 	           },
@@ -1570,29 +1561,37 @@ function showDeleteModal(type,ppid,name){
 		$('#PARENT_LIST').append(parent_info);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();
+		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
+			emergencySwitchToggle(ppid,event,state);
+		});
 		$('#PARENT_LIST #parent_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
 		});
 		$('#PARENT_LIST #parent_' + ppid).on('click','.deleteModal',function(){
-			showDeleteModal(type,ppid,new_contact_name);
+			showDeleteModal('PARENT',ppid,new_contact_name);
 		});
 	}
 	
 	function addContact(type,ppid,new_contact_name){
-		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>;'
+		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
 		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
 		});
 		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.deleteModal',function(){
-			showDeleteModal(type,ppid,new_contact_name);
+			showDeleteModal('CONTACT',ppid,new_contact_name);
 		});
 	}
 	
 	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
 		if(type == 'STUDENT'){
-			var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER">&nbsp;' + alert_phone_number + '&nbsp;(Your phone number will always be contacted)</li>';			
-			$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+			if($('#STUDENT_EP_NUMBER').length){
+				$('#STUDENT_EP_NUMBER').val(alert_phone_number);
+				$('#STUDENT_EP_NUMBER_TEXT').html('&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)');
+			}else{
+				var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER"><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)</span></li>';			
+				$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+			}			
 		}else{
 			var newAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ')</li>';
 			$('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);
@@ -1644,9 +1643,59 @@ function showDeleteModal(type,ppid,name){
 				$('#group_alert_text_check').show();	
 				$('#paragraph_tty_device_check').html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
 			}
-	    }	
+	    }		
+		
 	}
 	
+	function emergencySwitchToggle(ppid, event, state){
+		var x = 0;
+		var removeParent = false;
+		$('.parent-bootstrap-switch').each(function(){
+			if ($(this).is(":checked")){
+				x++;
+			}
+		});
+		if(state == false){
+			//turning parent off
+			if(x < 1){
+				//turn back on
+				$(this).bootstrapSwitch('state',true);
+				//then show error message "you need to have at least one parent as an emergency contact", even though this should be taken care of by making it read-only below 
+				//$('#PARENT_ERROR').show();
+			}else if(x == 1){
+				$('.parent-bootstrap-switch').each(function(){
+					if ($(this).is(":checked")){
+						$(this).closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
+					}
+				});
+				removeParent = true;
+			}else{
+				$('.parent-bootstrap-switch').each(function(){
+					if ($(this).is(":checked")){
+						$(this).closest(".bootstrap-switch-wrapper").removeClass("bootstrap-switch-readonly");
+					}
+				});
+				removeParent = true;
+			}			
+			if(removeParent){
+				$('#emr_contact_'+ppid).fadeOut();
+			}
+		}else{
+			//turning parent on
+			//show in emerg contacts list
+			$('#emr_contact_'+ppid).fadeIn();
+			//change read-only state
+			if(x > 1){
+				$('.bootstrap-switch-wrapper').removeClass("bootstrap-switch-readonly");
+			}
+		}		
+
+		  //console.log("ppid: " + ppid);
+		  //console.log("form_id: " + form_id);
+		  //console.log(this); // DOM element
+		  //console.log(event); // jQuery event
+		  //console.log(state); // true | false
+	}
 	
 
  

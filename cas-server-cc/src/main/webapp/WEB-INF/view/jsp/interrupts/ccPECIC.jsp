@@ -134,7 +134,7 @@
 		border: 2px solid #FF9999;
 		text-align:center;
 		padding: 2px;
-		padding-bottom: 8px;
+		/*padding-bottom: 8px;*/
 		clear:both;
 	}
   </style>
@@ -144,12 +144,11 @@
 <div class="container">
   <h2>Confirm Contact Information</h2>
   <div class="errorMessage">
-  	<h3>Almost Done!</h3>
   	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
   </div> 
-  StudentAddr: ${StudentAddr}
+  <%-- StudentAddr: ${StudentAddr} --%>
   <br>
-  StudentHomePhone: ${StudentHomePhone}
+  <%-- StudentHomePhone: ${StudentHomePhone} --%>
   <div id="step1">
   	<h3>Step 1 Verify Your Permanent Mailing Address <small><span class="edit_link">Edit My Info</span></small></h3>	
  	<div class="row">
@@ -218,7 +217,7 @@
 	</div>
   </div>
   <br>
-  StudentCellPhone: ${StudentCellPhone}
+  <%-- StudentCellPhone: ${StudentCellPhone} --%>
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>	
 	<div class="row">
@@ -291,7 +290,7 @@
   
    <div id="step5">
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
-  	EmmergPhones: ${EmmrgPhones}
+  	<%-- EmmergPhones: ${EmmrgPhones} --%>
   	<div class="confirm_section">
   		<ul>
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
@@ -363,12 +362,9 @@ $(document).ready(function() {
 			    	   //y ++;
 			    	   //$('#contact_' + ppid).append('<h4>Emergency Contact ' + y + '</h4>');
 			    	   if(type_id == 'CONTACT'){
-				    	   $.each(data.contact, function(index, element){
-				       		
-				       		 var output = '';
-				       		
-				       		var loc = demoFields.indexOf(index); 	
-				       		
+				    	   $.each(data.contact, function(index, element){				       		
+				       		var output = '';				       		
+				       		var loc = demoFields.indexOf(index); 					       		
 				       		if(loc != -1){
 				       			
 				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
@@ -382,8 +378,7 @@ $(document).ready(function() {
 			    	   }else{
 			    		   $.each(data.parent, function(index, element){
 					       		//console.log("-parent- index: " + index + " element:" + element);
-					       		 var output = '';
-					       		
+					       	 	var output = '';					       		
 					       		var loc = demoFields.indexOf(index); 		       		
 					       		if(loc != -1){
 					       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
@@ -419,12 +414,12 @@ $(document).ready(function() {
 			       	  //use first address: data.parent_address[0]?
 
 			       	  $.each(data.address, function(index,element){
-			       		console.log("-contact- index: " + index + " element:" + element);
+			       		//console.log("-contact- index: " + index + " element:" + element);
 				       		var output = '';			       		
 				       		var loc = demoFields.indexOf(index); 
-				       		console.log("Address: loc: " + loc + "ppid: " + ppid);
+				       		//console.log("Address: loc: " + loc + "ppid: " + ppid);
 				       		if(loc != -1){
-				       			console.log("Address: loc: " + loc);
+				       			//console.log("Address: loc: " + loc);
 				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
 				       			if(element != null){
 				       				output += element;
@@ -436,11 +431,39 @@ $(document).ready(function() {
 		
 			          });
 
+			       	
+			       	//phones
+			       	for(i=0;i<data.phones.length;i++){
+			       		var phone_code = data.phones[i].PHONE_CODE;
+		        		//var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
+		        		var phone_area_code = data.phones[i].PHONE_AREA_CODE;
+		        		var phone_number = data.phones[i].PHONE_NUMBER;
+		        		var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
+		        		if(phone_number_intl.length > 0){
+		        			phone_display = phone_number_intl;
+		        		}else{
+		        			phone_display =  phone_area_code + ' ' + phone_number;
+		        		}
+		        		var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
+		        		var phone_carrier = data.phones[i].CELL_PHONE_CARRIER;
+		        		var output = '';
+		        		if(phone_code == 'CP'){
+		       				phone_type = 'Mobile';
+		       			}else if(phone_code == 'MA'){
+		       				phone_type = 'Home';
+		       			}else if(phone_code == 'BU'){
+		       				phone_type = 'Office';					       			
+		       			}
+		        		output += '<div class="row"><div class="col-xs-3"><div>' + phone_type + ' Phone</div></div><div class="col-xs-9">' + phone_display + '<div>';
+		        		output += '</div></div></div>';
+				       	$('#' + type_id + '_' + ppid).append(output);
+			       	}
+			       	
 			       	  
-			       	$.each(data.phones, function(index1,element1){
+/* 			       	$.each(data.phones, function(index1,element1){
 							//console.log("index1: " + index1); 
 			    		  $.each(this, function(index2,element2){  
-			    			  
+			    			  console.log(index2['PHONE_CODE']);
 					       		var output = '';			       		
 					       		var loc = phoneFields.indexOf(index2);
 					       		var thisTitle = phoneValues[loc];
@@ -451,12 +474,12 @@ $(document).ready(function() {
 					       		}
 					       		if(loc != -1){
 					       			output += '<div class="row"><div class="col-xs-3"><div>' + thisTitle + '</div></div><div class="col-xs-9"><div>';
-					       			if(index2 == 'PECI_PHONE_CODE'){
-						       			if(element2 == 'C'){
+					       			if(index2 == 'PHONE_CODE'){
+						       			if(element2 == 'CP'){
 						       				output += 'Mobile';
-						       			}else if(element2 == 'H'){
+						       			}else if(element2 == 'MA'){
 						       				output += 'Home';
-						       			}else if(element2 == 'O'){
+						       			}else if(element2 == 'BU'){
 						       				output += 'Office';					       			
 						       			}
 					       			}else if(element2 != null){
@@ -472,7 +495,7 @@ $(document).ready(function() {
 			    		  });
 			    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
 			      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-			      	  });
+			      	  }); */
 			       	  
 		
 			       },
