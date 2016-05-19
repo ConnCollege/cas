@@ -650,11 +650,11 @@ public class PECIResource extends Resource
 			        if (origValue.getClass().getName().equals("java.lang.String") || origValue.getClass().getName().equals("java.lang.Integer")) {
 		        		if (!(origValue.equals(testValue))){
 		    	        	map.put(key,testValue);
-		    	        }
-		        	}
-        		} else if (!(testValue.getClass().getName().equals("org.json.JSONObject$Null"))) {
-	        		map.put(key,testValue);
-	        	} 
+		        		}
+		        	} else if ( !(testValue.getClass().getName().equals("org.json.JSONObject$Null")) ) {
+		        		map.put(key,testValue);
+		        	} 
+        		} 
 	        }
 	    }    
 	    return map;   

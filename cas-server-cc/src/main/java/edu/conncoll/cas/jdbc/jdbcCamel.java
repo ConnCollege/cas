@@ -382,9 +382,7 @@ public class jdbcCamel {
 				
 				context.getFlowScope().put("Flag", "PECIE");
 				
-				if ( (Long)studentTrans.get("ct") !=0 ){
-					if ( !flag.equals("PECIE") ) context.getFlowScope().put("Flag", "PECIC");
-				} else {
+				if ( (Long)studentTrans.get("ct") == 0 ){
 					//Check for data in Oracle
 					log.debug("Checking for eisting record in Oracle");
 					SQL = "select count(STUDENT_PIDM) ct from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
@@ -394,7 +392,6 @@ public class jdbcCamel {
 					BigDecimal ct = (BigDecimal)studentData.get("ct");
 					
 					if ( ct.intValue() !=0 ){
-						if ( !flag.equals("PECIE") ) context.getFlowScope().put("Flag", "PECIC");
 						log.debug("Loading Data from Oracle to MySQL");
 					
 						//Pull PECI Data from Oracle and store in MySQL 
@@ -443,7 +440,7 @@ public class jdbcCamel {
 					} else {
 						//Brand new PECI record.		
 						log.debug("Brand new PECI Record starting MySQL Base record");			
-						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME, 'Y' as  EMERG_SEND_TEXT, 'NEW. as CHANGE_COLS from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
+						SQL = "select SPRIDEN_PIDM as STUDENT_PIDM, SPRIDEN_FIRST_NAME as PREFERRED_FIRST_NAME, SPRIDEN_LAST_NAME as PREFERRED_LAST_NAME, SPRIDEN_MI as PREFERRED_MIDDLE_NAME, 'Y' as  EMERG_SEND_TEXT, 'NEW' as CHANGE_COLS from spriden where SPRIDEN_NTYP_CODE='PREF' and SPRIDEN_PIDM =" + ccPDIM.toString();
 						studentData = jdbcCensus.queryForMap(SQL);
 						
 						copy2MySQL("cc_stu_peci_students_t",studentData);
@@ -552,6 +549,13 @@ public class jdbcCamel {
 					emergData = jdbcCAS.queryForList(SQL,namedParameters);
 				} catch(Exception e) {
 					log.info("No Student data in MySQL");
+				}
+				
+				// Send to PECIC if flag is PECI and record is sufficently complete
+				if ( !flag.equals("PECIE") ) {
+					if ( (emergData.size() >1)  && (parentData.size() >1)  && (!addressData.isEmpty())  && (!emailData.isEmpty()) )  {
+						context.getFlowScope().put("Flag", "PECIC");
+					}
 				}
 				
 				context.getFlowScope().put("StudentBio",studentData);
@@ -954,6 +958,7 @@ public class jdbcCamel {
 					phoneRecord.put("CELL_PHONE_CARRIER",intData.getField(14));
 					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
 					phoneDataIn.add(phoneRecord);
+					phoneRecord.clear();
 				}		
 
 				//Home Phone
@@ -966,6 +971,7 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(28));
 					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(31));
 					phoneDataIn.add(phoneRecord);
+					phoneRecord.clear();
 				}
 
 				//Emergency Phone
@@ -978,6 +984,7 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(30));
 					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
 					phoneDataIn.add(phoneRecord);
+					phoneRecord.clear();
 				}
 				
 				PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
