@@ -163,14 +163,14 @@
 	<div class="form-group" id="group_student_address1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address 1</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
+				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address2">
 		<label for="country" class="control-label col-sm-3">Address 2</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
+				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
 		</div>
 	</div>  
 
@@ -178,7 +178,7 @@
 	<div class="form-group" id="group_student_country">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq country_field" placeholder="Country" name="fields[6]" id="STUDENT_ADDR_NATN_CODE">
+			<select class="form-control address_field ccreq country_field STUDENT_ADDRESS_FIELD" placeholder="Country" name="fields[6]" id="STUDENT_ADDR_NATN_CODE">
 				<option value="">Choose Country </option>
 				<c:forEach items="${options['Countries']}" var="countries">
 					<option <c:if test="${countries.key == StudentAddr['ADDR_NATN_CODE'] || ((countries.key == 'US') && (StudentAddr['ADDR_NATN_CODE'] == null))}">selected="selected"</c:if> value="${countries.key}">${countries.value}</option>
@@ -190,7 +190,7 @@
 	<div class="form-group" id="group_student_city">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>City</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
+				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
 		</div>
 	</div>  
 	<%-- ${options} --%>
@@ -199,7 +199,7 @@
 	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
 		<div class="col-sm-9">
-			<select class="form-control address_field ccreq" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
+			<select class="form-control address_field ccreq STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
 				<option value="">Choose State</option>
 				<c:forEach items="${options['States']}" var="states">
 					<option <c:if test="${states.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${states.key}">${states.value}</option>
@@ -216,7 +216,7 @@
 			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
 		</div> --%>
 		<div class="col-sm-9">
-			<select class="form-control address_field" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
+			<select class="form-control address_field STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
 				<option value="">Choose Province/Region</option>
 				<c:forEach items="${options['Regions']}" var="regions">
 					<option <c:if test="${regions.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${regions.key}">${regions.value}</option>
@@ -229,7 +229,7 @@
 	<div class="form-group" id="GROUP_STUDENT_ADDR_ZIP">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
+				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
 		</div>
 	</div> 
 
@@ -259,7 +259,7 @@
 	</div>	
 	
 	<div class="form-group" id="group_student_MA_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="MA" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter International Number</span>							
 	</div>		
 	
 	<div class="form-group" id="group_student_non_college_email">
@@ -301,7 +301,7 @@
 	</div>		
 	
 	<div class="form-group" id="group_student_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="CP" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP" class="intl_number_switch col-sm-4">Enter International Number</span>							
 	</div>		  			
 		  				
 		<%
@@ -349,7 +349,7 @@
 	</div>	
 	
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="EMERGENCY" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter International Number</span>							
 	</div>	
 	
 	<p class="q_check" id="paragraph_alert_text_check">Connecticut College will contact this number in the case of a campus emergency. Do you wish to also receive a text message at this number in the case of a campus emergency?</p>
@@ -400,7 +400,7 @@
 	 	<c:forEach items="${StudentParents}" var="parents">
 			<div class="panel panel-default PARENT-LISTED" id="parent_${parents.PARENT_PPID}">
 			  <div class="panel-body">
-			    <strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
+			    <span class="contact-name"><strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong></span><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
 			  </div>
 			</div>
 		</c:forEach>	
@@ -562,7 +562,7 @@
 			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_CP_CODE" id="<c:out value="${modalType}"/>_PHONE_CP_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="CP"> 
 		  			 
 		  			<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
+			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="CP" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
 		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
@@ -570,7 +570,7 @@
 		  			</div>
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="CP"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP"  class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>
 		  			
 		  			<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_CP_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -586,7 +586,7 @@
 						</div>
 					</div>
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" value="Y" name="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" id="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" class="mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>					
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" value="Y" name="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" id="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" class="mobile_phone_check modal_mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>					
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>	
@@ -601,7 +601,7 @@
 					</div> 
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
+					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
 						<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
 							<input type="text" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
@@ -609,7 +609,7 @@
 					</div>	
 					
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
-						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="EMERGENCY" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>	
 										
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
@@ -628,7 +628,7 @@
 			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_MA_CODE" id="<c:out value="${modalType}"/>_PHONE_MA_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="MA"> 
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
+			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="MA" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Home Phone</label>
 		  				<div class="col-sm-6">
 		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
@@ -636,7 +636,7 @@
 		  			</div>	
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="MA" class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>		
 																					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
@@ -655,7 +655,7 @@
 			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_BU_CODE" id="<c:out value="${modalType}"/>_PHONE_BU_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="BU"> 
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclaBUtion-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-			  		<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
+			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="BU" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Office Phone</label>
 		  				<div class="col-sm-6">
 		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
@@ -663,7 +663,7 @@
 		  			</div>		
 		  			
 		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-id="BU"  class="intl_number_switch col-sm-4" data-id="2">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="BU"  class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>						
 										 						
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -686,6 +686,9 @@
 							</select>
 						</div>
 					</div>
+					
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use address information from: </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><option value="STUDENT">My Address</option></select></div></div></div>	
+					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
 						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
@@ -917,7 +920,7 @@
 	//switch to international phone
 	$('.intl_number_switch').click(function (){		
 		var form_id = $(this).closest('form').attr("id");
-		var phone_type = $(this).attr("data-id");
+		var phone_type = $(this).attr("data-type");
 		var intl_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL';
 		//console.log("intl_group: " + intl_group);
 		var phone_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER';	
@@ -972,7 +975,8 @@
 	$('input[name="PARENT"]').on('switchChange.bootstrapSwitch', function(event, state) {
 		//$('#PARENT_ERROR').hide();
 		var ppid = $(this).attr("data-ppid");
-		emergencySwitchToggle(ppid,event,state);
+		var thisName = $('#parent_' + ppid + ' .contact-name').html();
+		emergencySwitchToggle(ppid,name,event,state);
 	});
 	
 	//state/province drop-down toggle based on country chosen
@@ -1002,7 +1006,7 @@
 	//triggered when modal is about to be shown
 	/* $('#DELETE_MODAL').on('show.bs.modal', function(e) {
 
-	    //get data-id attribute of the clicked element
+	    //get data-type attribute of the clicked element
 	    var person_name = $(e.relatedTarget).data('person-name');
 	    var person_id = $(e.relatedTarget).data('ppid');
 	    var type = $(e.relatedTarget).data('modal-type');
@@ -1086,6 +1090,34 @@
 	       this.checked = false;
 	   }
 	});
+	
+	
+	$('.address_to_use_checkbox').change(function(){
+		var thisName = $(this).attr('name');
+		var thisType = $(this).attr('data-type');
+		var typeToSteal = $('#SELECT_' + thisName).val();
+		if($(this).prop('checked')){			
+			if(typeToSteal == 'STUDENT'){
+				$('.STUDENT_ADDRESS_FIELD').each(function(){
+					var thisID = $(this).attr('id');
+					var thisID = thisID.replace('STUDENT','');
+					var thisVal = $(this).val();
+					$('#'+ thisType + thisID).val(thisVal);
+				});
+			}				
+		}else{
+			if(typeToSteal == 'STUDENT'){
+				$('.STUDENT_ADDRESS_FIELD').each(function(){
+					var thisID = $(this).attr('id');
+					var thisID = thisID.replace('STUDENT','');
+					var thisVal = $(this).val();
+					$('#'+ thisType + thisID).val('');
+				});
+			}
+		}
+	});
+	
+	
  });
  
 function checkNum(type){	
@@ -1116,8 +1148,10 @@ function showDeleteModal(type,ppid,name){
  function deleteIndividual(){
 	 ppid_to_delete = $('#delete_form #ppid_to_delete').val();
 	 type = $('#delete_form  #type_to_delete').val();
-	 //console.log("ppid to delete: " + ppid_to_delete);
-	 //console.log("type: " + type);
+	 performDelete(ppid_to_delete,type);	 
+ } 
+ 
+ function performDelete(ppid_to_delete,type){
 	 $.ajax({
          type: "POST",
          url: ajaxurl,
@@ -1143,7 +1177,7 @@ function showDeleteModal(type,ppid,name){
          }
 	    });			 
 	 return false;
- } 
+ }
  
  function formValidate(form_id){
 	 showMainError = 0;
@@ -1518,36 +1552,10 @@ function showDeleteModal(type,ppid,name){
 				console.log("DONT ADD: " + phone_number);
 			}
 			
-			
-			
-			
-			
-			
-			
-			
-			/* if(phone_number.length != 0){				
-				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-					var alert_phone_number = phone_intl;					
-				}else{					
-					var alert_phone_number = "" + phone_area_code + phone_number;
-				}
-				if($.inArray(alert_phone_number,all_phone_numbers) == -1){
-					//add number to campus alert phone number list
-					console.log("add this num: " + alert_phone_number);
-					addCampusAlertNumber(alert_phone_number, new_contact_name, form_id);
-				}else{
-					console.log("DONT ADD: " + phone_number);
-				}
-			}else{
-				console.log("DONT ADD blank number: " + phone_number);
-			} */
-			
 		 }			
 
-		formData = formData + "}]";		
-				
-		formData = formData + "}";
-		 		 
+		formData = formData + "}]";					
+		formData = formData + "}";		 		 
 		console.log(formData);
 		 
 		$.ajax({
@@ -1565,6 +1573,9 @@ function showDeleteModal(type,ppid,name){
 	        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
 	        	   }
 	        	   document.getElementById(form_id).reset();
+	        	   resetIntlModalNumbers();	
+	        	   $('.modal_mobile_phone_check').prop('checked',false).change();
+	        	   //$('.modal_mobile_phone_check').trigger('click');
 	        	   $('#'+ form_id + '_MODAL').hide();
 	        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 	        	   $('#CONFIRMATION_MODAL').modal('show');
@@ -1587,6 +1598,15 @@ function showDeleteModal(type,ppid,name){
 	 }	 
 	}
 	
+	 function resetIntlModalNumbers(){
+  	     //reset all international numbers in modal back to US numbers after modal submission
+		 $('.modal_intl_form_group').each(function(){
+   	   		if($(this).is(':visible')){
+   	   			  var type = $(this).attr('data-type');
+   	   			  $('.intl_number_switch[data-type=' + type + ']').trigger('click');
+   	   		}
+    	 });
+	 }
 	 
 	function addToFormData(val,name){
 		formData = formData + '"' + name + '" : ';
@@ -1614,8 +1634,11 @@ function showDeleteModal(type,ppid,name){
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
-			emergencySwitchToggle(ppid,event,state);
+			emergencySwitchToggle(ppid,new_contact_name,event,state);
 		});
+		if(checkNum('PARENT') == 1){
+			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
+		}
 		$('#PARENT_LIST #parent_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
 		});
@@ -1625,6 +1648,8 @@ function showDeleteModal(type,ppid,name){
 	}
 	
 	function addContact(type,ppid,new_contact_name){
+		console.log("add Contact: " + name + ' '  + ppid);	
+	
 		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
 		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.showModal',function(){
@@ -1665,6 +1690,7 @@ function showDeleteModal(type,ppid,name){
 			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();				
 			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
+			$('#' + form_id + '_PHONE_CP_NUMBER_INTL').removeClass('ccreq');
 			//add requirement for emergency phone
 			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
 			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');
@@ -1699,9 +1725,9 @@ function showDeleteModal(type,ppid,name){
 		
 	}
 	
-	function emergencySwitchToggle(ppid, event, state){
+	function emergencySwitchToggle(ppid, name, event, state){
 		var x = 0;
-		var removeParent = false;
+		var removeParentFromContact = false;
 		$('.parent-bootstrap-switch').each(function(){
 			if ($(this).is(":checked")){
 				x++;
@@ -1720,22 +1746,42 @@ function showDeleteModal(type,ppid,name){
 						$(this).closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
 					}
 				});
-				removeParent = true;
+				removeParentFromContact = true;
 			}else{
 				$('.parent-bootstrap-switch').each(function(){
 					if ($(this).is(":checked")){
 						$(this).closest(".bootstrap-switch-wrapper").removeClass("bootstrap-switch-readonly");
 					}
 				});
-				removeParent = true;
+				removeParentFromContact = true;
 			}			
-			if(removeParent){
-				$('#emr_contact_'+ppid).fadeOut();
+			if(removeParentFromContact){
+				$('#emr_contact_'+ppid).hide();
+				performDelete(ppid,'CONTACT');
 			}
 		}else{
 			//turning parent on
 			//show in emerg contacts list
-			$('#emr_contact_'+ppid).fadeIn();
+			if($('#emr_contact_' + ppid).length){
+				//already exists, just show it
+				$('#emr_contact_' + ppid).fadeIn();
+			}else{
+				//create contact by promoting through restlet
+				$.ajax({
+			           type: "POST",
+			           url: ajaxurl,
+			           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
+			           datatype: "json",
+			           contentType: "application/json",
+			           success: function(data)           
+			           {  
+			        	   addToList('CONTACT',name,ppid);
+			           },
+			           error: function (request, status, error) {
+			               
+			           }
+				 });		 
+			}			
 			//change read-only state
 			if(x > 1){
 				$('.bootstrap-switch-wrapper').removeClass("bootstrap-switch-readonly");
