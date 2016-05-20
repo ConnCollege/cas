@@ -710,7 +710,7 @@
 							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="<c:out value="${modalType}"/>_ADDR_NATN_CODE" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 								<option value="">Choose Country</option>
 								<c:forEach items="${options['Countries']}" var="countries">
-									<option value="${countries.key}">${countries.value}</option>
+									<option value="${countries.key}" <c:if test="${countries.key == 'US' }">selected="selected"</c:if>>${countries.value}</option>
 								</c:forEach>
 							</select>
 						</div>
