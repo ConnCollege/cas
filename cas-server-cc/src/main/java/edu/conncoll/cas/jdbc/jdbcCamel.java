@@ -996,7 +996,7 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_NUMBER",intData.getField(16));
 					phoneRecord.put("PHONE_AREA_CODE",intData.getField(29));
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(30));
-					if (intData.getField(33).equals("null")) {
+					if (intData.getField(34).equals("null")) {
 						phoneRecord.put("PHONE_SEQUENCE_NO","");
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
@@ -1008,7 +1008,11 @@ public class jdbcCamel {
 				
 				log.debug ("Phones: " + phoneDataIn.toString());
 				log.debug ("# of Phones: " + phoneDataIn.size());
-				PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
+				try {
+					PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
+				} catch (Exception e){
+					log.warn ("Student Phone save failed.");
+				}
 				
 				studentDataIn.put("EMERG_NO_CELL_PHONE",intData.getField(15));	
 				studentDataIn.put("EMERG_SEND_TEXT",intData.getField(17));	
