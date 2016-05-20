@@ -184,8 +184,11 @@ public class PECIResource extends Resource
 								+"		or phone.PHONE_CODE like 'EP%')"
 								+"  and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
 						phoneData = jdbcCAS.queryForList(SQL,namedParameters);
-						jsonResponse.put("result", "success");
+
 						jsonResponse.put("phones",phoneData );
+						jsonResponse.put("result", "success");
+						getResponse().setStatus( Status.SUCCESS_OK );
+						getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 					
 					} else if (dataType.equals("PARENT")) {
 						if (dataMode.equals("DELETE")){
