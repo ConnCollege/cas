@@ -868,7 +868,7 @@
     }); */
 	 
 	 all_phone_numbers = $("input[name=all_phone_numbers]").map(function(i,c){ return c.value; });
-    console.log(all_phone_numbers);
+     //console.log(all_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 
@@ -898,8 +898,11 @@
 	
 	//get count of number of emr switches that are "On". If only 1, make it read-only since at least 1 parent needs to be checked
 	emr_switch_count = $('.parent-bootstrap-switch:checked').length;
+	console.log('emr_switch_count: ' + emr_switch_count);
 	if(emr_switch_count == 1){
-		$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
+		console.log('emr_switch_count = 1');
+		//$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
+		$('.parent-bootstrap-switch').bootstrapSwitch('disabled',true);
 	}	
 	 	 
 	$('mobile_phone_check').each(function(){
@@ -1044,7 +1047,7 @@
 	});
 
 	//check to see if parents are emerg contacts, turn off switch if not
-	$('.parent-bootstrap-switch').each(function(){
+	/* $('.parent-bootstrap-switch').each(function(){
 		var ppid = $(this).attr("data-ppid");
 		var student_PIDM = ${StudentBio['STUDENT_PIDM']};
 		$.ajax({
@@ -1066,7 +1069,7 @@
 	               
 	           }
 		 });		 
-	});	
+	});	 */
 	
 	
 	//reset the modal form fields if modal is closed
@@ -1632,13 +1635,17 @@ function showDeleteModal(type,ppid,name){
 		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
-		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();
+		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();
+		
+		console.log("parent_count: " + checkNum('PARENT'));
+		if(checkNum('PARENT') == 1){
+			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',true);
+		}else if(checkNum('PARENT') > 1){
+			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',false);
+		}
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
 			emergencySwitchToggle(ppid,new_contact_name,event,state);
 		});
-		if(checkNum('PARENT') == 1){
-			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
-		}
 		$('#PARENT_LIST #parent_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);
 		});
@@ -1743,14 +1750,14 @@ function showDeleteModal(type,ppid,name){
 			}else if(x == 1){
 				$('.parent-bootstrap-switch').each(function(){
 					if ($(this).is(":checked")){
-						$(this).closest(".bootstrap-switch-wrapper").addClass("bootstrap-switch-readonly");
+						$(this).bootstrapSwitch('disabled',true);
 					}
 				});
 				removeParentFromContact = true;
 			}else{
 				$('.parent-bootstrap-switch').each(function(){
 					if ($(this).is(":checked")){
-						$(this).closest(".bootstrap-switch-wrapper").removeClass("bootstrap-switch-readonly");
+						$(this).bootstrapSwitch('disabled',false)
 					}
 				});
 				removeParentFromContact = true;
@@ -1784,7 +1791,7 @@ function showDeleteModal(type,ppid,name){
 			}			
 			//change read-only state
 			if(x > 1){
-				$('.bootstrap-switch-wrapper').removeClass("bootstrap-switch-readonly");
+				$('.bootstrap-switch-wrapper').removeClass('bootstrap-switch-readonly').removeProp('disabled');
 			}
 		}		
 
