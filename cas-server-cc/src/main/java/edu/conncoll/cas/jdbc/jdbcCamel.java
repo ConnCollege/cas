@@ -552,8 +552,14 @@ public class jdbcCamel {
 				}
 				
 				// Send to PECIC if flag is PECI and record is sufficently complete
+				log.debug ("Checking for PECIE complete");
+				log.debug ("Flag: " + flag);
+				log.debug ("emergData: " + emergData.size());
+				log.debug ("parentData: " + parentData.size());
+				log.debug ("addressData: " + addressData.isEmpty());
+				log.debug ("emailData: " + emailData.isEmpty());
 				if ( !flag.equals("PECIE") ) {
-					if ( (emergData.size() >1)  && (parentData.size() >1)  && (!addressData.isEmpty())  && (!emailData.isEmpty()) )  {
+					if ( (emergData.size() >0)  && (parentData.size() >0)  && (!addressData.isEmpty())  && (!emailData.isEmpty()) )  {
 						context.getFlowScope().put("Flag", "PECIC");
 					}
 				}

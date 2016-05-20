@@ -349,10 +349,12 @@ public class PECIResource extends Resource
 									}
 									//email
 									updates = compareMap(emailDataIn, emailData);
+									if (!updates.isEmpty()) log.debug ("Updating email data");
 									writeUpdates(namedParameters,updates,"cc_gen_peci_email_data_t");
 									
 									//adresses
 									updates = compareMap(addressDataIn, addressData);
+									if (!updates.isEmpty()) log.debug ("Updating adress data");
 									writeUpdates(namedParameters,updates,"cc_gen_peci_addr_data_t");
 	
 									//phones
@@ -651,10 +653,10 @@ public class PECIResource extends Resource
 		        		if (!(origValue.equals(testValue))){
 		    	        	map.put(key,testValue);
 		        		}
-		        	} else if ( !(testValue.getClass().getName().equals("org.json.JSONObject$Null")) ) {
-		        		map.put(key,testValue);
 		        	} 
-        		} 
+        		} else if ( !(testValue.getClass().getName().equals("org.json.JSONObject$Null")) && testValue != null) {
+	        		map.put(key,testValue);
+	        	} 
 	        }
 	    }    
 	    return map;   
