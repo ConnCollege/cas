@@ -959,7 +959,11 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_NUMBER",intData.getField(11));
 					phoneRecord.put("PHONE_AREA_CODE",intData.getField(27));
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(28));
-					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(31));
+					if (intData.getField(31).equals("null")) {
+						phoneRecord.put("PHONE_SEQUENCE_NO","");
+					}else {
+						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(31));
+					}
 					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
@@ -974,7 +978,11 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_AREA_CODE",intData.getField(23));
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(24));
 					phoneRecord.put("CELL_PHONE_CARRIER",intData.getField(14));
-					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
+					if (intData.getField(32).equals("null")) {
+						phoneRecord.put("PHONE_SEQUENCE_NO","");
+					}else {
+						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
+					}
 					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
@@ -988,7 +996,11 @@ public class jdbcCamel {
 					phoneRecord.put("PHONE_NUMBER",intData.getField(16));
 					phoneRecord.put("PHONE_AREA_CODE",intData.getField(29));
 					phoneRecord.put("PHONE_NUMBER_INTL",intData.getField(30));
-					phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
+					if (intData.getField(33).equals("null")) {
+						phoneRecord.put("PHONE_SEQUENCE_NO","");
+					}else {
+						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
+					}
 					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();

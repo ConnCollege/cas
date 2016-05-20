@@ -141,7 +141,7 @@ public class PECIResource extends Resource
 					Map<String,Object> addressData = new HashMap<String,Object>();
 					if (dataType.equals("PHONES")) {
 						SQL="select distinct PECI_PHONE_CODE, PHONE_CODE, concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
-								+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,"				
+								+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL, phone.PHONE_SEQUENCE_NO,"				
 								+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
 								+"  from cc_gen_peci_phone_data_t phone"
 								+"  left join (select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"
@@ -652,11 +652,15 @@ public class PECIResource extends Resource
 	        if (origMap.containsKey(key) || origMap.size() == 0) {
 	        	Object origValue = origMap.get(key);
         		if (origValue != null) {
-			        if (origValue.getClass().getName().equals("java.lang.String") || origValue.getClass().getName().equals("java.lang.Integer")) {
+			        if ( origValue.getClass().getName().equals("java.lang.String") ) {
 		        		if (!(origValue.equals(testValue))){
-		    	        	map.put(key,testValue);
+		    	        	map.put(key,testValue.toString());
 		        		}
-		        	} 
+		        	} else if ( origValue.getClass().getName().equals("java.lang.Integer") ){
+		        		if (!(origValue != testValue)){
+		        			map.put(key,testValue);
+		        		}
+		        	}
         		} else if ( !(testValue.getClass().getName().equals("org.json.JSONObject$Null")) && testValue != null) {
 	        		map.put(key,testValue);
 	        	} 
