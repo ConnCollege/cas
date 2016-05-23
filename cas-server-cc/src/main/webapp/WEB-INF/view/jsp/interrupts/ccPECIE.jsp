@@ -137,7 +137,7 @@
 	<p>Please <strong>do not</strong> enter your local or campus address. </p>
 
 	<p><span class="required">* </span>Required Field</p>  
-	
+	${StudentBio}
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_FORM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">There was an error with your form submission. Please fix the areas indicated in red below.</span></div>
 		
 	<div class="form-group" id="group_student_firstname">
@@ -216,7 +216,7 @@
 			<input type="text" placeholder="Province/Region" name="fields[9]" class="form-control address_field" id="STUDENT_ADDR_STAT_CODE" value="${StudentAddr['ADDR_STAT_CODE']}">
 		</div> --%>
 		<div class="col-sm-9">
-			<select class="form-control address_field STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE">
+			<select class="form-control address_field STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE" disabled="disabled">
 				<option value="">Choose Province/Region</option>
 				<c:forEach items="${options['Regions']}" var="regions">
 					<option <c:if test="${regions.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${regions.key}">${regions.value}</option>
@@ -269,12 +269,6 @@
 		</div>
 	</div> 
 	
-	<%
-			/*out.print(displayInput(true,"address_field","Postal Code",2,10,"student_postal_code","postal code","",true,false));
-			out.print("<div id='student_clnaddr_results' name='student_clnaddr_results'></div>");
-			out.print(displayInput(false,"","Home Phone",2,10,"student_home_phone","tel","",true,false));
-			out.print(displayInput(false,"","Non-college email",2,10,"student_non_college_email","email","",true,false));*/			
-		%>   	
 	</div>
  ${StudentCellPhone}
 	<div id="step2" class="form_section">
@@ -282,9 +276,9 @@
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
-		<label for="Phone" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>		
+		<label for="Phone" class="control-label col-sm-3"><c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}"><span class="required">* </span></c:if>Mobile Phone</label>		
 		<div class="col-xs-2">
-			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-xs-4">
 			<input type="tel" data-phone-type="CP" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control ccreq num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
@@ -322,14 +316,14 @@
 	<div class="form-group" id="group_student_mobile_phone_check">
 		<div class="col-sm-offset-1 col-sm-9">
 			<div class="checkbox">
-				<label><input type="checkbox" name="fields[15]" class="mobile_phone_check" data-mobile-type="STUDENT" <c:if test="${StudentCellPhone['EMERG_NO_CELL_PHONE'] == 'Y'}"> checked="checked"</c:if>>I don't have a mobile phone</label>
+				<label><input type="checkbox" name="fields[15]" class="mobile_phone_check" data-mobile-type="STUDENT" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}"> checked="checked"</c:if>>I don't have a mobile phone</label>
 			</div>
 		</div>
 	</div>
-	<%-- EmrPhone: ${StudentEmrPhone} --%>
+	 EmrPhone: ${StudentEmrPhone}
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="display:none;">
+	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null }">style="display:none;"</c:if>>
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-xs-2">
 			<input type="tel" data-phone-type="EMERGENCY" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
@@ -986,22 +980,28 @@
 	$('.country_field').change(function(){
 		var form_id = $(this).closest('form').attr("id");
 		var intlFieldGroup = '#GROUP_' + form_id + '_INTL_REGION';
+		var intlField = intlFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
 		var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
-		var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';
-		var stateField = '#' + form_id + '_ADDR_STAT_CODE';
+		var stateField = stateFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
+		console.log(stateField);
+		var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';		
 		var zipField = '#' + form_id + '_ADDR_ZIP';
 		if($(this).val() == 'United States' || $(this).val() == "US"){
 			$(stateFieldGroup).show();
 			$(stateField).addClass('ccreq');
+			$(stateField).removeProp('disabled');
 			$(zipField).addClass('ccreq');
 			$(zipFieldGroup + ' .required').show();
 			$(intlFieldGroup).hide();
+			$(intlField).prop('disabled','disabled');
 		}else{
 			$(stateFieldGroup).hide();
 			$(stateField).removeClass('ccreq');
+			$(stateField).prop('disabled','disabled');
 			$(zipField).removeClass('ccreq');
 			$(zipFieldGroup + ' .required').hide();
 			$(intlFieldGroup).show();
+			$(intlField).removeProp('disabled');
 		}
 		
 	});
@@ -1102,19 +1102,23 @@
 		if($(this).prop('checked')){			
 			if(typeToSteal == 'STUDENT'){
 				$('.STUDENT_ADDRESS_FIELD').each(function(){
-					var thisID = $(this).attr('id');
-					var thisID = thisID.replace('STUDENT','');
-					var thisVal = $(this).val();
-					$('#'+ thisType + thisID).val(thisVal);
+					if($(this).is(':visible')){
+						var thisID = $(this).attr('id');
+						var thisID = thisID.replace('STUDENT','');
+						var thisVal = $(this).val();
+						$('#'+ thisType + thisID).val(thisVal);
+					}
 				});
 			}				
 		}else{
 			if(typeToSteal == 'STUDENT'){
 				$('.STUDENT_ADDRESS_FIELD').each(function(){
-					var thisID = $(this).attr('id');
-					var thisID = thisID.replace('STUDENT','');
-					var thisVal = $(this).val();
-					$('#'+ thisType + thisID).val('');
+					if($(this).is(':visible')){
+						var thisID = $(this).attr('id');
+						var thisID = thisID.replace('STUDENT','');
+						var thisVal = $(this).val();
+						$('#'+ thisType + thisID).val('');
+					}
 				});
 			}
 		}
@@ -1174,6 +1178,9 @@ function showDeleteModal(type,ppid,name){
       	   	}else{
       		   enableModalEnter(type);
       	   	}
+        	 if(checkNum('PARENT') == 1){
+     			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',true);
+        	 }
          },
          error: function (request, status, error) {
              //console.log("ERROR: " + request.responseText);
@@ -1641,7 +1648,7 @@ function showDeleteModal(type,ppid,name){
 		if(checkNum('PARENT') == 1){
 			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',true);
 		}else if(checkNum('PARENT') > 1){
-			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',false);
+			$('.bootstrap-switch').bootstrapSwitch('disabled',false);
 		}
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
 			emergencySwitchToggle(ppid,new_contact_name,event,state);
