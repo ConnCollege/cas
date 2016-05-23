@@ -431,31 +431,41 @@
 	      </div>
 	    </div>
     </div>
+    ${EmmrgPhones}
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
 	    
 	    <ul ID="CAMPUS_ALERT_NUMBERS">
-		    <c:forEach items="${EmmrgPhones}" var="emmrg">
+		    <c:forEach items="${EmmrgPhones}" var="emmrg">	
+		    	<li class="list-unstyled <c:if test="${emmrg.PHONE_CODE == 'EP' }">grayed-out</c:if>">
+		    	<input <c:if test="${emmrg.PHONE_CODE == 'EP' }">id="STUDENT_EP_NUMBER" disabled="disabled"</c:if> type="checkbox" class="alert_phone_number" <c:if test="${emmrg.PHONE_CODE == 'EP' || fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">checked="checked"</c:if> value="${emmrg.PHONE_NUM}" name="fields[25]" >
+		    	<span <c:if test="${emmrg.PHONE_CODE == 'EP' }">id="STUDENT_EP_NUMBER_TEXT"</c:if>>&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} <c:if test="${emmrg.PHONE_CODE == 'EP' }">- Your phone number will always be contacted)</c:if></span></li>	
+		    	<c:if test="${emmrg.PHONE_CODE == 'EP' || fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }"><input type="hidden" name="checked_phone_numbers" value="${emmrg.PHONE_NUM}"></span></c:if>
+		  
 		    
-		    	 <c:choose>
+		    	 <%-- <c:choose>
 		    	 	<c:when test="${emmrg.PHONE_CODE == 'EP' }">
 		    	 		<!-- Student's emergency number, grey out, check it off and disable it -->
-		    	 		<li class="list-unstyled grayed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
-		    	 		<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
+		    	 		<div id="GROUP_STUDENT_EP_NUMBER">
+			    	 		<li class="list-unstyled grayed-out"><input id="STUDENT_EP_NUMBER" type="checkbox" class="alert_phone_number" disabled="disabled" checked="checked" value="${emmrg.PHONE_NUM}" name="fields[25]" ><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} - Your phone number will always be contacted)</li>	
+		    	 		</div>
+		    	 		<input type="hidden" name="checked_phone_numbers" value="${emmrg.PHONE_NUM}"></span>
 		    	 	</c:when>
-		    	 	<c:when test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
-		    	 		<!-- This number is has been previously checked off as a campus alert number, check it off by default -->
-		    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number" value="${emmrg.PHONE_NUM}" name="fields[25]" checked="checked">
-		    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
-		    	 		<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
-		    	 	</c:when>
-		    	 	<c:otherwise>
-		    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number value="${emmrg.PHONE_NUM}" name="fields[25]">
-		    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
-		    			<input type="hidden" name="all_phone_numbers" value="${emmrg.PHONE_NUM}">
-		    	 	</c:otherwise>		    	 
-		    	 </c:choose>
+		    	 	<div id="GROUP_ALL_EP_NUMBERS">
+			    	 	<c:when test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
+			    	 		<!-- This number is has been previously checked off as a campus alert number, check it off by default -->
+			    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number" value="${emmrg.PHONE_NUM}" name="fields[25]" checked="checked">
+			    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
+			    	 		<input type="hidden" name="checked_phone_numbers" value="${emmrg.PHONE_NUM}">
+			    	 	</c:when>
+			    	 	<c:otherwise>
+			    	 		<li class="list-unstyled"><input type="checkbox" class="alert_phone_number value="${emmrg.PHONE_NUM}" name="fields[25]">
+			    	 		&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME})</li>	
+			    			<input type="hidden" name="checked_phone_numbers" value="${emmrg.PHONE_NUM}">
+			    	 	</c:otherwise>	
+		    	 	</div>	    	 
+		    	 </c:choose> --%>
 		    	 
 		    </c:forEach>
 		</ul>
@@ -681,7 +691,7 @@
 						</div>
 					</div>
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use address information from: </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><option value="STUDENT">My Address</option></select></div></div></div>	
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use my address information </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><option value="STUDENT">My Address</option></select></div></div></div>	
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
@@ -861,9 +871,10 @@
       }
     }); */
 	 
-	 all_phone_numbers = $("input[name=all_phone_numbers]").map(function(i,c){ return c.value; });
-     //console.log(all_phone_numbers);
-	 ajaxurl = "/cas/cas-rest-api/peci/";
+	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });
+     //console.log(checked_phone_numbers);
+	 ajaxurl = "/cas/cas-rest-api/peci/?x=" + Date.now();
+	 console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 
 	 //check parent and contact numbers on page load
@@ -896,7 +907,7 @@
 	if(emr_switch_count == 1){
 		console.log('emr_switch_count = 1');
 		//$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
-		$('.parent-bootstrap-switch').bootstrapSwitch('disabled',true);
+		$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);
 	}	
 	 	 
 	$('mobile_phone_check').each(function(){
@@ -962,7 +973,7 @@
 		}else if(thisType == 'EMERGENCY_INTL'){
 			phone_number = $('#STUDENT_PHONE_EMERGENCY_NUMBER_INTL').val();
 		}		
-		if($.inArray(phone_number,all_phone_numbers) == -1){
+		if($.inArray(phone_number,checked_phone_numbers) == -1){
 			//add number to campus alert phone number list
 			addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
 		}
@@ -1554,13 +1565,13 @@ function showDeleteModal(type,ppid,name){
 				var alert_phone_number = "" + phone_area_code + phone_number;
 			}
 			
-			if($.inArray(alert_phone_number,all_phone_numbers) == -1){
+			/* if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
 				//add number to campus alert phone number list
 				console.log("add this num: " + alert_phone_number);
 				addCampusAlertNumber(alert_phone_number, new_contact_name, form_id);
 			}else{
 				console.log("DONT ADD: " + phone_number);
-			}
+			} */
 			
 		 }			
 
@@ -1688,8 +1699,8 @@ function showDeleteModal(type,ppid,name){
 			$('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);
 		}	
 		//push to all phone number array
-		all_phone_numbers.push(alert_phone_number);
-		//console.log("New all phone numbers: " + all_phone_numbers);
+		checked_phone_numbers.push(alert_phone_number);
+		//console.log("New all phone numbers: " + checked_phone_numbers);
 	}
 	
 	function emergencyNumberToggle(form_id, checked){
@@ -1742,31 +1753,18 @@ function showDeleteModal(type,ppid,name){
 	function emergencySwitchToggle(ppid, name, event, state){
 		var x = 0;
 		var removeParentFromContact = false;
-		$('.parent-bootstrap-switch').each(function(){
-			if ($(this).is(":checked")){
-				x++;
-			}
-		});
+		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;
+		console.log('emr_switch_count: ' + emr_switch_count);
 		if(state == false){
 			//turning parent off
-			if(x < 1){
+			if(emr_switch_count < 1){
 				//turn back on
 				$(this).bootstrapSwitch('state',true);
-				//then show error message "you need to have at least one parent as an emergency contact", even though this should be taken care of by making it read-only below 
-				//$('#PARENT_ERROR').show();
-			}else if(x == 1){
-				$('.parent-bootstrap-switch').each(function(){
-					if ($(this).is(":checked")){
-						$(this).bootstrapSwitch('disabled',true);
-					}
-				});
+			}else if(emr_switch_count == 1){
+				$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
 				removeParentFromContact = true;
 			}else{
-				$('.parent-bootstrap-switch').each(function(){
-					if ($(this).is(":checked")){
-						$(this).bootstrapSwitch('disabled',false)
-					}
-				});
+				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 				removeParentFromContact = true;
 			}			
 			if(removeParentFromContact){
@@ -1778,8 +1776,21 @@ function showDeleteModal(type,ppid,name){
 			//show in emerg contacts list
 			if($('#emr_contact_' + ppid).length){
 				//already exists, just show it
+				console.log('contact already exists, show it');
 				$('#emr_contact_' + ppid).fadeIn();
+				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 			}else{
+				console.log('contact does not exist, use ajax to create');	
+				if(emr_switch_count < 1){
+					//turn back on
+					$(this).bootstrapSwitch('state',true);
+				}else if(emr_switch_count == 1){
+					$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
+					removeParentFromContact = true;
+				}else{
+					$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
+					removeParentFromContact = true;
+				}	
 				//create contact by promoting through restlet
 				$.ajax({
 			           type: "POST",
@@ -1797,9 +1808,9 @@ function showDeleteModal(type,ppid,name){
 				 });		 
 			}			
 			//change read-only state
-			if(x > 1){
+			/* if(x > 1){
 				$('.bootstrap-switch-wrapper').removeClass('bootstrap-switch-readonly').removeProp('disabled');
-			}
+			} */
 		}		
 
 		  //console.log("ppid: " + ppid);
@@ -1809,7 +1820,48 @@ function showDeleteModal(type,ppid,name){
 		  //console.log(state); // true | false
 	}
 	
-
+	function getAlertNumbers(){
+		$.ajax({
+	           type: "POST",
+	           url: ajaxurl,
+	           data: JSON.stringify({"PIDM": student_PIDM, "PPID": null, "DATA": "PHONES", "MODE": "READ"}),
+	           datatype: "json",
+	           contentType: "application/json",
+	           success: function(data)           
+	           {  
+	        	 //phones
+	        	 if(data.phones.length > 0){
+	        		 $('#CAMPUS_ALERT_NUMBERS').html('');	        		 
+	        	 }
+	        	  for(i=0;i<data.phones.length;i++){
+	          		  var phone_code = data.phones[i].PHONE_CODE;
+	        		  //var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
+	        		  if(phone_code != 'EP'){
+		        		  var phone_area_code = data.phones[i].PHONE_AREA_CODE;
+		        		  var phone_number = data.phones[i].PHONE_NUMBER;
+		        		  var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
+		        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
+		        		  var contact_name = data.phones[i].Pref_Name;
+		        		  if(phone_number_intl.length > 0){
+		        			  var alert_phone_number = phone_number_intl;
+		        		  }else{
+		        			  var alert_phone_number = '' + phone_area_code + phone_number;
+		        		  }
+		        		  if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
+		        			  var newAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
+			      			}else{
+			      				var newAlertNumber = '<li class="list-unstyled"><input type="checkbox" checked="checked" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
+			      			}
+		      			  $('#GROUP_ALL_ALERT_NUMBERS').append(newAlertNumber);   
+		      			
+	        		  }
+	        	  }		        		  
+	           },
+	           error: function (request, status, error) {
+	               
+	           }
+		 });		 
+	}
  
 	
  </script>
