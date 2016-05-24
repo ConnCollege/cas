@@ -557,8 +557,8 @@ public class jdbcCamel {
 				log.debug ("Flag: " + flag);
 				log.debug ("emergData: " + emergData.size());
 				log.debug ("parentData: " + parentData.size());
-				log.debug ("addressData: " + addressData.isEmpty());
-				log.debug ("emailData: " + emailData.isEmpty());
+				log.debug ("addressData: " + !addressData.isEmpty());
+				log.debug ("emailData: " + !emailData.isEmpty());
 				if ( !flag.equals("PECIE") ) {
 					if ( (emergData.size() >0)  && (parentData.size() >0)  && (!addressData.isEmpty())  && (!emailData.isEmpty()) )  {
 						context.getFlowScope().put("Flag", "PECIC");
@@ -935,10 +935,10 @@ public class jdbcCamel {
 				addressDataIn.put("ADDR_STREET_LINE2",intData.getField(5));
 				addressDataIn.put("ADDR_NATN_CODE",intData.getField(6));
 				addressDataIn.put("ADDR_CITY",intData.getField(7));
-				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,1));
+				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,2));
 				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
 				
-				updates = PECIResource.compareMap(addressDataIn,addressData);
+				updates = compareMap(addressDataIn,addressData);
 				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_addr_data_t", jdbcCAS);
 				
 				//Home email
@@ -947,7 +947,7 @@ public class jdbcCamel {
 					emailDataIn.put("EMAIL_ADDRESS",intData.getField(12));
 				}				
 				
-				updates = PECIResource.compareMap(emailDataIn,emailData);
+				updates = compareMap(emailDataIn,emailData);
 				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_email_data_t", jdbcCAS);
 				
 				
@@ -1005,7 +1005,7 @@ public class jdbcCamel {
 					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
-				} else if (intData.getField(16) != "" || intData.getField(30) != "") {
+				} else if (intData.getField(13) != "" || intData.getField(24) != "") {
 					phoneRecord.put("PECI_PHONE_CODE","E");
 					phoneRecord.put("PHONE_CODE","EP");
 					phoneRecord.put("PHONE_STATUS_IND","A");
@@ -1035,10 +1035,8 @@ public class jdbcCamel {
 				studentDataIn.put("EMERG_SEND_TEXT",intData.getField(17));	
 				studentDataIn.put("EMERG_PHONE_TTY_DEVICE",intData.getField(18));	
 			    studentDataIn.put("EMERG_AUTO_OPT_OUT",intData.getField(19));
-				/*
 				
-				updates = PECIResource.compareMap(studentDataIn,studentData);
-				
+				updates = compareMap(studentDataIn,studentData);
 				Map<String, Object> sourceData = new HashMap<String, Object>();
 				SQL="select CHANGE_COLS from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				sourceData = jdbcCAS.queryForMap(SQL,PECIParameters);
@@ -1055,7 +1053,8 @@ public class jdbcCamel {
 				SQL = SQL + "CHANGE_COLS = '" + changeCol +"'";
 				SQL = SQL + " where STUDENT_PIDM=:STUDENT_PIDM";
 				jdbcCAS.update(SQL,PECIParameters);
-				*/
+				
+				
 				String EMERG_ORDER = intData.getField(26);
 				String PHONE_ORDER = intData.getField(25);
 				
@@ -1684,6 +1683,34 @@ public class jdbcCamel {
 			return super.execute(inputs);
 		}
 	}
+	
+	public static Map<String, Object> compareMap(Map<String, Object> testMap, Map<String, Object> origMap) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		List<String> columns = new ArrayList(testMap.keySet());
+		for(int i=0; i<columns.size(); i++) { 
+	        String key = columns.get(i);
+	        Object testValue = testMap.get(key);
+	        if (origMap.containsKey(key) || origMap.size() == 0) {
+	        	Object origValue = origMap.get(key);
+        		if (origValue != null) {
+			        if ( origValue.getClass().getName().equals("java.lang.String") ) {
+		        		if (!(origValue.equals(testValue))){
+		    	        	map.put(key,testValue.toString());
+		        		}
+		        	} else if ( origValue.getClass().getName().equals("java.lang.Integer") ){
+		        		if (!(origValue != testValue)){
+		        			map.put(key,testValue);
+		        		}
+		        	}
+        		} else if ( testValue != null) {
+	        		map.put(key,testValue);
+	        	} 
+	        }
+	    }    
+	    return map;   
+	}
+	
 	
 	private class UUIDRemove extends StoredProcedure {
 		public UUIDRemove( DataSource dataSource ) {
