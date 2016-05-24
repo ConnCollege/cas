@@ -931,6 +931,8 @@ public class jdbcCamel {
 				Map<String,Object> phoneRecord = new HashMap<String,Object>();
 				Map<String,Object> updates = new HashMap<String,Object>();
 				
+				addressDataIn.put("PECI_ADDR_CODE","H");
+				addressDataIn.put("ADDR_CODE","MA");
 				addressDataIn.put("ADDR_STREET_LINE1",intData.getField(4));
 				addressDataIn.put("ADDR_STREET_LINE2",intData.getField(5));
 				addressDataIn.put("ADDR_NATN_CODE",intData.getField(6));
@@ -938,7 +940,11 @@ public class jdbcCamel {
 				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,2));
 				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
 				
+				log.debug("Address: " + addressData);
+				log.debug("Address in: " + addressDataIn);
+				
 				updates = compareMap(addressDataIn,addressData);
+				log.debug(updates);
 				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_addr_data_t", jdbcCAS);
 				
 				//Home email
@@ -1031,10 +1037,26 @@ public class jdbcCamel {
 					log.warn ("Student Phone save failed.");
 				}
 				
-				studentDataIn.put("EMERG_NO_CELL_PHONE",intData.getField(15));	
-				studentDataIn.put("EMERG_SEND_TEXT",intData.getField(17));	
-				studentDataIn.put("EMERG_PHONE_TTY_DEVICE",intData.getField(18));	
-			    studentDataIn.put("EMERG_AUTO_OPT_OUT",intData.getField(19));
+				if (intData.getField(15) == null){
+					studentDataIn.put("EMERG_NO_CELL_PHONE","N");
+				}else {
+					studentDataIn.put("EMERG_NO_CELL_PHONE","Y");
+				}
+				if (intData.getField(17) == null){
+					studentDataIn.put("EMERG_SEND_TEXT","N");
+				}else {
+					studentDataIn.put("EMERG_SEND_TEXT","Y");
+				}	
+				if (intData.getField(18) == null){
+					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","N");
+				}else {
+					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","y");
+				}
+				if (intData.getField(19) == null){
+					studentDataIn.put("EMERG_AUTO_OPT_OUT","N");
+				}else {
+					studentDataIn.put("EMERG_AUTO_OPT_OUT","Y");
+				}	
 				
 				updates = compareMap(studentDataIn,studentData);
 				Map<String, Object> sourceData = new HashMap<String, Object>();
@@ -1694,13 +1716,9 @@ public class jdbcCamel {
 	        if (origMap.containsKey(key) || origMap.size() == 0) {
 	        	Object origValue = origMap.get(key);
         		if (origValue != null) {
-			        if ( origValue.getClass().getName().equals("java.lang.String") ) {
+			        if ( origValue.getClass().getName().equals("java.lang.String") || origValue.getClass().getName().equals("java.lang.Integer")) {
 		        		if (!(origValue.equals(testValue))){
-		    	        	map.put(key,testValue.toString());
-		        		}
-		        	} else if ( origValue.getClass().getName().equals("java.lang.Integer") ){
-		        		if (!(origValue != testValue)){
-		        			map.put(key,testValue);
+		    	        	map.put(key,testValue);
 		        		}
 		        	}
         		} else if ( testValue != null) {
