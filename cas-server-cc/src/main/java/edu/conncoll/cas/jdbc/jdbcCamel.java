@@ -943,7 +943,7 @@ public class jdbcCamel {
 				
 				//Home email
 				if (intData.getField(12) != ""){
-					emailDataIn.put("PECI_EMAIL_CODE","MA");
+					emailDataIn.put("PECI_EMAIL_CODE","H");
 					emailDataIn.put("EMAIL_ADDRESS",intData.getField(12));
 				}				
 				
