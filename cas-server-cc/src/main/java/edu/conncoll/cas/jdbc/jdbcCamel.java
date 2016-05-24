@@ -1040,7 +1040,7 @@ public class jdbcCamel {
 				if (intData.getField(18) == null){
 					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","N");
 				}else {
-					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","y");
+					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","Y");
 				}
 				if (intData.getField(19) == null){
 					studentDataIn.put("EMERG_AUTO_OPT_OUT","N");
@@ -1095,6 +1095,22 @@ public class jdbcCamel {
 				
 				
 				String PHONE_ORDER = intData.getField(25);
+				
+				SQL= "DELETE FROM cc_gen_peci_phone_data_t where PHONE_CODE Like 'EP_' and STUDENT_PIDM=:STUDENT_PIDM";
+				jdbcCAS.update(SQL,PECIParameters);
+				
+				if (PHONE_ORDER != null) {
+					String[] pOrder = PHONE_ORDER.toString().split(",");
+					for(int i=0; i< pOrder.length; i++) {
+						int e = i+1;
+						SQL="insert into cas.cc_gen_peci_phone_data_t (STUDENT_PIDM, PARENT_PPID, PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL)"
+							+"	select distinct STUDENT_PIDM, '0' PARENT_PPID, 'E' PECI_PHONE_CODE, 'EP" + e + "' PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL from cc_gen_peci_phone_data_t phone"
+							+"	where concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL)=" + pOrder[i]
+							+"	and STUDENT_PIDM = :STUDENT_PIDM";
+						jdbcCAS.update(SQL,PECIParameters);
+					}
+				}	
+				
 				
 				context.getFlowScope().put("Flag","PECIC");
 			}
