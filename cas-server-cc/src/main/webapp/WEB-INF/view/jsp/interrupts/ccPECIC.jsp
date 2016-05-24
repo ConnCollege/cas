@@ -236,20 +236,28 @@
 	     	<div>${StudentCellPhone['CELL_PHONE_CARRIER']}</div>
 	  	</div>
 	</div>
-		<div class="row">
+	<div class="row">
 		<div class="col-xs-3">
 	    	<div>Send Text </div>
 	 	</div>
 	 	<div class="col-xs-9">
-	     	<div>${StudentCellPhone['EMERG_SEND_TEXT']}</div>
+	     	<div>${StudentBio['EMERG_SEND_TEXT']}</div>
 	  	</div>
 	</div>
-		<div class="row">
+	<div class="row">
 		<div class="col-xs-3">
 	    	<div>TTY Device</div>
 	 	</div>
 	 	<div class="col-xs-9">
-	     	<div>${StudentCellPhone['PHONE_TTY_DEVICE']}</div>
+	     	<div>${StudentBio['EMERG_PHONE_TTY_DEVICE']}</div>
+	  	</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+	    	<div>Opt Out of Campus Alerts</div>
+	 	</div>
+	 	<div class="col-xs-9">
+	     	<div>${StudentBio['EMERG_AUTO_OPT_OUT']}</div>
 	  	</div>
 	</div>
   </div>
@@ -279,7 +287,7 @@
 	  	 <c:forEach items="${StudentEMR}" var="contacts">
 	  	 	<c:set var="y" value="${y + 1}" scope="page" />	
 	    	<div class="contact_info info_box" id="CONTACT_${contacts.PARENT_PPID}" data-type-id="CONTACT" data-ppid="${contacts.PARENT_PPID}">
-				<h4>Emergency Contact ${x}</h4>
+				<h4>Emergency Contact ${y}</h4>
 		    </div>			        
 	    </c:forEach> 
 	    <c:if test="${y == 0 }">
@@ -341,8 +349,8 @@ $(document).ready(function() {
 	var phoneValues= ["Phone Type","Area Code","Phone Number","Phone Carrier"]
 	
 	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
-	x = 0;
-	y= 0;
+	var x = 0;
+	var y= 0;
 			
 	$('.contact_info').each(function(){
 		var ppid = $(this).attr("data-ppid");
