@@ -140,43 +140,44 @@ public class PECIResource extends Resource
 					Map<String,Object> emailData =new HashMap<String,Object>();
 					Map<String,Object> addressData = new HashMap<String,Object>();
 					if (dataType.equals("PHONES")) {
-						SQL="select distinct PECI_PHONE_CODE, PHONE_CODE, concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
-								+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL, phone.PHONE_SEQUENCE_NO,"				
+						SQL="select distinct case when PECI_PHONE_CODE = 'E' then 'E' else null end PECI_PHONE_CODE, "
+								+"		     case when PHONE_CODE like 'ep%' then PHONE_CODE else null end PHONE_CODE,"
+								+"           concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
+								+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,"				
 								+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
 								+"  from cc_gen_peci_phone_data_t phone"
 								+"  left join (select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"
-								+"			        Group_Concat(concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME"
+								+"			        Group_Concat(concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME,"
+								+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 								+"			  from cc_gen_peci_phone_data_t p"
 								+"			 inner join cc_adv_peci_parents_t par"
 								+"			    on p.PARENT_PPID = par.PARENT_PPID"
+								+"			   and par.CHANGE_COLS <> 'DELETE'"
 								+"			 group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents"
-								+"   on ((phone.PHONE_AREA_CODE = parents.PHONE_AREA_CODE"
-								+"  and phone.PHONE_NUMBER = parents.PHONE_NUMBER)"
-								+"   or phone.PHONE_NUMBER_INTL = parents.PHONE_NUMBER_INTL)"
+								+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = parents.Phone_Num"
 								+"  and phone.STUDENT_PIDM = parents.STUDENT_PIDM"
 								+" left join (select p.STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL,  "
-								+"			        Group_Concat(concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME"
+								+"			        Group_Concat(concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME,"
+								+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 								+"			   from cc_gen_peci_phone_data_t p"
 								+"			   left join cc_gen_peci_emergs_t EMERG"
 								+"			     on p.PARENT_PPID = EMERG.PARENT_PPID"
 								+"			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+								+"			    and EMERG.CHANGE_COLS <> 'DELETE'"
 								+"			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=p.STUDENT_PIDM)"
 								+"			  group by PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) EMERG"
-								+"   on ((phone.PHONE_AREA_CODE = EMERG.PHONE_AREA_CODE"
-								+"  and phone.PHONE_NUMBER = EMERG.PHONE_NUMBER)"
-								+"    or phone.PHONE_NUMBER_INTL = EMERG.PHONE_NUMBER_INTL)"
+								+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = EMERG.Phone_Num"
 								+"   and phone.STUDENT_PIDM = EMERG.STUDENT_PIDM"
 								+"  left join (Select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"  
-								+"				    concat(PREFERRED_FIRST_NAME,' ',PREFERRED_LAST_NAME) STUDENT_PREF_NAME"
+								+"				    concat(PREFERRED_FIRST_NAME,' ',PREFERRED_LAST_NAME) STUDENT_PREF_NAME,"
+								+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 								+"			   from cc_gen_peci_phone_data_t p"
 								+"			  inner join cc_stu_peci_students_t s"
 								+"                 on p.STUDENT_PIDM = s.STUDENT_PIDM"
-								+"			    and p.PARENT_PPID = 0"
+								+"			    and p.PARENT_PPID = '0'"
 								+"			  where PHONE_CODE Not Like 'EP_'"
 								+"			  group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) student"
-								+"    on ((phone.PHONE_AREA_CODE = student.PHONE_AREA_CODE"
-								+"   and phone.PHONE_NUMBER = student.PHONE_NUMBER)"
-								+"    or phone.PHONE_NUMBER_INTL = student.PHONE_NUMBER_INTL)"
+								+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = student.Phone_Num"
 								+"   and phone.STUDENT_PIDM = student.STUDENT_PIDM"
 								+" where (concat_ws(',',phone.PHONE_AREA_CODE,phone.PHONE_NUMBER,phone.PHONE_NUMBER_INTL,phone.STUDENT_PIDM) not in "
 								+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
@@ -675,8 +676,21 @@ public class PECIResource extends Resource
 	
 	public static void phoneUpdate (List<Map<String,Object>> phoneDataIn, List<Map<String,Object>> phoneData, Map<String,Object> namedParameters, NamedParameterJdbcTemplate jdbcCAS) throws Exception {
 		String SQL;
+		
 		for (int i=0;i<phoneDataIn.size();i++){
 			Map<String,Object> phoneRecordIn = phoneDataIn.get(i);
+			
+			String phoneNumber = "";
+			if (phoneRecordIn.containsKey("PHONE_NUMBER")){
+				if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
+					phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
+			}
+			
+			String phoneNumberIntl = "";
+			if (phoneRecordIn.containsKey("PHONE_NUMBER_INTL")) {
+				if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
+					phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
+			}
 			
 			if (( phoneRecordIn.get("PHONE_SEQUENCE_NO").getClass().getName().equals("org.json.JSONObject$Null") ) || phoneRecordIn.get("PHONE_SEQUENCE_NO")=="") {
 				//Add a phone to the parent 
@@ -695,25 +709,27 @@ public class PECIResource extends Resource
 					seqNo = maxData.get("seq").toString().charAt(0);
 					seqNo = (char)((int)seqNo + 1);
 				}
-				SQL = "INSERT cc_gen_peci_phone_data_t SET ";
-				List<String> columns = new ArrayList(phoneRecordIn.keySet());
-				for(int y=0; y<columns.size(); y++) { 
-			        String key = columns.get(y);
-			        if (!key.equals("PHONE_SEQUENCE_NO")) {
-				        Object newValue = phoneRecordIn.get(key);
-				        if (newValue.getClass().getName().equals("java.lang.String")) {
-				        	SQL = SQL + key +" = '" +  newValue + "', ";
-				        } else {
-				        	SQL = SQL + key +" = " +  newValue + ", ";
+				if ( !phoneNumberIntl.equals("") || !phoneNumber.equals("")) {
+					SQL = "INSERT cc_gen_peci_phone_data_t SET ";
+					List<String> columns = new ArrayList(phoneRecordIn.keySet());
+					for(int y=0; y<columns.size(); y++) { 
+				        String key = columns.get(y);
+				        if (!key.equals("PHONE_SEQUENCE_NO")) {
+					        Object newValue = phoneRecordIn.get(key);
+					        if (newValue.getClass().getName().equals("java.lang.String")) {
+					        	SQL = SQL + key +" = '" +  newValue + "', ";
+					        } else {
+					        	SQL = SQL + key +" = " +  newValue + ", ";
+					        }
 				        }
-			        }
-			    } 
-				SQL = SQL + "CHANGE_COLS = 'NEW', "
-					+ "STUDENT_PIDM=:STUDENT_PIDM, "
-					+ "PARENT_PPID=:PARENT_PPID, "
-					+ "PHONE_SEQUENCE_NO='" + seqNo + "'";
-				
-				jdbcCAS.update(SQL,namedParameters);
+				    } 
+					SQL = SQL + "CHANGE_COLS = 'NEW', "
+						+ "STUDENT_PIDM=:STUDENT_PIDM, "
+						+ "PARENT_PPID=:PARENT_PPID, "
+						+ "PHONE_SEQUENCE_NO='" + seqNo + "'";
+					
+					jdbcCAS.update(SQL,namedParameters);
+				}
 			} else {
 				for (int x=0;x<phoneData.size();x++) {
 				
@@ -723,18 +739,6 @@ public class PECIResource extends Resource
 						Map<String,Object> phoneParameters = namedParameters;
 						phoneParameters.put("PHONE_SEQUENCE_NO", phoneRecordIn.get("PHONE_SEQUENCE_NO"));
 						phoneParameters.put("PHONE_CODE", phoneRecordIn.get("PHONE_CODE"));
-						
-						String phoneNumber = "";
-						if (phoneRecordIn.containsKey("PHONE_NUMBER")){
-							if (!(phoneRecordIn.get("PHONE_NUMBER").getClass().getName().equals("org.json.JSONObject$Null")))
-								phoneNumber=(String)phoneRecordIn.get("PHONE_NUMBER");
-						}
-						
-						String phoneNumberIntl = "";
-						if (phoneRecordIn.containsKey("PHONE_NUMBER_INTL")) {
-							if (!(phoneRecordIn.get("PHONE_NUMBER_INTL").getClass().getName().equals("org.json.JSONObject$Null")))
-								phoneNumberIntl = (String)phoneRecordIn.get("PHONE_NUMBER_INTL");
-						}
 						
 						if ((phoneNumber.isEmpty()) && (phoneNumberIntl.isEmpty())){
 							//Inactivate the phone record
