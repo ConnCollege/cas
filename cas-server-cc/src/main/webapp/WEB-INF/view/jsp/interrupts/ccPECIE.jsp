@@ -440,7 +440,7 @@
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">	
 		    	<li class="list-unstyled <c:if test="${emmrg.PHONE_CODE == 'EP' }">grayed-out</c:if>">
 		    	<input <c:if test="${emmrg.PHONE_CODE == 'EP' }">id="STUDENT_EP_NUMBER" disabled="disabled"</c:if> type="checkbox" class="alert_phone_number" <c:if test="${emmrg.PHONE_CODE == 'EP' || fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">checked="checked"</c:if> value="${emmrg.PHONE_NUM}" name="fields[25]" >
-		    	<span <c:if test="${emmrg.PHONE_CODE == 'EP' }">id="STUDENT_EP_NUMBER_TEXT"</c:if>>&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME} <c:if test="${emmrg.PHONE_CODE == 'EP' }">- Your phone number will always be contacted)</c:if></span></li>	
+		    	<span <c:if test="${emmrg.PHONE_CODE == 'EP' }">id="STUDENT_EP_NUMBER_TEXT"</c:if>>&nbsp;${emmrg.PHONE_NUM}&nbsp;(${emmrg.PREF_NAME}<c:if test="${emmrg.PHONE_CODE == 'EP' }"> - Your phone number will always be contacted</c:if>)</span></li>	 
 		    	<c:if test="${emmrg.PHONE_CODE == 'EP' || fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }"><input type="hidden" name="checked_phone_numbers" value="${emmrg.PHONE_NUM}"></span></c:if>
 		  
 		    
@@ -691,7 +691,7 @@
 						</div>
 					</div>
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use my address information </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><option value="STUDENT">My Address</option></select></div></div></div>	
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use my address information </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE" style="display:none;"><option value="STUDENT">My Address</option></select></div></div></div>	
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
@@ -877,7 +877,7 @@
 	 console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 
-	 //check parent and contact numbers on page load
+	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
 	 if(checkNum('PARENT') >= 5){
 		disableModalEnter('PARENT');
 	 }
@@ -938,8 +938,9 @@
 			$(phone_group).hide();		
 			//show international number
 			$(intl_group).show();
+			console.log('phone_type: ' + phone_type);
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
-				//change required fields
+				//intl number now showing, change required fields
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').removeClass('ccreq');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').removeClass('ccreq');			
@@ -947,7 +948,6 @@
 			//change text of link
 			$(this).html('Enter U.S. Number');
 		}else{
-			//console.log("displayed");
 			$(phone_group).show();			
 			$(intl_group).hide();
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
@@ -1046,12 +1046,16 @@
 	
 	//don't allow any special characters in phone number fields, only 0-9, backspace, delete
 	$(".num_only").keypress(function (e) {
+		console.log(e.which);
 		if (/^\d+$/.test(e.key) ){
 			//console.log("character accepted: " + e.key)
 		} else {
 			//console.log("illegal character detected: "+ e.key)
 			var charCode = (e.which) ? e.which : e.keyCode
-			if (charCode > 31 && (charCode < 48 || charCode > 57)){
+			if (e.key == 'Delete'){
+				//console.log('character accepted' + e.key);
+			}else if (charCode > 31 && (charCode < 48 || charCode > 57)){
+				//console.log("illegal character detected: "+ e.key)
 				return false;
 			}
 		}
@@ -1326,6 +1330,15 @@ function showDeleteModal(type,ppid,name){
 	        			  var new_index = index;
 	        			  var new_index = new_index.replace('EMERG','CONTACT')
 	        			  $('form#' + modal_type + ' #' + new_index).val(element);
+	        			  if(index == 'EMERG_NO_CELL_PHONE'){
+		        			  console.log('Emerg_no_cell_phone: ' + index);
+		        			  if(element == 'Y'){
+		        				  console.log('element: ' + element);
+		        				  console.log('modal_type: ' + modal_type);
+		        				  $('#' + modal_type + '_' + index).attr('checked','checked');
+		        				  emergencyNumberToggle(modal_type, 1);
+		        			  }
+		        		  }
 	  	        	   	//$('#' + index).val(element);
 	  	        	  });
 	        	  }
@@ -1363,12 +1376,18 @@ function showDeleteModal(type,ppid,name){
 		   	        			  //console.log(phone_number_intl);
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').hide();
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').val(phone_number_intl);
-		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').show();        			  
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').show();   
+		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').addClass('ccreq');
+								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
+								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
 		   	        		  }else{
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').hide();
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').val(phone_area_code);
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').val(phone_number);
-		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').show();        			 
+		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').show();  
+		  						  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').removeClass('ccreq');
+								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
+								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');	
 		   	        		  } 
 	        			 }else{
 	        				 $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
@@ -1500,13 +1519,17 @@ function showDeleteModal(type,ppid,name){
 				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
 					emerg_no_cell_phone = 'Y';					
 					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
+						console.log('is visible');	
+					
 						phone_area_code = '';
 						phone_number = '';
 						phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
 					}else{
+						console.log('NOT visible');
+					
 						phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
 						phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
-						phone_intl = '';
+						phone_intl = '';				
 					}	
 				}else{
 					var emerg_no_cell_phone = 'N';
@@ -1521,9 +1544,16 @@ function showDeleteModal(type,ppid,name){
 					}		
 				}
 			}else{
-				phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
-				phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
-				phone_intl = '';
+				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
+					phone_area_code = '';
+					phone_number = '';
+					phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
+				}else{
+					phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+					phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+					phone_intl = '';
+				}	
+				
 			}
 			phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
 			phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
