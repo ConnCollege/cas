@@ -921,7 +921,7 @@ public class jdbcCamel {
 				} catch (EmptyResultDataAccessException e){
 					// dataset empty 
 				}
-				
+							
 				Map<String,Object> studentDataIn = new HashMap<String,Object>();
 				Map<String,Object> addressDataIn = new HashMap<String,Object>();
 				Map<String,Object> emailDataIn = new HashMap<String,Object>();
@@ -940,11 +940,7 @@ public class jdbcCamel {
 				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,2));
 				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
 				
-				log.debug("Address: " + addressData);
-				log.debug("Address in: " + addressDataIn);
-				
 				updates = compareMap(addressDataIn,addressData);
-				log.debug(updates);
 				PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_addr_data_t", jdbcCAS);
 				
 				//Home email
@@ -971,7 +967,6 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(31));
 					}
-					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				}
@@ -990,7 +985,6 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
 					}
-					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				}	
@@ -1008,7 +1002,6 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
 					}
-					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				} else if (intData.getField(13) != "" || intData.getField(24) != "") {
@@ -1024,13 +1017,10 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
 					}
-					log.debug ("home: " + phoneRecord.toString());
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				}
 				
-				log.debug ("Phones: " + phoneDataIn.toString());
-				log.debug ("# of Phones: " + phoneDataIn.size());
 				try {
 					PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
 				} catch (Exception e){
@@ -1078,6 +1068,32 @@ public class jdbcCamel {
 				
 				
 				String EMERG_ORDER = intData.getField(26);
+				
+				
+				if (EMERG_ORDER != null) {
+					String[] eOrder = EMERG_ORDER.toString().split(",");
+					
+					Map<String,Object> emergData = new HashMap<String,Object>();
+					Map<String,Object> emergDataIn = new HashMap<String,Object>();
+					for(int i=0; i< eOrder.length; i++) {
+						PECIParameters.put("PARENT_PPID", eOrder[i]);
+
+						log.debug ("Contact Priority: " + eOrder[i] + " is " + i);
+						try {
+						//Emergency Contacts
+							SQL="select PARENT_PPID, EMERG_CONTACT_PRIORITY, EMERG_LEGAL_PREFIX_NAME, EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME, EMERG_LEGAL_SUFFIX_NAME from cc_gen_peci_emergs_t where (CHANGE_COLS !='DELETE' or  CHANGE_COLS is null) and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID order by EMERG_CONTACT_PRIORITY";
+							emergData = jdbcCAS.queryForMap(SQL,PECIParameters);
+						} catch (EmptyResultDataAccessException e){
+							// dataset empty 
+						}
+						emergDataIn.put("EMERG_CONTACT_PRIORITY", i+1);
+						updates = compareMap(emergDataIn,emergData);
+						PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_emergs_t", jdbcCAS);
+						
+					}
+				}
+				
+				
 				String PHONE_ORDER = intData.getField(25);
 				
 				context.getFlowScope().put("Flag","PECIC");
