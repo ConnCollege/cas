@@ -608,6 +608,9 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 						</div>
 					</div> 
 					
+					<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EMERGENCY_SEQUENCE_NO" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
+			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EMERGENCY_CODE" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="EP">
+					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
 						<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Emergency Phone</label>
@@ -898,7 +901,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	 
 	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });
      //console.log(checked_phone_numbers);
-	 ajaxurl = "/cas/cas-rest-api/peci/?x=" + Date.now();
+	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 
@@ -1558,19 +1561,16 @@ function showDeleteModal(type,ppid,name){
 			if(phoneCodeArray[j] == "CP"){
 				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
 					emerg_no_cell_phone = 'Y';					
-					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
-						console.log('is visible');	
-					
+					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){					
 						phone_area_code = '';
 						phone_number = '';
 						phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
-					}else{
-						console.log('NOT visible');
-					
+					}else{					
 						phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
 						phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
 						phone_intl = '';				
 					}	
+					//phone_code = 'EP';
 				}else{
 					var emerg_no_cell_phone = 'N';
 					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
@@ -1581,7 +1581,8 @@ function showDeleteModal(type,ppid,name){
 						phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
 						phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
 						phone_intl = '';
-					}		
+					}	
+					//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 				}
 			}else{
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
@@ -1593,10 +1594,12 @@ function showDeleteModal(type,ppid,name){
 					phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
 					phone_intl = '';
 				}	
+				//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 				
 			}
 			phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
 			phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+			
 			if(phone_sequence_no.length == 0){
 				formData = formData + '"PHONE_SEQUENCE_NO" : null,';
 			}else{
@@ -1645,7 +1648,10 @@ function showDeleteModal(type,ppid,name){
 			
      	   //reset hidden form fields on modal manually because Safari is old and cranky and can't reset fields it can't see	
 			$('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
-		 }			
+		 }	
+		 
+		 //set emr separately
+		 $('#' + form_id + '_PHONE_EMR_SEQUENCE_NO').val('');
 
 		formData = formData + "}]";					
 		formData = formData + "}";		 		 
