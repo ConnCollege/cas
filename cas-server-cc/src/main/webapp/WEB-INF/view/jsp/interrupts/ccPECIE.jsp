@@ -323,10 +323,11 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			</div>
 		</div>
 	</div>
+
 	 <%-- EmrPhone: ${StudentEmrPhone} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn.length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0 }">style="display:none;"</c:if>>
+	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null}">style="display:none;"</c:if>>
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-xs-2">
 			<input type="tel" data-phone-type="EMERGENCY" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">ccreq</c:if>" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
@@ -420,7 +421,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			<c:forEach items="${StudentEMR}" var="emr" varStatus="status">
 				<li class="panel panel-info CONTACT-LISTED" id="emr_contact_${emr.PARENT_PPID}"> 
 		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        	<div class="panel-body"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+		        	<div class="panel-body"><span class="contact-name"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
 		    	</li>
 		    	<c:set var="emergency_contact_order" value="${emergency_contact_order}${status.first ? '' : ','}${emr.PARENT_PPID}" scope="page" />		    	
 			</c:forEach>
@@ -1642,6 +1643,8 @@ function showDeleteModal(type,ppid,name){
 				console.log("DONT ADD: " + phone_number);
 			} */
 			
+     	   //reset hidden form fields on modal manually because Safari is old and cranky and can't reset fields it can't see	
+			$('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
 		 }			
 
 		formData = formData + "}]";					
@@ -1661,7 +1664,11 @@ function showDeleteModal(type,ppid,name){
 	        	   //console.log(data.PARENT_PPID);
 	        	   if(parent_ppid == 0){
 	        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
+	        	   }else{
+	        		   	$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
+	        	   		$('#CONTACT_LIST #emr_contact_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
 	        	   }
+	        	   $('#' + form_id + '_PARENT_PPID').val(0);
 	        	   document.getElementById(form_id).reset();
 	        	   resetIntlModalNumbers();
 	        	   getAlertNumbers();
@@ -1728,7 +1735,7 @@ function showDeleteModal(type,ppid,name){
 	}
 	
 	function addParent(type,ppid,new_contact_name){
-		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
+		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();		
@@ -1761,7 +1768,7 @@ function showDeleteModal(type,ppid,name){
 	function addContact(type,ppid,new_contact_name){
 		console.log("add Contact: " + new_contact_name + ' '  + ppid);	
 	
-		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
+		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
 		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.showModal',function(){
 			populateModal(type,ppid);

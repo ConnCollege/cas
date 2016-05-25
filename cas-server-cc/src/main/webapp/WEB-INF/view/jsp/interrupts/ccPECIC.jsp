@@ -135,7 +135,7 @@
 		text-align:center;
 		padding: 2px;
 		/*padding-bottom: 8px;*/
-		padding-top: 10px;
+		/*padding-top: 10px;*/
 		clear:both;
 	}
   </style>
@@ -144,9 +144,12 @@
 
 <div class="container">
   <h2>Confirm Contact Information</h2>
-  <div class="errorMessage">
+  <div class="errorMessage" <c:if test="${SourceFlag != 'PECIE'}">style="padding-top:10px;"</c:if>>
+  	<c:if test="${SourceFlag == 'PECIE'}">
+  		<h3>Almost Done!</h3>
+  	</c:if>
   	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
-  </div> 
+  </div>
   <%-- StudentAddr: ${StudentAddr} --%>
   <br>
   <%-- StudentHomePhone: ${StudentHomePhone} --%>
@@ -282,7 +285,7 @@
   
     <div id="step4">
   	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
-  	${StudentEMR}
+  	<%-- ${StudentEMR} --%>
   	<div class="confirm_section">
   		<c:set var="y" value="0" scope="page" />	
 	  	 <c:forEach items="${StudentEMR}" var="contacts">
@@ -298,7 +301,7 @@
 	    </c:if>   
     </div>
   </div>
-  ${EmmrgPhones}
+ <%--  ${EmmrgPhones} --%>
    <div id="step5">
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
