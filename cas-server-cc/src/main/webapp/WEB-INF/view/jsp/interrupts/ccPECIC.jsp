@@ -282,21 +282,23 @@
   
     <div id="step4">
   	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
-  	
+  	${StudentEMR}
   	<div class="confirm_section">
   		<c:set var="y" value="0" scope="page" />	
 	  	 <c:forEach items="${StudentEMR}" var="contacts">
-	  	 	<c:set var="y" value="${y + 1}" scope="page" />	
-	    	<div class="contact_info info_box" id="CONTACT_${contacts.PARENT_PPID}" data-type-id="CONTACT" data-ppid="${contacts.PARENT_PPID}">
-				<h4>Emergency Contact ${y}</h4>
-		    </div>			        
+	  	 	<c:if test="${fn:length(contacts.PARENT_PPID) > 0 }">
+		  	 	<c:set var="y" value="${y + 1}" scope="page" />	
+		    	<div class="contact_info info_box" id="CONTACT_${contacts.PARENT_PPID}" data-type-id="CONTACT" data-ppid="${contacts.PARENT_PPID}">
+					<h4>Emergency Contact ${y}</h4>
+			    </div>
+			 </c:if>			        
 	    </c:forEach> 
 	    <c:if test="${y == 0 }">
 	    	<p><em>None Entered</em></p>
 	    </c:if>   
     </div>
   </div>
-  
+  ${EmmrgPhones}
    <div id="step5">
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
@@ -304,7 +306,7 @@
   	<p id="doc_message">These numbers will be contacted in the case of a campus emergency.</p>
   		<ul>
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
-		    	 <c:if test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
+		    	 <c:if test="${fn:length(emmrg.PHONE_CODE) != 0 }">
 		    	 	<li class="list-unstyled">&nbsp;${emmrg.PHONE_AREA_CODE}&nbsp;${emmrg.PHONE_NUMBER}&nbsp;(${emmrg.PREF_NAME })</li>
 		    	 </c:if>
 		    </c:forEach>

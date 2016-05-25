@@ -35,11 +35,12 @@
           // Omit this to make then entire <li>...</li> draggable.
           handle: '.panel-heading', 
           update: function() {
-        	  contact_order_list = '';
-              $('.panel', panelList).each(function(index, elem) {
-                   var $listItem = $(elem),
-                       newIndex = $listItem.index();
-                   		ppid = $listItem.attr("id").replace('emr_contact_','');
+        	  var contact_order_list = '';
+              $('.panel',panelList).each(function(index, elem) {
+                   var $listItem = $(elem);
+                        var newIndex = $listItem.index();
+                   		var ppid = $listItem.attr("id").replace('emr_contact_','');
+                   		ppid = ppid.replace('parent_','');
                    		if(index != 0){
                    			contact_order_list += ',';
                    		}
@@ -47,7 +48,7 @@
 						//console.log("newList: " + contact_order_list)
                    // Persist the new indices. 
               }); 
-              $('#emr_order').val(contact_order_list);
+              $('#emr_order').val(contact_order_list);              
           },
           stop: function() {
               //console.log("stopped drag");
@@ -122,7 +123,8 @@
 	}
 	.grayed-out{
 		color: #9F9F9F;
-	}
+	}	
+
   </style>
 </head>
 <body>
@@ -1673,6 +1675,14 @@ function showDeleteModal(type,ppid,name){
 	        	   }else{
 	        		   enableModalEnter(form_id);
 	        	   }
+	        	   //add to emr_order
+	        	   var current_emr_order = $('#emr_order').val();
+	        	   if(current_emr_order.length > 0){
+	        		   $('#emr_order').val(current_emr_order + ',' + data.PARENT_PPID); 
+	        	   }else{
+	        		   $('#emr_order').val(current_emr_order + '' + data.PARENT_PPID); 
+	        	   }
+	        	      
 	        	   
 		           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
 	              
