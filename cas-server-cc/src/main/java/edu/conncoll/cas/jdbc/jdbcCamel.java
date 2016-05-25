@@ -347,7 +347,7 @@ public class jdbcCamel {
 				String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 				log.debug("Vault search filter: " + vaultSearchFilter);
 				
-				context.getFlowScope().put("SourceFlag", flag);
+				if ( !flag.equals("PECIC")) context.getFlowScope().put("SourceFlag", flag);
 				
 				List vaultDN = this.vaultTemplate.search(
 					this.vaultSearchBase, vaultSearchFilter, 
