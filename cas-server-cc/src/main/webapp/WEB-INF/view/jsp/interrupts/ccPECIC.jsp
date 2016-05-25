@@ -135,6 +135,7 @@
 		text-align:center;
 		padding: 2px;
 		/*padding-bottom: 8px;*/
+		padding-top: 10px;
 		clear:both;
 	}
   </style>
@@ -300,6 +301,7 @@
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
   	<div class="confirm_section">
+  	<p id="doc_message">These numbers will be contacted in the case of a campus emergency.</p>
   		<ul>
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
 		    	 <c:if test="${fn:length(fn:substringAfter(emmrg.PHONE_CODE,'EP')) != 0 }">
@@ -310,7 +312,7 @@
     </div>
     <div class="row">
     	<div class="col-sm-offset-4  col-xs-3">
-    		<button type="submit" class="btn btn-primary">Confirm</button>
+    		<button type="submit" id="confirm_button" class="btn btn-primary">Confirm</button>
     	</div>
     </div>
   </div>
@@ -518,6 +520,10 @@ $(document).ready(function() {
 	$('.edit_link').click(function(){
 		$('#editForm').submit();
 	});	
+	
+	$('#confirm_button').click(function(){
+		$('#confirmForm').submit();
+	});
 	
 });
 

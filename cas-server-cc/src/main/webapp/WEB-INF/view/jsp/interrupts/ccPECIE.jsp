@@ -137,7 +137,7 @@
 	<p>Please <strong>do not</strong> enter your local or campus address. </p>
 
 	<p><span class="required">* </span>Required Field</p>  
-	${StudentBio}
+	<%-- ${StudentBio} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_FORM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">There was an error with your form submission. Please fix the areas indicated in red below.</span></div>
 		
 	<div class="form-group" id="group_student_firstname">
@@ -194,8 +194,8 @@
 		</div>
 	</div>  
 	<%-- ${options} --%>
-States: ${options['States']}
-${StudentAddr['ADDR_STAT_CODE']}
+<%-- States: ${options['States']}
+${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
@@ -271,13 +271,13 @@ ${StudentAddr['ADDR_STAT_CODE']}
 	</div> 
 	
 	</div>
- ${StudentCellPhone}
+ <%-- ${StudentCellPhone} --%>
 	<div id="step2" class="form_section">
 	<h3>Step 2 Your Emergency Phone Number</h3>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
-		<label for="Phone" class="control-label col-sm-3"><c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}"><span class="required">* </span></c:if>Mobile Phone</label>		
+		<label for="Phone" class="control-label col-sm-3"><c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null}"><span class="required">* </span></c:if>Mobile Phone</label>		
 		<div class="col-xs-2">
 			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
@@ -321,7 +321,7 @@ ${StudentAddr['ADDR_STAT_CODE']}
 			</div>
 		</div>
 	</div>
-	 EmrPhone: ${StudentEmrPhone}
+	 <%-- EmrPhone: ${StudentEmrPhone} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null }">style="display:none;"</c:if>>
@@ -432,7 +432,7 @@ ${StudentAddr['ADDR_STAT_CODE']}
 	      </div>
 	    </div>
     </div>
-    ${EmmrgPhones}
+   <%--  ${EmmrgPhones} --%>
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
@@ -842,6 +842,27 @@ ${StudentAddr['ADDR_STAT_CODE']}
 	  	</div>
   	</div>
 </div>
+
+<div class="modal fade" id="ALERT_NUMBER_MODAL" role="dialog">
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">
+	  		<div class="modal-header">
+			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+			  	<h4 class="modal-title">Maximum selected</h4>
+			  </div>
+			  <div class="modal-body">	
+				<p>Only <strong>five</strong> numbers can be selected as campus alert numbers.</p>
+				<p>Please note: Your mobile/emergency phone number will always be contacted.</p>
+			  </div>
+			</div>
+			<div class="modal-footer">
+ 				<button type="button" id="CONFIRMATION_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button>
+ 			</div>
+		</div>
+	</div>
+</div>
  	
   	
 <%
@@ -973,11 +994,19 @@ ${StudentAddr['ADDR_STAT_CODE']}
 			phone_number = $('#STUDENT_PHONE_EMERGENCY_AREA_CODE').val() + '' + $('#STUDENT_PHONE_EMERGENCY_NUMBER').val();
 		}else if(thisType == 'EMERGENCY_INTL'){
 			phone_number = $('#STUDENT_PHONE_EMERGENCY_NUMBER_INTL').val();
-		}		
-		if($.inArray(phone_number,checked_phone_numbers) == -1){
+		}			
+		if($('#STUDENT_EP_NUMBER').length){
+			$('#STUDENT_EP_NUMBER').val(phone_number);
+			$('#STUDENT_EP_NUMBER_TEXT').html("&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)");
+		}else{
+			var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
+			$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+		}				
+		
+		/* if($.inArray(phone_number,checked_phone_numbers) == -1){
 			//add number to campus alert phone number list
 			addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
-		}
+		} */
 	});
 	
 	//switching off emergency contacts
@@ -1039,15 +1068,15 @@ ${StudentAddr['ADDR_STAT_CODE']}
 	});		
 	
 	$('.deleteModal').click(function(){
-		type = $(this).attr("data-modal-type");
-		ppid = $(this).attr("data-ppid");
-		name = $(this).attr("data-name");
+		var type = $(this).attr("data-modal-type");
+		var ppid = $(this).attr("data-ppid");
+		var name = $(this).attr("data-name");
 		showDeleteModal(type,ppid,name);
 	});		
 	
 	//don't allow any special characters in phone number fields, only 0-9, backspace, delete
 	$(".num_only").keypress(function (e) {
-		console.log(e.which);
+		//console.log(e.which);
 		if (/^\d+$/.test(e.key) ){
 			//console.log("character accepted: " + e.key)
 		} else {
@@ -1104,9 +1133,13 @@ ${StudentAddr['ADDR_STAT_CODE']}
  
 	//only allow 5 alert numbers to be checked
 	var alert_number_limit = 5;
+	
 	$('input.alert_phone_number').on('change', function(evt) {
+		var alertNum = $("input[name='fields[25]']:checked").length;
+		console.log("number of alert numbers: " + alertNum);
 	   if($("input[name='fields[25]']:checked").length > alert_number_limit) {
 	       this.checked = false;
+	       $('#ALERT_NUMBER_MODAL').modal();
 	   }
 	});
 	
@@ -1196,7 +1229,9 @@ function showDeleteModal(type,ppid,name){
       		   enableModalEnter(type);
       	   	}
         	 if(emr_switch_count == 1){
-     			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',true);
+        		 $('.parent-bootstrap-switch:checked').each(function(){
+     				$(this).bootstrapSwitch('disabled',false);
+     			});
         	 }
          },
          error: function (request, status, error) {
@@ -1438,11 +1473,11 @@ function showDeleteModal(type,ppid,name){
 		 //console.log("continue save");
 		 //close any former error messages
 		 $(".alert_danger").hide();
-		 parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
+		 var parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
 		 //console.log("parent_ppid: " + parent_ppid);
-		 student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
+		 var student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
 		 //console.log("student_pidm: " + student_pidm);
-		 new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
+		 var new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
 		 //submit via ajax
 		
 		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
@@ -1686,15 +1721,19 @@ function showDeleteModal(type,ppid,name){
 		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><strong>' + new_contact_name + '</strong><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
-		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();
+		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();		
 		
-		console.log("parent_count: " + checkNum('PARENT'));
 		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;
+		console.log('emr_switch_count: ' + emr_switch_count);
 		if(emr_switch_count == 1){
 			$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch('disabled',true);
 		}else if(emr_switch_count > 1){
+			$('.parent-bootstrap-switch:checked').each(function(){
+				$(this).bootstrapSwitch('disabled',false);
+			});
 			//$('.bootstrap-switch').bootstrapSwitch('disabled',false);
 		}
+		
 		//attach click event to bootstrap switch for new contact
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
 			emergencySwitchToggle(ppid,new_contact_name,event,state);
@@ -1710,7 +1749,7 @@ function showDeleteModal(type,ppid,name){
 	}
 	
 	function addContact(type,ppid,new_contact_name){
-		console.log("add Contact: " + name + ' '  + ppid);	
+		console.log("add Contact: " + new_contact_name + ' '  + ppid);	
 	
 		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><strong>' + new_contact_name + '</strong> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
@@ -1722,23 +1761,23 @@ function showDeleteModal(type,ppid,name){
 		});
 	}
 	
-	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
+/* 	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
 		if(type == 'STUDENT'){
 			if($('#STUDENT_EP_NUMBER').length){
 				$('#STUDENT_EP_NUMBER').val(alert_phone_number);
 				$('#STUDENT_EP_NUMBER_TEXT').html('&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)');
 			}else{
-				var newAlertNumber = '<li class="list-unstyled grayed-out"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER"><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)</span></li>';			
+				var newAlertNumber = '<li class="list-unstyled grayed-out alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" checked="checked" disabled="disabled" id="STUDENT_EP_NUMBER"><span id="STUDENT_EP_NUMBER_TEXT">&nbsp;&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ' - Your phone number will always be contacted)</span></li>';			
 				$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
 			}			
 		}else{
-			var newAlertNumber = '<li class="list-unstyled"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ')</li>';
+			var newAlertNumber = '<li class="list-unstyled alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ')</li>';
 			$('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);
 		}	
 		//push to all phone number array
 		//checked_phone_numbers.push(alert_phone_number);
 		//console.log("New all phone numbers: " + checked_phone_numbers);
-	}
+	} */
 	
 	function emergencyNumberToggle(form_id, checked){
 		if(checked) {
@@ -1791,7 +1830,7 @@ function showDeleteModal(type,ppid,name){
 		var x = 0;
 		var removeParentFromContact = false;
 		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;
-		console.log('emr_switch_count: ' + emr_switch_count);
+		console.log('emr_switch_count from emergencySwitchToggle: ' + emr_switch_count);
 		if(state == false){
 			//turning parent off
 			if(emr_switch_count < 1){
@@ -1885,9 +1924,9 @@ function showDeleteModal(type,ppid,name){
 		        			  var alert_phone_number = '' + phone_area_code + phone_number;
 		        		  }
 		        		  if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
-		        			  var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
+		        			  var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
 			      			}else{
-			      				var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER"><input type="checkbox" checked="checked" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
+			      				var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER alert_phone_number"><input type="checkbox" checked="checked" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
 			      			}
 		      			  $('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);   
 		      			
