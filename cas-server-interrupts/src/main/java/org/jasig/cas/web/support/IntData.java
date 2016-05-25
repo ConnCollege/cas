@@ -9,4 +9,5 @@ public class IntData implements Serializable {
 	public void setFields(String[] fields) { this.fields = fields; }
 	public String[] getFields() { return this.fields; }
 	public String getField(int pos) { return this.fields[pos]; }
+	public void setField(int pos, String value) { this.fields[pos] = value; }
 }

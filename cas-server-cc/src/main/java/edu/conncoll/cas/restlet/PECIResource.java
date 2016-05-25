@@ -152,6 +152,7 @@ public class PECIResource extends Resource
 								+"			  from cc_gen_peci_phone_data_t p"
 								+"			 inner join cc_adv_peci_parents_t par"
 								+"			    on p.PARENT_PPID = par.PARENT_PPID"
+								+"			   and p.STUDENT_PIDM = par.STUDENT_PIDM"
 								+"			   and par.CHANGE_COLS <> 'DELETE'"
 								+"			 group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents"
 								+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = parents.Phone_Num"
@@ -162,6 +163,7 @@ public class PECIResource extends Resource
 								+"			   from cc_gen_peci_phone_data_t p"
 								+"			   left join cc_gen_peci_emergs_t EMERG"
 								+"			     on p.PARENT_PPID = EMERG.PARENT_PPID"
+								+"			   and p.STUDENT_PIDM = EMERG.STUDENT_PIDM"
 								+"			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
 								+"			    and EMERG.CHANGE_COLS <> 'DELETE'"
 								+"			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=p.STUDENT_PIDM)"
@@ -183,6 +185,7 @@ public class PECIResource extends Resource
 								+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
 								+"						from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
 								+"		or phone.PHONE_CODE like 'EP%')"
+								+"     and phone.CHANGE_COLS != 'DELETE'"
 								+"  and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
 						phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 
@@ -234,7 +237,7 @@ public class PECIResource extends Resource
 									//phones
 									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
 											+ " CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t"
-											+ " where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+											+ " where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and CHANGE_COLS != 'DELETE' and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
@@ -394,7 +397,7 @@ public class PECIResource extends Resource
 									//phones
 									SQL="select PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
 											+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t "
-											+ "where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+											+ "where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and CHANGE_COLS != 'DELETE' and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 

@@ -480,17 +480,17 @@ public class jdbcCamel {
 					emailData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Phone Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_PHONE_CODE='C'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and CHANGE_COLS != 'DELETE' and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_PHONE_CODE='C'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentCellPhone",phoneData.get(0));
 					
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_PHONE_CODE='H'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and CHANGE_COLS != 'DELETE' and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_PHONE_CODE='H'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentHomePhone",phoneData.get(0));
 					
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PHONE_CODE='EP'";
+					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and CHANGE_COLS != 'DELETE' and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PHONE_CODE='EP'";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
@@ -507,6 +507,7 @@ public class jdbcCamel {
 							+"			  from cc_gen_peci_phone_data_t p"
 							+"			 inner join cc_adv_peci_parents_t par"
 							+"			    on p.PARENT_PPID = par.PARENT_PPID"
+							+"			   and p.STUDENT_PIDM = par.STUDENT_PIDM"
 							+"			   and par.CHANGE_COLS <> 'DELETE'"
 							+"			 group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents"
 							+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = parents.Phone_Num"
@@ -517,6 +518,7 @@ public class jdbcCamel {
 							+"			   from cc_gen_peci_phone_data_t p"
 							+"			   left join cc_gen_peci_emergs_t EMERG"
 							+"			     on p.PARENT_PPID = EMERG.PARENT_PPID"
+							+"			   and p.STUDENT_PIDM = EMERG.STUDENT_PIDM"
 							+"			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
 							+"			    and EMERG.CHANGE_COLS <> 'DELETE'"
 							+"			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=p.STUDENT_PIDM)"
@@ -538,6 +540,7 @@ public class jdbcCamel {
 							+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
 							+"						from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
 							+"		or phone.PHONE_CODE like 'EP%')"
+							+"     and phone.CHANGE_COLS != 'DELETE'"
 							+"  and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
@@ -969,8 +972,16 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(31));
 					}
+					log.debug("Home: " + phoneRecord);
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
+				}
+				
+				if (intData.getField(15) != null){
+					SQL="Update  cc_gen_peci_phone_data_t set CHANGE_COLS = 'DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PECI_PHONE_CODE='C' and PARENT_PPID='0'";
+					jdbcCAS.update(SQL,PECIParameters);
+					intData.setField(13,"");
+					intData.setField(24,"");
 				}
 				
 				//Mobile Phone
@@ -987,6 +998,7 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
 					}
+					log.debug("Mobile: " + phoneRecord);
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				}	
@@ -1004,6 +1016,7 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
 					}
+					log.debug("Emergency: " + phoneRecord);
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				} else if (intData.getField(13) != "" || intData.getField(24) != "") {
@@ -1019,11 +1032,13 @@ public class jdbcCamel {
 					}else {
 						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(32));
 					}
+					log.debug("Mobile as EP: " + phoneRecord);
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
 					phoneRecord.clear();
 				}
 				
 				try {
+					log.debug("Phones: " + phoneDataIn);
 					PECIResource.phoneUpdate(phoneDataIn,phoneData,PECIParameters, jdbcCAS);
 				} catch (Exception e){
 					log.warn ("Student Phone save failed.");
