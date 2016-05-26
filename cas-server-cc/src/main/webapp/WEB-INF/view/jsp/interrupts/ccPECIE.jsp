@@ -438,7 +438,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	      </div>
 	    </div>
     </div>
-   <%--  ${EmmrgPhones} --%>
+    <%-- ${EmmrgPhones} --%>
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
@@ -611,8 +611,8 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 						</div>
 					</div> 
 					
-					<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EMERGENCY_SEQUENCE_NO" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
-			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EMERGENCY_CODE" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="EP">
+					<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EP_SEQUENCE_NO" id="<c:out value="${modalType}"/>_PHONE_EP_SEQUENCE_NO" class=" <c:out value="${modalType}"/>_PHONE_FIELD" value="">
+			  		<input type="hidden" name="<c:out value="${modalType}"/>_PHONE_EP_CODE" id="<c:out value="${modalType}"/>_PHONE_EP_CODE" class="<c:out value="${modalType}"/>_PHONE_FIELD" value="EP">
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
 					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
@@ -1026,7 +1026,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		//$('#PARENT_ERROR').hide();
 		var ppid = $(this).attr("data-ppid");
 		var thisName = $('#parent_' + ppid + ' .contact-name').html();
-		emergencySwitchToggle(ppid,name,event,state);
+		emergencySwitchToggle(ppid,thisName,event,state);
 	});
 	
 	//state/province drop-down toggle based on country chosen
@@ -1132,9 +1132,15 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	//reset the modal form fields if modal is closed
 	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("CONTACT").reset();
+		 if($('.modal_mobile_phone_check').is(':checked')){
+			 $('.modal_mobile_phone_check').prop('checked',false).change();
+		 }
 	 });	 
 	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {
 		 document.getElementById("PARENT").reset();
+		 if($('.modal_mobile_phone_check').is(':checked')){
+			 $('.modal_mobile_phone_check').prop('checked',false).change();
+		 }
 	 });
 	 
 	//hide all modal error messages if modal is closed 
@@ -1145,16 +1151,30 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
  
 	//only allow 5 alert numbers to be checked
 	var alert_number_limit = 5;
-	
 	$('input.alert_phone_number').on('change', function(evt) {
+		//first add to array if not already there
+		var thisVal = $(this).val();
+		console.log("thisVal: " + thisVal);
+		if($(this).is(':checked')){
+			//add to array if not already there
+			if($.inArray(thisVal,checked_phone_numbers) == -1){
+	 			checked_phone_numbers.push(thisVal);
+	 		}
+			console.log(checked_phone_numbers);
+		}else{
+			//remove from array if present
+			if($.inArray(thisVal,checked_phone_numbers) != -1){
+				checked_phone_numbers.splice( $.inArray(thisVal, checked_phone_numbers), 1 );
+	 		}
+			console.log(checked_phone_numbers);
+		}		
 		var alertNum = $("input[name='fields[25]']:checked").length;
-		console.log("number of alert numbers: " + alertNum);
-	   if($("input[name='fields[25]']:checked").length > alert_number_limit) {
-	       this.checked = false;
-	       $('#ALERT_NUMBER_MODAL').modal();
-	   }
+		//console.log("number of alert numbers: " + alertNum);
+	   	if($("input[name='fields[25]']:checked").length > alert_number_limit) {
+	      	this.checked = false;
+	      	$('#ALERT_NUMBER_MODAL').modal();
+	   	}
 	});
-	
 	
 	$('.address_to_use_checkbox').change(function(){
 		var thisName = $(this).attr('name');
@@ -1418,7 +1438,7 @@ function showDeleteModal(type,ppid,name){
 	        		  
 	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CODE').val(phone_code);
 	        		  
-	        		 if(phone_code == 'CP'){
+	        		 if(phone_code == 'EP'){
 	        			 //handle emergency number
 	        			 if($('#' + modal_type + '_' + 'EMERG_NO_CELL_PHONE').is(':checked')){
 		        			  if(phone_number_intl != "" && phone_number_intl != null){
@@ -1439,8 +1459,8 @@ function showDeleteModal(type,ppid,name){
 								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');	
 		   	        		  } 
 	        			 }else{
-	        				 $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
-	        				 $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
+	        				 //$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
+	        				 //$('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
 	        			 }
 	        		 }else{
 	        		  	$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
@@ -1454,7 +1474,7 @@ function showDeleteModal(type,ppid,name){
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show();        			 
 		        		  }   
-	        		 }	        		  
+	        		 	}	        		  
 	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
 	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_CARRIER').val(phone_carrier);   
 	        	  }
@@ -1558,53 +1578,69 @@ function showDeleteModal(type,ppid,name){
 
 		//loop phones separately as array
 		formData = formData + '"phones": [ {';
-		var phoneCodeArray = ["CP","MA","BU"];		 
+		var phoneCodeArray = ["CP","EP","MA","BU"];			
 		 for (var j = 0; j < phoneCodeArray.length; j++) {
 			if(phoneCodeArray[j] != "CP"){
 				formData = formData + "},{";
 			}
-			phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
-			if(phoneCodeArray[j] == "CP"){
+			var phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
+			var phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+			if(phoneCodeArray[j] == "EP"){
 				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
-					emerg_no_cell_phone = 'Y';					
+					var emerg_no_cell_phone = 'Y';					
 					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){					
-						phone_area_code = '';
-						phone_number = '';
-						phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
+						var phone_area_code = '';
+						var phone_number = '';
+						var phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
 					}else{					
-						phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
-						phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
-						phone_intl = '';				
+						var phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
+						var phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
+						var phone_intl = '';	
 					}	
-					//phone_code = 'EP';
+					
+					//check if CP number has data, if it does, wipe it out
+					var phone_cp_sequence_no = $('#' + form_id + '_PHONE_CP_SEQUENCE_NO').val();
+					if(phone_cp_sequence_no.length != 0){
+						//wipe out current number					
+						var phone_area_code = '';
+						var phone_number = '';						
+						var phone_code = 'CP';
+						var phone_intl = '';
+						var emerg_no_cell_phone = '';
+						var phone_carrier = '';
+					}					
+					
 				}else{
-					var emerg_no_cell_phone = 'N';
-					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-						phone_area_code = '';
-						phone_number = '';
-						phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
-					}else{
-						phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
-						phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
-						phone_intl = '';
-					}	
-					//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+					//emerg_no_cell_phone not checked, don't send any EP number, wipe out whats there
+					var emerg_no_cell_phone = 'N';	
+					//check if EP number has data, if it does, wipe it out
+					var phone_ep_sequence_no = $('#' + form_id + '_PHONE_EP_SEQUENCE_NO').val();
+					if(phone_ep_sequence_no.length != 0){
+						//wipe out current number					
+						var phone_area_code = '';
+						var phone_number = '';						
+						var phone_code = 'EP';
+						var phone_intl = '';
+						var emerg_no_cell_phone = '';
+						var phone_carrier = '';
+					}							
 				}
 			}else{
+				var submitNumber = 1;
+				var emerg_no_cell_phone = 'N';					
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-					phone_area_code = '';
-					phone_number = '';
-					phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
+					var phone_area_code = '';
+					var phone_number = '';
+					var phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
 				}else{
-					phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
-					phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
-					phone_intl = '';
-				}	
-				//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+					var phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+					var phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
+					var phone_intl = '';
+				}					
 				
 			}
-			phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
-			phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
+			var phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
+			//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 			
 			if(phone_sequence_no.length == 0){
 				formData = formData + '"PHONE_SEQUENCE_NO" : null,';
@@ -1620,9 +1656,8 @@ function showDeleteModal(type,ppid,name){
 				formData = formData + '"CELL_PHONE_CARRIER" : null';
 			}else{
 				formData = formData + '"CELL_PHONE_CARRIER" : "' + phone_carrier + '"';
-			}			
-			//show number in step 5
-			
+			}	
+			//show number in step 5	
 								
 			if(phoneCodeArray[j] == "CP"){
 				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
@@ -1685,7 +1720,9 @@ function showDeleteModal(type,ppid,name){
 		        	   document.getElementById(form_id).reset();
 		        	   resetIntlModalNumbers();
 		        	   getAlertNumbers();
-		        	   $('.modal_mobile_phone_check').prop('checked',false).change();
+		        	   if($('.modal_mobile_phone_check').is(':checked')){
+		      			 $('.modal_mobile_phone_check').prop('checked',false).change();
+		      		   }
 		        	   //$('.modal_mobile_phone_check').trigger('click');
 		        	   $('#'+ form_id + '_MODAL').hide();
 		        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
@@ -1898,22 +1935,23 @@ function showDeleteModal(type,ppid,name){
 					$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 					removeParentFromContact = true;
 				}	
-				//create contact by promoting through restlet
-				$.ajax({
-			           type: "POST",
-			           url: ajaxurl,
-			           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
-			           datatype: "json",
-			           contentType: "application/json",
-			           success: function(data)           
-			           {  
-			        	   addToList('CONTACT',name,ppid);
-			           },
-			           error: function (request, status, error) {
-			               
-			           }
-				 });		 
-			}			
+			}
+			//create contact by promoting through restlet
+			$.ajax({
+		           type: "POST",
+		           url: ajaxurl,
+		           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
+		           datatype: "json",
+		           contentType: "application/json",
+		           success: function(data)           
+		           {  
+		        	   addToList('CONTACT',name,ppid);
+		           },
+		           error: function (request, status, error) {
+		               
+		           }
+			 });		 
+						
 			//change read-only state
 			/* if(x > 1){
 				$('.bootstrap-switch-wrapper').removeClass('bootstrap-switch-readonly').removeProp('disabled');
