@@ -1015,7 +1015,7 @@ public class jdbcCamel {
 					if (intData.getField(34).equals("null")) {
 						phoneRecord.put("PHONE_SEQUENCE_NO","");
 					}else {
-						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(33));
+						phoneRecord.put("PHONE_SEQUENCE_NO",intData.getField(34));
 					}
 					log.debug("Emergency: " + phoneRecord);
 					phoneDataIn.add(new HashMap<String,Object>(phoneRecord));
