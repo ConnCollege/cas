@@ -1388,7 +1388,8 @@ function showDeleteModal(type,ppid,name){
 		        			  if(element == 'Y'){
 		        				  console.log('element: ' + element);
 		        				  console.log('modal_type: ' + modal_type);
-		        				  $('#' + modal_type + '_' + index).attr('checked','checked');
+		        				  //$('#' + modal_type + '_' + index).attr('checked','checked');
+		        				  $('.modal_mobile_phone_check').prop('checked',true).change();
 		        				  emergencyNumberToggle(modal_type, 1);
 		        			  }
 		        		  }
