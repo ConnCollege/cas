@@ -1086,7 +1086,7 @@ public class jdbcCamel {
 				
 				
 				String EMERG_ORDER = intData.getField(26);
-				
+				log.debug ("EMERG_ORDER: " + EMERG_ORDER);
 				
 				if (EMERG_ORDER != null) {
 					String[] eOrder = EMERG_ORDER.toString().split(",");
@@ -1105,7 +1105,10 @@ public class jdbcCamel {
 							// dataset empty 
 						}
 						emergDataIn.put("EMERG_CONTACT_PRIORITY", i+1);
+
+						log.debug ("emergDataIn: " + emergDataIn);
 						updates = compareMap(emergDataIn,emergData);
+						log.debug ("updates: " + updates);
 						PECIResource.writeUpdates(PECIParameters,updates,"cc_gen_peci_emergs_t", jdbcCAS);
 						
 					}
