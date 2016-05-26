@@ -179,13 +179,16 @@
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_country">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
-		<div class="col-sm-9">
+		<div class="col-sm-8">
 			<select class="form-control address_field ccreq country_field STUDENT_ADDRESS_FIELD" placeholder="Country" name="fields[6]" id="STUDENT_ADDR_NATN_CODE">
 				<option value="">Choose Country </option>
 				<c:forEach items="${options['Countries']}" var="countries">
 					<option <c:if test="${countries.key == StudentAddr['ADDR_NATN_CODE'] || ((countries.key == 'US') && (StudentAddr['ADDR_NATN_CODE'] == null))}">selected="selected"</c:if> value="${countries.key}">${countries.value}</option>
 				</c:forEach>
-			</select>
+			</select>			
+		</div>
+		<div class="col-sm-1">
+			<a data-content="If you do not see the correct country listed, please select 'other' and email the Registrar's office at  &lt;a href='mailto:registrar@conncoll.edu' target='_blank'&gt;registrar@conncoll.edu&lt;/a&gt;. In your email, please let the Registrar's office know your full name and the name of the country." data-placement="top" data-title="Country Selection" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title="" style="top:8px;right:10px;"></a>
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_CITY_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -244,10 +247,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<%-- ${StudentHomePhone} --%>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
-		<div class="col-xs-2">
+		<div class="col-sm-3">
 			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_MA_PHONE_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
-		<div class="col-xs-4">
+		<div class="col-sm-6">
 			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_MA_PHONE_NUMBER" size="7" class="form-control num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
@@ -280,10 +283,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
 		<label for="Phone" class="control-label col-sm-3"><c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null}"><span class="required">* </span></c:if>Mobile Phone</label>		
-		<div class="col-xs-2">
+		<div class="col-sm-3">
 			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
-		<div class="col-xs-4">
+		<div class="col-sm-6">
 			<input type="tel" data-phone-type="CP" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
@@ -329,10 +332,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null}">style="display:none;"</c:if>>
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
-		<div class="col-xs-2">
+		<div class="col-sm-3">
 			<input type="tel" data-phone-type="EMERGENCY" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">ccreq</c:if>" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
-		<div class="col-xs-4">
+		<div class="col-sm-6">
 			<input type="tel" data-phone-type="EMERGENCY" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">ccreq</c:if>" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[34]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
@@ -717,13 +720,16 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>Country</label>
-						<div class="col-sm-6">
+						<div class="col-sm-5">
 							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="<c:out value="${modalType}"/>_ADDR_NATN_CODE" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 								<option value="">Choose Country</option>
 								<c:forEach items="${options['Countries']}" var="countries">
 									<option value="${countries.key}" <c:if test="${countries.key == 'US' }">selected="selected"</c:if>>${countries.value}</option>
 								</c:forEach>
 							</select>
+						</div>
+						<div class="col-sm-1">
+							<a data-content="If you do not see the correct country listed, please select 'other' and email the Registrar's office at  &lt;a href='mailto:registrar@conncoll.edu' target='_blank'&gt;registrar@conncoll.edu&lt;/a&gt;. In your email, please let the Registrar's office know your full name and the name of the country." data-placement="top" data-title="Country Selection" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title="" style="top:8px;right:10px;"></a>
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_CITY_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -1657,54 +1663,56 @@ function showDeleteModal(type,ppid,name){
 		formData = formData + "}";		 		 
 		console.log(formData);
 		 
-		$.ajax({
-	           type: "POST",
-	           url: ajaxurl,
-	           //data: JSON.stringify($('#' + form_id).serialize()),
-	           data: formData,
-	           dataType: "json",
-	           contentType: "application/json",
-	           success: function(data)
-	           {   
-	        	   //console.log(data);
-	        	   //console.log(data.PARENT_PPID);
-	        	   if(parent_ppid == 0){
-	        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
-	        	   }else{
-	        		   	$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
-	        	   		$('#CONTACT_LIST #emr_contact_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
-	        	   }
-	        	   $('#' + form_id + '_PARENT_PPID').val(0);
-	        	   document.getElementById(form_id).reset();
-	        	   resetIntlModalNumbers();
-	        	   getAlertNumbers();
-	        	   $('.modal_mobile_phone_check').prop('checked',false).change();
-	        	   //$('.modal_mobile_phone_check').trigger('click');
-	        	   $('#'+ form_id + '_MODAL').hide();
-	        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
-	        	   $('#CONFIRMATION_MODAL').modal('show');
-	        	   if(checkNum(form_id) >= 5){
-	        		   disableModalEnter(form_id);
-	        	   }else{
-	        		   enableModalEnter(form_id);
-	        	   }
-	        	   //add to emr_order
-	        	   var current_emr_order = $('#emr_order').val();
-	        	   if(current_emr_order.length > 0){
-	        		   $('#emr_order').val(current_emr_order + ',' + data.PARENT_PPID); 
-	        	   }else{
-	        		   $('#emr_order').val(current_emr_order + '' + data.PARENT_PPID); 
-	        	   }
-	        	      
-	        	   
-		           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
-	              
-	           },
-	           error: function(e){
-	        	   console.log(e);
-	        	   return false;
-	           }
-		    });	 
+		if(new_contact_name.length > 1){
+			$.ajax({
+		           type: "POST",
+		           url: ajaxurl,
+		           //data: JSON.stringify($('#' + form_id).serialize()),
+		           data: formData,
+		           dataType: "json",
+		           contentType: "application/json",
+		           success: function(data)
+		           {   
+		        	   //console.log(data);
+		        	   //console.log(data.PARENT_PPID);
+		        	   if(parent_ppid == 0){
+		        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
+		        	   }else{
+		        		   	$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
+		        	   		$('#CONTACT_LIST #emr_contact_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
+		        	   }
+		        	   $('#' + form_id + '_PARENT_PPID').val(0);
+		        	   document.getElementById(form_id).reset();
+		        	   resetIntlModalNumbers();
+		        	   getAlertNumbers();
+		        	   $('.modal_mobile_phone_check').prop('checked',false).change();
+		        	   //$('.modal_mobile_phone_check').trigger('click');
+		        	   $('#'+ form_id + '_MODAL').hide();
+		        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
+		        	   $('#CONFIRMATION_MODAL').modal('show');
+		        	   if(checkNum(form_id) >= 5){
+		        		   disableModalEnter(form_id);
+		        	   }else{
+		        		   enableModalEnter(form_id);
+		        	   }
+		        	   //add to emr_order
+		        	   var current_emr_order = $('#emr_order').val();
+		        	   if(current_emr_order.length > 0){
+		        		   $('#emr_order').val(current_emr_order + ',' + data.PARENT_PPID); 
+		        	   }else{
+		        		   $('#emr_order').val(current_emr_order + '' + data.PARENT_PPID); 
+		        	   }
+		        	      
+		        	   
+			           //console.log("recipientSubmitAjax: id:" + id + " formID:" + formID + " formToSubmitTo:" + formToSubmitTo);  
+		              
+		           },
+		           error: function(e){
+		        	   console.log(e);
+		        	   return false;
+		           }
+			    });	 
+			}
 		 return false;
 		 
 	 }	 
