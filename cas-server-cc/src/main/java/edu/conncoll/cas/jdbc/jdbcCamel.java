@@ -496,38 +496,38 @@ public class jdbcCamel {
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
 					
 					SQL="select distinct case when PECI_PHONE_CODE = 'E' then 'E' else null end PECI_PHONE_CODE, "
-							+"		     case when PHONE_CODE like 'ep%' then PHONE_CODE else null end PHONE_CODE,"
-							+"           concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num," 
-							+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,"				
+							+"				case when PHONE_CODE like 'ep%' then PHONE_CODE else null end PHONE_CODE, "
+							+"                concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num, "
+							+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,				"
 							+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
 							+"  from cc_gen_peci_phone_data_t phone"
 							+"  left join (select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"
 							+"			        Group_Concat(concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME,"
-							+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
+							+"                    concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 							+"			  from cc_gen_peci_phone_data_t p"
 							+"			 inner join cc_adv_peci_parents_t par"
 							+"			    on p.PARENT_PPID = par.PARENT_PPID"
 							+"			   and p.STUDENT_PIDM = par.STUDENT_PIDM"
-							+"			   and par.CHANGE_COLS <> 'DELETE'"
+							+"			 where par.CHANGE_COLS <> 'DELETE'"
 							+"			 group by STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents"
-							+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = parents.Phone_Num"
+							+"    on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = parents.Phone_Num"
 							+"  and phone.STUDENT_PIDM = parents.STUDENT_PIDM"
 							+" left join (select p.STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL,  "
 							+"			        Group_Concat(concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME,"
-							+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
+							+"                    concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 							+"			   from cc_gen_peci_phone_data_t p"
 							+"			   left join cc_gen_peci_emergs_t EMERG"
 							+"			     on p.PARENT_PPID = EMERG.PARENT_PPID"
 							+"			   and p.STUDENT_PIDM = EMERG.STUDENT_PIDM"
 							+"			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-							+"			    and EMERG.CHANGE_COLS <> 'DELETE'"
+							+"                and EMERG.CHANGE_COLS <> 'DELETE'"
 							+"			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=p.STUDENT_PIDM)"
 							+"			  group by PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) EMERG"
-							+"   on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = EMERG.Phone_Num"
+							+"    on concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) = EMERG.Phone_Num"
 							+"   and phone.STUDENT_PIDM = EMERG.STUDENT_PIDM"
-							+"  left join (Select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,"  
+							+"  left join (Select p.STUDENT_PIDM, PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,  "
 							+"				    concat(PREFERRED_FIRST_NAME,' ',PREFERRED_LAST_NAME) STUDENT_PREF_NAME,"
-							+"			        concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
+							+"                   concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num"
 							+"			   from cc_gen_peci_phone_data_t p"
 							+"			  inner join cc_stu_peci_students_t s"
 							+"                 on p.STUDENT_PIDM = s.STUDENT_PIDM"
@@ -538,10 +538,9 @@ public class jdbcCamel {
 							+"   and phone.STUDENT_PIDM = student.STUDENT_PIDM"
 							+" where (concat_ws(',',phone.PHONE_AREA_CODE,phone.PHONE_NUMBER,phone.PHONE_NUMBER_INTL,phone.STUDENT_PIDM) not in "
 							+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
-							+"						from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
-							+"		or phone.PHONE_CODE like 'EP%')"
-							+"     and phone.CHANGE_COLS != 'DELETE'"
-							+"  and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
+							+"				from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
+							+"				or phone.PHONE_CODE like 'EP%')"
+							+" and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					context.getFlowScope().put("EmmrgPhones",phoneData);
@@ -563,9 +562,11 @@ public class jdbcCamel {
 				log.debug ("emergData: " + emergData.size());
 				log.debug ("parentData: " + parentData.size());
 				log.debug ("addressData: " + !addressData.isEmpty());
-				log.debug ("emailData: " + !emailData.isEmpty());
 				if ( !flag.equals("PECIE") ) {
-					if ( (emergData.size() >0)  && (parentData.size() >0)  && (!addressData.isEmpty())  && (!emailData.isEmpty()) )  {
+					if ( (emergData.size() >0)  && (parentData.size() >0)  && (!addressData.isEmpty()) )  {
+						context.getFlowScope().put("ContactCount", emergData.size());
+						context.getFlowScope().put("ParentCount", emergData.size());
+						context.getFlowScope().put("HasAddress", !addressData.isEmpty());
 						context.getFlowScope().put("Flag", "PECIC");
 					}
 				}
