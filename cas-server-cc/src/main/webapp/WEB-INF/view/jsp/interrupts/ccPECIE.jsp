@@ -1380,6 +1380,7 @@ function showDeleteModal(type,ppid,name){
 	        	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
 	        	  $('#' + modal_type + '_PARENT_PPID').val(ppid);
 	        	  //$('#' + modal_type + '_PARENT_PIDM').val();
+	        	  var showEmerNumber = 0;
 	        	  if(modal_type == 'PARENT'){
 		        	  $.each(data.parent, function(index, element){	       
 		        		  $('form#' + modal_type + ' #' + index).val(element);	 
@@ -1390,6 +1391,7 @@ function showDeleteModal(type,ppid,name){
 		        				  console.log('modal_type: ' + modal_type);
 		        				  //$('#' + modal_type + '_' + index).attr('checked','checked');
 		        				  $('.modal_mobile_phone_check').prop('checked',true).change();
+		        				  var showEmerNumber = 1;
 		        				  emergencyNumberToggle(modal_type, 1);
 		        			  }
 		        		  }
@@ -1441,7 +1443,7 @@ function showDeleteModal(type,ppid,name){
 	        		  
 	        		 if(phone_code == 'EP'){
 	        			 //handle emergency number
-	        			 if($('#' + modal_type + '_' + 'EMERG_NO_CELL_PHONE').is(':checked')){
+	        			 if(showEmerNumber = 1/*$('#' + modal_type + '_' + 'EMERG_NO_CELL_PHONE').is(':checked')*/){
 		        			  if(phone_number_intl != "" && phone_number_intl != null){
 		   	        			  //console.log(phone_number_intl);
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').hide();
@@ -1919,12 +1921,12 @@ function showDeleteModal(type,ppid,name){
 		}else{
 			//turning parent on
 			//show in emerg contacts list
-			if($('#emr_contact_' + ppid).length){
+			/* if($('#emr_contact_' + ppid).length){
 				//already exists, just show it
 				console.log('contact already exists, show it');
 				$('#emr_contact_' + ppid).fadeIn();
 				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
-			}else{
+			}else{ */
 				console.log('contact does not exist, use ajax to create');	
 				if(emr_switch_count < 1){
 					//turn back on
@@ -1936,7 +1938,7 @@ function showDeleteModal(type,ppid,name){
 					$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 					removeParentFromContact = true;
 				}	
-			}
+			/*}*/
 			//create contact by promoting through restlet
 			$.ajax({
 		           type: "POST",

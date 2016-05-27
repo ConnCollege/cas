@@ -301,7 +301,7 @@
 	    </c:if>   
     </div>
   </div>
- <%--  ${EmmrgPhones} --%>
+${EmmrgPhones} 
    <div id="step5">
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
