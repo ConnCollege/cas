@@ -221,17 +221,41 @@
 	</div>
   </div>
   <br>
-  <%-- StudentCellPhone: ${StudentCellPhone} --%>
+ StudentCellPhone: ${StudentCellPhone} 
+ StudentEmrPhone: ${StudentEmrPhone }
   <div id="step2">
-  	<h3>Step 2 Your Emergency Contact Information</h3>	
-	<div class="row">
-		<div class="col-xs-3">
-	    	<div>Mobile Phone </div>
-	 	</div>
-	 	<div class="col-xs-9">
-	     	<div>${StudentCellPhone['PHONE_AREA_CODE']}&nbsp;${StudentCellPhone['PHONE_NUMBER']}</div>
-	  	</div>
-	</div>
+  	<h3>Step 2 Your Emergency Contact Information</h3>
+  	<c:choose>	
+	  	<c:when test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">
+			<div class="row">
+				<div class="col-xs-3">
+			    	<div>Emergency Phone </div>
+			 	</div>
+			 	<div class="col-xs-9">
+			     	<div>
+				     	<c:choose>
+				     		<c:when test="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) != 0}">
+				     			${StudentEmrPhone['PHONE_NUMBER_INTL']}
+				     		</c:when>
+				     		<c:otherwise>
+				     			${StudentEmrPhone['PHONE_AREA_CODE']}&nbsp;${StudentEmrPhone['PHONE_NUMBER']}
+				     		</c:otherwise>
+				     	</c:choose>
+			     	</div>
+			  	</div>
+			</div>
+		</c:when>
+		<c:otherwise>
+			<div class="row">
+				<div class="col-xs-3">
+			    	<div>Mobile Phone </div>
+			 	</div>
+			 	<div class="col-xs-9">
+			     	<div>${StudentCellPhone['PHONE_AREA_CODE']}&nbsp;${StudentCellPhone['PHONE_NUMBER']}</div>
+			  	</div>
+			</div>
+		</c:otherwise>
+	</c:choose>
 	<div class="row">
 		<div class="col-xs-3">
 	    	<div>Phone Carrier </div>
@@ -348,12 +372,20 @@ function confirmExit() {
 
 $(document).ready(function() {	
 	
-	var demoFields = ["PARENT_LEGAL_PREFIX_NAME","PARENT_PREF_FIRST_NAME","PARENT_PREF_MIDDLE_NAME","PARENT_PREF_LAST_NAME","PARENT_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS","EMERG_LEGAL_PREFIX_NAME","EMERG_PREF_FIRST_NAME","EMERG_PREF_MIDDLE_NAME","EMERG_PREF_LAST_NAME","EMERG_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
-	var demoValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address","Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
-	var contactFields = ["EMERG_LEGAL_PREFIX_NAME","EMERG_PREF_FIRST_NAME","EMERG_PREF_MIDDLE_NAME","EMERG_PREF_LAST_NAME","EMERG_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS"];
-	var contactValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address"]
-	var phoneFields = ["PECI_PHONE_CODE","PHONE_AREA_CODE","PHONE_NUMBER","CELL_PHONE_CARRIER"];
-	var phoneValues= ["Phone Type","Area Code","Phone Number","Phone Carrier"]
+	demoFields = ["PARENT_LEGAL_PREFIX_NAME","PARENT_PREF_FIRST_NAME","PARENT_PREF_MIDDLE_NAME","PARENT_PREF_LAST_NAME","PARENT_LEGAL_SUFFIX_NAME","EMERG_RELT_CODE","PARENT_RELT_CODE","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS","EMERG_LEGAL_PREFIX_NAME","EMERG_PREF_FIRST_NAME","EMERG_PREF_MIDDLE_NAME","EMERG_PREF_LAST_NAME","EMERG_LEGAL_SUFFIX_NAME","DEPENDENT","ADDR_STREET_LINE1","ADDR_STREET_LINE2","ADDR_CITY","ADDR_STAT_CODE","ADDR_ZIP","ADDR_NATN_CODE","EMAIL_ADDRESS","EMERG_NO_CELL_PHONE"];
+	demoValues = ["Prefix","First Name","Middle Name","Last Name","Suffix","Relationship","Relationship","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address","Prefix","First Name","Middle Name","Last Name","Suffix","Dependent","Address 1","Address 2","City","State","Zip/Postal","Country","Email Address","No Cell Phone"]
+	
+	phoneFields = ["PECI_PHONE_CODE","PHONE_AREA_CODE","PHONE_NUMBER","CELL_PHONE_CARRIER"];
+	phoneValues= ["Phone Type","Area Code","Phone Number","Phone Carrier"]
+	relationshipCodes  = [];
+	relationshipValues = [];
+	<c:forEach items="${options['Relationships']}" var="relationships">
+		relationshipCodes.push("${relationships.key}");
+		relationshipValues.push("${relationships.value}");
+	</c:forEach>
+	
+	console.log(relationshipCodes);
+	console.log(relationshipValues);
 	
 	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
 	var x = 0;
@@ -373,150 +405,64 @@ $(document).ready(function() {
 			       contentType: "application/json",
 			       success: function(data)           
 			       {  
-			    	   var output = '';
-			    	   //y ++;
-			    	   //$('#contact_' + ppid).append('<h4>Emergency Contact ' + y + '</h4>');
-			    	   if(type_id == 'CONTACT'){
-				    	   $.each(data.contact, function(index, element){				       		
-				       		var output = '';				       		
-				       		var loc = demoFields.indexOf(index); 					       		
-				       		if(loc != -1){
-				       			
-				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-				       			if(element != null){
-				       				output += element;
-				       			}
-				       			output += '</div></div></div>';
-				       		}	
-				       		$('#' + type_id + '_' + ppid).append(output);
-				       	  });
+						var output = '';
+			    	   	if(type_id == 'CONTACT'){
+				    	   	$.each(data.contact, function(index, element){				       		
+				       			var output = displayOutput(index,element);					       		
+				       			$('#' + type_id + '_' + ppid).append(output);
+				       	  	});
 			    	   }else{
 			    		   $.each(data.parent, function(index, element){
-					       		//console.log("-parent- index: " + index + " element:" + element);
-					       	 	var output = '';					       		
-					       		var loc = demoFields.indexOf(index); 		       		
-					       		if(loc != -1){
-					       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-					       			if(element != null){
-					       				output += element;
-					       			}
-					       			output += '</div></div></div>';
-					       		}	
-					       		$('#' + type_id + '_' + ppid).append(output);
-					       	  });
-			    	   }
-			    	   
-			    	   
-			       	  //use first email: data.parent_email[0]?
-			       	if (data.email[0] != undefined && data.email[0] != null && data.email[0].length != 0){
-			       	  $.each(data.email[0], function(index,element){
-			       		//console.log("-parent- index: " + index + " element:" + element);
-				       		var output = '';			       		
-				       		var loc = demoFields.indexOf(index); 	
-				       		//console.log("loc: " + loc + "ppid: " + ppid);
-				       		if(loc != -1){
-				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-				       			if(element != null){
-				       				output += element;
-				       			}
-				       			output += '</div></div></div>';	 
-				       		}
-				       		$('#' + type_id + '_' + ppid).append(output);
-			       	  });
-			       	}
-			       	  
-			       	  
-			       	  //use first address: data.parent_address[0]?
-
-			       	  $.each(data.address, function(index,element){
-			       		//console.log("-contact- index: " + index + " element:" + element);
-				       		var output = '';			       		
-				       		var loc = demoFields.indexOf(index); 
-				       		//console.log("Address: loc: " + loc + "ppid: " + ppid);
-				       		if(loc != -1){
-				       			//console.log("Address: loc: " + loc);
-				       			output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';
-				       			if(element != null){
-				       				output += element;
-				       			}
-				       			output += '</div></div></div>';
-				       		}      	
+					       	 	var output = displayOutput(index,element);					       		
+					       	 	$('#' + type_id + '_' + ppid).append(output);
+					       	 });
+			    	   }			    	   			    	   
 	
-				       		$('#' + type_id + '_' + ppid).append(output);
-		
-			          });
-
+				       if (data.email != undefined && data.email != null && data.email.length != 0){
+				       		$.each(data.email, function(index,element){
+				       			var output = displayOutput(index,element);					       		
+			       				$('#' + type_id + '_' + ppid).append(output);
+				       	  	});
+				       	}	
+	
+				       	$.each(data.address, function(index,element){
+				       		var output = displayOutput(index,element);					       		
+			       			$('#' + type_id + '_' + ppid).append(output);
+			
+				         });
 			       	
-			       	//phones
-			       	for(i=0;i<data.phones.length;i++){
-			       		var phone_code = data.phones[i].PHONE_CODE;
-		        		//var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
-		        		var phone_area_code = data.phones[i].PHONE_AREA_CODE;
-		        		var phone_number = data.phones[i].PHONE_NUMBER;
-		        		var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
-		        		if(phone_number_intl.length > 0){
-		        			phone_display = phone_number_intl;
-		        		}else{
-		        			phone_display =  phone_area_code + ' ' + phone_number;
-		        		}
-		        		var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
-		        		var phone_carrier = data.phones[i].CELL_PHONE_CARRIER;
-		        		var output = '';
-		        		if(phone_code == 'CP'){
-		       				phone_type = 'Mobile';
-		       			}else if(phone_code == 'MA'){
-		       				phone_type = 'Home';
-		       			}else if(phone_code == 'BU'){
-		       				phone_type = 'Office';					       			
-		       			}
-		        		output += '<div class="row"><div class="col-xs-3"><div>' + phone_type + ' Phone</div></div><div class="col-xs-9">' + phone_display + '<div>';
-		        		output += '</div></div></div>';
-				       	$('#' + type_id + '_' + ppid).append(output);
-			       	}
-			       	
-			       	  
-/* 			       	$.each(data.phones, function(index1,element1){
-							//console.log("index1: " + index1); 
-			    		  $.each(this, function(index2,element2){  
-			    			  console.log(index2['PHONE_CODE']);
-					       		var output = '';			       		
-					       		var loc = phoneFields.indexOf(index2);
-					       		var thisTitle = phoneValues[loc];
-					       		if(index1 == 1){
-					       			var thisTitle = "Additional " + thisTitle;
-					       		}else if(index1 != 0){
-					       			var thisTitle = "Additional " + thisTitle + " " + index1;
-					       		}
-					       		if(loc != -1){
-					       			output += '<div class="row"><div class="col-xs-3"><div>' + thisTitle + '</div></div><div class="col-xs-9"><div>';
-					       			if(index2 == 'PHONE_CODE'){
-						       			if(element2 == 'CP'){
-						       				output += 'Mobile';
-						       			}else if(element2 == 'MA'){
-						       				output += 'Home';
-						       			}else if(element2 == 'BU'){
-						       				output += 'Office';					       			
-						       			}
-					       			}else if(element2 != null){
-					       				output += element2;
-					       			}
-					       			output += '</div></div></div>';	
-					       		}
-					       		$('#' + type_id + '_' + ppid).append(output);
-			        		  
-			      			  //console.log(peci_phone_code);
-			      			  //console.log(peci_phone_code);
-			    			  //console.log("peci phone code" +  index[element]);        			  
-			    		  });
-			    		  //console.log("-parent_phones-index: " + index + " element:" + element['PHONE_NUMBER']);
-			      	  	//$('#' + $modal_type + "_" + index).val(element); 		   
-			      	  }); */
-			       	  
-		
+				       	//phones
+				       	for(i=0;i<data.phones.length;i++){
+				       		var phone_code = data.phones[i].PHONE_CODE;
+			        		//var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
+			        		var phone_area_code = data.phones[i].PHONE_AREA_CODE;
+			        		var phone_number = data.phones[i].PHONE_NUMBER;
+			        		var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
+			        		if(phone_number_intl.length > 0){
+			        			phone_display = phone_number_intl;
+			        		}else{
+			        			phone_display =  phone_area_code + ' ' + phone_number;
+			        		}
+			        		var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
+			        		var phone_carrier = data.phones[i].CELL_PHONE_CARRIER;
+			        		var output = '';
+			        		if(phone_code == 'CP'){
+			       				phone_type = 'Mobile';
+			       			}else if(phone_code == 'MA'){
+			       				phone_type = 'Home';
+			       			}else if(phone_code == 'BU'){
+			       				phone_type = 'Office';					       			
+			       			}else if(phone_code == 'EP'){
+			       				phone_type = 'Emergency';
+			       			}
+			        		output += '<div class="row"><div class="col-xs-3"><div>' + phone_type + ' Phone</div></div><div class="col-xs-9">' + phone_display + '<div>';
+			        		output += '</div></div></div>';
+					       	$('#' + type_id + '_' + ppid).append(output);
+				       	}
 			       },
 			 		error: function (request, status, error) {
-		           console.log("ERROR: " + request.responseText);
-		       }
+		           		console.log("ERROR: " + request.responseText);
+		       		}
 			});
 		}
 			
@@ -531,6 +477,43 @@ $(document).ready(function() {
 	});
 	
 });
+
+function displayOutput(index, element){
+	var output = '';
+	if(index.indexOf('RELT_CODE') > -1){	
+		output = displayRelationship(index,element);		
+	}else{
+   		output = displayField(index,element);	
+	}
+	return output;
+}
+
+function displayRelationship(index, element){
+	var output = '';
+	var loc1 = relationshipCodes.indexOf(element); 					       		
+	if(loc1 != -1){		   			
+		output += '<div class="row"><div class="col-xs-3"><div>Relationship</div></div><div class="col-xs-9"><div>';	
+		if(element != null){
+			output += relationshipValues[loc1];
+		}
+		output += '</div></div></div>';
+	}	
+	return output
+}
+
+function displayField(index, element){
+	var output = '';
+	var loc = demoFields.indexOf(index); 					       		
+	if(loc != -1){
+		
+		output += '<div class="row"><div class="col-xs-3"><div>' + demoValues[loc] + '</div></div><div class="col-xs-9"><div>';	
+		if(element != null){
+			output += element;
+		}
+		output += '</div></div></div>';
+	}	
+	return output;
+}
 
 </script>
   	

@@ -260,7 +260,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[28]" size="7" class="form-control" id="STUDENT_MA_PHONE_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" placeholder="International Number" name="fields[28]" size="7" class="form-control" id="STUDENT_MA_PHONE_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -906,7 +906,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
     }); */
 	 
 	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });
-     //console.log(checked_phone_numbers);
+     console.log(checked_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
@@ -1131,12 +1131,14 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	
 	//reset the modal form fields if modal is closed
 	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
+		  console.log('2: is checked, uncheck');   
 		 document.getElementById("CONTACT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		 }
 	 });	 
 	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {
+		 console.log('3: is checked, uncheck');   
 		 document.getElementById("PARENT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
@@ -1265,6 +1267,7 @@ function showDeleteModal(type,ppid,name){
      				$(this).bootstrapSwitch('disabled',false);
      			});
         	 }
+        	 getAlertNumbers();
          },
          error: function (request, status, error) {
              //console.log("ERROR: " + request.responseText);
@@ -1589,8 +1592,7 @@ function showDeleteModal(type,ppid,name){
 			var phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
 			var phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 			if(phoneCodeArray[j] == "EP"){
-				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
-					var emerg_no_cell_phone = 'Y';					
+				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){		
 					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){					
 						var phone_area_code = '';
 						var phone_number = '';
@@ -1599,38 +1601,35 @@ function showDeleteModal(type,ppid,name){
 						var phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
 						var phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
 						var phone_intl = '';	
-					}	
-					
-					//check if CP number has data, if it does, wipe it out
-					var phone_cp_sequence_no = $('#' + form_id + '_PHONE_CP_SEQUENCE_NO').val();
-					if(phone_cp_sequence_no.length != 0){
-						//wipe out current number					
-						var phone_area_code = '';
-						var phone_number = '';						
-						var phone_code = 'CP';
-						var phone_intl = '';
-						var emerg_no_cell_phone = '';
-						var phone_carrier = '';
-					}					
+					}				
 					
 				}else{
 					//emerg_no_cell_phone not checked, don't send any EP number, wipe out whats there
-					var emerg_no_cell_phone = 'N';	
-					//check if EP number has data, if it does, wipe it out
-					var phone_ep_sequence_no = $('#' + form_id + '_PHONE_EP_SEQUENCE_NO').val();
-					if(phone_ep_sequence_no.length != 0){
-						//wipe out current number					
-						var phone_area_code = '';
-						var phone_number = '';						
-						var phone_code = 'EP';
-						var phone_intl = '';
-						var emerg_no_cell_phone = '';
-						var phone_carrier = '';
-					}							
+					//wipe out current number					
+					var phone_area_code = '';
+					var phone_number = '';						
+					var phone_intl = '';
+					var phone_carrier = '';					
 				}
-			}else{
-				var submitNumber = 1;
-				var emerg_no_cell_phone = 'N';					
+			}else if(phoneCodeArray[j] == "CP"){
+				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){					
+					//wipe out current number					
+					var phone_area_code = '';
+					var phone_number = '';				 		
+					var phone_intl = '';
+					var phone_carrier = '';						
+				}else{				
+					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){					
+						var phone_area_code = '';
+						var phone_number = '';
+						var phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
+					}else{					
+						var phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
+						var phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
+						var phone_intl = '';	
+					}							
+				}	
+			}else{		
 				if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
 					var phone_area_code = '';
 					var phone_number = '';
@@ -1639,7 +1638,7 @@ function showDeleteModal(type,ppid,name){
 					var phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
 					var phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
 					var phone_intl = '';
-				}					
+				}			
 				
 			}
 			var phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
@@ -1654,7 +1653,6 @@ function showDeleteModal(type,ppid,name){
 			formData = formData + '"PHONE_NUMBER" : "' + phone_number + '",';
 			formData = formData + '"PHONE_CODE" : "' + phone_code + '",';
 			formData = formData + '"PHONE_NUMBER_INTL" : "' + phone_intl + '",';
-			formData = formData + '"EMERG_NO_CELL_PHONE" : "' + emerg_no_cell_phone + '",';
 			if(phone_carrier == undefined || phone_sequence_no.length == 0){
 				formData = formData + '"CELL_PHONE_CARRIER" : null';
 			}else{
@@ -1662,16 +1660,14 @@ function showDeleteModal(type,ppid,name){
 			}	
 			//show number in step 5	
 								
-			if(phoneCodeArray[j] == "CP"){
-				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
-					emerg_no_cell_phone = 'Y';					
+/* 			if(phoneCodeArray[j] == "CP"){
+				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){		
 					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
 						var alert_phone_number = phone_intl;
 					}else{
 						var alert_phone_number = "" + phone_area_code + phone_number;
 					}	
 				}else{
-					var emerg_no_cell_phone = 'N';
 					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
 						var alert_phone_number = phone_intl;
 					}else{
@@ -1680,15 +1676,8 @@ function showDeleteModal(type,ppid,name){
 				}
 			}else{
 				var alert_phone_number = "" + phone_area_code + phone_number;
-			}
-			
-			/* if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
-				//add number to campus alert phone number list
-				console.log("add this num: " + alert_phone_number);
-				addCampusAlertNumber(alert_phone_number, new_contact_name, form_id);
-			}else{
-				console.log("DONT ADD: " + phone_number);
-			} */
+			}	 */		
+
 			
      	   //reset hidden form fields on modal manually because Safari is old and cranky and can't reset fields it can't see	
 			$('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
@@ -1719,13 +1708,15 @@ function showDeleteModal(type,ppid,name){
 		        		   	$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
 		        	   		$('#CONTACT_LIST #emr_contact_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
 		        	   }
-		        	   $('#' + form_id + '_PARENT_PPID').val(0);
-		        	   document.getElementById(form_id).reset();
+		        	   $('#' + form_id + '_PARENT_PPID').val(0);		        	   
 		        	   resetIntlModalNumbers();
 		        	   getAlertNumbers();
 		        	   if($('.modal_mobile_phone_check').is(':checked')){
+		        			console.log('1: is checked, uncheck');   
+		        	   
 		      			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		      		   }
+		        	   document.getElementById(form_id).reset();
 		        	   //$('.modal_mobile_phone_check').trigger('click');
 		        	   $('#'+ form_id + '_MODAL').hide();
 		        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
@@ -1949,6 +1940,7 @@ function showDeleteModal(type,ppid,name){
 		           success: function(data)           
 		           {  
 		        	   addToList('CONTACT',name,ppid);
+		        	   getAlertNumbers();
 		           },
 		           error: function (request, status, error) {
 		               
@@ -1995,6 +1987,8 @@ function showDeleteModal(type,ppid,name){
 		        		  }else{
 		        			  var alert_phone_number = '' + phone_area_code + phone_number;
 		        		  }
+		        		  console.log('getAlertNumbers');
+		        		  console.log(checked_phone_numbers);
 		        		  if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
 		        			  var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
 			      			}else{
