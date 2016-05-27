@@ -1619,13 +1619,13 @@ function showDeleteModal(type,ppid,name){
 					var phone_intl = '';
 					var phone_carrier = '';						
 				}else{				
-					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){					
+					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){					
 						var phone_area_code = '';
 						var phone_number = '';
-						var phone_intl = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').val();
+						var phone_intl = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').val();
 					}else{					
-						var phone_area_code = $('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').val();
-						var phone_number = $('#' + form_id + '_PHONE_EMERGENCY_NUMBER').val();
+						var phone_area_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_AREA_CODE').val();
+						var phone_number = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER').val();
 						var phone_intl = '';	
 					}							
 				}	
