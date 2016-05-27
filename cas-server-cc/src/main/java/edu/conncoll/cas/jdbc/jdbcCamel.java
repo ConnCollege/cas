@@ -495,8 +495,8 @@ public class jdbcCamel {
 					
 					if (phoneData.size() >0 ) context.getFlowScope().put("StudentEmrPhone",phoneData.get(0));
 					
-					SQL="select distinct case when PECI_PHONE_CODE = 'E' then case when PARENT_PPID = '0' and PHONE_CODE = 'EP' then 'E' else null end else null end PECI_PHONE_CODE, "
-							+"				case when PHONE_CODE like 'ep%' then case when PARENT_PPID = '0' and PHONE_CODE = 'EP' then PHONE_CODE else null end else null end PHONE_CODE, "
+					SQL="select distinct case when PECI_PHONE_CODE = 'E' then case when PARENT_PPID != '0' and PHONE_CODE = 'EP' then null else PECI_PHONE_CODE end else null end PECI_PHONE_CODE, "
+							+"				case when PHONE_CODE like 'ep%' then case when PARENT_PPID != '0' and PHONE_CODE = 'EP' then null else PHONE_CODE end else null end PHONE_CODE, "
 							+"                concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL) Phone_Num, "
 							+"				phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL,				"
 							+"	            concat_ws(', ',STUDENT_PREF_NAME, PARENT_PREF_NAME, EMERG_PREF_NAME) Pref_Name"
@@ -540,7 +540,8 @@ public class jdbcCamel {
 							+"			(select concat_ws(',',PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,STUDENT_PIDM) "
 							+"				from cc_gen_peci_phone_data_t where PHONE_CODE like 'EP%')"
 							+"				or phone.PHONE_CODE like 'EP%')"
-							+" and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
+							+"   and (phone.CHANGE_COLS <> 'DELETE' or phone.CHANGE_COLS is null) "
+							+"   and phone.STUDENT_PIDM = :STUDENT_PIDM     ";
 					phoneData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					context.getFlowScope().put("EmmrgPhones",phoneData);
