@@ -34,21 +34,8 @@
           // Only make the .panel-heading child elements support dragging.
           // Omit this to make then entire <li>...</li> draggable.
           handle: '.panel-heading', 
-          update: function() {
-        	  var contact_order_list = '';
-              $('.panel',panelList).each(function(index, elem) {
-                   var $listItem = $(elem);
-                        var newIndex = $listItem.index();
-                   		var ppid = $listItem.attr("id").replace('emr_contact_','');
-                   		ppid = ppid.replace('parent_','');
-                   		if(index != 0){
-                   			contact_order_list += ',';
-                   		}
-                   		contact_order_list += ppid
-						//console.log("newList: " + contact_order_list)
-                   // Persist the new indices. 
-              }); 
-              $('#emr_order').val(contact_order_list);              
+          update: function() {        	  
+              setEmrOrder();    
           },
           stop: function() {
               //console.log("stopped drag");
@@ -1268,6 +1255,8 @@ function showDeleteModal(type,ppid,name){
      			});
         	 }
         	 getAlertNumbers();
+        	//remove from emr_order
+			setEmrOrder();
          },
          error: function (request, status, error) {
              //console.log("ERROR: " + request.responseText);
@@ -2003,6 +1992,30 @@ function showDeleteModal(type,ppid,name){
 	               
 	           }
 		 });		 
+	}
+	
+	function setEmrOrder(){
+		var panelList = $('.draggablePanelList');
+		var contact_order_list = '';
+		$('.panel',panelList).each(function(index, elem) {
+            var $listItem = $(elem);
+            console.log($listItem);
+            	if($listItem.is(':visible')){
+            		console.log("visible");
+            		
+            	
+	                 var newIndex = $listItem.index();
+	            		var ppid = $listItem.attr("id").replace('emr_contact_','');
+	            		ppid = ppid.replace('parent_','');
+	            		if(index != 0){
+	            			contact_order_list += ',';
+	            		}
+	            		contact_order_list += ppid
+            	}
+					//console.log("newList: " + contact_order_list)
+            // Persist the new indices. 
+       }); 
+       $('#emr_order').val(contact_order_list);          
 	}
  
 	
