@@ -247,7 +247,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[28]" size="7" class="form-control" id="STUDENT_MA_PHONE_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
+			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="30" class="form-control" id="STUDENT_MA_PHONE_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -283,7 +283,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
@@ -332,7 +332,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div <c:if test="${fn.length(StudentCellPhone['PHONE_NUMBER_INTL']) != 0 }">style="display:none;"</c:if> class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="EMERGENCY_INTL" placeholder="International Number" name="fields[30]" size="7" class="form-control" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="EMERGENCY_INTL" placeholder="International Number" name="fields[30]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -563,7 +563,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="CP" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				</div>
 		  			</div>
 		  			
@@ -605,7 +605,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
 						<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="International Number" name="fields[24]" size="7" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+							<input type="text" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 						</div>
 					</div>	
 					
@@ -632,7 +632,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="MA" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Home Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				</div>
 		  			</div>	
 		  			
@@ -659,7 +659,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="BU" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Office Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				</div>
 		  			</div>		
 		  			
@@ -1812,7 +1812,7 @@ function showDeleteModal(type,ppid,name){
 		});
 	}
 	
-/* 	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
+	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
 		if(type == 'STUDENT'){
 			if($('#STUDENT_EP_NUMBER').length){
 				$('#STUDENT_EP_NUMBER').val(alert_phone_number);
@@ -1828,7 +1828,7 @@ function showDeleteModal(type,ppid,name){
 		//push to all phone number array
 		//checked_phone_numbers.push(alert_phone_number);
 		//console.log("New all phone numbers: " + checked_phone_numbers);
-	} */
+	} 
 	
 	function emergencyNumberToggle(form_id, checked){
 		if(checked) {
