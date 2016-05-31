@@ -126,7 +126,7 @@
 	<p>Please <strong>do not</strong> enter your local or campus address. </p>
 
 	<p><span class="required">* </span>Required Field</p>  
-	<%-- ${StudentBio} --%>
+	${StudentBio} 
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_FORM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">There was an error with your form submission. Please fix the areas indicated in red below.</span></div>
 		
 	<div class="form-group" id="group_student_firstname">
@@ -381,8 +381,15 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	    <h3>Step 3 Parent/Guardian Information</h3>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_NUM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to enter at least one parent</span></div>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu</span></div>
-	    <p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
-	    <p id="doc_opt_out_message" style="display:none;">You are not required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</p>	   
+	    
+	    <c:choose>
+	    	<c:when test = "${StudentBio['DEAN_EXCEPTION_DATE'] != null}">
+	    		<p id="doc_message">You are <strong>not</strong> required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</strong></p>
+	    	</c:when>
+	    	<c:otherwise>
+	    		<p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
+	    	</c:otherwise>
+	    </c:choose> 
 
 	<div id="PARENT_LIST">
 	 	<c:forEach items="${StudentParents}" var="parents">
@@ -425,7 +432,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	      </div>
 	    </div>
     </div>
-    ${EmmrgPhones}
+    <%-- ${EmmrgPhones} --%>
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
@@ -897,6 +904,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
+	 deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}";
 	 
 	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
 	 if(checkNum('PARENT') >= 5){
@@ -925,7 +933,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	//get count of number of emr switches that are "On". If only 1, make it read-only since at least 1 parent needs to be checked
 	emr_switch_count = $('.parent-bootstrap-switch:checked').length;
 	//console.log('emr_switch_count: ' + emr_switch_count);
-	if(emr_switch_count == 1){
+	if(emr_switch_count == 1 && deanExceptionDate.length == 0){
 		//console.log('emr_switch_count = 1');
 		//$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
 		$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);
@@ -1883,16 +1891,25 @@ function showDeleteModal(type,ppid,name){
 	function emergencySwitchToggle(ppid, name, event, state){
 		var x = 0;
 		var removeParentFromContact = false;
-		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;
+		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;		
 		console.log('emr_switch_count from emergencySwitchToggle: ' + emr_switch_count);
 		if(state == false){
 			//turning parent off
 			if(emr_switch_count < 1){
-				//turn back on
-				$(this).bootstrapSwitch('state',true);
+				if(deanExceptionDate.length == 0){	
+					//turn back on
+					$(this).bootstrapSwitch('state',true);
+				}else{
+					removeParentFromContact = true;
+				}
 			}else if(emr_switch_count == 1){
-				$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
-				removeParentFromContact = true;
+				if(deanExceptionDate.length == 0){			
+					$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
+					removeParentFromContact = true;
+				}else{
+					//don't disable the last remaining switch
+					removeParentFromContact = true;
+				}
 			}else{
 				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 				removeParentFromContact = true;
@@ -1913,11 +1930,15 @@ function showDeleteModal(type,ppid,name){
 			}else{ */
 				console.log('contact does not exist, use ajax to create');	
 				if(emr_switch_count < 1){
-					//turn back on
-					$(this).bootstrapSwitch('state',true);
+					if(deanExceptionDate.length == 0){	
+						//turn back on
+						$(this).bootstrapSwitch('state',true);
+					}
 				}else if(emr_switch_count == 1){
-					$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
-					//removeParentFromContact = true;
+					if(deanExceptionDate.length == 0){		
+						$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
+						//removeParentFromContact = true;
+					}
 				}else{
 					$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 					//removeParentFromContact = true;
