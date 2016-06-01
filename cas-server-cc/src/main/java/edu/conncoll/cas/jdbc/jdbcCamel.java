@@ -1079,9 +1079,10 @@ public class jdbcCamel {
 					String[] pOrder = PHONE_ORDER.toString().split(",");
 					for(int i=0; i< pOrder.length; i++) {
 						int e = i+1;
+						PECIParameters.put("Phone_Num", pOrder[i]);
 						SQL="insert into cas.cc_gen_peci_phone_data_t (STUDENT_PIDM, PARENT_PPID, PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL)"
 							+"	select distinct STUDENT_PIDM, '0' PARENT_PPID, 'E' PECI_PHONE_CODE, 'EP" + e + "' PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL from cc_gen_peci_phone_data_t phone"
-							+"	where concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL)='" + pOrder[i] +"'"
+							+"	where concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL)=:Phone_Num"
 							+"	and STUDENT_PIDM = :STUDENT_PIDM";
 						jdbcCAS.update(SQL,PECIParameters);
 					}
