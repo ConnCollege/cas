@@ -264,6 +264,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	
 	</div>
  <%-- ${StudentCellPhone} --%>
+ 
 	<div id="step2" class="form_section">
 	<h3>Step 2 Your Emergency Phone Number</h3>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -1471,23 +1472,37 @@ function showDeleteModal(type,ppid,name){
 	        				 //$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
 	        				 //$('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
 	        			 }
-	        		 }else{
+	        		 }else if(phone_code = 'CP'){
 	        		  	$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
 		        		  if(phone_number_intl != "" && phone_number_intl != null){
 		        			  //console.log(phone_number_intl);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').hide();
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
-		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').addClass('ccreq');
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').removeClass('ccreq');
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').removeClass('ccreq');
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();   
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
 		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }else{
-		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();
-		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').removeClass('ccreq');
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();		        			  
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').addClass('ccreq');
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').addClass('ccreq');
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show(); 
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
+		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch');
+		        		  } 
+	        		 }else{
+	        		  	$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
+		        		  if(phone_number_intl != "" && phone_number_intl != null){
+		        			  //console.log(phone_number_intl);
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').hide();
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();   
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
+		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch');
+		        		  }else{
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();		        			  
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show(); 
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');

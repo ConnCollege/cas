@@ -219,10 +219,10 @@
 	     	<div>${StudentEmail['EMAIL_ADDRESS']}</div>
 	  	</div>
 	</div>
-  </div>
+  </div> 
   <br>
- StudentCellPhone: ${StudentCellPhone} 
- StudentEmrPhone: ${StudentEmrPhone }
+<%--  StudentCellPhone: ${StudentCellPhone} 
+ StudentEmrPhone: ${StudentEmrPhone } --%>
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>
   	<c:choose>	
@@ -325,7 +325,7 @@
 	    </c:if>   
     </div>
   </div>
-${EmmrgPhones} 
+ <%-- ${EmmrgPhones} --%>
    <div id="step5">
   	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
@@ -334,7 +334,15 @@ ${EmmrgPhones}
   		<ul>
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
 		    	 <c:if test="${fn:length(emmrg.PHONE_CODE) != 0 }">
-		    	 	<li class="list-unstyled">&nbsp;${emmrg.PHONE_AREA_CODE}&nbsp;${emmrg.PHONE_NUMBER}&nbsp;(${emmrg.PREF_NAME })</li>
+		    	 	<c:choose>
+		    	 		<c:when test="${fn:length(emmrg.PHONE_NUMBER_INTL) != 0 }">
+		    	 			<li class="list-unstyled">&nbsp;${emmrg.PHONE_NUMBER_INTL}&nbsp;(${emmrg.PREF_NAME })</li>
+		    	 		</c:when>
+		    	 		<c:otherwise>
+		    	 			<li class="list-unstyled">&nbsp;${emmrg.PHONE_AREA_CODE}&nbsp;${emmrg.PHONE_NUMBER}&nbsp;(${emmrg.PREF_NAME })</li>
+		    	 		</c:otherwise>
+		    	 	</c:choose>
+		    	 	
 		    	 </c:if>
 		    </c:forEach>
 		</ul>
