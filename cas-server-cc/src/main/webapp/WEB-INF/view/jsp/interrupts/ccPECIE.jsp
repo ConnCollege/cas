@@ -252,7 +252,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	</div>	
 	
 	<div class="form-group" id="group_student_MA_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>		
 	
 	<div class="form-group" id="group_student_non_college_email">
@@ -271,10 +271,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER" style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) != 0}">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3"><span class="required" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">display:none;</c:if>">* </span>Mobile Phone</label>		
 		<div class="col-sm-3">
-			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> num_only student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> num_only student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
@@ -288,7 +288,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	</div>		
 	
 	<div class="form-group" id="group_student_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>		  			
 		  				
 		<%
@@ -337,7 +337,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	</div>	
 	
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null }">display:none;</c:if>">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>	
 	
 	<p class="q_check" id="paragraph_alert_text_check">Connecticut College will contact this number in the case of a campus emergency. Do you wish to also receive a text message at this number in the case of a campus emergency?</p>
@@ -575,7 +575,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  			</div>
 		  			
 		  			<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL_SWITCH">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP"  class="intl_number_switch col-sm-4">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP"  class="intl_number_switch modal_intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>
 		  			
 		  			<div style="display:none;" role="alert" class="alert alert-danger" id="PHONE_CP_CARRIER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -617,7 +617,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 					</div>	
 					
 					<div class="form-group"  id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
-						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter International Number</span>							
+						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch modal_intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>	
 										
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
@@ -644,7 +644,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  			</div>	
 		  			
 		  			<div class="form-group"  id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL_SWITCH">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch modal_intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>		
 																					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
@@ -671,7 +671,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  			</div>		
 		  			
 		  			<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL_SWITCH">
-							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="BU"  class="intl_number_switch col-sm-4">Enter International Number</span>							
+							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="BU"  class="intl_number_switch modal_intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>						
 										 						
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -1762,10 +1762,12 @@ function showDeleteModal(type,ppid,name){
 	
 	 function resetIntlModalNumbers(){
   	     //reset all international numbers in modal back to US numbers after modal submission
-		 $('.modal_intl_form_group').each(function(){
+		 $('.modal_intl_form_group').each(function(){		 
    	   		if($(this).is(':visible')){
+   	   			thisID = $(this).attr('id');
    	   			  var type = $(this).attr('data-type');
-   	   			  $('.intl_number_switch[data-type=' + type + ']').trigger('click');
+   	   			  $('#' + thisID + '_SWITCH .modal_intl_number_switch').trigger('click');
+   	   			  console.log('ID to Switch: ' + thisID + '_SWITCH .modal_intl_number_switch');
    	   		}
     	 });
 	 }
