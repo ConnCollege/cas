@@ -126,7 +126,7 @@
 	<p>Please <strong>do not</strong> enter your local or campus address. </p>
 
 	<p><span class="required">* </span>Required Field</p>  
-	${StudentBio} 
+	<%-- ${StudentBio} --%> 
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_FORM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">There was an error with your form submission. Please fix the areas indicated in red below.</span></div>
 		
 	<div class="form-group" id="group_student_firstname">
@@ -232,27 +232,27 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<%-- ${StudentHomePhone} --%>
-	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER">
+	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER" style="<c:if test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) != 0}">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-3">
-			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_MA_PHONE_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_PHONE_MA_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_MA_PHONE_NUMBER" size="7" class="form-control num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_PHONE_MA_NUMBER" size="7" class="form-control num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 
  <%-- Student Home Phone: ${StudentHomePhone} --%>
 		<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_MA_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
+	<div style="<c:if test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="30" class="form-control" id="STUDENT_MA_PHONE_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
+			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_MA_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
 	<div class="form-group" id="group_student_MA_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>		
 	
 	<div class="form-group" id="group_student_non_college_email">
@@ -268,27 +268,27 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<h3>Step 2 Your Emergency Phone Number</h3>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_CP_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER">
+	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER" style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) != 0}">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3"><span class="required" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">display:none;</c:if>">* </span>Mobile Phone</label>		
 		<div class="col-sm-3">
-			<input type="tel" data-phone-type="CP" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="CP" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> num_only" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N'}">ccreq</c:if> num_only student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
 	<%-- Student Cell Phone: ${StudentCellPhone} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-	<div style="display:none;" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
+	<div style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="INTL" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="CP" data-phone-intl="1" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control student_phone_field" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
 	<div class="form-group" id="group_student_intl_phone_switch">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP" class="intl_number_switch col-sm-4">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>		  			
 		  				
 		<%
@@ -320,24 +320,24 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null || fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) != 0 }">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-sm-3">
-			<input type="tel" data-phone-type="EMERGENCY" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if>" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="EMERGENCY" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if>" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[34]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
 	</div> 
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			  		
-	<div style="<c:if test="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 }">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
+	<div style="<c:if test="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 || StudentBio['EMERG_NO_CELL_PHONE'] == 'N' }">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="EMERGENCY_INTL" placeholder="International Number" name="fields[30]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="EMERGENCY" data-phone-intl="1" placeholder="International Number" name="fields[30]" size="7" maxlength="30" class="form-control student_phone_field" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null }">display:none;</c:if>">
-		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter International Number</span>							
+		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>	
 	
 	<p class="q_check" id="paragraph_alert_text_check">Connecticut College will contact this number in the case of a campus emergency. Do you wish to also receive a text message at this number in the case of a campus emergency?</p>
@@ -574,7 +574,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  				</div>
 		  			</div>
 		  			
-		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
+		  			<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL_SWITCH">
 							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="CP"  class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>
 		  			
@@ -616,7 +616,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 						</div>
 					</div>	
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
+					<div class="form-group"  id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
 						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>	
 										
@@ -643,7 +643,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  				</div>
 		  			</div>	
 		  			
-		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
+		  			<div class="form-group"  id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL_SWITCH">
 							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>		
 																					
@@ -670,7 +670,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 		  				</div>
 		  			</div>		
 		  			
-		  			<div class="form-group" id="group_<c:out value="${modalType}"/>_intl_phone_switch">
+		  			<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL_SWITCH">
 							<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="BU"  class="intl_number_switch col-sm-4">Enter International Number</span>							
 					</div>						
 										 						
@@ -965,25 +965,34 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 			$(phone_group).hide();		
 			//show international number
 			$(intl_group).show();
+			if(form_id == 'STUDENT'){
+				//wipe out fields for student form (modal handled separatenly in submitModal function)
+				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').val('');
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').val('');
+			}
+			//change text of link
+			$(this).html('Enter U.S. Number');
 			console.log('phone_type: ' + phone_type);
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
 				//intl number now showing, change required fields
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').removeClass('ccreq');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').removeClass('ccreq');			
-			}
-			//change text of link
-			$(this).html('Enter U.S. Number');
+			}			
 		}else{
 			$(phone_group).show();			
 			$(intl_group).hide();
+			if(form_id == 'STUDENT'){
+				//wipe out intl field for student form (modal handled separately in submitModal function)
+				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').val('');
+			}
+ 			$(this).html('Enter International Number');
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
 				//change required fields
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').removeClass("ccreq");
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').addClass('ccreq');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').addClass('ccreq');			
-			}
- 			$(this).html('Enter International Number');
+			}			
 		}	
 		if(form_id == 'STUDENT'){
 			addCampusAlertNumber($(this).val(), '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
@@ -991,27 +1000,17 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 
 	});
 	
-	$('#STUDENT_PHONE_CP_NUMBER, #STUDENT_PHONE_CP_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER, #STUDENT_PHONE_EMERGENCY_AREA_CODE, #STUDENT_PHONE_EMERGENCY_NUMBER_INTL').focusout(function(){
+	$('.student_phone_field').focusout(function(){
 		var thisType = $(this).attr('data-phone-type');
-		if(thisType == 'CP'){
-			phone_number = $('#STUDENT_PHONE_CP_AREA_CODE').val() + '' + $('#STUDENT_PHONE_CP_NUMBER').val();
-		}else if(thisType == 'EMERGENCY'){
-			phone_number = $('#STUDENT_PHONE_EMERGENCY_AREA_CODE').val() + '' + $('#STUDENT_PHONE_EMERGENCY_NUMBER').val();
-		}else if(thisType == 'EMERGENCY_INTL'){
-			phone_number = $('#STUDENT_PHONE_EMERGENCY_NUMBER_INTL').val();
-		}			
-		if($('#STUDENT_EP_NUMBER').length){
-			$('#STUDENT_EP_NUMBER').val(phone_number);
-			$('#STUDENT_EP_NUMBER_TEXT').html("&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)");
+		var thisIntl = $(this).attr('data-phone-intl');
+		if(thisIntl == 1){
+			var phone_number = $('#STUDENT_PHONE_' + thisType + '_NUMBER_INTL').val();
 		}else{
-			var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
-			$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
-		}				
-		
-		/* if($.inArray(phone_number,checked_phone_numbers) == -1){
-			//add number to campus alert phone number list
-			addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
-		} */
+			var phone_number = $('#STUDENT_PHONE_' + thisType + '_AREA_CODE').val() + '' + $('#STUDENT_PHONE_' + thisType + '_NUMBER').val();
+		}		
+		var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
+		//$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+		addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
 	});
 	
 	//switching off emergency contacts
@@ -1453,6 +1452,8 @@ function showDeleteModal(type,ppid,name){
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').addClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
+								  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
+								  //console.log('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch');
 		   	        		  }else{
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').hide();
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').val(phone_area_code);
@@ -1461,6 +1462,8 @@ function showDeleteModal(type,ppid,name){
 		  						  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').removeClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');	
+								  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
+								  //console.log('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch');
 		   	        		  } 
 	        			 }else{
 	        				 //$('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').val(phone_area_code);
@@ -1472,11 +1475,21 @@ function showDeleteModal(type,ppid,name){
 		        			  //console.log(phone_number_intl);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').hide();
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').val(phone_number_intl);
-		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();        			  
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').addClass('ccreq');
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').removeClass('ccreq');
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').removeClass('ccreq');
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').show();   
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
+		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }else{
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').hide();
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL').removeClass('ccreq');
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_AREA_CODE').addClass('ccreq');
+		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').addClass('ccreq');
 		        			  $('#' + modal_type + '_PHONE_' + phone_code + '_NUMBER').val(phone_number);
-		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show();        			 
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER').show(); 
+		        			  $('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
+		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + phone_code + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }   
 	        		 	}	        		  
 	        		  $('#' + modal_type + '_PHONE_' + phone_code + '_SEQUENCE_NO').val(phone_sequence_no);
@@ -1849,7 +1862,8 @@ function showDeleteModal(type,ppid,name){
 			$('form#' + form_id + ' PHONE_CP_NUMBER_ERROR').hide();
 			//$('#GROUP_' + form_id + '_PHONE_CP_NUMBER').removeClass('has-error');
 			//remove requirement for mobile phone
-			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();				
+			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();
+			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER_INTL .required').hide();	
 			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER_INTL').removeClass('ccreq');
