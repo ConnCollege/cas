@@ -41,6 +41,7 @@ BEGIN
 			    on p.PARENT_PPID = par.PARENT_PPID
 			   and p.STUDENT_PIDM = par.STUDENT_PIDM
 			 where (par.CHANGE_COLS <> 'DELETE' or par.CHANGE_COLS is null)
+			   and (p.CHANGE_COLS <> 'DELETE' or p.CHANGE_COLS is null) 
 			   and par.STUDENT_PIDM = _STUDENT_PIDM
 			 group by PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) parents
          on PECI_Phones.Phone_Num= parents.Phone_Num
@@ -57,6 +58,7 @@ BEGIN
 			   and p.STUDENT_PIDM = EMERG.STUDENT_PIDM
 			  where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') 
                 and (EMERG.CHANGE_COLS <> 'DELETE' or EMERG.CHANGE_COLS is null)
+			    and (p.CHANGE_COLS <> 'DELETE' or p.CHANGE_COLS is null) 
 			    and EMERG.PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM= _STUDENT_PIDM)
 			  group by PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL) EMERG
          on PECI_Phones.Phone_Num= EMERG.Phone_Num
