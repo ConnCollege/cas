@@ -1123,21 +1123,23 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	
 	
 	//reset the modal form fields if modal is closed
-	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {
-		    
+	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {	
+		  alert('1');
 		 document.getElementById("CONTACT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
 			 console.log('2: is checked, uncheck'); 
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		 }
+		 resetIntlModalNumbers();
 	 });	 
-	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {
-		   
+	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {		
+		 
 		 document.getElementById("PARENT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
 			 console.log('3: is checked, uncheck'); 
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		 }
+		 resetIntlModalNumbers();
 	 });
 	 
 	//hide all modal error messages if modal is closed 
@@ -1762,12 +1764,11 @@ function showDeleteModal(type,ppid,name){
 	
 	 function resetIntlModalNumbers(){
   	     //reset all international numbers in modal back to US numbers after modal submission
-		 $('.modal_intl_form_group').each(function(){		 
-   	   		if($(this).is(':visible')){
-   	   			thisID = $(this).attr('id');
-   	   			  var type = $(this).attr('data-type');
-   	   			  $('#' + thisID + '_SWITCH .modal_intl_number_switch').trigger('click');
-   	   			  console.log('ID to Switch: ' + thisID + '_SWITCH .modal_intl_number_switch');
+		 $('.modal_intl_form_group').each(function(){		
+			thisID = $(this).attr('id');
+			thisHTML = $('#' + thisID + '_SWITCH .modal_intl_number_switch').html();
+			if(thisHTML == 'Enter U.S. Number'){
+				$('#' + thisID + '_SWITCH .modal_intl_number_switch').trigger('click');   	   			
    	   		}
     	 });
 	 }
