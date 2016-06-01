@@ -1723,7 +1723,7 @@ function showDeleteModal(type,ppid,name){
 		        	   resetIntlModalNumbers();
 		        	   getAlertNumbers();
 		        	   if($('.modal_mobile_phone_check').is(':checked')){
-		        			console.log('1: is checked, uncheck'); 
+		        			//console.log('1: is checked, uncheck'); 
 		        			$('.modal_mobile_phone_check').prop('checked',false).change();
 		      		   }
 		        	   document.getElementById(form_id).reset();
@@ -1944,6 +1944,7 @@ function showDeleteModal(type,ppid,name){
 				$('#emr_contact_' + ppid).fadeIn();
 				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
 			}else{ */
+			if($('#emr_contact_' + ppid).length == 0){
 				console.log('contact does not exist, use ajax to create');	
 				if(emr_switch_count < 1){
 					if(deanExceptionDate.length == 0){	
@@ -1961,22 +1962,25 @@ function showDeleteModal(type,ppid,name){
 				}	
 			/*}*/
 			//create contact by promoting through restlet
-			$.ajax({
-		           type: "POST",
-		           url: ajaxurl,
-		           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
-		           datatype: "json",
-		           contentType: "application/json",
-		           success: function(data)           
-		           {  
-		        	   addToList('CONTACT',name,ppid);
-		        	   getAlertNumbers();
-		        	   setEmrOrder();
-		           },
-		           error: function (request, status, error) {
-		               
-		           }
-			 });		 
+				$.ajax({
+			           type: "POST",
+			           url: ajaxurl,
+			           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
+			           datatype: "json",
+			           contentType: "application/json",
+			           success: function(data)           
+			           {  
+			        	   if($('#emr_contact_' + ppid).length == 0){
+			        	   	addToList('CONTACT',name,ppid);
+			        	   }
+			        	   getAlertNumbers();
+			        	   setEmrOrder();
+			           },
+			           error: function (request, status, error) {
+			               
+			           }
+				 });
+			}
 						
 			//change read-only state
 			/* if(x > 1){
