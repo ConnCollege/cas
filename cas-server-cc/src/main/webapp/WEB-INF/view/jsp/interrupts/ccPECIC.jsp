@@ -208,7 +208,16 @@
 	    	<div>Home Phone </div>
 	 	</div>
 	 	<div class="col-xs-9">
-	     	<div>${StudentHomePhone['PHONE_AREA_CODE']}&nbsp;${StudentHomePhone['PHONE_NUMBER']}</div>
+	     	<div>
+		     	<c:choose>
+		     		<c:when test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) != 0}">
+		     			${StudentHomePhone['PHONE_NUMBER_INTL']}
+		     		</c:when>
+		     		<c:otherwise>
+		     			${StudentHomePhone['PHONE_AREA_CODE']}&nbsp;${StudentHomePhone['PHONE_NUMBER']}
+		     		</c:otherwise>
+		     	</c:choose>
+	     	</div>
 	  	</div>
 	</div>
 	<div class="row">
@@ -221,7 +230,7 @@
 	</div>
   </div> 
   <br>
-<%--  StudentCellPhone: ${StudentCellPhone} 
+<%-- StudentCellPhone: ${StudentCellPhone} 
  StudentEmrPhone: ${StudentEmrPhone } --%>
   <div id="step2">
   	<h3>Step 2 Your Emergency Contact Information</h3>
@@ -251,7 +260,16 @@
 			    	<div>Mobile Phone </div>
 			 	</div>
 			 	<div class="col-xs-9">
-			     	<div>${StudentCellPhone['PHONE_AREA_CODE']}&nbsp;${StudentCellPhone['PHONE_NUMBER']}</div>
+			     	<div>
+				     	<c:choose>
+				     		<c:when test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) != 0}">
+				     			${StudentCellPhone['PHONE_NUMBER_INTL']}
+				     		</c:when>
+				     		<c:otherwise>
+				     			${StudentCellPhone['PHONE_AREA_CODE']}&nbsp;${StudentCellPhone['PHONE_NUMBER']}
+				     		</c:otherwise>
+				     	</c:choose>
+			     	</div>
 			  	</div>
 			</div>
 		</c:otherwise>
