@@ -429,11 +429,11 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
 	        <button id="ADD_CONTACT" type="button" class="btn btn-primary" data-toggle="modal" data-target="#CONTACT_MODAL">Add Contact</button>
-	        <span id="CONTACT_MAX_ENTERED" style="display:none;">&nbsp;You have entered the max number of contacts (5).</span>
+	        <span id="CONTACT_MAX_ENTERED" style="display:none;">&nbsp;You have entered the max number of contacts (6).</span>
 	      </div>
 	    </div>
     </div>
-    ${EmmrgPhones}
+    <%-- ${EmmrgPhones} --%>
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
@@ -719,7 +719,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 							<select class="form-control ccreq address_field country_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="Country" name="<c:out value="${modalType}"/>_ADDR_NATN_CODE" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE">
 								<option value="">Choose Country</option>
 								<c:forEach items="${options['Countries']}" var="countries">
-									<option value="${countries.key}" <c:if test="${countries.key == 'US' }">selected="selected"</c:if>>${countries.value}</option>
+									<option value="${countries.key}">${countries.value}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -751,7 +751,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_INTL_REGION">
 						<label for="state" class="control-label col-sm-4">Province/Region</label>						
 						<div class="col-sm-6">
-							<select class="form-control address_field" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
+							<select class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
 								<option value="">Choose Province/Region</option>
 								<c:forEach items="${options['Regions']}" var="regions">
 									<option value="${regions.key}">${regions.value}</option>
@@ -901,14 +901,14 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
     }); */
 	 
 	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });
-     console.log(checked_phone_numbers);
+     //console.log(checked_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
-	 console.log(ajaxurl);
+	 //console.log(ajaxurl);
 	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
 	 deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}";
 	 
 	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
-	 if(checkNum('PARENT') >= 5){
+	 if(checkNum('PARENT') >= 6){
 		disableModalEnter('PARENT');
 	 }
 	 if(checkNum('CONTACT') >= 5){
@@ -1024,33 +1024,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	});
 	
 	//state/province drop-down toggle based on country chosen
-	$('.country_field').change(function(){
+	$('.country_field').change(function(){		
 		var form_id = $(this).closest('form').attr("id");
-		var intlFieldGroup = '#GROUP_' + form_id + '_INTL_REGION';
-		var intlField = intlFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
-		var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
-		var stateField = stateFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
-		console.log(stateField);
-		var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';		
-		var zipField = '#' + form_id + '_ADDR_ZIP';
-		if($(this).val() == 'United States' || $(this).val() == "US"){
-			$(stateFieldGroup).show();
-			$(stateField).addClass('ccreq');
-			$(stateField).removeProp('disabled');
-			$(zipField).addClass('ccreq');
-			$(zipFieldGroup + ' .required').show();
-			$(intlFieldGroup).hide();
-			$(intlField).prop('disabled','disabled');
-		}else{
-			$(stateFieldGroup).hide();
-			$(stateField).removeClass('ccreq');
-			$(stateField).prop('disabled','disabled');
-			$(zipField).removeClass('ccreq');
-			$(zipFieldGroup + ' .required').hide();
-			$(intlFieldGroup).show();
-			$(intlField).removeProp('disabled');
-		}
-		
+		var thisValue = $(this).val();
+		countryProvinceDisplay(form_id,thisValue);		
 	});
 	
 	//triggered when modal is about to be shown
@@ -1273,6 +1250,33 @@ function showDeleteModal(type,ppid,name){
 	 return false;
  }
  
+ function countryProvinceDisplay(form_id,value){
+	var intlFieldGroup = '#GROUP_' + form_id + '_INTL_REGION';
+	var intlField = intlFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
+	var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
+	var stateField = stateFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
+	//console.log(stateField);
+	var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';		
+	var zipField = '#' + form_id + '_ADDR_ZIP';
+	if(value == 'United States' || value == "US"){
+		$(stateFieldGroup).show();
+		$(stateField).addClass('ccreq');
+		$(stateField).removeProp('disabled');
+		$(zipField).addClass('ccreq');
+		$(zipFieldGroup + ' .required').show();
+		$(intlFieldGroup).hide();
+		$(intlField).prop('disabled','disabled');
+	}else{
+		$(stateFieldGroup).hide();
+		$(stateField).removeClass('ccreq');
+		$(stateField).prop('disabled','disabled');
+		$(zipField).removeClass('ccreq');
+		$(zipFieldGroup + ' .required').hide();
+		$(intlFieldGroup).show();
+		$(intlField).removeProp('disabled');
+	}
+ }
+ 
  function formValidate(form_id){
 	 showMainError = 0;
 	 $('.alert').hide();
@@ -1425,6 +1429,9 @@ function showDeleteModal(type,ppid,name){
 	        		  if(index == 'ADDR_NATN_CODE' && element == null){
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val('US');
 	        			//$('#' + modal_type + "_" + index).val('US');
+	        		  }else if(index == 'ADDR_NATN_CODE' && element != 'US'){
+	        			  countryProvinceDisplay(modal_type,data.address['ADDR_NATN_CODE']);
+	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
 	        		  }else{
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
 	          	  		//$('#' + modal_type + "_" + index).val(element);
@@ -1561,11 +1568,12 @@ function showDeleteModal(type,ppid,name){
 			}							
 			
 			x=0;
-			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){
+			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){			 
 				 if($(this).is(':visible') || ($(this).attr("name","PECI_EMAIL_CODE") && typeArray[i] == 'EMAIL')){
 					 //test = $(this).is(':visible');
 					 var val = $(this).val();
 					 var name = $(this).attr("name");
+					 console.log('visible' + name + ' ' + val);
 					 if(typeArray[i] != "DEMO"){					 	
 					 	var name = name.replace("PARENT_","");
 					 	var name = name.replace("EMERG_","");	
