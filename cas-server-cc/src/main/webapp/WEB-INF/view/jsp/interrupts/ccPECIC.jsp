@@ -413,7 +413,7 @@ $(document).ready(function() {
 	console.log(relationshipCodes);
 	console.log(relationshipValues);
 	
-	$student_PIDM = ${StudentBio['STUDENT_PIDM']};	
+	$student_PIDM = '${StudentBio['STUDENT_PIDM']}';	
 	var x = 0;
 	var y= 0;
 			
