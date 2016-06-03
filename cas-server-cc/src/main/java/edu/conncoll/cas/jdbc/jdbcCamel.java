@@ -397,17 +397,18 @@ public class jdbcCamel {
 						log.debug("Loading Data from Oracle to MySQL");
 					
 						//Pull PECI Data from Oracle and store in MySQL 
+						
+						//Enter transaction data in trans table
+						SQL= "insert into peci_trans_start (STUDENT_PIDM, STUDENT_UUID, Trans_start) values ( :STUDENT_PIDM,uuid(), now())";
+						log.debug("inserting transaction start");
+						jdbcCAS.update(SQL,namedParameters);
+						
+						
 						//Student Data
 						SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,LEGAL_SUFFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
-						
 						studentData = jdbcCensus.queryForMap(SQL);
 						
 						copy2MySQL("cc_stu_peci_students_t",studentData);
-											
-						//Enter transaction data in trans table
-						SQL= "insert into peci_trans_start (STUDENT_PIDM, Trans_start) values ( :STUDENT_PIDM, now())";
-						log.debug("inserting transaction start");
-						jdbcCAS.update(SQL,namedParameters);
 						
 						
 						//Parent Data
@@ -468,7 +469,7 @@ public class jdbcCamel {
 					jdbcCAS.update(SQL, new HashMap<String,Object>());
 
 					//Student Data
-					SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+					SQL = "select st.STUDENT_PPID, ts.STUDENT_UUID STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t st inner join peci_trans_start ts on st.STUDENT_PIDM = ts.STUDENT_PIDM where st.STUDENT_PIDM=:STUDENT_PIDM";
 					studentData = jdbcCAS.queryForMap(SQL,namedParameters);
 
 					//Address Data
@@ -898,7 +899,11 @@ public class jdbcCamel {
 				addressDataIn.put("ADDR_STREET_LINE2",intData.getField(5));
 				addressDataIn.put("ADDR_NATN_CODE",intData.getField(6));
 				addressDataIn.put("ADDR_CITY",intData.getField(7));
-				addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,2));
+				if (intData.getField(8).toString().length() > 2 ) {
+					addressDataIn.put("ADDR_STAT_CODE",intData.getField(8).toString().substring(0,2));
+				} else {
+					addressDataIn.put("ADDR_STAT_CODE",intData.getField(8));
+				}
 				addressDataIn.put("ADDR_ZIP",intData.getField(10));	
 				
 				updates = compareMap(addressDataIn,addressData);

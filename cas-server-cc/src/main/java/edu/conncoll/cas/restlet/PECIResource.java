@@ -128,11 +128,16 @@ public class PECIResource extends Resource
 					String dataMode = json.getString("MODE");
 					log.debug("Valid peci restlet request Data:" + dataType + " PDIM: " + pdim + " Mode: " + dataMode);
 					
-					Map<String,Object> namedParameters = new HashMap<String,Object>();
-					namedParameters.put("STUDENT_PIDM", pdim);
-					namedParameters.put("PARENT_PPID", ppid);
-					
 					String SQL;
+					
+					//Get the real PDIM from the UUID
+					Map<String,Object> pidmData = new HashMap<String,Object>();
+					SQL="SELECT STUDENT_PIDM from peci_trans_start where STUDENT_UUID='" + pdim + "'";
+					pidmData = jdbcCAS.queryForMap(SQL,new HashMap<String,Object>());
+									
+					Map<String,Object> namedParameters = new HashMap<String,Object>();
+					namedParameters.put("STUDENT_PIDM", pidmData.get("STUDENT_PIDM"));
+					namedParameters.put("PARENT_PPID", ppid);
 					
 					Map<String,Object> parentData = new HashMap<String,Object>();
 					Map<String,Object> emrgData = new HashMap<String,Object>();
