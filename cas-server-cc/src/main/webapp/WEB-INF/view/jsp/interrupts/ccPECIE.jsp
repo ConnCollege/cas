@@ -751,7 +751,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 					<div style="display:none;" class="form-group" id="GROUP_<c:out value="${modalType}"/>_INTL_REGION">
 						<label for="state" class="control-label col-sm-4">Province/Region</label>						
 						<div class="col-sm-6">
-							<select class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE">
+							<select class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_PROV_REGION">
 								<option value="">Choose Province/Region</option>
 								<c:forEach items="${options['Regions']}" var="regions">
 									<option value="${regions.key}">${regions.value}</option>
@@ -908,10 +908,10 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
 	 deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}";
 	 
 	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
-	 if(checkNum('PARENT') >= 6){
+	 if(checkNum('PARENT') >= 5){
 		disableModalEnter('PARENT');
 	 }
-	 if(checkNum('CONTACT') >= 5){
+	 if(checkNum('CONTACT') >= 6){
 		disableModalEnter('CONTACT');
 	 }
 	 		 
@@ -1431,6 +1431,7 @@ function showDeleteModal(type,ppid,name){
 	        		  }else if(index == 'ADDR_NATN_CODE' && element != 'US'){
 	        			  countryProvinceDisplay(modal_type,data.address['ADDR_NATN_CODE']);
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
+	        			  $('form#' + modal_type + ' #' + modal_type + '_ADDR_PROV_REGION').val(data.address['ADDR_STAT_CODE']);
 	        		  }else{
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
 	          	  		//$('#' + modal_type + "_" + index).val(element);
@@ -1567,7 +1568,9 @@ function showDeleteModal(type,ppid,name){
 			}							
 			
 			x=0;
-			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){			 
+			 $('.' + form_id + '_' + typeArray[i] + '_FIELD').each(function(){		
+				console.log('.' + form_id + '_' + typeArray[i] + '_FIELD');	 
+			 
 				 if($(this).is(':visible') || ($(this).attr("name","PECI_EMAIL_CODE") && typeArray[i] == 'EMAIL')){
 					 //test = $(this).is(':visible');
 					 var val = $(this).val();
@@ -1730,9 +1733,12 @@ function showDeleteModal(type,ppid,name){
 		        	   //console.log(data);
 		        	   //console.log(data.PARENT_PPID);
 		        	   if(parent_ppid == 0){
-		        	   	addToList(form_id,new_contact_name,data.PARENT_PPID);
+		        	   		/* addToList(form_id,new_contact_name,data.PARENT_PPID); */
+		        	   		if(checkNum('CONTACT') < 6){
+		        				promoteParent(data.PARENT_PPID,new_contact_name);
+		        	   		}
 		        	   }else{
-		        		   	$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
+		        			$('#PARENT_LIST #parent_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
 		        	   		$('#CONTACT_LIST #emr_contact_' + parent_ppid + ' .contact-name').html('<strong>' + new_contact_name + '</strong>');  
 		        	   }
 		        	   $('#PARENT_PARENT_PPID').val(0);	
@@ -1924,7 +1930,7 @@ function showDeleteModal(type,ppid,name){
 		var x = 0;
 		var removeParentFromContact = false;
 		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;		
-		console.log('emr_switch_count from emergencySwitchToggle: ' + emr_switch_count);
+		//console.log('emr_switch_count from emergencySwitchToggle: ' + emr_switch_count);
 		if(state == false){
 			//turning parent off
 			if(emr_switch_count < 1){
@@ -1977,25 +1983,8 @@ function showDeleteModal(type,ppid,name){
 					//removeParentFromContact = true;
 				}	
 			/*}*/
-			//create contact by promoting through restlet
-				$.ajax({
-			           type: "POST",
-			           url: ajaxurl,
-			           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
-			           datatype: "json",
-			           contentType: "application/json",
-			           success: function(data)           
-			           {  
-			        	   if($('#emr_contact_' + ppid).length == 0){
-			        	   	addToList('CONTACT',name,ppid);
-			        	   }
-			        	   getAlertNumbers();
-			        	   setEmrOrder();
-			           },
-			           error: function (request, status, error) {
-			               
-			           }
-				 });
+				//create contact by promoting through restlet
+				promoteParent(ppid,name);
 			}
 						
 			//change read-only state
@@ -2010,6 +1999,27 @@ function showDeleteModal(type,ppid,name){
 		  //console.log(event); // jQuery event
 		  //console.log(state); // true | false
 		  
+	}
+	
+	function promoteParent(ppid,name){
+		$.ajax({
+	           type: "POST",
+	           url: ajaxurl,
+	           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "PARENT", "MODE": "PROMOTE"}),
+	           datatype: "json",
+	           contentType: "application/json",
+	           success: function(data)           
+	           {  
+	        	   if($('#emr_contact_' + ppid).length == 0){
+	        	   	addToList('CONTACT',name,ppid);
+	        	   }
+	        	   getAlertNumbers();
+	        	   setEmrOrder();
+	           },
+	           error: function (request, status, error) {
+	               
+	           }
+		 });
 	}
 	
 	function getAlertNumbers(){
