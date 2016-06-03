@@ -275,6 +275,7 @@ public class PECIResource extends Resource
 										jdbcCAS.update(SQL,namedParameters);
 										jsonResponse.put("PARENT_PPID",String.valueOf(seqNo));
 										//Per Tonm's requst on 5/6/2016 adding a new parent automatically adds them as an emergency Contact
+										/* Per Tom's request on 6/3/2016 commenting this out
 										SQL = "INSERT cc_gen_peci_emergs_t SET ";
 										for(int y=0; y<columns.size(); y++) { 
 									        String key = columns.get(y);
@@ -293,7 +294,7 @@ public class PECIResource extends Resource
 											+ "PARENT_PPID=:PARENT_PPID";
 										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
 										jdbcCAS.update(SQL,namedParameters);
-																				
+										*/										
 									} else {
 										//Parent Data
 										updates = compareMap(parentDataIn, parentData);
