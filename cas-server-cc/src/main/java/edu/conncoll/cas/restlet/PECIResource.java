@@ -176,6 +176,7 @@ public class PECIResource extends Resource
 										+ " SELECT STUDENT_PIDM, PARENT_PPID,  'NEW' CHANGE_COLS, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, "
 										+ " PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, "
 										+ " PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE"
+										+ " from cc_adv_peci_parents_t"
 										+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 								jdbcCAS.update(SQL,namedParameters);
 							}
@@ -294,7 +295,7 @@ public class PECIResource extends Resource
 											+ "PARENT_PPID=:PARENT_PPID";
 										namedParameters.put("PARENT_PPID",String.valueOf(seqNo));
 										jdbcCAS.update(SQL,namedParameters);
-										*/										
+										*/			
 									} else {
 										//Parent Data
 										updates = compareMap(parentDataIn, parentData);
