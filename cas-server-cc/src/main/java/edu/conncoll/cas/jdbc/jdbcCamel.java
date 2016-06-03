@@ -449,7 +449,7 @@ public class jdbcCamel {
 						copy2MySQL("cc_stu_peci_students_t",studentData);
 						
 						//Enter transaction data in trans table
-						SQL= "insert into peci_trans_start (STUDENT_PIDM, Trans_start) values ( :STUDENT_PIDM, now())";
+						SQL= "insert into peci_trans_start (STUDENT_PIDM, STUDENT_UUID, Trans_start) values ( :STUDENT_PIDM, uuid(), now())";
 						log.debug("inserting transaction start");
 						jdbcCAS.update(SQL,namedParameters);
 					}
