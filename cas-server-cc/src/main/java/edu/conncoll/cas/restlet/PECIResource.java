@@ -531,7 +531,9 @@ public class PECIResource extends Resource
 			        Object newValue = updates.get(key);
 			        if (newValue.getClass().getName().equals("java.lang.String")) {
 			        	SQL = SQL + key +" = '" +  newValue + "', ";
-			        } else {
+			        } else if (newValue.toString().equals("null")) {
+			        	SQL = SQL + key +" = null, ";
+					}else{
 			        	SQL = SQL + key +" = " +  newValue + ", ";
 			        }
 			        changeCol = changeCol + key + ",";
