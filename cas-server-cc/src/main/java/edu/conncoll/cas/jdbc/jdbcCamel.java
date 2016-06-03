@@ -1170,7 +1170,7 @@ public class jdbcCamel {
 		}
 		
 		//Carriers
-		SQL = "select vendor_code key, vendor_desc value from peci.cc_gen_peci_phone_carriers order by display_order";
+		SQL = "select vendor_code key, vendor_desc value from peci.cc_gen_peci_phone_carriers where PECI_ENABLED = 'Y' order by display_order";
 		rows = jdbcCensus.queryForList(SQL);
 		options.put ("Carriers",new LinkedHashMap<String,Object>());
 		for (Map<String,Object> row : rows){

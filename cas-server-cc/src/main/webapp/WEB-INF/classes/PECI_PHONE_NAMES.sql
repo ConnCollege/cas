@@ -34,7 +34,7 @@ BEGIN
      
      #Update the name where the phone is a parent.
      update PECI_Phones 
-	 inner join (select Group_Concat(concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME,
+	 inner join (select Group_Concat(distinct concat(PARENT_PREF_FIRST_NAME,' ',PARENT_PREF_LAST_NAME)) PARENT_PREF_NAME,
                     concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num
 			  from cc_gen_peci_phone_data_t p
 			 inner join cc_adv_peci_parents_t par
@@ -50,7 +50,7 @@ BEGIN
      #Update the name where the phone is a contact.
      update PECI_Phones 
 	 inner join (select p.STUDENT_PIDM, PHONE_AREA_CODE, PHONE_NUMBER, PHONE_NUMBER_INTL,  
-			        Group_Concat(concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME,
+			        Group_Concat(distinct concat(EMERG_PREF_FIRST_NAME,' ',EMERG_PREF_LAST_NAME)) EMERG_PREF_NAME,
                     concat_ws('', p.PHONE_AREA_CODE, p.PHONE_NUMBER, p.PHONE_NUMBER_INTL) Phone_Num
 			   from cc_gen_peci_phone_data_t p
 			   left join cc_gen_peci_emergs_t EMERG
