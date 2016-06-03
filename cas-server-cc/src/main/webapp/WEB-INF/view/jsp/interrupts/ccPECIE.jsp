@@ -504,7 +504,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="event.preventDefault();submitModal(this.id);return false;">
+		  	<form class="form-horizontal" role="form" id="<c:out value="${modalType}"/>" onsubmit="event.preventDefault();submitModal(this.id,'${StudentBio['STUDENT_PIDM']}');return false;">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_STUDENT_PIDM" id="<c:out value="${modalType}"/>_STUDENT_PIDM" value="${StudentBio['STUDENT_PIDM']}">
 		  	<input type="hidden" name="<c:out value="${modalType}"/>_PARENT_PPID" id="<c:out value="${modalType}"/>_PARENT_PPID" value="0">
 			  	<div class="modal-header">
@@ -904,7 +904,7 @@ ${StudentAddr['ADDR_STAT_CODE']} --%>
      //console.log(checked_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
 	 //console.log(ajaxurl);
-	 student_PIDM = ${StudentBio['STUDENT_PIDM']};
+	 student_PIDM = '${StudentBio['STUDENT_PIDM']}';
 	 deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}";
 	 
 	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
@@ -1371,7 +1371,6 @@ function showDeleteModal(type,ppid,name){
  }
  
  function populateModal(modal_type,ppid){
-		student_PIDM = ${StudentBio['STUDENT_PIDM']};
 		$.ajax({
 	           type: "POST",
 	           url: ajaxurl,
@@ -1522,7 +1521,7 @@ function showDeleteModal(type,ppid,name){
 	}
  
  //save modal
- function submitModal(form_id) { 
+ function submitModal(form_id,student_pidm) { 
 	 //console.log("submitModal");	  
 	 formValidate(form_id);
 	 //console.log("after form validates");
@@ -1540,7 +1539,7 @@ function showDeleteModal(type,ppid,name){
 		 $(".alert_danger").hide();
 		 var parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
 		 //console.log("parent_ppid: " + parent_ppid);
-		 var student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
+		 //var student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
 		 //console.log("student_pidm: " + student_pidm);
 		 var new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
 		 //submit via ajax
