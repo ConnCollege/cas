@@ -189,7 +189,7 @@
 <%-- States: ${options['States']} --%>
 <%-- ${StudentAddr['ADDR_NATN_CODE']} --%>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE" style="<c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null || fn:length(StudentAddr['ADDR_NATN_CODE']) != 0}">display:none;</c:if>">
+	<div class="form-group" id="GROUP_STUDENT_ADDR_STAT_CODE" style="<c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null}">display:none;</c:if>">
 		<label for="state" class="control-label col-sm-3"><span class="required">* </span>State</label>
 		<div class="col-sm-9">
 			<select class="form-control address_field <c:if test="${StudentAddr['ADDR_NATN_CODE'] == 'US' || StudentAddr['ADDR_NATN_CODE'] == null || fn:length(StudentAddr['ADDR_NATN_CODE']) == 0}">ccreq</c:if> STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_STAT_CODE" <c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null && fn:length(StudentAddr['ADDR_NATN_CODE']) != 0}">disabled="disabled"</c:if>>
@@ -388,7 +388,7 @@
 	    		<p id="doc_message">You are <strong>not</strong> required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</strong></p>
 	    	</c:when>
 	    	<c:otherwise>
-	    		<p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
+	    		<p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu. <a data-content="<strong>For students with no living parent/guardian</strong> - please enter a spouse or the most appropriate next of kin (aunt, uncle, etc.).<br/><br/><strong>For students who do not wish to list parents as emergency contacts</strong> - please enter one parent to complete this form. You may email the Dean of the College for an exception at &lt;a href='mailto:doc@conncoll.edu' target='_blank'&gt;doc@conncoll.edu&lt;/a&gt;. Once granted, the form will permit you to remove the parent from your emergency contacts." data-placement="top" data-title="Parent/Guardian Exception" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a></p>
 	    	</c:otherwise>
 	    </c:choose> 
 
@@ -779,7 +779,7 @@
 								<div class="checkbox">
 									<label><span class="emergency_contact_switch">&nbsp;<input type="checkbox" name="DEPENDENT" checked="checked" class="bootstrap-switch <c:out value="${modalType}"/>_DEMO_FIELD" ID="DEPENDENT" data-off-text="No" data-on-text="Yes"></span> This parent claims me as a dependent</label>
 							
-							<a data-content="Please indicate whether your parents claim you as a tax dependent for federal income tax purposes. This is turned on by default. &lt;a href='http://www.conncoll.edu/academics/registrar/ferpa/' target='_blank'&gt; FERPA Information&lt;/a&gt;." data-placement="top" data-title="U.S. Tax Dependence Status Info" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a>
+							<a data-content="Under the Federal Educational Rights and Privacy Act (FERPA), Connecticut College is permitted to disclose information from your education records to your parents if your parents (or one of your parents) claim you as a dependent for U.S. federal tax purposes. If you have questions, please contact the Dean of the College office, 860-439-2050." data-placement="top" data-title="U.S. Tax Dependence Status Info" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a>
 								</div>
 							</div>
 						</div>	
@@ -1253,8 +1253,8 @@ function showDeleteModal(type,ppid,name){
 	$('#delete_form').find('.name_block').html(name);
 	$('#delete_form').find('#ppid_to_delete').val(ppid);
 	$('#delete_form').find('#type_to_delete').val(type);	
-	if(type = 'PARENT'){
-		$('#delete_form').find('#note').html('Please Note: this will also remove this parent from your emergency contacts');
+	if(type == 'PARENT'){
+		$('#delete_form').find('#note').html('Please Note: this will also remove this parent from your emergency contacts if applicable');
 	}
 }
 
@@ -1389,7 +1389,7 @@ function showDeleteModal(type,ppid,name){
 		 }
 	 });
 	 //telephone validation
-	 $("#" + form_id + " input[type=tel]").each(function(){
+	 $("#" + form_id + " input[type=tel]:visible").each(function(){
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
 		 var field_type = $(this).attr("type");
@@ -1804,8 +1804,12 @@ function showDeleteModal(type,ppid,name){
 		        	   console.log("new parent ppid: " + data.PARENT_PPID);
 		        	   if(parent_ppid == 0){
 		        			console.log("yes, zero");   
-		        	   
-		        	   		addToList(form_id,new_contact_name,data.PARENT_PPID);
+		        	   		console.log("addToList: form_id: " + form_id + ", new_contact_name: " + new_contact_name + "ppid: " + data.PARENT_PPID);
+		        	   		if(checkNum('CONTACT') < totalAllowed('CONTACT')){
+		        	   			addToList(form_id,new_contact_name,data.PARENT_PPID,1);
+		        	   		}else{
+		        	   			addToList(form_id,new_contact_name,data.PARENT_PPID,0);
+		        	   		}
 		        	   		
 		        	   		if(form_id == 'PARENT'){
 		        	   			console.log("yes, parent");	
@@ -1869,17 +1873,17 @@ function showDeleteModal(type,ppid,name){
 		 return formData;
 	}
 	
-	function addToList(type,new_contact_name,ppid){
+	function addToList(type,new_contact_name,ppid,switchedOn){
 		if(type == 'PARENT'){
 			//always add parents as emergency contacts
-			addParent(type,ppid,new_contact_name);
+			addParent(type,ppid,new_contact_name,switchedOn);
 			//addContact(type,ppid,new_contact_name);
 		}else{
 			addContact(type,ppid,new_contact_name);
 		}		
-	}
+	} 
 	
-	function addParent(type,ppid,new_contact_name){
+	function addParent(type,ppid,new_contact_name,switchedOn){
 		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
 		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
@@ -1894,7 +1898,24 @@ function showDeleteModal(type,ppid,name){
 				$(this).bootstrapSwitch('disabled',false);
 			});
 			//$('.bootstrap-switch').bootstrapSwitch('disabled',false);
+		}	
+		if(!switchedOn){
+			$('#PARENT_LIST #parent_' + ppid + ' .parent-bootstrap-switch').bootstrapSwitch('state',false);
 		}
+		 //only select Yes on parents that are listed as emergency contacts
+		 /* $('#PARENT_LIST .PARENT-LISTED').each(function(){
+			 var thisID = $(this).attr("id");
+			 shortenedID = thisID.replace('parent_','');
+			 //console.log("thisID: " + thisID);
+			 if($('#CONTACT_LIST #emr_contact_' + shortenedID).length){
+				 //this parent is also a contact, flip emr switch on
+				 //$('#parent_' + shortenedID + ' .parent-bootstrap-switch').bootstrapSwitch('state',true);
+			 }else{
+				 //turn off
+				 $('#parent_' + shortenedID + ' .parent-bootstrap-switch').bootstrapSwitch('state',false);
+			 }
+			//console.log("contact_listed: " + thisID); 
+		 }); */
 		
 		//attach click event to bootstrap switch for new contact
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
@@ -1919,7 +1940,7 @@ function showDeleteModal(type,ppid,name){
 		});
 	}
 	
-	function addContact(ppid,new_contact_name){
+	function addContact(type, ppid,new_contact_name){
 		//console.log("add Contact: " + new_contact_name + ' '  + ppid);	
 	
 		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
@@ -2127,11 +2148,16 @@ function showDeleteModal(type,ppid,name){
 		        		  var phone_number_intl = data.phones[i].PHONE_NUMBER_INTL;
 		        		  var phone_sequence_no = data.phones[i].PHONE_SEQUENCE_NO;
 		        		  var contact_name = data.phones[i].Pref_Name;
-		        		  if(phone_number_intl.length > 0){
-		        			  var alert_phone_number = phone_number_intl;
+		        		  if(phone_number_intl != null){
+		        			  if(phone_number_intl.length > 0){
+			        			  var alert_phone_number = phone_number_intl;
+			        		  }else{
+			        			  var alert_phone_number = '' + phone_area_code + phone_number;
+			        		  } 
 		        		  }else{
 		        			  var alert_phone_number = '' + phone_area_code + phone_number;
 		        		  }
+		        		  
 		        		  //console.log('getAlertNumbers');
 		        		  //console.log(checked_phone_numbers);
 		        		  if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
