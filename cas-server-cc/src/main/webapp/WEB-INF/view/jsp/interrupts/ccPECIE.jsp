@@ -149,7 +149,7 @@
 				<input type="text" disabled="disabled" placeholder="Last Name" name="" class="form-control" id="STUDENT_PREF_LAST_NAME" value="${StudentBio['PREFERRED_LAST_NAME']}">
 		</div>
 	</div>
-	
+	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_CAMPUS_ADDR_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address Line 1</label>
@@ -700,6 +700,7 @@
 					
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDRESS_TO_USE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" data-type="<c:out value="${modalType}"/>" class="address_to_use_checkbox">Use my address information </label>&nbsp;&nbsp;<select name="<c:out value="${modalType}"/>_ADDRESS_TO_USE" id="SELECT_<c:out value="${modalType}"/>_ADDRESS_TO_USE" style="display:none;"><option value="STUDENT">My Address</option></select></div></div></div>	
 					
+					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_CAMPUS_ADDR_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
 						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address Line 1</label>
@@ -913,6 +914,26 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="ERROR_MODAL" role="dialog">
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">
+	  		<div class="modal-header">
+			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+			  	<h4 class="modal-title">ERROR</h4>
+			  </div>
+			  <div class="modal-body">	
+				<p>There was an error with your submission. Please refresh this page and try again.</p>
+			  </div>
+			</div>
+			<div class="modal-footer">
+ 				<button type="button" id="CONFIRMATION_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button>
+ 			</div>
+		</div>
+	</div>
+</div>
  	
   	
 <%
@@ -1041,11 +1062,11 @@
 			}			
 		}	
 		if(form_id == 'STUDENT'){
-			addCampusAlertNumber($(this).val(), '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
+			addCampusAlertNumber($(this).val(), "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}", "STUDENT");
 		}
 
-	});
-	
+	});	
+
 	$('.student_phone_field').focusout(function(){
 		var thisType = $(this).attr('data-phone-type');
 		var thisIntl = $(this).attr('data-phone-intl');
@@ -1053,10 +1074,11 @@
 			var phone_number = $('#STUDENT_PHONE_' + thisType + '_NUMBER_INTL').val();
 		}else{
 			var phone_number = $('#STUDENT_PHONE_' + thisType + '_AREA_CODE').val() + '' + $('#STUDENT_PHONE_' + thisType + '_NUMBER').val();
+			var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
+			//$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
+			addCampusAlertNumber(phone_number, "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}", "STUDENT");
 		}		
-		var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
-		//$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
-		addCampusAlertNumber(phone_number, '${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}', 'STUDENT');
+		
 	});
 	
 	//switching off emergency contacts
@@ -1408,7 +1430,13 @@ function showDeleteModal(type,ppid,name){
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
 	 });
-	 
+	 //campus address check
+	 var addr_line1 = $('#' + form_id + '_ADDR_STREET_LINE1').val();
+	 var addr_city = $('#' + form_id + '_ADDR_CITY').val();
+	 if(addr_line1.indexOf('270 Mohegan Ave') != -1 && addr_city.indexOf('New London') != -1){
+		$('#' + form_id + '_CAMPUS_ADDR_ERROR').html('Please do not enter your campus address').show();
+	 	showMainError = 1;
+ 	}
 	 
 	 if(form_id == 'STUDENT'){
 		 if(checkNum('PARENT') == 0){
@@ -1594,30 +1622,26 @@ function showDeleteModal(type,ppid,name){
 	}
  
  //save modal
- function submitModal(form_id,student_pidm) { 
-	 //console.log("submitModal");	  
+ function submitModal(form_id,student_pidm) { 	  
 	 formValidate(form_id);
-	 //console.log("after form validates");
-	 //console.log("show main error: " + showMainError);
 	 if(showMainError){
 		 window.scrollTo(0,0);
 		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast');
-		 //console.log("show main error");
 		 $('#' + form_id + '_MODAL_ERROR').show();
-		 return false;		 
-	 }else{
+		 return false;	
+	 }else if(student_pidm.length == 0){
+		//student_pidm required, close modal, show error modal	 
+		$('#' + form_id + '_MODAL').hide();
+		$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
+     	$('#ERROR_MODAL').modal('show');
+	 }else{ 
+		 //continue with modal save
 		 $('#' + form_id + '_MODAL_ERROR').hide();
-		 //console.log("continue save");
 		 //close any former error messages
 		 $(".alert_danger").hide();
 		 var parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
-		 //console.log("parent_ppid: " + parent_ppid);
-		 //var student_pidm = $('#' + form_id + '_STUDENT_PIDM').val();
-		 //console.log("student_pidm: " + student_pidm);
 		 var new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
 		 //submit via ajax
-		
-		 //var formData = JSON.stringify($('#' + form_id).serializeArray());
 		 formData = '{"PIDM" : "' + student_pidm + '",';
 		 if(parent_ppid == 0){
 			 formData = formData + '"PPID" : null,';
@@ -1792,7 +1816,7 @@ function showDeleteModal(type,ppid,name){
 		formData = formData + "}";		 		 
 		console.log(formData);
 		 
-		if(new_contact_name.length > 1){
+		if(new_contact_name.length > 1 && student_pidm.length != 0){
 			$.ajax({
 		           type: "POST",
 		           url: ajaxurl,
@@ -1802,11 +1826,7 @@ function showDeleteModal(type,ppid,name){
 		           contentType: "application/json",
 		           success: function(data)
 		           {   
-		        	   console.log(data);
-		        	   console.log("new parent ppid: " + data.PARENT_PPID);
-		        	   if(parent_ppid == 0){
-		        			console.log("yes, zero");   
-		        	   		console.log("addToList: form_id: " + form_id + ", new_contact_name: " + new_contact_name + "ppid: " + data.PARENT_PPID);
+		        	   if(parent_ppid == 0){		        			
 		        	   		if(checkNum('CONTACT') < totalAllowed('CONTACT')){
 		        	   			addToList(form_id,new_contact_name,data.PARENT_PPID,1);
 		        	   		}else{
@@ -1845,8 +1865,16 @@ function showDeleteModal(type,ppid,name){
 		           error: function(e){
 		        	   console.log(e);
 		        	   return false;
+		        	   //close modal, show error modal
+		        	    $('#' + form_id + '_MODAL').hide();
+			        	$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
+			        	$('#ERROR_MODAL').modal('show');
 		           }
 			    });	 
+			}else{
+				$('#' + form_id + '_MODAL').hide();
+	        	$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
+	        	$('#ERROR_MODAL').modal('show');
 			}
 		 return false;
 		 
