@@ -1020,11 +1020,6 @@ public class jdbcCamel {
 				}else {
 					studentDataIn.put("EMERG_PHONE_TTY_DEVICE","Y");
 				}
-				if (intData.getField(19) == null){
-					studentDataIn.put("EMERG_AUTO_OPT_OUT","N");
-				}else {
-					studentDataIn.put("EMERG_AUTO_OPT_OUT","Y");
-				}	
 				
 				updates = compareMap(studentDataIn,studentData);
 				Map<String, Object> sourceData = new HashMap<String, Object>();
