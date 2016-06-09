@@ -150,7 +150,7 @@
   	</c:if>
   	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
   </div>
-  <%-- StudentAddr: ${StudentAddr} --%>
+ <%--  StudentAddr: ${StudentAddr} --%>
   <br>
   <%-- StudentHomePhone: ${StudentHomePhone} --%>
   <div id="step1">
@@ -176,7 +176,7 @@
 	    	<div>Country </div>
 	 	</div>
 	 	<div class="col-xs-9">	 		
-	     	<div><c:out value="${StudentAddr['ADDR_NAT_CODE'] == null ? 'U.S.' : StudentAddr['ADDR_NAT_CODE']}" /></div>
+	     	<div><c:out value="${fn:length(StudentAddr['ADDR_NATN_CODE']) == 0 ? 'U.S.' : StudentAddr['ADDR_NATN_CODE']}" /></div>
 	  	</div>
 	</div>
 	<div class="row">
@@ -185,11 +185,20 @@
 	 	</div>
 	 	<div class="col-xs-9">
 	     	<div>${StudentAddr['ADDR_CITY']}</div>
-	  	</div>
+	  	</div> 
 	</div>
 	<div class="row">
 		<div class="col-xs-3">
-	    	<div>State </div>
+	    	<div>
+		    	<c:choose>
+		    		<c:when test="${StudentAddr['ADDR_NATN_CODE'] == 'US'}">
+		    			State
+		    		</c:when>
+		    		<c:otherwise>
+		    			Province/Region
+		    		</c:otherwise>
+		    	</c:choose>
+	    	</div>
 	 	</div>
 	 	<div class="col-xs-9">
 	     	<div>${StudentAddr['ADDR_STAT_CODE']}</div>
@@ -298,7 +307,7 @@
 	     	<div>${StudentBio['EMERG_PHONE_TTY_DEVICE']}</div>
 	  	</div>
 	</div>
-	<div class="row">
+<%-- 	<div class="row">
 		<div class="col-xs-3">
 	    	<div>Opt Out of Campus Alerts</div>
 	 	</div>
@@ -306,7 +315,7 @@
 	     	<div>${StudentBio['EMERG_AUTO_OPT_OUT']}</div>
 	  	</div>
 	</div>
-  </div>
+  </div> --%>
   
   <div id="step3">
   	<h3>Step 3 Parent/Guardian Information <small><span class="edit_link">Edit Parent/Guardian Info</span></small></h3>	
@@ -409,9 +418,27 @@ $(document).ready(function() {
 		relationshipCodes.push("${relationships.key}");
 		relationshipValues.push("${relationships.value}");
 	</c:forEach>
+	stateCodes  = [];
+	stateValues = [];
+	<c:forEach items="${options['States']}" var="states">
+		stateCodes.push("${states.key}");
+		stateValues.push("${states.value}");
+	</c:forEach>
+	countryCodes  = [];
+	countryValues = [];
+	<c:forEach items="${options['Countries']}" var="countries">
+		countryCodes.push("${countries.key}");
+		countryValues.push("${countries.value}");
+	</c:forEach>
+	regionCodes  = [];
+	regionValues = [];
+	<c:forEach items="${options['Regions']}" var="regions">
+		regionCodes.push("${regions.key}");
+		regionValues.push("${regions.value}");
+	</c:forEach>
 	
-	console.log(relationshipCodes);
-	console.log(relationshipValues);
+	console.log(regionCodes);
+	console.log(regionValues);
 	
 	$student_PIDM = '${StudentBio['STUDENT_PIDM']}';	
 	var x = 0;
@@ -442,7 +469,7 @@ $(document).ready(function() {
 					       	 	var output = displayOutput(index,element);					       		
 					       	 	$('#' + type_id + '_' + ppid).append(output);
 					       	 });
-			    	   }			    	   			    	   
+			    	   }			    	   			    	    
 	
 				       if (data.email != undefined && data.email != null && data.email.length != 0){
 				       		$.each(data.email, function(index,element){
@@ -508,6 +535,10 @@ function displayOutput(index, element){
 	var output = '';
 	if(index.indexOf('RELT_CODE') > -1){	
 		output = displayRelationship(index,element);		
+	}else if(index.indexOf('ADDR_STAT_CODE') > -1){
+		output = displayState(index,element);
+	}else if(index.indexOf('ADDR_NATN_CODE') > -1){
+		output = displayCountry(index,element);
 	}else{
    		output = displayField(index,element);	
 	}
@@ -521,6 +552,41 @@ function displayRelationship(index, element){
 		output += '<div class="row"><div class="col-xs-3"><div>Relationship</div></div><div class="col-xs-9"><div>';	
 		if(element != null){
 			output += relationshipValues[loc1];
+		}
+		output += '</div></div></div>';
+	}	
+	return output
+}
+
+function displayState(index, element){
+	var output = '';
+	var loc1 = stateCodes.indexOf(element); 					       		
+	if(loc1 != -1){		   			
+		output += '<div class="row"><div class="col-xs-3"><div>State</div></div><div class="col-xs-9"><div>';	
+		if(element != null){
+			output += stateValues[loc1];
+		}
+		output += '</div></div></div>';
+	}else{
+		var loc2 = regionCodes.indexOf(element);
+		if(loc2 != -1){
+			output += '<div class="row"><div class="col-xs-3"><div>Province/Region</div></div><div class="col-xs-9"><div>';	
+			if(element != null){
+				output += regionValues[loc2];
+			}
+			output += '</div></div></div>';
+		}
+	}
+	return output
+} 
+
+function displayCountry(index, element){
+	var output = '';
+	var loc1 = countryCodes.indexOf(element); 					       		
+	if(loc1 != -1){		   			
+		output += '<div class="row"><div class="col-xs-3"><div>Country</div></div><div class="col-xs-9"><div>';	
+		if(element != null){
+			output += countryValues[loc1];
 		}
 		output += '</div></div></div>';
 	}	
