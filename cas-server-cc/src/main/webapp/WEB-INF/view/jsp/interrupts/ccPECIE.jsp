@@ -86,9 +86,9 @@
     .draggablePanelList .panel-heading {
         cursor: move;
     }
-    .modal .modal-body {
+    /* .modal .modal-body {
 	    overflow-y: auto;
-	}
+	} */ 
 	#clnaddr table {
     	margin: 0 auto;
 	}
@@ -110,19 +110,21 @@
 	}
 	.grayed-out{
 		color: #9F9F9F;
-	}	
-
+	}
+	/* .modal	{
+    	-webkit-overflow-scrolling: auto;
+	} */
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Update Your Contact Information</h2>
+  <h2>Your Contact Information</h2>
   <p>Please enter your personal, parent/guardian and emergency contact information below.</p> 
   <form class="form-horizontal" method="post" role="form" id="STUDENT" onsubmit="return submitMainForm(this.id);"> 
  
   <div id="step1" class="form_section">
-	<h3>Step 1 Verify Your Permanent Mailing Address</h3>
+	<h3>Step 1 Your Permanent Mailing Address</h3>
 	<p>Please <strong>do not</strong> enter your local or campus address. </p>
 
 	<p><span class="required">* </span>Required Field</p>  
@@ -150,16 +152,16 @@
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address1">
-		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address 1</label>
+		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address Line 1</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 1" name="fields[4]" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
+				<input type="text" placeholder="Address 1" name="fields[4]" maxlength="75" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_student_address2">
-		<label for="country" class="control-label col-sm-3">Address 2</label>
+		<label for="country" class="control-label col-sm-3">Address Line 2</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Address 2" name="fields[5]" class="form-control address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
+				<input type="text" placeholder="Address 2" name="fields[5]" maxlength="75" class="form-control address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
 		</div>
 	</div>  
 
@@ -182,7 +184,7 @@
 	<div class="form-group" id="group_student_city">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>City</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="City" name="fields[7]" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
+				<input type="text" placeholder="City" name="fields[7]" maxlength="75" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
 		</div>
 	</div>  
 	<%-- ${options} --%>
@@ -222,7 +224,7 @@
 	<div class="form-group" id="GROUP_STUDENT_ADDR_ZIP">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required" style="<c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null && fn:length(StudentAddr['ADDR_NATN_CODE']) != 0}">display:none;</c:if>">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Postal Code" name="fields[10]" class="form-control <c:if test="${StudentAddr['ADDR_NATN_CODE'] == 'US' || StudentAddr['ADDR_NATN_CODE'] == null || fn:length(StudentAddr['ADDR_NATN_CODE']) == 0}">ccreq</c:if> address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
+				<input type="text" placeholder="Postal Code" name="fields[10]" maxlength="30" class="form-control <c:if test="${StudentAddr['ADDR_NATN_CODE'] == 'US' || StudentAddr['ADDR_NATN_CODE'] == null || fn:length(StudentAddr['ADDR_NATN_CODE']) == 0}">ccreq</c:if> address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
 		</div>
 	</div> 
 
@@ -247,7 +249,7 @@
 	<div style="<c:if test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="30" class="form-control" id="STUDENT_PHONE_MA_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
+			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="45" class="form-control" id="STUDENT_PHONE_MA_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -258,7 +260,7 @@
 	<div class="form-group" id="group_student_non_college_email">
 		<label for="Email" class="control-label col-sm-3">Non-college email</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Non-college email" name="fields[12]" class="form-control" id="STUDENT_EMAIL_ADDRESS" value="${StudentEmail['EMAIL_ADDRESS']}">
+				<input type="text" placeholder="Non-college email" maxlength="75" name="fields[12]" maxlength="128" class="form-control" id="STUDENT_EMAIL_ADDRESS" value="${StudentEmail['EMAIL_ADDRESS']}">
 		</div>
 	</div> 
 	
@@ -284,7 +286,7 @@
 	<div style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="CP" data-phone-intl="1" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control student_phone_field" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="CP" data-phone-intl="1" placeholder="International Number" name="fields[24]" size="7" maxlength="45" class="form-control student_phone_field" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
@@ -333,7 +335,7 @@
 	<div style="<c:if test="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 || StudentBio['EMERG_NO_CELL_PHONE'] == 'N' }">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="EMERGENCY" data-phone-intl="1" placeholder="International Number" name="fields[30]" size="7" maxlength="30" class="form-control student_phone_field" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="EMERGENCY" data-phone-intl="1" placeholder="International Number" name="fields[30]" size="7" maxlength="45" class="form-control student_phone_field" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -358,7 +360,7 @@
 			</div>
 		</div>
 	</div>
-	<p class="q_check" id="paragraph_alert_home_email_check">If you do not wish to receive campus alerts beyond those to your campus email and voice mail, check the box below:</p>
+<%-- 	<p class="q_check" id="paragraph_alert_home_email_check">If you do not wish to receive campus alerts beyond those to your campus email and voice mail, check the box below:</p>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="alert_home_email_check_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div class="form-group" id="group_alert_home_email_check">
 		<div class="col-sm-offset-1 col-sm-9">
@@ -366,7 +368,7 @@
 				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentBio['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if> value="Y">Opt out of automated campus alerts to my home email and cell phone</label>
 			</div>
 		</div>
-	</div>
+	</div> --%>
 	
 
 	
@@ -388,7 +390,7 @@
 	    		<p id="doc_message">You are <strong>not</strong> required to include a parent or guardian as an emergency contact. You are required to have at least one emergency contact, which you can add in the additional emergency contacts section below.</strong></p>
 	    	</c:when>
 	    	<c:otherwise>
-	    		<p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu. <a data-content="<strong>For students with no living parent/guardian</strong> - please enter a spouse or the most appropriate next of kin (aunt, uncle, etc.).<br/><br/><strong>For students who do not wish to list parents as emergency contacts</strong> - please enter one parent to complete this form. You may email the Dean of the College for an exception at &lt;a href='mailto:doc@conncoll.edu' target='_blank'&gt;doc@conncoll.edu&lt;/a&gt;. Once granted, the form will permit you to remove the parent from your emergency contacts." data-placement="top" data-title="Parent/Guardian Exception" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a></p>
+	    		<p id="doc_message">Please list <strong>all</strong> parent/guardian contacts below. You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu. <a data-content="<strong>For students with no living parent/guardian</strong> - please enter a spouse or the most appropriate next of kin (aunt, uncle, etc.).<br/><br/><strong>For students who do not wish to list parents or guardians as emergency contacts</strong> - please enter one parent/guardian to complete this form. You may email the Dean of the College for an exception at &lt;a href='mailto:doc@conncoll.edu' target='_blank'&gt;doc@conncoll.edu&lt;/a&gt;. Once granted, the form will permit you to remove the parent/guardian from your emergency contacts." data-placement="top" data-title="Parent/Guardian Exception" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title=""></a></p>
 	    	</c:otherwise>
 	    </c:choose> 
 
@@ -436,7 +438,7 @@
     <%-- ${EmmrgPhones} --%>
     <div id="step5" class="form_section">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
-	    <p id="doc_message">Please choose up to five phone numbers to be contacted in the case of a campus emergency (your mobile phone will always be contacted).</p>
+	    <p id="doc_message">Please choose up to five phone numbers that may be contacted in the case of a campus emergency (your mobile phone, if it is a U.S. number, will always be contacted).</p>
 	    
 	    <ul ID="CAMPUS_ALERT_NUMBERS">
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">	
@@ -519,21 +521,21 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
 			  			<label for="text" class="control-label col-sm-4">Prefix</label>
 			  			<div class="col-sm-3">
-			  				<input type="text" placeholder="Rev., Dr., Atty" name="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
+			  				<input type="text" placeholder="Rev., Dr., Atty" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_FIRST_NAME">
 			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="First Name" name="<c:out value="${modalType}"/>_PREF_FIRST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME">
+			  				<input type="text" placeholder="First Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_FIRST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_MIDDLE_NAME">
 			  			<label for="text" class="control-label col-sm-4">Middle Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="Middle Name" name="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME">
+			  				<input type="text" placeholder="Middle Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME">
 			  			</div>
 			  		</div>	  	
 			  		
@@ -541,14 +543,14 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PREF_LAST_NAME">
 			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>Last Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="Last Name" name="<c:out value="${modalType}"/>_PREF_LAST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_LAST_NAME">
+			  				<input type="text" placeholder="Last Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_LAST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_LAST_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			<label for="text" class="control-label col-sm-4">Suffix</label>
 			  			<div class="col-sm-3">
-			  				<input type="text" placeholder="Jr., Sr., IV" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
+			  				<input type="text" placeholder="Jr., Sr., IV" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			</div>
 			  		</div>
 			  		
@@ -571,7 +573,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="CP" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				</div>
 		  			</div>
 		  			
@@ -613,7 +615,7 @@
 					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
 						<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="International Number" name="fields[24]" size="7" maxlength="30" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+							<input type="text" placeholder="International Number" name="fields[24]" size="7" maxlength="45" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 						</div>
 					</div>	
 					
@@ -640,7 +642,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="MA" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Home Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				</div>
 		  			</div>	
 		  			
@@ -667,7 +669,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="BU" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Office Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" maxlength="30" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				</div>
 		  			</div>		
 		  			
@@ -680,7 +682,7 @@
 						<label for="email" class="control-label col-sm-4"><span class="required">* </span>Preferred Email</label>
 						<div class="col-sm-6">
 							<input type="hidden" name="PECI_EMAIL_CODE" id="PECI_EMAIL_CODE" value="P" class="<c:out value="${modalType}"/>_EMAIL_FIELD">
-							<input type="email" placeholder="Preferred Email" name="<c:out value="${modalType}"/>_EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS">
+							<input type="email" placeholder="Preferred Email" name="<c:out value="${modalType}"/>_EMAIL_ADDRESS" class="form-control  ccreq <c:out value="${modalType}"/>_EMAIL_FIELD" id="<c:out value="${modalType}"/>_EMAIL_ADDRESS" maxlength="128">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_RELT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -700,16 +702,16 @@
 					
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
-						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address 1</label>
+						<label for="text" class="control-label col-sm-4"><span class="required">* </span>Address Line 1</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 1" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1">
+							<input type="text" placeholder="Address 1" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE1" class="form-control ccreq address_field  <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE1" maxlength="75">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
-						<label for="text" class="control-label col-sm-4">Address 2</label>
+						<label for="text" class="control-label col-sm-4">Address Line 2</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Address 2" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2">
+							<input type="text" placeholder="Address 2" name="<c:out value="${modalType}"/>_ADDR_STREET_LINE2" class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_STREET_LINE2" maxlength="75">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -731,7 +733,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_CITY">
 						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="City" name="<c:out value="${modalType}"/>_ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_CITY">
+							<input type="text" placeholder="City" maxlength="50" name="<c:out value="${modalType}"/>_ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_CITY">
 						</div>
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_STAT_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
@@ -765,7 +767,7 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_ZIP">
 						<label for="Postal Code" class="control-label col-sm-4"><span class="required">* </span>Zip/Postal Code</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="Zip/Postal Code" name="<c:out value="${modalType}"/>_ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_ZIP">
+							<input type="text" maxlength="30" placeholder="Zip/Postal Code" name="<c:out value="${modalType}"/>_ADDR_ZIP" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_ZIP">
 						</div>
 					</div>
 					
@@ -1645,7 +1647,7 @@ function showDeleteModal(type,ppid,name){
 					 //test = $(this).is(':visible');
 					 var val = $(this).val();
 					 var name = $(this).attr("name");
-					 console.log('visible' + name + ' ' + val);
+					 //console.log('visible' + name + ' ' + val);
 					 if(typeArray[i] != "DEMO"){					 	
 					 	var name = name.replace("PARENT_","");
 					 	var name = name.replace("EMERG_","");	
