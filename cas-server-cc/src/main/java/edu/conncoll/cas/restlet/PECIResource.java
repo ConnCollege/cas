@@ -262,7 +262,7 @@ public class PECIResource extends Resource
 									        if (!key.equals("PARENT_PPID")) {
 										        Object newValue = parentDataIn.get(key);
 										        if (newValue.getClass().getName().equals("java.lang.String")) {
-										        	SQL = SQL + key +" = '" +  newValue + "', ";
+										        	SQL = SQL + key +" = '" +  newValue.toString().replace("'", "''") + "', ";
 										        } else {
 										        	SQL = SQL + key +" = " +  newValue + ", ";
 										        }
@@ -428,7 +428,7 @@ public class PECIResource extends Resource
 								        if (!key.equals("PARENT_PPID")) {
 									        Object newValue = emrgDataIn.get(key);
 									        if (newValue.getClass().getName().equals("java.lang.String")) {
-									        	SQL = SQL + key +" = '" +  newValue + "', ";
+									        	SQL = SQL + key +" = '" +  newValue.toString().replace("'", "''") + "', ";
 									        } else {
 									        	SQL = SQL + key +" = " +  newValue + ", ";
 									        }
@@ -736,7 +736,7 @@ public class PECIResource extends Resource
 							        String key = columns.get(y);
 							        Object newValue = updates.get(key);
 							        if (newValue.getClass().getName().equals("java.lang.String")) {
-							        	SQL = SQL + key +" = '" +  newValue + "', ";
+							        	SQL = SQL + key +" = '" +  newValue.toString().replace("'", "''") + "', ";
 							        } else {
 							        	SQL = SQL + key +" = " +  newValue + ", ";
 							        }
