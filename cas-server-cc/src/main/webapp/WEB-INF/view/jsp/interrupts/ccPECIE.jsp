@@ -86,9 +86,7 @@
     .draggablePanelList .panel-heading {
         cursor: move;
     }
-    /* .modal .modal-body {
-	    overflow-y: auto;
-	} */ 
+
 	#clnaddr table {
     	margin: 0 auto;
 	}
@@ -105,14 +103,21 @@
 		padding: 0;
 	}
 	/*stop scroll to top of page when modal opens*/
-	body.modal-open {
+	/* body.modal-open {
     	overflow: visible;
-	}
+	} */
 	.grayed-out{
 		color: #9F9F9F;
 	}
+	/* .modal .modal-body {
+	    overflow-y: auto;
+	} */ 
 	/* .modal	{
     	-webkit-overflow-scrolling: auto;
+	} */
+	/*the css below may be needed for ios scrolling of modal. Shifts main form left though*/
+	/* .modal-open {
+		position: fixed;
 	} */
   </style>
 </head>
@@ -1175,7 +1180,8 @@
 		 }
 		 resetIntlModalNumbers();		 
   	   	$('#CONTACT_PARENT_PPID').val(0);
-	 });	 
+  	  	$('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').show();
+	 });
 	 $('#PARENT_MODAL').on('hidden.bs.modal', function () {			 
 		 document.getElementById("PARENT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
@@ -1183,6 +1189,15 @@
 		 }
 		 resetIntlModalNumbers();
 		 $('#PARENT_PARENT_PPID').val(0);	
+		 $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').show();
+	 });
+	 
+	 $('#CONTACT_MODAL, #PARENT_MODAL').on('shown.bs.modal',function(){
+	  	  //address to use checkbox, show if student address line 1 is not blank
+	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
+	  		  $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').hide();
+	  		  $('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').hide();
+	  	  } 
 	 });
 	 
 	//hide all modal error messages if modal is closed 
@@ -1538,6 +1553,12 @@ function showDeleteModal(type,ppid,name){
 	         		  }
 	          	  });
 	        	  //phones
+	        	  
+	    	  	  //address to use checkbox, hide if student address is blank
+	    	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
+	    	  		  $('form#' + modal_type + ' #GROUP_' + modal_type + '_ADDRESS_TO_USE').hide();
+	    	  	  }
+	        	  
 	        	  //console.log(data.phones.length);
 	        	  for(i=0;i<data.phones.length;i++){
 	        		  //console.log(i);
@@ -1849,6 +1870,7 @@ function showDeleteModal(type,ppid,name){
 		        	   $('#CONTACT_PARENT_PPID').val(0);	
 		        	   resetIntlModalNumbers();
 		        	   getAlertNumbers();
+		        	   $('form#' + modal_type + ' #GROUP_' + modal_type + '_ADDRESS_TO_USE').show();
 		        	   if($('.modal_mobile_phone_check').is(':checked')){
 		        			//console.log('1: is checked, uncheck'); 
 		        			$('.modal_mobile_phone_check').prop('checked',false).change();
