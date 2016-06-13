@@ -532,9 +532,11 @@ public class PECIResource extends Resource
 			        String key = columns.get(i);
 			        Object newValue = updates.get(key);
 			        if (newValue.getClass().getName().equals("java.lang.String")) {
-			        	SQL = SQL + key +" = '" +  newValue + "', ";
-			        } else if (newValue.toString().equals("null")) {
-			        	SQL = SQL + key +" = null, ";
+			        	if (newValue.toString().equals("null")) {
+				        	SQL = SQL + key +" = null, ";
+			        	} else {
+				        		SQL = SQL + key +" = '" +  newValue + "', ";
+				        	}
 					}else{
 			        	SQL = SQL + key +" = " +  newValue + ", ";
 			        }
