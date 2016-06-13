@@ -119,6 +119,29 @@
 	/* .modal-open {
 		position: fixed;
 	} */
+	
+	@media only screen and (max-device-width:768px){
+		body.modal-open {
+		    /*block scroll for mobile;
+		    causes underlying page to jump to top;
+		    prevents scrolling on all screens*/
+		    overflow: hidden;
+		    position: fixed;
+		}
+	}
+	
+	body.viewport-lg {
+	/*block scroll for desktop;
+	will not jump to top;
+	will not prevent scroll on mobile*/
+	position: absolute; 
+	}
+	
+	body {  
+	overflow-x: hidden;
+	overflow-y: scroll !important;
+	}
+	
   </style>
 </head>
 <body>
@@ -156,14 +179,14 @@
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_CAMPUS_ADDR_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE1_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_address1">
+	<div class="form-group" id="GROUP_STUDENT_ADDRESS_STREET_LINE1">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Address Line 1</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Address 1" name="fields[4]" maxlength="75" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE1" value="${StudentAddr['ADDR_STREET_LINE1']}">
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_STREET_LINE2_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_address2">
+	<div class="form-group" id="GROUP_STUDENT_ADDRESS_STREET_LINE2">
 		<label for="country" class="control-label col-sm-3">Address Line 2</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Address 2" name="fields[5]" maxlength="75" class="form-control address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_STREET_LINE2" value="${StudentAddr['ADDR_STREET_LINE2']}">
@@ -171,7 +194,7 @@
 	</div>  
 
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_NATN_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_country">
+	<div class="form-group" id="GROUP_STUDENT_ADDR_NATN_CODE">
 		<label for="country" class="control-label col-sm-3"><span class="required">* </span>Country</label>
 		<div class="col-sm-8">
 			<select class="form-control address_field ccreq country_field STUDENT_ADDRESS_FIELD" placeholder="Country" name="fields[6]" id="STUDENT_ADDR_NATN_CODE">
@@ -186,8 +209,8 @@
 		</div>
 	</div>
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_CITY_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_student_city">
-		<label for="country" class="control-label col-sm-3"><span class="required">* </span>City</label>
+	<div class="form-group" id="GROUP_STUDENT_ADDR_CITY">
+		<label for="country" class="control-label col-sm-3"><span class="required">* </span><span class="city"><c:out value="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null && fn:length(StudentAddr['ADDR_NATN_CODE']) != 0 ? 'Postal Code & City' : 'City'}"></c:out></span></label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="City" name="fields[7]" maxlength="75" class="form-control ccreq address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_CITY" value="${StudentAddr['ADDR_CITY']}">
 		</div>
@@ -218,6 +241,8 @@
 		<div class="col-sm-9">
 			<select class="form-control address_field STUDENT_ADDRESS_FIELD" placeholder="State" name="fields[8]" id="STUDENT_ADDR_PROV_REGION" <c:if test="${StudentAddr['ADDR_NATN_CODE'] == 'US' || StudentAddr['ADDR_NATN_CODE'] == null || fn:length(StudentAddr['ADDR_NATN_CODE']) == 0}">disabled="disabled"</c:if>>
 				<option value="">Choose Province/Region</option>
+				<option value="">Not Applicable</option>
+				<option value="">Other</option>
 				<c:forEach items="${options['Regions']}" var="regions">
 					<option <c:if test="${regions.key == StudentAddr['ADDR_STAT_CODE']}">selected="selected"</c:if> value="${regions.key}">${regions.value}</option>
 				</c:forEach>
@@ -226,7 +251,7 @@
 	</div>
 	
 	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_ADDR_ZIP_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="GROUP_STUDENT_ADDR_ZIP">
+	<div class="form-group" id="GROUP_STUDENT_ADDR_ZIP" style="<c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null && fn:length(StudentAddr['ADDR_NATN_CODE']) != 0}">display:none;</c:if>">
 		<label for="Postal Code" class="control-label col-sm-3 address_field"><span class="required" style="<c:if test="${StudentAddr['ADDR_NATN_CODE'] != 'US' && StudentAddr['ADDR_NATN_CODE'] != null && fn:length(StudentAddr['ADDR_NATN_CODE']) != 0}">display:none;</c:if>">* </span>Zip/Postal Code</label>
 		<div class="col-sm-9">
 				<input type="text" placeholder="Postal Code" name="fields[10]" maxlength="30" class="form-control <c:if test="${StudentAddr['ADDR_NATN_CODE'] == 'US' || StudentAddr['ADDR_NATN_CODE'] == null || fn:length(StudentAddr['ADDR_NATN_CODE']) == 0}">ccreq</c:if> address_field STUDENT_ADDRESS_FIELD" id="STUDENT_ADDR_ZIP" value="${StudentAddr['ADDR_ZIP']}">
@@ -737,7 +762,7 @@
 					</div>
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_ADDR_CITY_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_ADDR_CITY">
-						<label for="" class="control-label col-sm-4"><span class="required">* </span>City</label>
+						<label for="" class="control-label col-sm-4"><span class="required">* </span><span class="city">City</span></label>
 						<div class="col-sm-6">
 							<input type="text" placeholder="City" maxlength="50" name="<c:out value="${modalType}"/>_ADDR_CITY" class="form-control ccreq address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" id="<c:out value="${modalType}"/>_ADDR_CITY">
 						</div>
@@ -761,6 +786,8 @@
 						<div class="col-sm-6">
 							<select class="form-control address_field <c:out value="${modalType}"/>_ADDRESS_FIELD" placeholder="State" name="<c:out value="${modalType}"/>_ADDR_STAT_CODE" id="<c:out value="${modalType}"/>_ADDR_PROV_REGION">
 								<option value="">Choose Province/Region</option>
+								<option value="">Not Applicable</option>
+								<option value="">Other</option>
 								<c:forEach items="${options['Regions']}" var="regions">
 									<option value="${regions.key}">${regions.value}</option>
 								</c:forEach>
@@ -924,12 +951,12 @@
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-	  		<div class="modal-header alert alert-danger">
+	  		<div class="modal-header">
 			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
 
 			  	<h4 class="modal-title"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> ERROR</h4>
 			  </div>
-			  <div class="modal-body alert alert-danger"">	
+			  <div class="modal-body">	
 				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> There was an error with your submission. Please refresh this page and try again.<br/><br/>If you continue to have problems, please contact the IT Service Desk at 860-439-4357.</p>
 			  </div>
 			</div>
@@ -949,7 +976,7 @@
 %>
 
 
- <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10101"></script>   
+ <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10102"></script>   
 
  <script type="text/javascript">
  
@@ -1385,6 +1412,7 @@ function showDeleteModal(type,ppid,name){
 	var intlField = intlFieldGroup + ' #' + form_id + '_ADDR_PROV_REGION';
 	var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
 	var stateField = stateFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
+	var cityFieldGroup = '#GROUP_' + form_id + '_ADDR_CITY';
 	//console.log(stateField);
 	var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';		
 	var zipField = '#' + form_id + '_ADDR_ZIP';
@@ -1393,15 +1421,30 @@ function showDeleteModal(type,ppid,name){
 		$(stateField).addClass('ccreq');
 		$(stateField).removeProp('disabled');
 		$(zipField).addClass('ccreq');
+		$(zipFieldGroup).show();
 		$(zipFieldGroup + ' .required').show();
+		$(cityFieldGroup + ' .city').html('City');
 		$(intlFieldGroup).hide();
 		$(intlField).prop('disabled','disabled');
+	}else if(value == 'Canada' || value == 'CA'){
+		$(stateFieldGroup).hide();
+		$(stateField).removeClass('ccreq');
+		$(stateField).prop('disabled','disabled');
+		$(zipField).addClass('ccreq');
+		$(zipFieldGroup).show();
+		$(zipFieldGroup + ' .required').show();
+		$(cityFieldGroup + ' .city').html('City');
+		$(intlFieldGroup).show();
+		$(intlField).removeProp('disabled');
 	}else{
 		$(stateFieldGroup).hide();
 		$(stateField).removeClass('ccreq');
 		$(stateField).prop('disabled','disabled');
 		$(zipField).removeClass('ccreq');
+		$(zipField).val('');
+		$(zipFieldGroup).hide();
 		$(zipFieldGroup + ' .required').hide();
+		$(cityFieldGroup + ' .city').html('Postal Code & City');
 		$(intlFieldGroup).show();
 		$(intlField).removeProp('disabled');
 	}
@@ -1411,7 +1454,7 @@ function showDeleteModal(type,ppid,name){
 	 showMainError = 0;
 	 $('.alert').hide();
 	 //required fields
-	 $("#" + form_id + " .ccreq").each(function(){
+	 $("#" + form_id + " .ccreq:visible").each(function(){
 		 //console.log($(this));
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
