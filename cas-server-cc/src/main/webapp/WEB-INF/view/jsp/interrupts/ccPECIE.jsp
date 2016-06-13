@@ -245,7 +245,7 @@
 			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_PHONE_MA_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_PHONE_MA_NUMBER" size="7" class="form-control num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_PHONE_MA_NUMBER" size="7" class="form-control phone_number num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 
@@ -282,7 +282,7 @@
 			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> num_only student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> num_only phone_number student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
@@ -331,7 +331,7 @@
 			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[34]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
 	</div> 
@@ -564,10 +564,10 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control area_code ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
+		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control phone_number ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
 		  				</div>
 		  			</div>
 		  			
@@ -609,7 +609,7 @@
 							<input type="tel" placeholder="Area Code" name="fields[29]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="" maxlength="3">
 						</div>
 						<div class="col-xs-4">
-							<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control num_only" value="" maxlength="7">
+							<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only" value="" maxlength="7">
 						</div>
 					</div> 
 					
@@ -633,10 +633,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER">
 						<label for="tel" class="control-label col-sm-4">Home Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
+		  					<input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -660,10 +660,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER" >
 						<label for="tel" class="control-label col-sm-4">Office Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
+		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
+		  					<input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -924,13 +924,13 @@
   	<div class="modal-dialog">    
 	  	<!-- Modal content-->
 	  	<div class="modal-content">
-	  		<div class="modal-header">
+	  		<div class="modal-header alert alert-danger">
 			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
 
-			  	<h4 class="modal-title">ERROR</h4>
+			  	<h4 class="modal-title"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> ERROR</h4>
 			  </div>
-			  <div class="modal-body">	
-				<p>There was an error with your submission. Please refresh this page and try again.</p>
+			  <div class="modal-body alert alert-danger"">	
+				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> There was an error with your submission. Please refresh this page and try again.<br/><br/>If you continue to have problems, please contact the IT Service Desk at 860-439-4357.</p>
 			  </div>
 			</div>
 			<div class="modal-footer">
@@ -1145,6 +1145,15 @@
 			}
 		}
 	});
+	
+	//jump to next form field
+	$(".area_code").on('input',function () {
+	    if($(this).val().length == $(this).attr('maxlength')) {
+	    	//move on to phone_number field
+	    	var inputs = $(this).closest('form').find(':input');
+	    	inputs.eq( inputs.index(this)+ 1 ).focus();
+	    }
+	});
 
 	//check to see if parents are emerg contacts, turn off switch if not
 	/* $('.parent-bootstrap-switch').each(function(){
@@ -1197,7 +1206,19 @@
 	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
 	  		  $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').hide();
 	  		  $('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').hide();
-	  	  } 
+	  	  } 	  	  
+	 });
+	 
+	 $('#ADD_PARENT,#ADD_CONTACT').click( function(){
+		 //make sure edit sequence numbers and parent ppids are wiped out on new entries
+	  	 var typeArray = ["PARENT","CONTACT"];
+		 var phoneCodeArray = ["CP","EP","MA","BU"];	
+		 for (var i = 0; i < typeArray.length; i++) {
+			 for (var j = 0; j < phoneCodeArray.length; j++) {
+				 $('#' + typeArray[i] + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
+			 }
+			 $('#' + typeArray + '_PARENT_PPID').val(0);
+		 }
 	 });
 	 
 	//hide all modal error messages if modal is closed 
@@ -1870,7 +1891,8 @@ function showDeleteModal(type,ppid,name){
 		        	   $('#CONTACT_PARENT_PPID').val(0);	
 		        	   resetIntlModalNumbers();
 		        	   getAlertNumbers();
-		        	   $('form#' + modal_type + ' #GROUP_' + modal_type + '_ADDRESS_TO_USE').show();
+		        	   $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').show();
+		        	   $('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').show();
 		        	   if($('.modal_mobile_phone_check').is(':checked')){
 		        			//console.log('1: is checked, uncheck'); 
 		        			$('.modal_mobile_phone_check').prop('checked',false).change();
@@ -1882,15 +1904,17 @@ function showDeleteModal(type,ppid,name){
 		        	   $('#CONFIRMATION_MODAL').modal('show');		        	   
 		        	   //add to emr_order
 		        	   setEmrOrder();		        	   
-		        	   setTimeout(function(){ entryCheck(); }, 2000);
+		        	   setTimeout(function(){ entryCheck(); }, 1500);
 		           },
 		           error: function(e){
-		        	   console.log(e);
-		        	   return false;
-		        	   //close modal, show error modal
+		        		console.log("error on page: ");
+		        		console.log(e);
+		        	 	//close modal, show error modal
 		        	    $('#' + form_id + '_MODAL').hide();
 			        	$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 			        	$('#ERROR_MODAL').modal('show');
+		        	   return false;
+		        	   
 		           }
 			    });	 
 			}else{
