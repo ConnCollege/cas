@@ -120,6 +120,10 @@
 		position: fixed;
 	} */
 	
+	.mobile_label{
+		display: none;
+	}
+	
 	@media only screen and (max-device-width:768px){
 		body.modal-open {
 		    /*block scroll for mobile;
@@ -127,6 +131,11 @@
 		    prevents scrolling on all screens*/
 		    overflow: hidden;
 		    position: fixed;
+		}
+		
+		.mobile_label{ 
+			display: inline;
+			font-size: .8em;
 		}
 	}
 	
@@ -267,10 +276,10 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER" style="<c:if test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) != 0}">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-3">
-			<input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_PHONE_MA_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
+			<span class="mobile_label">Area Code: </span><input type="tel" placeholder="Area Code" name="fields[27]" id="STUDENT_PHONE_MA_AREA_CODE" size="3" class="form-control area_code num_only" value="${StudentHomePhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_PHONE_MA_NUMBER" size="7" class="form-control phone_number num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
+			<span class="mobile_label">Phone Number: </span><input type="tel" placeholder="Home Phone" name="fields[11]" id="STUDENT_PHONE_MA_NUMBER" size="7" class="form-control phone_number num_only" value="${StudentHomePhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[31]" id="STUDENT_MA_PHONE_SEQUENCE_NO" value="${StudentHomePhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 
@@ -304,10 +313,10 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER" style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) != 0}">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3"><span class="required" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y'}">display:none;</c:if>">* </span>Mobile Phone</label>		
 		<div class="col-sm-3">
-			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<span class="mobile_label">Area Code: </span><input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Area Code" name="fields[23]" id="STUDENT_PHONE_CP_AREA_CODE" size="3" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> area_code num_only student_phone_field" value="${StudentCellPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> num_only phone_number student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
+			<span class="mobile_label">Phone Number: </span><input type="tel" data-phone-type="CP" data-phone-intl="0" placeholder="Mobile Phone" name="fields[13]" id="STUDENT_PHONE_CP_NUMBER" size="7" class="form-control <c:if test="${(StudentBio['EMERG_NO_CELL_PHONE'] == 'N'  || fn:length(StudentBio['EMERG_NO_CELL_PHONE']) == 0) && fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> num_only phone_number student_phone_field" value="${StudentCellPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[32]" id="STUDENT_CP_PHONE_SEQUENCE_NO" value="${StudentCellPhone['PHONE_SEQUENCE_NO']}">
 		</div>
 	</div> 	
@@ -353,10 +362,10 @@
 	<div class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER" style="<c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'N' || StudentBio['EMERG_NO_CELL_PHONE'] == null || fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) != 0 }">display:none;</c:if>">
 		<label for="Phone" class="control-label col-sm-3 address_field"><span class="required">* </span>Emergency Phone</label>		
 		<div class="col-sm-3">
-			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
+			<span class="mobile_label">Area Code: </span><input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Area Code" name="fields[29]" id="STUDENT_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_AREA_CODE']}" maxlength="3">
 		</div>
 		<div class="col-sm-6">
-			<input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
+			<span class="mobile_label">Phone Number: </span><input type="tel" data-phone-type="EMERGENCY" data-phone-intl="0" placeholder="Emergency Phone" name="fields[16]" id="STUDENT_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only <c:if test="${StudentBio['EMERG_NO_CELL_PHONE'] == 'Y' && fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0}">ccreq</c:if> student_phone_field" value="${StudentEmrPhone['PHONE_NUMBER']}" maxlength="7">
 			<input type="hidden" name="fields[34]" id="STUDENT_EMR_PHONE_SEQUENCE_NO" value="${StudentEmrPhone['PHONE_SEQUENCE_NO']}">			
 		</div>
 	</div> 
@@ -589,10 +598,10 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control area_code ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
+		  					<span class="mobile_label">Area Code: </span><input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" size="3" class="form-control area_code ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control phone_number ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
+		  					<span class="mobile_label">Phone Number: </span><input type="tel" placeholder="Mobile Phone Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" size="7" class="form-control phone_number ccreq <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER" maxlength="7">		  					
 		  				</div>
 		  			</div>
 		  			
@@ -631,10 +640,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>		
 						<div class="col-xs-3">
-							<input type="tel" placeholder="Area Code" name="fields[29]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="" maxlength="3">
+							<span class="mobile_label">Area Code: </span><input type="tel" placeholder="Area Code" name="fields[29]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE" size="3" class="form-control area_code num_only" value="" maxlength="3">
 						</div>
 						<div class="col-xs-4">
-							<input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only" value="" maxlength="7">
+							<span class="mobile_label">Phone Number: </span><input type="tel" placeholder="Emergency Phone" name="fields[16]" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" size="7" class="form-control phone_number num_only" value="" maxlength="7">
 						</div>
 					</div> 
 					
@@ -658,10 +667,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER">
 						<label for="tel" class="control-label col-sm-4">Home Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
+		  					<span class="mobile_label">Area Code: </span><input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
+		  					<span class="mobile_label">Phone Number: </span><input type="tel" placeholder="Home Phone Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -685,10 +694,10 @@
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER" >
 						<label for="tel" class="control-label col-sm-4">Office Phone</label>
 						<div class="col-sm-3">
-		  					<input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
+		  					<span class="mobile_label">Area Code: </span><input type="tel" placeholder="Area Code" name="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" size="3" class="form-control area_code <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_AREA_CODE" maxlength="3">
 		  				</div>
 		  				<div class="col-sm-4">
-		  					<input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
+		  					<span class="mobile_label">Phone Number: </span><input type="tel" placeholder="Office Phone Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" size="7" class="form-control phone_number <c:out value="${modalType}"/>_PHONE_FIELD num_only" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER" maxlength="7">
 		  				</div>
 					</div>	
 					
@@ -976,7 +985,7 @@
 %>
 
 
- <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10102"></script>   
+ <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10105"></script>   
 
  <script type="text/javascript">
  
@@ -997,13 +1006,11 @@
     }); */
 	 
 	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });
-     //console.log(checked_phone_numbers);
 	 ajaxurl = "/cas/cas-rest-api/peci/";
-	 //console.log(ajaxurl);
 	 student_PIDM = '${StudentBio['STUDENT_PIDM']}';
 	 deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}";
 	 
-	 //check parent and contact numbers on page load and disable any new entries if 5 or over entered
+	 /*check parent and contact numbers on page load and disable any new entries if 5 or over entered*/
 	 entryCheck();
 	 /* if(checkNum('PARENT') >= totalAllowed('PARENT')){
 		disableModalEnter('PARENT');
@@ -1015,26 +1022,21 @@
 	 $("[data-toggle=popover]").popover();
 	 $("[data-toggle=tooltip]").tooltip(); 
 	 
-	 //only select Yes on parents that are listed as emergency contacts on page load
+	 /*only select Yes on parents that are listed as emergency contacts on page load*/
 	 $('#CONTACT_LIST li').each(function(){
 		 var thisID = $(this).attr("id");
 		 shortenedID = thisID.replace('emr_contact_','');
-		 //console.log("thisID: " + thisID);
 		 if($('#PARENT_LIST #parent_' + shortenedID).length){
-			 //this contact is also a parent, flip emr switch on
+			 /*this contact is also a parent, flip emr switch on*/
 			 $('#parent_' + shortenedID + ' .parent-bootstrap-switch').bootstrapSwitch('state',true);
-			 //remove the delete icon for this contact
+			 /*remove the delete icon for this contact*/
 			 $('#' + thisID + ' .deleteModal').remove(); 
-		 }
-		//console.log("contact_listed: " + thisID); 
+		 }		 
 	 });	 
 	
-	//get count of number of emr switches that are "On". If only 1, make it read-only since at least 1 parent needs to be checked
+	/*get count of number of emr switches that are "On". If only 1, make it read-only since at least 1 parent needs to be checked*/
 	emr_switch_count = $('.parent-bootstrap-switch:checked').length;
-	//console.log('emr_switch_count: ' + emr_switch_count);
 	if(emr_switch_count == 1 && deanExceptionDate.length == 0){
-		//console.log('emr_switch_count = 1');
-		//$('.parent-bootstrap-switch').closest('.bootstrap-switch-wrapper').addClass('bootstrap-switch-readonly');
 		$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);
 	}	
 	 	 
@@ -1051,29 +1053,25 @@
 		emergencyNumberToggle(form_id, checked);
 	}); 
 	
-	//switch to international phone
+	/*switch to international phone*/
 	$('.intl_number_switch').click(function (){		
 		var form_id = $(this).closest('form').attr("id");
 		var phone_type = $(this).attr("data-type");
 		var intl_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL';
-		//console.log("intl_group: " + intl_group);
-		var phone_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER';	
-		//console.log("phone group: " + phone_group);		
+		var phone_group = '#GROUP_' + form_id + '_PHONE_' + phone_type + '_NUMBER';		
 		if($(intl_group).css('display') == 'none'){
-			//console.log("display none");
 			$(phone_group).hide();		
-			//show international number
+			/*show international number*/
 			$(intl_group).show();
 			if(form_id == 'STUDENT'){
-				//wipe out fields for student form (modal handled separatenly in submitModal function)
+				/*wipe out fields for student form (modal handled separatenly in submitModal function)*/
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').val('');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').val('');
 			}
-			//change text of link
+			/*change text of link*/
 			$(this).html('Enter U.S. Number');
-			console.log('phone_type: ' + phone_type);
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
-				//intl number now showing, change required fields
+				/*intl number now showing, change required fields*/
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').addClass("ccreq");
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').removeClass('ccreq');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').removeClass('ccreq');			
@@ -1082,12 +1080,12 @@
 			$(phone_group).show();			
 			$(intl_group).hide();
 			if(form_id == 'STUDENT'){
-				//wipe out intl field for student form (modal handled separately in submitModal function)
+				/*wipe out intl field for student form (modal handled separately in submitModal function)*/
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').val('');
 			}
  			$(this).html('Enter International Number');
 			if(phone_type == 'CP' || phone_type == 'EMERGENCY'){
-				//change required fields
+				/*change required fields*/
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER_INTL').removeClass("ccreq");
 				$('#' + form_id + '_PHONE_' + phone_type + '_AREA_CODE').addClass('ccreq');
 				$('#' + form_id + '_PHONE_' + phone_type + '_NUMBER').addClass('ccreq');			
@@ -1107,42 +1105,25 @@
 		}else{
 			var phone_number = $('#STUDENT_PHONE_' + thisType + '_AREA_CODE').val() + '' + $('#STUDENT_PHONE_' + thisType + '_NUMBER').val();
 			var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
-			//$('#CAMPUS_ALERT_NUMBERS').prepend(newAlertNumber);
 			addCampusAlertNumber(phone_number, "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}", "STUDENT");
 		}		
 		
 	});
 	
-	//switching off emergency contacts
+	/*switching off emergency contacts*/
 	$('input[name="PARENT"]').on('switchChange.bootstrapSwitch', function(event, state) {
-		//$('#PARENT_ERROR').hide();
-		console.log("emerg switch change");
 		var ppid = $(this).attr("data-ppid");
 		var thisName = $('#parent_' + ppid + ' .contact-name').html();
 		emergencySwitchToggle(ppid,thisName,event,state);
 	});
 	
-	//state/province drop-down toggle based on country chosen
+	/*state/province drop-down toggle based on country chosen*/
 	$('.country_field').change(function(){		
 		var form_id = $(this).closest('form').attr("id");
 		var thisValue = $(this).val();
 		countryProvinceDisplay(form_id,thisValue);		
 	});
 	
-	//triggered when modal is about to be shown
-	/* $('#DELETE_MODAL').on('show.bs.modal', function(e) {
-
-	    //get data-type attribute of the clicked element
-	    var person_name = $(e.relatedTarget).data('person-name');
-	    var person_id = $(e.relatedTarget).data('ppid');
-	    var type = $(e.relatedTarget).data('modal-type');
-
-	    //populate the textbox
-	    $(e.currentTarget).find('.name_block').html(person_name);
-	    $(e.currentTarget).find('#ppid_to_delete').val(person_id);
-	    $(e.currentTarget).find('#type_to_delete').val(type);
-	}); */	
-
 	$('.showModal').click(function() {		
 		modal_type = $(this).attr("data-modal-type");		
 		ppid = $(this).attr("data-ppid");		
@@ -1156,18 +1137,15 @@
 		showDeleteModal(type,ppid,name);
 	});		
 	
-	//don't allow any special characters in phone number fields, only 0-9, backspace, delete
+	/*don't allow any special characters in phone number fields, only 0-9, backspace, delete*/
 	$(".num_only").keypress(function (e) {
-		//console.log(e.which);
 		if (/^\d+$/.test(e.key) ){
-			//console.log("character accepted: " + e.key)
+			/*console.log("character accepted: " + e.key)*/
 		} else {
-			//console.log("illegal character detected: "+ e.key)
 			var charCode = (e.which) ? e.which : e.keyCode
 			if (e.key == 'Delete'){
-				//console.log('character accepted' + e.key);
+				
 			}else if (charCode > 31 && (charCode < 48 || charCode > 57)){
-				//console.log("illegal character detected: "+ e.key)
 				return false;
 			}
 		}
@@ -1176,45 +1154,20 @@
 	//jump to next form field
 	$(".area_code").on('input',function () {
 	    if($(this).val().length == $(this).attr('maxlength')) {
-	    	//move on to phone_number field
+	    	/*move on to phone_number field*/
 	    	var inputs = $(this).closest('form').find(':input');
 	    	inputs.eq( inputs.index(this)+ 1 ).focus();
 	    }
 	});
-
-	//check to see if parents are emerg contacts, turn off switch if not
-	/* $('.parent-bootstrap-switch').each(function(){
-		var ppid = $(this).attr("data-ppid");
-		var student_PIDM = ${StudentBio['STUDENT_PIDM']};
-		$.ajax({
-	           type: "POST",
-	           url: ajaxurl,
-	           data: JSON.stringify({"PIDM": student_PIDM, "PPID": ppid, "DATA": "CONTACT", "MODE": "READ"}),
-	           datatype: "json",
-	           contentType: "application/json",
-	           success: function(data)           
-	           {  
-	        	   //IS A CONTACT
-	        	   //console.log("is a contact: " + ppid);
-	           },
-	           error: function (request, status, error) {
-	               //console.log("ERROR: " + request.responseText);
-	               //console.log("is NOT a contact: " + ppid);
-	               var this_parent_switch = $('.parent-bootstrap-switch').attr("data-ppid",ppid);
-	               $(this_parent_switch).bootstrapSwitch('state',false);
-	               
-	           }
-		 });		 
-	});	 */
 	
-	
-	//reset the modal form fields if modal is closed
+	/*reset the modal form fields if modal is closed*/
 	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {			  
 		 document.getElementById("CONTACT").reset();
 		 if($('.modal_mobile_phone_check').is(':checked')){
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		 }
-		 resetIntlModalNumbers();		 
+		 resetIntlModalNumbers();	
+		 resetPhoneSequenceNo();
   	   	$('#CONTACT_PARENT_PPID').val(0);
   	  	$('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').show();
 	 });
@@ -1224,12 +1177,13 @@
 			 $('.modal_mobile_phone_check').prop('checked',false).change();
 		 }
 		 resetIntlModalNumbers();
+		 resetPhoneSequenceNo();
 		 $('#PARENT_PARENT_PPID').val(0);	
 		 $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').show();
 	 });
 	 
 	 $('#CONTACT_MODAL, #PARENT_MODAL').on('shown.bs.modal',function(){
-	  	  //address to use checkbox, show if student address line 1 is not blank
+	  	  /*address to use checkbox, show if student address line 1 is not blank*/
 	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
 	  		  $('form#PARENT #GROUP_PARENT_ADDRESS_TO_USE').hide();
 	  		  $('form#CONTACT #GROUP_CONTACT_ADDRESS_TO_USE').hide();
@@ -1237,24 +1191,16 @@
 	 });
 	 
 	 $('#ADD_PARENT,#ADD_CONTACT').click( function(){
-		 //make sure edit sequence numbers and parent ppids are wiped out on new entries
-	  	 var typeArray = ["PARENT","CONTACT"];
-		 var phoneCodeArray = ["CP","EP","MA","BU"];	
-		 for (var i = 0; i < typeArray.length; i++) {
-			 for (var j = 0; j < phoneCodeArray.length; j++) {
-				 $('#' + typeArray[i] + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
-			 }
-			 $('#' + typeArray + '_PARENT_PPID').val(0);
-		 }
+		resetPhoneSequenceNo();
 	 });
 	 
-	//hide all modal error messages if modal is closed 
+	/*hide all modal error messages if modal is closed */
 	$('#PARENT_MODAL, #CONTACT_MODAL, #DELETE_MODAL').on('hidden.bs.modal', function () {		
 	    $('#PARENT_MODAL .alert-danger, #CONTACT_MODAL .alert-danger, #DELETE_MODAL .alert-danger').hide();
 		$('#PARENT_MODAL .form-group, #CONTACT_MODAL .form-group, #DELETE_MODAL .form-group').removeClass('has-error');
 	});
  
-	//only allow 5 alert numbers to be checked	
+	/*only allow 5 alert numbers to be checked	*/
 	$('input.alert_phone_number').on('change', function() {
 		alertNumberReview($(this));		
 	});
@@ -1308,9 +1254,7 @@ function totalAllowed(type){
 }
 
 function entryCheck(){
-   //check num on both parents and contacts
-   console.log("parent num: " + checkNum('PARENT'));
-   console.log("contact num: " + checkNum('CONTACT'));
+   /*check num on both parents and contacts*/
    if(checkNum('PARENT') >= totalAllowed('PARENT')){
 	   disableModalEnter('PARENT');
    }else{
@@ -1335,7 +1279,6 @@ function enableModalEnter(type){
 
 function showDeleteModal(type,ppid,name){	
 	$('#DELETE_MODAL').modal();
-	//console.log("showDeleteModal, name: " + name + "ppid: " + ppid + "type: " + type);
 	$('#delete_form').find('#type').html(type.toLowerCase());
 	$('#delete_form').find('.name_block').html(name);
 	$('#delete_form').find('#ppid_to_delete').val(ppid);
@@ -1362,16 +1305,14 @@ function showDeleteModal(type,ppid,name){
 	 var thisVal = $(thisObj).val();
 		console.log("thisVal: " + thisVal);
 		var alertNum = $("input[name='fields[25]']:checked").length;
-		//console.log("number of alert numbers: " + alertNum);
 	   	if($("input[name='fields[25]']:checked").length > alert_number_limit) {
 	   		$(thisObj).prop('checked',false);
 	      	$('#ALERT_NUMBER_MODAL').modal();
 	   	}else if($(thisObj).is(':checked')){
-			//add to array if not already there
+			/*add to array if not already there*/
 			if($.inArray(thisVal,checked_phone_numbers) == -1){
 	 			checked_phone_numbers.push(thisVal);
 	 		}
-			console.log(checked_phone_numbers);
 		}else if($.inArray(thisVal,checked_phone_numbers) != -1){
 			checked_phone_numbers.splice( $.inArray(thisVal, checked_phone_numbers), 1 );
 			console.log(checked_phone_numbers);
@@ -1401,7 +1342,7 @@ function showDeleteModal(type,ppid,name){
         	entryCheck();
          },
          error: function (request, status, error) {
-             //console.log("ERROR: " + request.responseText);
+             /*console.log("ERROR: " + request.responseText);*/
          }
 	    });			 
 	 return false;
@@ -1413,7 +1354,6 @@ function showDeleteModal(type,ppid,name){
 	var stateFieldGroup = '#GROUP_' + form_id + '_ADDR_STAT_CODE';
 	var stateField = stateFieldGroup + ' #' + form_id + '_ADDR_STAT_CODE';
 	var cityFieldGroup = '#GROUP_' + form_id + '_ADDR_CITY';
-	//console.log(stateField);
 	var zipFieldGroup = '#GROUP_' + form_id + '_ADDR_ZIP';		
 	var zipField = '#' + form_id + '_ADDR_ZIP';
 	if(value == 'United States' || value == "US"){
@@ -1453,9 +1393,8 @@ function showDeleteModal(type,ppid,name){
  function formValidate(form_id){
 	 showMainError = 0;
 	 $('.alert').hide();
-	 //required fields
+	 /*required fields*/
 	 $("#" + form_id + " .ccreq:visible").each(function(){
-		 //console.log($(this));
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
 		 var field_type = $(this).attr("type");
@@ -1463,17 +1402,14 @@ function showDeleteModal(type,ppid,name){
 		 if(field_value.length == 0){
 			 $("#" + field_id + "_ERROR" + " .custom-error").html('Please Enter ' + field_label);	
 			 $("#" + field_id + "_ERROR").show();		
-			 $("#group_" + field_id).addClass("has-error");
-			 console.log(" error on: field_id: " + field_id + " field_label: " + field_label + " field_value: " + field_value + " field_type: " + field_type);			 
-			 console.log("#" + field_id + "_ERROR");
+			 $("#group_" + field_id).addClass("has-error");		 
 			 showMainError = 1
 		 }else{
 			 $("#" + field_id + "_ERROR").hide();		
 			 $("#group_" + field_id).removeClass("has-error");
 		 }		 
-		 //console.log(input);
 	 });
-	 //email validation
+	 /*email validation*/
 	 $("#" + form_id + " input[type=email]").each(function(){
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
@@ -1485,13 +1421,12 @@ function showDeleteModal(type,ppid,name){
 			 $("#" + field_id + "_ERROR" + " .custom-error").html('The ' + field_label + ' you entered is invalid. Please enter a valid ' + field_label);	
 			 $("#" + field_id + "_ERROR").show();		
 			 $("#group_" + field_id).addClass("has-error");
-			 //console.log("error on: " + field_label);
 			 showMainError = 1;
 		 }else{
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
 	 });
-	 //telephone validation
+	 /*telephone validation*/
 	 $("#" + form_id + " input[type=tel]:visible").each(function(){
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
@@ -1509,7 +1444,7 @@ function showDeleteModal(type,ppid,name){
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
 	 });
-	 //campus address check
+	 /*campus address check*/
 	 var addr_line1 = $('#' + form_id + '_ADDR_STREET_LINE1').val();
 	 var addr_city = $('#' + form_id + '_ADDR_CITY').val();
 	 if(addr_line1.indexOf('270 Mohegan Ave') != -1 && addr_city.indexOf('New London') != -1){
@@ -1533,18 +1468,16 @@ function showDeleteModal(type,ppid,name){
  	}
 }
  
- //save main form
+ /*save main form*/
  function submitMainForm(form_id){
 	 formValidate(form_id);
 	 if(showMainError){
 		 window.scrollTo(0,0);
 		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast'); 
 		 $('#STUDENT_FORM_ERROR').show();
-		 //$('#' + form_id + '_MODAL').scrollTop(0);
 		 return false;	
 	 }else{
 		 $('#STUDENT_FORM_ERROR').hide();
-		 //$('#' + form_id).submit();
 		 return true;
 	 }
  }
@@ -1558,26 +1491,19 @@ function showDeleteModal(type,ppid,name){
 	           contentType: "application/json",
 	           success: function(data)           
 	           {   
-	        	  //$('#' + modal_type + '_STUDENT_PPID').val();
 	        	  $('#' + modal_type + '_STUDENT_PIDM').val(student_PIDM);
 	        	  $('#' + modal_type + '_PARENT_PPID').val(ppid);
-	        	  //$('#' + modal_type + '_PARENT_PIDM').val();
 	        	  var showEmerNumber = 0;
 	        	  if(modal_type == 'PARENT'){
 		        	  $.each(data.parent, function(index, element){	       
 		        		  $('form#' + modal_type + ' #' + index).val(element);	 
 		        		  if(index == 'EMERG_NO_CELL_PHONE'){
-		        			  //console.log('Emerg_no_cell_phone: ' + index);
 		        			  if(element == 'Y'){
-		        				  console.log('element: ' + element);
-		        				  console.log('modal_type: ' + modal_type);
-		        				  //$('#' + modal_type + '_' + index).attr('checked','checked');
 		        				  $('.modal_mobile_phone_check').prop('checked',true).change();
 		        				  var showEmerNumber = 1;
 		        				  emergencyNumberToggle(modal_type, 1);
 		        			  }
 		        		  }
-		        	   	//$('#' + index).val(element);
 		        	  });
 	        	  }else{
 	        		  $.each(data.contact, function(index, element){
@@ -1585,54 +1511,42 @@ function showDeleteModal(type,ppid,name){
 	        			  var new_index = new_index.replace('EMERG','CONTACT')
 	        			  $('form#' + modal_type + ' #' + new_index).val(element);
 	        			  if(index == 'EMERG_NO_CELL_PHONE'){
-		        			  console.log('Emerg_no_cell_phone: ' + index);
 		        			  if(element == 'Y'){
-		        				  console.log('element: ' + element);
-		        				  console.log('modal_type: ' + modal_type);
 		        				  $('.modal_mobile_phone_check').prop('checked',true).change();
 		        				  var showEmerNumber = 1;
 		        				  emergencyNumberToggle(modal_type, 1);
 		        			  }
 		        		  }
-	  	        	   	//$('#' + index).val(element);
 	  	        	  });
 	        	  }
 
 	        	  $.each(data.email, function(index,element){        
 	        		 $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
-	        	  	 //$('#' + modal_type + "_" + index).val(element); 	
 	        	  });
 
 	        	  $.each(data.address, function(index,element){        		 
 	        		  if(index == 'ADDR_NATN_CODE' && element == null){
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val('US');
-	        			//$('#' + modal_type + "_" + index).val('US');
 	        		  }else if(index == 'ADDR_NATN_CODE' && element != 'US'){
 	        			  countryProvinceDisplay(modal_type,data.address['ADDR_NATN_CODE']);
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
 	        			  $('form#' + modal_type + ' #' + modal_type + '_ADDR_PROV_REGION').val(data.address['ADDR_STAT_CODE']);
 	        		  }else{
 	        			  $('form#' + modal_type + ' #' + modal_type + '_' + index).val(element);
-	          	  		//$('#' + modal_type + "_" + index).val(element);
 	         		  }
 	          	  });
-	        	  //phones
 	        	  
-	    	  	  //address to use checkbox, hide if student address is blank
+	    	  	  /*address to use checkbox, hide if student address is blank*/
 	    	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
 	    	  		  $('form#' + modal_type + ' #GROUP_' + modal_type + '_ADDRESS_TO_USE').hide();
 	    	  	  }
 	        	  
-	        	  //console.log(data.phones.length);
+	    	  	  /*phones*/
 	        	  for(i=0;i<data.phones.length;i++){
-	        		  //console.log(i);
-	        		  //console.log(data.phones[i].PHONE_CODE);
 	        		  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_CODE').val(data.phones[i].PHONE_CODE);
 	        		  if(data.phones[i].PHONE_CODE == 'EP'){
-	        			  //console.log("yes EP");
-	        			  if(showEmerNumber = 1/*$('#' + modal_type + '_' + 'EMERG_NO_CELL_PHONE').is(':checked')*/){
+	        			  if(showEmerNumber = 1){
 		        			  if(data.phones[i].PHONE_NUMBER_INTL != "" && data.phones[i].PHONE_NUMBER_INTL != null){
-		   	        			  //console.log(phone_number_intl);
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER').hide();
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').val(data.phones[i].PHONE_NUMBER_INTL);
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').show();   
@@ -1640,7 +1554,6 @@ function showDeleteModal(type,ppid,name){
 								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
 								  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
-								  //console.log('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch');
 		   	        		  }else{
 		   	        			  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL').hide();
 		   	        			  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').val(data.phones[i].PHONE_AREA_CODE);
@@ -1650,20 +1563,16 @@ function showDeleteModal(type,ppid,name){
 								  $('#' + modal_type + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
 								  $('#' + modal_type + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');	
 								  $('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
-								  //console.log('#GROUP_' + modal_type + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH .intl_number_switch');
 		   	        		  } 
 	        			  }
 	        		  }else if(data.phones[i].PHONE_CODE == 'CP'){
-	        			  //console.log("yes CP");
 	        			  if(data.phones[i].PHONE_NUMBER_INTL != "" && data.phones[i].PHONE_NUMBER_INTL != null){
-		        			  //console.log(phone_number_intl);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').hide();
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').val(data.phones[i].PHONE_NUMBER_INTL);
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_AREA_CODE').removeClass('ccreq');
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').removeClass('ccreq');
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').show();   
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
-		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }else{
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_AREA_CODE').val(data.phones[i].PHONE_AREA_CODE);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').hide();		        			  
@@ -1672,23 +1581,19 @@ function showDeleteModal(type,ppid,name){
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').addClass('ccreq');
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').show(); 
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
-		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  } 
 	        		  }else{
 		        		  if(data.phones[i].PHONE_NUMBER_INTL != "" && data.phones[i].PHONE_NUMBER_INTL != null){
-		        			  //console.log(phone_number_intl);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').hide();
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').val(data.phones[i].PHONE_NUMBER_INTL);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').show();   
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter U.S. Number');
-		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }else{
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_AREA_CODE').val(data.phones[i].PHONE_AREA_CODE);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL').hide();		        			  
 		        			  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').val(data.phones[i].PHONE_NUMBER);
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER').show(); 
 		        			  $('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch').html('Enter International Number');
-		        			  //console.log('#GROUP_' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_NUMBER_INTL_SWITCH .intl_number_switch');
 		        		  }   
 	        		  }
 	        		  
@@ -1699,14 +1604,14 @@ function showDeleteModal(type,ppid,name){
 	        	  
 	           },
 	           error: function (request, status, error) {
-	               //console.log("ERROR: " + request.responseText);
+
 	           }
 		    });		    
 			
 			$('#' + modal_type + "_MODAL").modal('show');
 	}
  
- //save modal
+ /*save modal*/
  function submitModal(form_id,student_pidm) { 	  
 	 formValidate(form_id);
 	 if(showMainError){
@@ -1715,18 +1620,18 @@ function showDeleteModal(type,ppid,name){
 		 $('#' + form_id + '_MODAL_ERROR').show();
 		 return false;	
 	 }else if(student_pidm.length == 0){
-		//student_pidm required, close modal, show error modal	 
+		/*student_pidm required, close modal, show error modal	*/ 
 		$('#' + form_id + '_MODAL').hide();
 		$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
      	$('#ERROR_MODAL').modal('show');
 	 }else{ 
-		 //continue with modal save
+		 /*continue with modal save*/
 		 $('#' + form_id + '_MODAL_ERROR').hide();
-		 //close any former error messages
+		 /*close any former error messages*/
 		 $(".alert_danger").hide();
 		 var parent_ppid = $('#' + form_id + '_PARENT_PPID').val();
 		 var new_contact_name = $('#' + form_id + '_PREF_FIRST_NAME').val() + ' ' + $('#' + form_id + '_PREF_LAST_NAME').val();
-		 //submit via ajax
+		 /*submit via ajax*/
 		 formData = '{"PIDM" : "' + student_pidm + '",';
 		 if(parent_ppid == 0){
 			 formData = formData + '"PPID" : null,';
@@ -1753,10 +1658,8 @@ function showDeleteModal(type,ppid,name){
 				console.log('.' + form_id + '_' + typeArray[i] + '_FIELD');	 
 			 
 				 if($(this).is(':visible') || ($(this).attr("name","PECI_EMAIL_CODE") && typeArray[i] == 'EMAIL')){
-					 //test = $(this).is(':visible');
 					 var val = $(this).val();
 					 var name = $(this).attr("name");
-					 //console.log('visible' + name + ' ' + val);
 					 if(typeArray[i] != "DEMO"){					 	
 					 	var name = name.replace("PARENT_","");
 					 	var name = name.replace("EMERG_","");	
@@ -1780,7 +1683,6 @@ function showDeleteModal(type,ppid,name){
 							 var val = 'N';
 						 }
 					 }
-					 //console.log("val: " + val + " name: " + name);
 					 if(x == 0){						
 						x = x + 1;						
 					 }else{
@@ -1793,7 +1695,7 @@ function showDeleteModal(type,ppid,name){
 			formData = formData + "},";			
 		 }
 
-		//loop phones separately as array
+		/*loop phones separately as array*/
 		formData = formData + '"phones": [ {';
 		var phoneCodeArray = ["CP","EP","MA","BU"];			
 		 for (var j = 0; j < phoneCodeArray.length; j++) {
@@ -1815,8 +1717,8 @@ function showDeleteModal(type,ppid,name){
 					}				
 					
 				}else{
-					//emerg_no_cell_phone not checked, don't send any EP number, wipe out whats there
-					//wipe out current number					
+					/*emerg_no_cell_phone not checked, don't send any EP number, wipe out whats there*/
+					/*wipe out current number	*/				
 					var phone_area_code = '';
 					var phone_number = '';						
 					var phone_intl = '';
@@ -1824,7 +1726,7 @@ function showDeleteModal(type,ppid,name){
 				}
 			}else if(phoneCodeArray[j] == "CP"){
 				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){					
-					//wipe out current number					
+					/*wipe out current number*/					
 					var phone_area_code = '';
 					var phone_number = '';				 		
 					var phone_intl = '';
@@ -1853,7 +1755,6 @@ function showDeleteModal(type,ppid,name){
 				
 			}
 			var phone_carrier = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CARRIER').val();
-			//phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 			
 			if(phone_sequence_no.length == 0){
 				formData = formData + '"PHONE_SEQUENCE_NO" : null,';
@@ -1869,32 +1770,12 @@ function showDeleteModal(type,ppid,name){
 			}else{
 				formData = formData + '"CELL_PHONE_CARRIER" : "' + phone_carrier + '"';
 			}	
-			//show number in step 5	
-								
-/* 			if(phoneCodeArray[j] == "CP"){
-				if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){		
-					if($('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').is(':visible')){
-						var alert_phone_number = phone_intl;
-					}else{
-						var alert_phone_number = "" + phone_area_code + phone_number;
-					}	
-				}else{
-					if($('#GROUP_' + form_id + '_PHONE_' + phoneCodeArray[j] + '_NUMBER_INTL').is(':visible')){
-						var alert_phone_number = phone_intl;
-					}else{
-						var alert_phone_number = "" + phone_area_code + phone_number;
-					}		
-				}
-			}else{
-				var alert_phone_number = "" + phone_area_code + phone_number;
-			}	 */		
-
-			
-     	   //reset hidden form fields on modal manually because Safari is old and cranky and can't reset fields it can't see	
+	
+     	   /*reset hidden form fields on modal manually because Safari is old and cranky and can't reset fields it can't see*/	
 			$('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
 		 }	
 		 
-		 //set emr separately
+		 /*set emr separately*/
 		 $('#' + form_id + '_PHONE_EMR_SEQUENCE_NO').val('');
 
 		formData = formData + "}]";					
@@ -1905,7 +1786,6 @@ function showDeleteModal(type,ppid,name){
 			$.ajax({
 		           type: "POST",
 		           url: ajaxurl,
-		           //data: JSON.stringify($('#' + form_id).serialize()),
 		           data: formData,
 		           dataType: "json",
 		           contentType: "application/json",
@@ -1941,18 +1821,15 @@ function showDeleteModal(type,ppid,name){
 		        			$('.modal_mobile_phone_check').prop('checked',false).change();
 		      		   }
 		        	   document.getElementById(form_id).reset();
-		        	   //$('.modal_mobile_phone_check').trigger('click');
 		        	   $('#'+ form_id + '_MODAL').hide();
 		        	   $('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 		        	   $('#CONFIRMATION_MODAL').modal('show');		        	   
-		        	   //add to emr_order
+		        	   /*add to emr_order*/
 		        	   setEmrOrder();		        	   
 		        	   setTimeout(function(){ entryCheck(); }, 1500);
 		           },
 		           error: function(e){
-		        		console.log("error on page: ");
-		        		console.log(e);
-		        	 	//close modal, show error modal
+		        	 	/*close modal, show error modal*/
 		        	    $('#' + form_id + '_MODAL').hide();
 			        	$('#' + form_id + '_CLOSE_BUTTON').trigger('click');
 			        	$('#ERROR_MODAL').modal('show');
@@ -1971,7 +1848,7 @@ function showDeleteModal(type,ppid,name){
 	}
 	
 	 function resetIntlModalNumbers(){
-  	     //reset all international numbers in modal back to US numbers after modal submission
+  	     /*reset all international numbers in modal back to US numbers after modal submission*/
 		 $('.modal_intl_form_group').each(function(){		
 			thisID = $(this).attr('id');
 			thisHTML = $('#' + thisID + '_SWITCH .modal_intl_number_switch').html();
@@ -1980,6 +1857,18 @@ function showDeleteModal(type,ppid,name){
    	   		}
     	 });
 	 }	 
+	 
+	 function resetPhoneSequenceNo(){
+		 /*make sure edit sequence numbers and parent ppids are wiped out on new entries*/
+	  	 var typeArray = ["PARENT","CONTACT"];
+		 var phoneCodeArray = ["CP","EP","MA","BU"];	
+		 for (var i = 0; i < typeArray.length; i++) {
+			 for (var j = 0; j < phoneCodeArray.length; j++) {
+				 $('#' + typeArray[i] + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val('');
+			 }
+			 $('#' + typeArray + '_PARENT_PPID').val(0);
+		 }
+	 }
 
 	 
 	function addToFormData(val,name){
@@ -1994,9 +1883,9 @@ function showDeleteModal(type,ppid,name){
 	
 	function addToList(type,new_contact_name,ppid,switchedOn){
 		if(type == 'PARENT'){
-			//always add parents as emergency contacts
+			/*always add parents as emergency contacts*/
 			addParent(type,ppid,new_contact_name,switchedOn);
-			//addContact(type,ppid,new_contact_name);
+			/*addContact(type,ppid,new_contact_name);*/
 		}else{
 			addContact(type,ppid,new_contact_name);
 		}		
@@ -2005,8 +1894,6 @@ function showDeleteModal(type,ppid,name){
 	function addParent(type,ppid,new_contact_name,switchedOn){
 		var parent_info = '<div class="panel panel-default PARENT-LISTED" id="parent_' + ppid + '"><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span><a href="#" title="Edit" class="showModal" data-ppid="' + ppid + '" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" checked="checked" class="bootstrap-switch parent-bootstrap-switch" data-ppid="' + ppid + '" data-off-text="No" data-on-text="Yes"></span></div></div>';
 		$('#PARENT_LIST').append(parent_info);
-		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').attr("data-ppid",ppid).bootstrapSwitch('state', true);
-		//$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').bootstrapSwitch();		
 		
 		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;
 		console.log('emr_switch_count: ' + emr_switch_count);
@@ -2016,42 +1903,28 @@ function showDeleteModal(type,ppid,name){
 			$('.parent-bootstrap-switch:checked').each(function(){
 				$(this).bootstrapSwitch('disabled',false);
 			});
-			//$('.bootstrap-switch').bootstrapSwitch('disabled',false);
+
 		}	
 		if(!switchedOn){
 			$('#PARENT_LIST #parent_' + ppid + ' .parent-bootstrap-switch').bootstrapSwitch('state',false);
 		}
-		 //only select Yes on parents that are listed as emergency contacts
-		 /* $('#PARENT_LIST .PARENT-LISTED').each(function(){
-			 var thisID = $(this).attr("id");
-			 shortenedID = thisID.replace('parent_','');
-			 //console.log("thisID: " + thisID);
-			 if($('#CONTACT_LIST #emr_contact_' + shortenedID).length){
-				 //this parent is also a contact, flip emr switch on
-				 //$('#parent_' + shortenedID + ' .parent-bootstrap-switch').bootstrapSwitch('state',true);
-			 }else{
-				 //turn off
-				 $('#parent_' + shortenedID + ' .parent-bootstrap-switch').bootstrapSwitch('state',false);
-			 }
-			//console.log("contact_listed: " + thisID); 
-		 }); */
 		
-		//attach click event to bootstrap switch for new contact
+		/*attach click event to bootstrap switch for new contact*/
 		$('#PARENT_LIST #parent_' + ppid + ' .bootstrap-switch').on('switchChange.bootstrapSwitch', function(event, state) {
 			emergencySwitchToggle(ppid,new_contact_name,event,state);
 		});
-		//attach click event for Edit icon on new contact
+		/*attach click event for Edit icon on new contact*/
 		$('#PARENT_LIST #parent_' + ppid).on('click','.showModal',function(){
 			populateModal('PARENT',ppid);
 		});
-		//attach click event for Delete icon on new contact
+		/*attach click event for Delete icon on new contact*/
 		$('#PARENT_LIST #parent_' + ppid).on('click','.deleteModal',function(){
 			showDeleteModal('PARENT',ppid,new_contact_name);
 		});
 	}
 	
 	function addParentAsContact(type,ppid,new_contact_name){
-		//don't show delete icon for parents in contact list			
+		/*don't show delete icon for parents in contact list	*/		
 		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
 		$('#CONTACT_LIST #emr_contact_' + ppid).on('click','.showModal',function(){
@@ -2059,8 +1932,7 @@ function showDeleteModal(type,ppid,name){
 		});
 	}
 	
-	function addContact(type, ppid,new_contact_name){
-		//console.log("add Contact: " + new_contact_name + ' '  + ppid);	
+	function addContact(type, ppid,new_contact_name){	
 	
 		var contact_info = '<li class="panel panel-info CONTACT-LISTED" id="emr_contact_' + ppid + '"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div><div class="panel-body"><span class="contact-name"><strong>' + new_contact_name + '</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="' + ppid + '" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="' + new_contact_name + '" data-ppid="' + ppid + '"  data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div></li>'
 		$('#CONTACT_LIST').append(contact_info);
@@ -2073,7 +1945,7 @@ function showDeleteModal(type,ppid,name){
 	}
 	
 	function addCampusAlertNumber(alert_phone_number, new_contact_name, type){		
-		//just for student numbers	
+		/*just for student numbers	*/
 		if(type == 'STUDENT'){
 			if($('#STUDENT_EP_NUMBER').length){
 				$('#STUDENT_EP_NUMBER').val(alert_phone_number);
@@ -2086,9 +1958,7 @@ function showDeleteModal(type,ppid,name){
 			var newAlertNumber = '<li class="list-unstyled alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]">&nbsp;' + alert_phone_number + '&nbsp;(' + new_contact_name + ')</li>';
 			$('#CAMPUS_ALERT_NUMBERS').append(newAlertNumber);
 		}	
-		//push to all phone number array
-		//checked_phone_numbers.push(alert_phone_number);
-		//console.log("New all phone numbers: " + checked_phone_numbers);
+
 	} 
 	
 	function emergencyNumberToggle(form_id, checked){
@@ -2096,22 +1966,21 @@ function showDeleteModal(type,ppid,name){
 			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER').show();
 			$('#' + form_id + '_EMERGENCY_PHONE').addClass('ccreq');
 			$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').show();
-			//remove error if it is already displaying
+			/*remove error if it is already displaying*/
 			$('form#' + form_id + ' PHONE_CP_NUMBER_ERROR').hide();
-			//$('#GROUP_' + form_id + '_PHONE_CP_NUMBER').removeClass('has-error');
-			//remove requirement for mobile phone
+			/*remove requirement for mobile phone*/
 			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();
 			$('#GROUP_' + form_id + '_PHONE_CP_NUMBER_INTL .required').hide();	
 			$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER_INTL').removeClass('ccreq');
-			//add requirement for emergency phone
+			/*add requirement for emergency phone*/
 			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').addClass('ccreq');
 			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').addClass('ccreq');
-			//remove requirement for phone carrier
+			/*remove requirement for phone carrier*/
 			$('#GROUP_' + form_id + '_PHONE_CARRIER .required').hide();	
 			if(form_id == 'STUDENT'){
-				//remove text alerts checkbox
+				/*remove text alerts checkbox*/
 				$('#paragraph_alert_text_check').hide();
 				$('#group_alert_text_check').hide();	
 				$('#paragraph_tty_device_check').html('If your emergency phone is a TTY device (for the hearing impaired) please indicate below:');
@@ -2121,17 +1990,17 @@ function showDeleteModal(type,ppid,name){
 	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL').hide();	
 	    	$('#' + form_id + '_EMERGENCY_PHONE').removeClass('ccreq');
 	    	$('#GROUP_' + form_id + '_PHONE_EMERGENCY_NUMBER_INTL_SWITCH').hide();
-	    	//add requirement for mobile phone
+	    	/*add requirement for mobile phone*/
 	    	$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').show();	
 	    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addClass('ccreq');
 			$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
-			//add requirement for emergency phone
+			/*add requirement for emergency phone*/
 			$('#' + form_id + '_PHONE_EMERGENCY_AREA_CODE').removeClass('ccreq');
 			$('#' + form_id + '_PHONE_EMERGENCY_NUMBER').removeClass('ccreq');
-	    	//add requirement for phone carrier
+	    	/*add requirement for phone carrier*/
 			$('form#' + form_id + ' #GROUP_PHONE_CARRIER .required').show();	
 			if(form_id == 'STUDENT'){
-				//show text alerts checkbox
+				/*show text alerts checkbox*/
 				$('#paragraph_alert_text_check').show();
 				$('#group_alert_text_check').show();	
 				$('#paragraph_tty_device_check').html('If your mobile phone is a TTY device (for the hearing impaired) please indicate below:');
@@ -2144,12 +2013,11 @@ function showDeleteModal(type,ppid,name){
 		var x = 0;
 		var removeParentFromContact = false;
 		var emr_switch_count = $('.parent-bootstrap-switch:checked').length;		
-		//console.log('emr_switch_count from emergencySwitchToggle: ' + emr_switch_count);
 		if(state == false){
-			//turning parent off
+			/*turning parent off*/
 			if(emr_switch_count < 1){
 				if(deanExceptionDate.length == 0){	
-					//turn back on
+					/*turn back on*/
 					$(this).bootstrapSwitch('state',true);
 				}else{
 					removeParentFromContact = true;
@@ -2159,7 +2027,7 @@ function showDeleteModal(type,ppid,name){
 					$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
 					removeParentFromContact = true;
 				}else{
-					//don't disable the last remaining switch
+					/*don't disable the last remaining switch*/
 					removeParentFromContact = true;
 				}
 			}else{
@@ -2172,58 +2040,34 @@ function showDeleteModal(type,ppid,name){
 			}
 			setEmrOrder();
 		}else{
-			//turning parent on
-			//show in emerg contacts list
-			/* if($('#emr_contact_' + ppid).length){
-				//already exists, just show it
-				console.log('contact already exists, show it');
-				$('#emr_contact_' + ppid).fadeIn();
-				$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
-			}else{ */
+			/*turning parent on*/
 			if($('#emr_contact_' + ppid).length == 0){
-				console.log('contact does not exist, use ajax to create');	
 				if(emr_switch_count < 1){
 					if(deanExceptionDate.length == 0){	
-						//turn back on
+						/*turn back on*/
 						$(this).bootstrapSwitch('state',true);
 					}
 				}else if(emr_switch_count == 1){
 					if(deanExceptionDate.length == 0){		
 						$('.parent-bootstrap-switch:checked').bootstrapSwitch('disabled',true);					
-						//removeParentFromContact = true;
 					}
 				}else{
 					$('.parent-bootstrap-switch').bootstrapSwitch('disabled',false);
-					//removeParentFromContact = true;
 				}	
-				console.log(checkNum('CONTACT'));
-				console.log(totalAllowed('CONTACT'));
 				if(checkNum('CONTACT') >= totalAllowed('CONTACT')){
-					//turn back on
+					/*turn back on*/
 					$('#parent_' + ppid + ' .parent-bootstrap-switch').bootstrapSwitch('state',false);
 					$('#MAX_CONTACTS_ALLOWED_MODAL').modal();
 				} 
-			/*}*/
-				//create contact by promoting through restlet
+				/*create contact by promoting through restlet*/
 				promoteParent(ppid,name);
 			}
 						
-			//change read-only state
-			/* if(x > 1){
-				$('.bootstrap-switch-wrapper').removeClass('bootstrap-switch-readonly').removeProp('disabled');
-			} */
 		}		
-
-		  //console.log("ppid: " + ppid);
-		  //console.log("form_id: " + form_id);
-		  //console.log(this); // DOM element
-		  //console.log(event); // jQuery event
-		  //console.log(state); // true | false
 		  
 	}
 	
 	function promoteParent(ppid,name){
-		console.log("promote parent: " + ppid + " name: " + name);	
 	
 		$.ajax({
 	           type: "POST",
@@ -2254,13 +2098,12 @@ function showDeleteModal(type,ppid,name){
 	           contentType: "application/json",
 	           success: function(data)           
 	           {  
-	        	 //phones
+	        	 /*phones*/
 	        	 if(data.phones.length > 0){
 	        		 $('.NON-STUDENT-EP-NUMBER').remove();	        		 
 	        	 }
 	        	  for(i=0;i<data.phones.length;i++){
 	          		  var phone_code = data.phones[i].PHONE_CODE;
-	        		  //var phone_number = data.phones[i].PHONE_AREA_CODE + data.phones[i].PHONE_NUMBER;
 	        		  if(phone_code != 'EP'){
 		        		  var phone_area_code = data.phones[i].PHONE_AREA_CODE;
 		        		  var phone_number = data.phones[i].PHONE_NUMBER;
@@ -2277,8 +2120,6 @@ function showDeleteModal(type,ppid,name){
 		        			  var alert_phone_number = '' + phone_area_code + phone_number;
 		        		  }
 		        		  
-		        		  //console.log('getAlertNumbers');
-		        		  //console.log(checked_phone_numbers);
 		        		  if($.inArray(alert_phone_number,checked_phone_numbers) == -1){
 		        			  var newAlertNumber = '<li class="list-unstyled NON-STUDENT-EP-NUMBER alert_phone_number"><input type="checkbox" value="' + alert_phone_number + '" name="fields[25]" onchange="alertNumberReview(this)">&nbsp;' + alert_phone_number + '&nbsp;(' + contact_name + ')</li>';
 			      			}else{
@@ -2300,9 +2141,7 @@ function showDeleteModal(type,ppid,name){
 		var x = 0;
 		$('.panel',panelList).each(function(index, elem) {
             var $listItem = $(elem);
-            //console.log($listItem);
             	if($listItem.is(':visible')){
-            		//console.log("visible");
 	                 var newIndex = $listItem.index();
 	            		var ppid = $listItem.attr("id").replace('emr_contact_','');
 	            		ppid = ppid.replace('parent_','');
@@ -2312,8 +2151,7 @@ function showDeleteModal(type,ppid,name){
 	            		contact_order_list += ppid
 	            	x=x+1;
             	}
-					//console.log("newList: " + contact_order_list)
-            // Persist the new indices. 
+            /* Persist the new indices. */
        }); 
        $('#emr_order').val(contact_order_list);          
 	}
