@@ -296,10 +296,11 @@
 		<label class="col-sm-4"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="MA" class="intl_number_switch col-sm-4">Enter <c:out value="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0 ? 'International' : 'U.S.'}" /> Number</span>							
 	</div>		
 	
+	<div style="display:none;" role="alert" class="alert alert-danger" id="STUDENT_EMAIL_ADDRESS_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>	
 	<div class="form-group" id="group_student_non_college_email">
 		<label for="Email" class="control-label col-sm-3">Non-college email</label>
 		<div class="col-sm-9">
-				<input type="text" placeholder="Non-college email" maxlength="75" name="fields[12]" maxlength="128" class="form-control" id="STUDENT_EMAIL_ADDRESS" value="${StudentEmail['EMAIL_ADDRESS']}">
+				<input type="email" type="text" placeholder="Non-college email" maxlength="75" name="fields[12]" maxlength="128" class="form-control" id="STUDENT_EMAIL_ADDRESS" value="${StudentEmail['EMAIL_ADDRESS']}">
 		</div>
 	</div> 
 	
@@ -1157,8 +1158,19 @@
 	    	/*move on to phone_number field*/
 	    	var inputs = $(this).closest('form').find(':input');
 	    	inputs.eq( inputs.index(this)+ 1 ).focus();
+	    	//hide the error message
+/* 	    	var thisID = $(this).attr("id");
+	    	$('#' + thisID + '_ERROR').hide(); */
 	    }
 	});
+	
+/* 	$(".phone_number").on('input',function () {
+	    if($(this).val().length == $(this).attr('maxlength')) {
+	    	//hide the error message
+	    	var thisID = $(this).attr("id");
+	    	$('#' + thisID + '_ERROR').hide();
+	    }
+	}); */
 	
 	/*reset the modal form fields if modal is closed*/
 	  $('#CONTACT_MODAL').on('hidden.bs.modal', function () {			  
@@ -1413,15 +1425,21 @@ function showDeleteModal(type,ppid,name){
 	 $("#" + form_id + " input[type=email]").each(function(){
 		 var field_value = $(this).val();
 		 var field_id = $(this).attr("id");
-		 var field_type = $(this).attr("type");
-		 var field_label = $(this).attr("placeholder");
-		 var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-		 valid_email = regex.test(field_value);
-		 if(!valid_email){
-			 $("#" + field_id + "_ERROR" + " .custom-error").html('The ' + field_label + ' you entered is invalid. Please enter a valid ' + field_label);	
-			 $("#" + field_id + "_ERROR").show();		
-			 $("#group_" + field_id).addClass("has-error");
-			 showMainError = 1;
+		 if($('#' + field_id).hasClass('ccreq') || field_value.length != 0){
+			 console.log('field_value: ' + field_value);		 
+			 var field_type = $(this).attr("type");
+			 var field_label = $(this).attr("placeholder");
+			 var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+			 valid_email = regex.test(field_value);
+			 console.log("valid email? " + valid_email);
+			 if(!valid_email){
+				 $("#" + field_id + "_ERROR" + " .custom-error").html('The ' + field_label + ' you entered is invalid. Please enter a valid ' + field_label);	
+				 $("#" + field_id + "_ERROR").show();		
+				 $("#group_" + field_id).addClass("has-error");
+				 showMainError = 1;
+			 }else{
+				 $("#group_" + field_id).removeClass("has-error");
+			 }
 		 }else{
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
@@ -1437,7 +1455,6 @@ function showDeleteModal(type,ppid,name){
 			 $("#" + field_id + "_ERROR" + " .custom-error").html('The ' + field_label + ' you entered is the incorrect length. Please enter a valid ' + field_label);	
 			 $("#" + field_id + "_ERROR").show();		
 			 $("#group_" + field_id).addClass("has-error");
-			 console.log("error on phone: field_id: " + field_id + "field_size: " + field_size + "field_value.length: " + field_value.length);
 			 showMainError = 1;
 		 }else{
 			 $("#" + field_id + "_ERROR").hide();
