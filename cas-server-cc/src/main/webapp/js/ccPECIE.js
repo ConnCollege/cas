@@ -1,5 +1,5 @@
 $(document).ready( function(){	 
-	 
+	 console.log('PECI');
 	 checked_phone_numbers = $("input[name=checked_phone_numbers]").map(function(i,c){ return c.value; });	 
 	 
 	 /*check parent and contact numbers on page load and disable any new entries if 5 or over entered*/
