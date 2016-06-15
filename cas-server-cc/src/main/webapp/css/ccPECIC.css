@@ -1,0 +1,86 @@
+.separation_box{
+  		border: 2px solid #D4E3FC;
+  		padding: 10px;
+  		border-radius: 10px;
+  		margin-bottom: 20px;
+  	}
+  	/*set the width of the form here with max-width*/
+ 	@media (min-width: 1200px) {
+    .container{
+        max-width: 900px;
+    }
+}
+.q_check{
+	margin: 0;
+}
+.glyphicon{
+	font-size: 1.2em;
+	padding: 0 5px;
+}
+.form_section{
+	border: 2px solid #D4E3FC;
+	border-radius: 10px;
+	padding: 0 10px;
+	margin: 0 0 10px;
+}
+.emergency_contact_switch{
+	margin-left: 30px;
+}
+.required{
+	color: red;
+	font-size: 1.1em;
+}
+/* show the move cursor as the user moves the mouse over the panel header.*/
+   #draggablePanelList .panel-heading {
+       cursor: move;
+   }
+   .modal .modal-body {
+    overflow-y: auto;
+}
+#clnaddr table {
+   	margin: 0 auto;
+}
+#clnaddr table tr, #clnaddr table td {
+   	border: 1px solid #ccc;
+   	border-radius: 4px;
+}
+.glyphicon-question-sign:hover,.glyphicon-question-sign:focus{
+	text-decoration: none;
+}
+.edit_link{
+	cursor: pointer;
+	color: #337ab7;
+}
+
+.edit_link:hover{
+	color: #23527c;
+	text-decoration: underline;		
+}
+
+.info_box{
+   	border: 2px solid #d4e3fc;
+   	border-radius: 10px;
+   	margin: 0 0 10px;
+   	padding: 10px 10px;
+}
+
+.info_box .row{
+	padding: 0 0 5px;
+}
+
+.message {
+	background: #D7EED7;
+	border: 3px solid #99CC99;
+	text-align:center;
+	padding-bottom: 8px;
+}
+
+.errorMessage {
+	background: #FFDAD9;
+	border: 2px solid #FF9999;
+	text-align:center;
+	padding: 2px;
+	/*padding-bottom: 8px;*/
+	/*padding-top: 10px;*/
+	clear:both;
+}
