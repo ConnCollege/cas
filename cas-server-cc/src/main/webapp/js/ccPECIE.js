@@ -78,7 +78,7 @@ $(document).ready( function(){
 			}			
 		}	
 		if(form_id == 'STUDENT'){
-			addCampusAlertNumber($(this).val(), "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}", "STUDENT");
+			addCampusAlertNumber($(this).val(), student_name, "STUDENT");
 		}
 
 	});	
@@ -89,9 +89,8 @@ $(document).ready( function(){
 		if(thisIntl == 1){
 			var phone_number = $('#STUDENT_PHONE_' + thisType + '_NUMBER_INTL').val();
 		}else{
-			var phone_number = $('#STUDENT_PHONE_' + thisType + '_AREA_CODE').val() + '' + $('#STUDENT_PHONE_' + thisType + '_NUMBER').val();
-			var newAlertNumber = "<li class=\"list-unstyled grayed-out phone_number\"><input type=\"checkbox\" value=\"" + phone_number + "\" name=\"fields[25]\" checked=\"checked\" disabled=\"disabled\" id=\"STUDENT_EP_NUMBER\"><span id=\"STUDENT_EP_NUMBER_TEXT\">&nbsp;&nbsp;" + phone_number + "&nbsp;(${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']} - Your phone number will always be contacted)</span></li>";			
-			addCampusAlertNumber(phone_number, "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}", "STUDENT");
+			var phone_number = $('#STUDENT_PHONE_' + thisType + '_AREA_CODE').val() + '' + $('#STUDENT_PHONE_' + thisType + '_NUMBER').val();	
+			addCampusAlertNumber(phone_number, student_name, "STUDENT");
 		}		
 		
 	});
