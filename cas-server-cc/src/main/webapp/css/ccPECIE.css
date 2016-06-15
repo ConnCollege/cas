@@ -1,0 +1,100 @@
+.separation_box{
+ 		border: 2px solid #D4E3FC;
+ 		padding: 10px;
+ 		border-radius: 10px;
+ 		margin-bottom: 20px;
+ 	}
+ 	/*set the width of the form here with max-width*/
+ 	@media (min-width: 1200px) {
+    .container{
+        max-width: 900px;
+    }
+}
+.q_check{
+	margin: 0;
+}
+.glyphicon{
+	font-size: 1.2em;
+	padding: 0 5px;
+}
+.form_section{
+	border: 2px solid #D4E3FC;
+	border-radius: 10px;
+	padding: 0 10px;
+	margin: 0 0 10px;
+}
+.emergency_contact_switch{
+	margin-left: 30px;
+}
+.required{
+	color: red;
+	font-size: 1.1em;
+}
+/* show the move cursor as the user moves the mouse over the panel header.*/
+   .draggablePanelList .panel-heading {
+       cursor: move;
+   }
+
+#clnaddr table {
+   	margin: 0 auto;
+}
+#clnaddr table tr, #clnaddr table td {
+   	border: 1px solid #ccc;
+   	border-radius: 4px;
+}
+.glyphicon-question-sign:hover,.glyphicon-question-sign:focus{
+	text-decoration: none;
+}	
+.intl_number_switch{
+	font-size: 12px;
+	margin: -10px;
+	padding: 0;
+}
+/*stop scroll to top of page when modal opens*/
+/* body.modal-open {
+   	overflow: visible;
+} */
+.grayed-out{
+	color: #9F9F9F;
+}
+/* .modal .modal-body {
+    overflow-y: auto;
+} */ 
+/* .modal	{
+   	-webkit-overflow-scrolling: auto;
+} */
+/*the css below may be needed for ios scrolling of modal. Shifts main form left though*/
+/* .modal-open {
+	position: fixed;
+} */
+
+.mobile_label{
+	display: none;
+}
+
+@media only screen and (max-device-width:768px){
+	body.modal-open {
+	    /*block scroll for mobile;
+	    causes underlying page to jump to top;
+	    prevents scrolling on all screens*/
+	    overflow: hidden;
+	    position: fixed;
+	}
+	
+	.mobile_label{ 
+		display: inline;
+		font-size: .8em;
+	}
+}
+
+body.viewport-lg {
+/*block scroll for desktop;
+will not jump to top;
+will not prevent scroll on mobile*/
+position: absolute; 
+}
+
+body {  
+overflow-x: hidden;
+overflow-y: scroll !important;
+}
