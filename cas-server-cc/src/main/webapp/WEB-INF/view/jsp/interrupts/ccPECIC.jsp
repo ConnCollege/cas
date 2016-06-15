@@ -437,9 +437,6 @@ $(document).ready(function() {
 		regionValues.push("${regions.value}");
 	</c:forEach>
 	
-	console.log(regionCodes);
-	console.log(regionValues);
-	
 	$student_PIDM = '${StudentBio['STUDENT_PIDM']}';	
 	var x = 0;
 	var y= 0;
@@ -447,9 +444,7 @@ $(document).ready(function() {
 	$('.contact_info').each(function(){
 		var ppid = $(this).attr("data-ppid");
 		var type_id = $(this).attr("data-type-id");
-		console.log('ppid: ' + ppid);
 		if(ppid != ''){
-			//console.log('ppid2: ' + ppid);
 			$.ajax({
 			       type: "POST",
 			       url: '/cas/cas-rest-api/peci/',
