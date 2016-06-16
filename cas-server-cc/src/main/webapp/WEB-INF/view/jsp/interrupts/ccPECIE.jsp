@@ -912,7 +912,7 @@
 %>
 
 
-<script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10105"></script>  
+<script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10106"></script>  
 <script type="text/javascript"> 
 	ajaxurl = "/cas/cas-rest-api/peci/";
 	student_PIDM = '${StudentBio['STUDENT_PIDM']}';
