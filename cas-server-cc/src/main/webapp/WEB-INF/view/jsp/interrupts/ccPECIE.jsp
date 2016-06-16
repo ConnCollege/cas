@@ -890,10 +890,10 @@
 	  		<div class="modal-header">
 			  	<button type="button" class="close" data-dismiss="modal">&times;</button>
 
-			  	<h4 class="modal-title"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> ERROR</h4>
+			  	<h4 class="modal-title"><span style="color: red;"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> ERROR</span></h4>
 			  </div>
 			  <div class="modal-body">	
-				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span> There was an error with your submission. Please refresh this page and try again.<br/><br/>If you continue to have problems, please contact the IT Service Desk at 860-439-4357.</p>
+				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span> There was an error with your submission. Please refresh this page and try again.<br/><br/>If you continue to have problems, please contact the IT Service Desk at 860-439-4357.</p>
 			  </div>
 			</div>
 			<div class="modal-footer">
