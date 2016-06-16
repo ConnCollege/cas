@@ -50,6 +50,15 @@
   }); 
   
   </script>
+  
+  <noscript>
+    <style type="text/css">
+        .container {display:none;}
+    </style>
+    <div id="noscriptmsg">
+    	<p style="margin-top: 30px;"><center>The Parent and Emergency Contact Information Form <strong>requires javascript enabled</strong> in your browser.<br>Please turn on javascript or use a browser with javascript enabled.</center></p>
+    </div>
+</noscript>
 
 </head>
 <body>
@@ -801,11 +810,29 @@
 	  	<div class="modal-content">		  	
 		  	<div class="modal-header">
 		  		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		  		<h4 class="modal-title">Maximum Allowed</h4>
+		  		<h4 class="modal-title"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span>Maximum Allowed</h4>
 		  	</div>
 		  	<div class="modal-body">	
-				<p>You have the maximum number of contacts. Only <strong>six</strong> contacts are allowed.</p>
+				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span>You have the maximum number of contacts. Only <strong>six</strong> contacts are allowed.</p>
 				<p><strong>Please note</strong>: You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College doc@conncoll.edu.</p>
+		  </div>		  	
+		</div>
+	  	<div class="modal-footer">
+	  		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	  	</div>
+  	</div>
+</div>
+
+<div class="modal fade" id="MAX_PARENTS_ALLOWED_MODAL" role="dialog">  	
+  	<div class="modal-dialog">    
+	  	<!-- Modal content-->
+	  	<div class="modal-content">		  	
+		  	<div class="modal-header">
+		  		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		  		<h4 class="modal-title"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span>Maximum Allowed</h4>
+		  	</div>
+		  	<div class="modal-body">	
+				<p><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span>You have the maximum number of parents. Only <strong>five</strong> parents are allowed.</p>				
 		  </div>		  	
 		</div>
 	  	<div class="modal-footer">
