@@ -827,6 +827,7 @@ public class jdbcCamel {
 			}
 			if ( intData.getField(1).equals("confirm"))	{				
 				//Save PECI Data from MySQL to Banner
+				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
 			if ( intData.getField(1).equals("update"))	{
