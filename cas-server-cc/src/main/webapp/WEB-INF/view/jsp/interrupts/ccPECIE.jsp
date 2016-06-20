@@ -901,8 +901,7 @@
  			</div>
 		</div>
 	</div>
-</div>
- 	
+</div> 	
   	
 <%
 	/*out.print(displayEntryModal("parent","Enter Details","Save"));
@@ -910,7 +909,6 @@
 	out.print(displayDeleteModal("delete","Confirm Deletion","Yes, Delete"));*/
 
 %>
-
 
 <script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10106"></script>  
 <script type="text/javascript"> 
