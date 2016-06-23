@@ -1,7 +1,6 @@
 package edu.conncoll.cas.jdbc;
 
 import java.io.File;
-import java.util.*;
 import java.lang.Character;
 import java.lang.Integer;
 import java.math.BigDecimal;
@@ -305,8 +304,8 @@ public class jdbcCamel {
 				// get banner id from ldap
 				searchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 				
-				DN = this.ldapTemplate.search(
-					this.searchBase, searchFilter, 
+				DN = this.vaultTemplate.search(
+					this.vaultSearchBase, searchFilter, 
 					new AbstractContextMapper(){
 						protected Object doMapFromContext(DirContextOperations ctx) {
 							return ctx.getNameInNamespace();
@@ -314,9 +313,9 @@ public class jdbcCamel {
 					}
 				);
 				
-				ldapcontext = ldapTemplate.lookupContext(DN.get(0).toString());
+				ldapcontext = vaultTemplate.lookupContext(DN.get(0).toString());
 				
-				Attrib = ldapcontext.getStringAttribute("extensionAttribute15");
+				Attrib = ldapcontext.getStringAttribute("employeeNumber");
 				//Write to Census Table
 				try {
 					SQL = "insert INTO census.cc_gen_census_data (network_id, banner_id, term_code, login_date) values ( :userName, :bannerId, :termCode, SYSDATE) ";
