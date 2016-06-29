@@ -47,9 +47,7 @@
 		</div>
 	  </c:otherwise>
   </c:choose>
- <%--  StudentAddr: ${StudentAddr} --%>
-  <br>
-  <%-- StudentHomePhone: ${StudentHomePhone} --%>
+
   <div id="step1">
   	<h3>Step 1 Verify Your Permanent Mailing Address <small><span class="edit_link">Edit My Info</span></small></h3>	
  	<div class="row">
