@@ -33,12 +33,20 @@
 
 <div class="container">
   <h2>Confirm Contact Information</h2>
-  <div class="errorMessage" <c:if test="${SourceFlag != 'PECIE'}">style="padding-top:10px;"</c:if>>
-  	<c:if test="${SourceFlag == 'PECIE'}">
-  		<h3>Almost Done!</h3>
-  	</c:if>
-  	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
-  </div>
+  <c:choose>
+	  <c:when test="${SourceFlag == 'PECIE'}">
+	  	<div class="errorMessage">
+		  	<h3>Almost Done!</h3>
+		  	<p>Please confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
+		</div>
+	 	<br>
+	  </c:when>
+	  <c:otherwise>
+	  	<div>
+		  	<p>Please review and confirm your contact information, parent/guardian and emergency contact information by clicking the <strong>Confirm</strong> button below.</p>
+		</div>
+	  </c:otherwise>
+  </c:choose>
  <%--  StudentAddr: ${StudentAddr} --%>
   <br>
   <%-- StudentHomePhone: ${StudentHomePhone} --%>
