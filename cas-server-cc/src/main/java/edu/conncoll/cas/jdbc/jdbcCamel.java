@@ -863,7 +863,8 @@ public class jdbcCamel {
 				String error;
 				MapSqlParameterSource in;
 				
-				if (studentData.get("STUDENT_PPID") == null){
+				if (studentData.get("STUDENT_PPID").equals("0")){
+					log.debug("Performing Create to banner");
 					//Run PECI Create statements
 					//Start with transaction ID
 					simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("f_cc_generate_trans_id");
@@ -893,6 +894,9 @@ public class jdbcCamel {
 					int ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
 					error = (String)out.get("p_errorCodeOut"); 
 					
+					log.debug("New Student procedure return is " + error);
+
+					log.debug("New Student PPID is " + ppId);
 					try {					
 						//Student email Data
 						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_EMAIL_CODE='H'";
@@ -1020,6 +1024,8 @@ public class jdbcCamel {
 							
 							int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
 							int p_pidm = Integer.parseInt(out.get("p_peciParentPidmOut").toString()); 
+							
+							log.debug("New Parent PPID is " + p_ppid);
 							error = (String)out.get("p_errorCodeOut"); 
 							//Update emergency contacts ppid.
 							
@@ -1119,7 +1125,8 @@ public class jdbcCamel {
 					}
 				} else {
 					//Run PECI Update statements
-					
+
+					log.debug("Performing Update to banner");
 				}
 				
 				context.getFlowScope().put("Flag","PECI");
