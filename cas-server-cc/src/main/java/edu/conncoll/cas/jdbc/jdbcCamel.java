@@ -39,6 +39,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlOutParameter;
@@ -818,6 +819,33 @@ public class jdbcCamel {
 		}
 
 		if (flag.equals("PECIC") || flag.equals("PECI") || flag.equals("PECIE")) {
+			
+			String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
+			
+			List vaultDN = this.vaultTemplate.search(
+				this.vaultSearchBase, vaultSearchFilter, 
+				new AbstractContextMapper(){
+					protected Object doMapFromContext(DirContextOperations ctx) {
+						return ctx.getNameInNamespace();
+					}
+				}
+			);
+			
+			DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
+			
+			String ccPDIM = vaultcontext.getStringAttribute("ccpidm");
+
+			Map<String,Object> PECIParameters = new HashMap<String,Object>();
+			
+			PECIParameters.put("STUDENT_PIDM",ccPDIM);
+			PECIParameters.put("PARENT_PPID","0");
+			
+			
+			Map<String,Object> studentData = new HashMap<String,Object>();
+			Map<String,Object> addressData = new HashMap<String,Object>();
+			Map<String,Object> emailData = new HashMap<String,Object>();
+			List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> parentData = new ArrayList<Map<String,Object>>();
 
 			log.debug ("intData: " + intData.toString());	
 			if ( intData.getField(1).equals("edit"))	{
@@ -826,36 +854,279 @@ public class jdbcCamel {
 			}
 			if ( intData.getField(1).equals("confirm"))	{				
 				//Save PECI Data from MySQL to Banner
+				Map<String,Object> PECIData = new HashMap<String,Object>();
+				
+				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
+				SimpleJdbcCall simpleJdbcCall;
+				Map out;
+				String error;
+				MapSqlParameterSource in;
+				
+				if (studentData.get("STUDENT_PPID") == null){
+					//Run PECI Create statements
+					//Start with transaction ID
+					simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("f_cc_generate_trans_id");
+					in = new MapSqlParameterSource();
+					in.addValue("p_peciUserId", userName);
+					out = simpleJdbcCall.execute(in);
+					
+					int transId = Integer.parseInt(out.get("p_transid").toString());
+					
+					//Save Student Record	
+					simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_student_pkg.p_student_main");
+					in = new MapSqlParameterSource();
+					in.addValue("p_changeType","C");
+					in.addValue("p_trans_id",transId);
+					in.addValue("p_peciRole","STUDENT");
+					in.addValue("p_pidm",ccPDIM);
+					in.addValue("p_peciUserId",userName);
+					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+					
+					in.addValue("p_peciLegalDisc",new Date());
+					in.addValue("p_noCellPhone",studentData.get("EMERG_NO_CELL_PHONE").toString());
+					in.addValue("p_emergAutoOptout",studentData.get("EMERG_AUTO_OPT_OUT").toString());
+					in.addValue("p_emergSendText",studentData.get("EMERG_SEND_TEXT").toString());
+					
+					out = simpleJdbcCall.execute(in);
+					
+					int ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
+					error = (String)out.get("p_errorCodeOut"); 
+					
+					try {					
+						//Student email Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_EMAIL_CODE='H'";
+						emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
+
+						//Studemt email
+						simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_email_pkg.p_email_main");
+						in = new MapSqlParameterSource();
+						in.addValue("p_changeType","C");
+						in.addValue("p_trans_id",transId);
+						in.addValue("p_ppid",ppId);
+						in.addValue("p_peciRole","STUDENT");
+						in.addValue("p_pidm",ccPDIM);
+						in.addValue("p_peciUserId",userName);
+						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+						
+						in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
+						in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
+
+						out = simpleJdbcCall.execute(in);
+						
+						error = (String)out.get("p_errorCodeOut"); 
+						
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty no email
+					}
+					try {					
+						//Student Address Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_ADDR_CODE='H'";
+						addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
+
+						//Studemt Address
+						simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_address_pkg.p_address_main");
+						in = new MapSqlParameterSource();
+						in.addValue("p_changeType","C");
+						in.addValue("p_trans_id",transId);
+						in.addValue("p_ppid",ppId);
+						in.addValue("p_peciRole","STUDENT");
+						in.addValue("p_pidm",ccPDIM);
+						in.addValue("p_peciUserId",userName);
+						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+
+						in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
+						in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1").toString());
+						in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2").toString());
+						in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3").toString());
+						in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY").toString());
+						in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE").toString());
+						in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP").toString());
+						in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE").toString());
+						
+						out = simpleJdbcCall.execute(in);
+						
+						error = (String)out.get("p_errorCodeOut"); 
+						
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty no email
+					}
+					try {					
+						//Student Phone Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0'";
+						phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+						
+						for(int i=0; i<phoneData.size();i++){
+							Map<String,Object> phone = phoneData.get(i);
+							//Studemt Phone
+							simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_address_pkg.p_address_main");
+							in = new MapSqlParameterSource();
+							in.addValue("p_changeType","C");
+							in.addValue("p_trans_id",transId);
+							in.addValue("p_ppid",ppId);
+							in.addValue("p_peciRole","STUDENT");
+							in.addValue("p_pidm",ccPDIM);
+							in.addValue("p_peciUserId",userName);
+							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+
+							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE").toString());
+							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE").toString());
+							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER").toString());
+							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL").toString());
+							in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER").toString());
+							in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE").toString());
+							
+							out = simpleJdbcCall.execute(in);
+							
+							error = (String)out.get("p_errorCodeOut"); 
+						}
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty 
+					}
+					try {					
+						//Parent Data
+						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where PARENT_PPID > 0 and STUDENT_PIDM=:STUDENT_PIDM";
+						parentData = jdbcCAS.queryForList(SQL,PECIParameters);
+						
+						for(int i=0; i<parentData.size();i++){
+							Map<String,Object> parent = parentData.get(i);
+							String tp_ppid = parent.get("PARENT_PPID").toString();
+							Map<String,Object> parentParameters = new HashMap<String,Object>();
+							parentParameters.put("STUDENT_PIDM", ccPDIM);
+							parentParameters.put("PARENT_PPID", tp_ppid);
+							
+							//Parent
+							simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_parent_pkg.p_parent_main");
+							in = new MapSqlParameterSource();
+							in = new MapSqlParameterSource();
+							in.addValue("p_changeType","C");
+							in.addValue("p_trans_id",transId);
+							in.addValue("p_ppid",ppId);
+							in.addValue("p_peciRole","PARENT");
+							in.addValue("p_pidm",ccPDIM);
+							in.addValue("p_peciUserId",userName);
+							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+							
+							in.addValue("p_peciParLastName",parent.get("PARENT_PREF_LAST_NAME").toString());
+							in.addValue("p_peciParFirstName",parent.get("PARENT_PREF_FIRST_NAME").toString());
+							in.addValue("p_peciParMiddleName",parent.get("PARENT_PREF_MIDDLE_NAME").toString());
+							in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME").toString());
+							in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME").toString());
+							in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE").toString());
+							in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE").toString());
+							in.addValue("p_dependent",parent.get("DEPENDENT").toString());
+							
+							out = simpleJdbcCall.execute(in);
+							
+							int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
+							int p_pidm = Integer.parseInt(out.get("p_peciParentPidmOut").toString()); 
+							error = (String)out.get("p_errorCodeOut"); 
+							//Update emergency contacts ppid.
+							
+							try {					
+								//parent email Data
+								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID and PECI_EMAIL_CODE='H'";
+								emailData = jdbcCAS.queryForMap(SQL,parentParameters);
+
+								//email
+								simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_email_pkg.p_email_main");
+								in = new MapSqlParameterSource();
+								in.addValue("p_changeType","C");
+								in.addValue("p_trans_id",transId);
+								in.addValue("p_ppid",p_ppid);
+								in.addValue("p_peciRole","PARENT");
+								in.addValue("p_pidm",p_pidm);
+								in.addValue("p_peciUserId",userName);
+								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+								
+								in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
+								in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
+
+								out = simpleJdbcCall.execute(in);
+								
+								error = (String)out.get("p_errorCodeOut"); 
+								
+							} catch (EmptyResultDataAccessException e){
+								// dataset empty no email
+							}
+							try {					
+								//Parent Address Data
+								SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID and PECI_ADDR_CODE='H'";
+								addressData = jdbcCAS.queryForMap(SQL,parentParameters);
+
+								//Address
+								simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_address_pkg.p_address_main");
+								in = new MapSqlParameterSource();
+								in.addValue("p_changeType","C");
+								in.addValue("p_trans_id",transId);
+								in.addValue("p_ppid",p_ppid);
+								in.addValue("p_peciRole","PARENT");
+								in.addValue("p_pidm",p_pidm);
+								in.addValue("p_peciUserId",userName);
+								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+								
+								in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
+								in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1").toString());
+								in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2").toString());
+								in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3").toString());
+								in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY").toString());
+								in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE").toString());
+								in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP").toString());
+								in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE").toString());
+								
+								out = simpleJdbcCall.execute(in);
+								
+								error = (String)out.get("p_errorCodeOut"); 
+								
+							} catch (EmptyResultDataAccessException e){
+								// dataset empty no email
+							}
+							try {					
+								//Parent Phone Data
+								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+								phoneData = jdbcCAS.queryForList(SQL,parentParameters);
+								
+								for(int x=0; x<phoneData.size();x++){
+									Map<String,Object> phone = phoneData.get(x);
+									//Phone
+									simpleJdbcCall = new SimpleJdbcCall(this.censusSource).withProcedureName("cc_gen_peci_crud_address_pkg.p_address_main");
+									in = new MapSqlParameterSource();
+									in.addValue("p_changeType","C");
+									in.addValue("p_trans_id",transId);
+									in.addValue("p_ppid",p_ppid);
+									in.addValue("p_peciRole","PARENT");
+									in.addValue("p_pidm",p_pidm);
+									in.addValue("p_peciUserId",userName);
+									in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+									
+									in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE").toString());
+									in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE").toString());
+									in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER").toString());
+									in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL").toString());
+									in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER").toString());
+									in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE").toString());
+									
+									out = simpleJdbcCall.execute(in);
+									
+									error = (String)out.get("p_errorCodeOut"); 
+								}
+							} catch (EmptyResultDataAccessException e){
+								// dataset empty 
+							}									
+						}	
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty 
+					}
+				} else {
+					//Run PECI Update statements
+					
+				}
+				
 				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
 			if ( intData.getField(1).equals("update"))	{
 				//Save PECI Main Form data to MySQL
-				
-				String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
-				
-				List vaultDN = this.vaultTemplate.search(
-					this.vaultSearchBase, vaultSearchFilter, 
-					new AbstractContextMapper(){
-						protected Object doMapFromContext(DirContextOperations ctx) {
-							return ctx.getNameInNamespace();
-						}
-					}
-				);
-				DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
-				
-				String ccPDIM = vaultcontext.getStringAttribute("ccpidm");
-
-				Map<String,Object> PECIParameters = new HashMap<String,Object>();
-				
-				PECIParameters.put("STUDENT_PIDM",ccPDIM);
-				PECIParameters.put("PARENT_PPID","0");
-				
-				
-				Map<String,Object> studentData = new HashMap<String,Object>();
-				Map<String,Object> addressData = new HashMap<String,Object>();
-				Map<String,Object> emailData = new HashMap<String,Object>();
-				List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
 				
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
