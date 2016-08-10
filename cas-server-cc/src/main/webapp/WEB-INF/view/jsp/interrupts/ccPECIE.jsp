@@ -910,14 +910,14 @@
 
 %>
 
-<script type="text/javascript" src="/clnaddr/js/clnaddr.js?version=10108"></script>  
+<script type="text/javascript" src="/clnaddr/js/clnaddr.js?ver=10098"></script>  
 <script type="text/javascript"> 
 	ajaxurl = "/cas/cas-rest-api/peci/";
 	student_PIDM = "${StudentBio['STUDENT_PIDM']}";
 	student_name = "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}";
 	deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}"; 
 </script> 
-<script type="text/javascript" src="/cas/js/ccPECIE.js?version=10109"></script>    
+<script type="text/javascript" src="/cas/js/ccPECIE.js?ver=10098"></script>    
 
 </body>
 </html>
