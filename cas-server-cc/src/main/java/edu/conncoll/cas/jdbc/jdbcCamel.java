@@ -887,22 +887,10 @@ public class jdbcCamel {
 				context.getFlowScope().put("Flag","PECIE");
 				return "Failed";
 			}
-			if ( intData.getField(1).equals("confirm"))	{				
+			if ( intData.getField(1).equals("confirm"))	{	
+				/* commented for production until Storage solution is ready for upload
 				//Save PECI Data from MySQL to Banner
 				Map<String,Object> PECIData = new HashMap<String,Object>();
-				
-				//Update the PECI Phone Codes to match banenr codes
-				SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='H' where PHONE_CODE='MA' and PECI_PHONE_CODE is null";
-				jdbcCAS.update(SQL, new HashMap<String,Object>());
-				
-				SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='C' where PHONE_CODE='CP' and PECI_PHONE_CODE is null";
-				jdbcCAS.update(SQL, new HashMap<String,Object>());
-				
-				SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='E' where PHONE_CODE='EP' and PECI_PHONE_CODE is null";
-				jdbcCAS.update(SQL, new HashMap<String,Object>());
-				
-				SQL="update cas.cc_gen_peci_phone_data_t set PHONE_SEQUENCE_NO=1 where PHONE_SEQUENCE_NO is null";
-				jdbcCAS.update(SQL, new HashMap<String,Object>());
 				
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
@@ -918,7 +906,7 @@ public class jdbcCamel {
 					
 					PECI2Banner(userName,ccPDIM,"U");
 				}
-				
+				*/
 				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
@@ -2138,7 +2126,20 @@ public class jdbcCamel {
 			new SqlOutParameter("p_banTeleCodeOut", Types.VARCHAR),
 			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
 		
-
+		//Update the PECI Phone Codes to match banenr codes
+		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='H' where PHONE_CODE='MA' and PECI_PHONE_CODE is null";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='C' where PHONE_CODE='CP' and PECI_PHONE_CODE is null";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='E' where PHONE_CODE='EP' and PECI_PHONE_CODE is null";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="update cas.cc_gen_peci_phone_data_t set PHONE_SEQUENCE_NO=1 where PHONE_SEQUENCE_NO is null";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
 		PECIParameters.put("PARENT_PPID","0");
