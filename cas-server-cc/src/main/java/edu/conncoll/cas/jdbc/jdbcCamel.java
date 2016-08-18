@@ -887,8 +887,7 @@ public class jdbcCamel {
 				context.getFlowScope().put("Flag","PECIE");
 				return "Failed";
 			}
-			if ( intData.getField(1).equals("confirm"))	{	
-				/* commented for production until Storage solution is ready for upload
+			if ( intData.getField(1).equals("confirm"))	{				
 				//Save PECI Data from MySQL to Banner
 				Map<String,Object> PECIData = new HashMap<String,Object>();
 				
@@ -906,7 +905,7 @@ public class jdbcCamel {
 					
 					PECI2Banner(userName,ccPDIM,"U");
 				}
-				*/
+				
 				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
@@ -2139,7 +2138,20 @@ public class jdbcCamel {
 		SQL="update cas.cc_gen_peci_phone_data_t set PHONE_SEQUENCE_NO=1 where PHONE_SEQUENCE_NO is null";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		//Set the parent Emergency Priority
+		SQL="update cc_adv_peci_parents_t p"
+			+"inner join cc_gen_peci_emergs_t e"
+			+"on p.STUDENT_PIDM=e.STUDENT_PIDM"
+			+"and p.PARENT_PPID=e.PARENT_PPID"
+			+"set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		//Remove extrainious emergency contacts
+		SQL="DELETE FROM cc_gen_peci_emergs_t  "
+			+"using  cc_gen_peci_emergs_t, cc_adv_peci_parents_t "
+			+ "where cc_gen_peci_emergs_t.STUDENT_PIDM=cc_adv_peci_parents_t.STUDENT_PIDM "
+			+ "and cc_gen_peci_emergs_t.PARENT_PPID=cc_adv_peci_parents_t.PARENT_PPID ";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
 		PECIParameters.put("PARENT_PPID","0");
