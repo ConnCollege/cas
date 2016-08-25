@@ -2139,11 +2139,11 @@ public class jdbcCamel {
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		//Set the parent Emergency Priority
-		SQL="update cc_adv_peci_parents_t p"
-			+"inner join cc_gen_peci_emergs_t e"
-			+"on p.STUDENT_PIDM=e.STUDENT_PIDM"
-			+"and p.PARENT_PPID=e.PARENT_PPID"
-			+"set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
+		SQL="update cc_adv_peci_parents_t p "
+			+ "inner join cc_gen_peci_emergs_t e "
+			+ "on p.STUDENT_PIDM=e.STUDENT_PIDM "
+			+ "and p.PARENT_PPID=e.PARENT_PPID "
+			+ "set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
