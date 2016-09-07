@@ -1889,6 +1889,8 @@ public class jdbcCamel {
 			new SqlParameter("p_ppid", Types.NUMERIC),
 			
 			new SqlParameter("p_peciEmailAddr", Types.VARCHAR),
+			new SqlParameter("p_peciEmailAddrStatusInd", Types.VARCHAR),
+			
 			
 			new SqlParameter("p_peciUserId", Types.VARCHAR),
 			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
@@ -1912,6 +1914,7 @@ public class jdbcCamel {
 			new SqlParameter("p_pidm", Types.NUMERIC),
 			new SqlParameter("p_ppid", Types.NUMERIC),
 
+			new SqlParameter("p_peciAddrStatus", Types.VARCHAR),
 			new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
 			new SqlParameter("p_peciAddrStreetLine1", Types.VARCHAR),
 			new SqlParameter("p_peciAddrStreetLine2", Types.VARCHAR),
@@ -1932,6 +1935,8 @@ public class jdbcCamel {
 			new SqlOutParameter("p_peciAddrZipCodeOut", Types.VARCHAR),
 			new SqlOutParameter("p_peciAddrNatnCodeOut", Types.VARCHAR),
 			new SqlOutParameter("p_peciAddrStatusOut", Types.VARCHAR),
+			new SqlOutParameter("p_banAddrCodeOut", Types.VARCHAR),
+			new SqlOutParameter("p_banAddrSeqnoOut", Types.NUMERIC),
 			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
 
 		SimpleJdbcCall p_phone_main = new SimpleJdbcCall(this.censusSource)
@@ -1947,7 +1952,8 @@ public class jdbcCamel {
 			
 			new SqlParameter("p_pidm", Types.NUMERIC),
 			new SqlParameter("p_ppid", Types.NUMERIC),
-			
+
+			new SqlParameter("p_banTeleCode", Types.VARCHAR),
 			new SqlParameter("p_banTeleSeqno", Types.NUMERIC),
 			new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
 			new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
@@ -1958,6 +1964,8 @@ public class jdbcCamel {
 			new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
 			new SqlParameter("p_banComment", Types.VARCHAR),
 			new SqlParameter("p_peciEmergPriority", Types.NUMERIC),
+			new SqlParameter("p_banAddrCode", Types.VARCHAR),
+			new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
 			
 			new SqlParameter("p_peciUserId", Types.VARCHAR),
 			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
@@ -1994,6 +2002,7 @@ public class jdbcCamel {
 			new SqlParameter("p_peciParSuffixName", Types.VARCHAR),
 			new SqlParameter("p_parPidm", Types.NUMERIC),
 			new SqlParameter("p_parPpid", Types.NUMERIC),
+			new SqlParameter("p_parOrder", Types.NUMERIC),
 			new SqlParameter("p_reltCode", Types.VARCHAR),
 			new SqlParameter("p_emergPriority", Types.NUMERIC),
 			new SqlParameter("p_noCellPhone", Types.VARCHAR),
@@ -2139,11 +2148,11 @@ public class jdbcCamel {
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		//Set the parent Emergency Priority
-		SQL="update cc_adv_peci_parents_t p "
-			+ "inner join cc_gen_peci_emergs_t e "
-			+ "on p.STUDENT_PIDM=e.STUDENT_PIDM "
-			+ "and p.PARENT_PPID=e.PARENT_PPID "
-			+ "set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
+		SQL="update cc_adv_peci_parents_t p"
+			+"inner join cc_gen_peci_emergs_t e"
+			+"on p.STUDENT_PIDM=e.STUDENT_PIDM"
+			+"and p.PARENT_PPID=e.PARENT_PPID"
+			+"set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
