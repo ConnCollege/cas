@@ -59,6 +59,7 @@ import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.User;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
@@ -418,7 +419,7 @@ public class jdbcCamel {
 						
 						
 						//Parent Data
-						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where PARENT_PPID > 0 and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where PARENT_PPID > 0 and PARENT_ORDER >0 and STUDENT_PIDM=" + ccPDIM.toString();
 						parentData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_adv_peci_parents_t",parentData);		
@@ -436,7 +437,7 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_email_data_t",emailData);	
 						
 						//Phone Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,nvl(PHONE_SEQUENCE_NO,0) PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
 						phoneData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_phone_data_t",phoneData);	
@@ -2333,9 +2334,9 @@ public class jdbcCamel {
 				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
 				in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
-				in.addValue("p_peciParFirstName",parent.get("PARENT_PREF_FIRST_NAME"));
-				in.addValue("p_peciParMiddleName",parent.get("PARENT_PREF_MIDDLE_NAME"));
-				in.addValue("p_peciParLastName",parent.get("PARENT_PREF_LAST_NAME"));
+				in.addValue("p_peciParFirstName",WordUtils.capitalize(parent.get("PARENT_PREF_FIRST_NAME").toString()));
+				in.addValue("p_peciParMiddleName",WordUtils.capitalize(parent.get("PARENT_PREF_MIDDLE_NAME").toString()));
+				in.addValue("p_peciParLastName",WordUtils.capitalize(parent.get("PARENT_PREF_LAST_NAME").toString()));
 				in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
 				in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
 				in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
@@ -2532,11 +2533,11 @@ public class jdbcCamel {
 					in.addValue("p_parPpid",null);
 				}
 
-				in.addValue("p_emergPrefixName",parent.get("EMERG_LEGAL_PREFIX_NAME"));
-				in.addValue("p_emergFirstName",parent.get("EMERG_PREF_FIRST_NAME"));
-				in.addValue("p_emergMiddleName",parent.get("EMERG_PREF_MIDDLE_NAME"));
-				in.addValue("p_emergLastName",parent.get("EMERG_PREF_LAST_NAME"));
-				in.addValue("p_emergSuffixName",parent.get("EMERG_LEGAL_SUFFIX_NAME"));
+				in.addValue("p_emergPrefixName",WordUtils.capitalize(parent.get("EMERG_LEGAL_PREFIX_NAME").toString()));
+				in.addValue("p_emergFirstName",WordUtils.capitalize(parent.get("EMERG_PREF_FIRST_NAME").toString()));
+				in.addValue("p_emergMiddleName",WordUtils.capitalize(parent.get("EMERG_PREF_MIDDLE_NAME").toString()));
+				in.addValue("p_emergLastName",WordUtils.capitalize(parent.get("EMERG_PREF_LAST_NAME").toString()));
+				in.addValue("p_emergSuffixName",WordUtils.capitalize(parent.get("EMERG_LEGAL_SUFFIX_NAME").toString()));
 				in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
 				in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
 				in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
