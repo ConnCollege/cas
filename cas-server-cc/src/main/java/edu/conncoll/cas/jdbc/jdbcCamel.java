@@ -59,7 +59,8 @@ import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.User;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
@@ -419,7 +420,7 @@ public class jdbcCamel {
 						
 						
 						//Parent Data
-						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_v where PARENT_PPID > 0 and PARENT_ORDER >0 and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND, DUPLICATE_STATUS from cc_adv_peci_parents_v where PARENT_PPID > 0 and PARENT_ORDER >0 and STUDENT_PIDM=" + ccPDIM.toString();
 						parentData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_adv_peci_parents_t",parentData);		
@@ -509,7 +510,7 @@ public class jdbcCamel {
 					context.getFlowScope().put("EmmrgPhones",phoneData);
 					
 					//Parents
-					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME from cc_adv_peci_parents_t where (CHANGE_COLS !='DELETE' or  CHANGE_COLS is null) and STUDENT_PIDM=:STUDENT_PIDM order by PARENT_ORDER";
+					SQL="select PARENT_PPID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, DUPLICATE_STATUS from cc_adv_peci_parents_t where (CHANGE_COLS !='DELETE' or  CHANGE_COLS is null) and STUDENT_PIDM=:STUDENT_PIDM order by PARENT_ORDER";
 					parentData = jdbcCAS.queryForList(SQL,namedParameters);
 					
 					//Emergency Contacts
@@ -904,7 +905,7 @@ public class jdbcCamel {
 
 					log.debug("Performing Update to banner");
 					
-					PECI2Banner(userName,ccPDIM,"U");
+					//PECI2Banner(userName,ccPDIM,"U");
 				}
 				
 				context.getFlowScope().put("Flag","PECI");
@@ -2148,12 +2149,14 @@ public class jdbcCamel {
 		SQL="update cas.cc_gen_peci_phone_data_t set PHONE_SEQUENCE_NO=1 where PHONE_SEQUENCE_NO is null";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		boolean bCRUDError = false;
+		
 		//Set the parent Emergency Priority
 		SQL="update cc_adv_peci_parents_t p"
-			+"inner join cc_gen_peci_emergs_t e"
-			+"on p.STUDENT_PIDM=e.STUDENT_PIDM"
-			+"and p.PARENT_PPID=e.PARENT_PPID"
-			+"set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
+			+" inner join cc_gen_peci_emergs_t e"
+			+" on p.STUDENT_PIDM=e.STUDENT_PIDM"
+			+" and p.PARENT_PPID=e.PARENT_PPID"
+			+" set p.EMERG_CONTACT_PRIORITY=e.EMERG_CONTACT_PRIORITY";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
@@ -2194,6 +2197,8 @@ public class jdbcCamel {
 		int ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
 		error = (String)out.get("p_errorCodeOut"); 
 		
+		if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+		
 		log.debug("New Student procedure return is " + error);
 
 		log.debug("New Student PPID is " + ppId);
@@ -2215,10 +2220,12 @@ public class jdbcCamel {
 			
 			in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
 			in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
+			in.addValue("p_peciEmailAddrStatusInd","A");
 
 			out = p_email_main.execute(in);
 			
 			error = (String)out.get("p_errorCodeOut"); 
+			if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 			
 			log.debug("New Student email procedure return is " + error);
 			
@@ -2244,6 +2251,7 @@ public class jdbcCamel {
 			in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 			
 			in.addValue("p_banAddrSeqno",null);
+			in.addValue("p_peciAddrStatus","A");
 			in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
 			in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
 			in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
@@ -2256,6 +2264,7 @@ public class jdbcCamel {
 			out = p_address_main.execute(in);
 			
 			error = (String)out.get("p_errorCodeOut"); 
+			if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 			
 			log.debug("New Student address procedure return is " + error);
 			
@@ -2284,21 +2293,30 @@ public class jdbcCamel {
 				in.addValue("p_peciUserId",userName);
 				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
-				in.addValue("p_banTeleSeqno",1);
+				in.addValue("p_banTeleSeqno",null);
+				in.addValue("p_banAddrSeqno",null);
+				//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+				in.addValue("p_banTeleCode",null);
+				in.addValue("p_peciPhonePrimary",null);
+				in.addValue("p_banAddrCode",null);
 				in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
 				in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
 				in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
 				in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
 				in.addValue("p_peciPhoneStatus","A");
-				in.addValue("p_peciPhonePrimary",null);
+				if (phone.get("PHONE_CODE").toString().length() == 3) {
+					in.addValue("p_peciEmergPriority",Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
+				}else{
+					in.addValue("p_peciEmergPriority",null);
+				}
 				in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
 				in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
 				in.addValue("p_banComment",null);
-				in.addValue("p_peciEmergPriority",null);
 				
 				out = p_phone_main.execute(in);
 				
 				error = (String)out.get("p_errorCodeOut"); 
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 				
 				log.debug("New Student phone procedure return is " + error);
 			}
@@ -2332,11 +2350,12 @@ public class jdbcCamel {
 				in.addValue("p_stuPidm",ccPDIM);
 				in.addValue("p_peciUserId",userName);
 				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+				in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
 
 				in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
-				in.addValue("p_peciParFirstName",WordUtils.capitalize(parent.get("PARENT_PREF_FIRST_NAME").toString()));
-				in.addValue("p_peciParMiddleName",WordUtils.capitalize(parent.get("PARENT_PREF_MIDDLE_NAME").toString()));
-				in.addValue("p_peciParLastName",WordUtils.capitalize(parent.get("PARENT_PREF_LAST_NAME").toString()));
+				in.addValue("p_peciParFirstName",capitalizeObj(parent.get("PARENT_PREF_FIRST_NAME")));
+				in.addValue("p_peciParMiddleName",capitalizeObj(parent.get("PARENT_PREF_MIDDLE_NAME")));
+				in.addValue("p_peciParLastName",capitalizeObj(parent.get("PARENT_PREF_LAST_NAME")));
 				in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
 				in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
 				in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
@@ -2403,12 +2422,9 @@ public class jdbcCamel {
 				int p_ppid = Integer.parseInt(out.get("p_parPpidOut").toString()); 
 				
 				error = (String)out.get("p_errorCodeOut");
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 				
 				log.debug("New Parent procedure return is " + error);
-				
-				//Update emergency contacts ppid.
-				SQL="update cc_gen_peci_emergs_t set PARENT_PPID=" + p_ppid + " where PARENT_PPID='" + tp_ppid + "'";
-				jdbcCAS.update(SQL, new HashMap<String,Object>());
 				
 				if (out.get("p_parPidmOut") != null){
 					int p_ppidm = Integer.parseInt(out.get("p_parPidmOut").toString()); 
@@ -2433,8 +2449,14 @@ public class jdbcCamel {
 							in.addValue("p_peciUserId",userName);
 							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
-							in.addValue("p_banTeleSeqno",1);
+							in.addValue("p_banTeleSeqno",null);
+							in.addValue("p_banAddrSeqno",null);
+							in.addValue("p_peciPhonePrimary",null);
+							in.addValue("p_peciPhoneStatus","A");
 							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+							in.addValue("p_banTeleCode",null);
+							in.addValue("p_peciPhonePrimary",null);
+							in.addValue("p_banAddrCode",null);
 							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
 							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
 							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
@@ -2446,6 +2468,7 @@ public class jdbcCamel {
 							out = p_phone_main.execute(in);
 							
 							error = (String)out.get("p_errorCodeOut"); 
+							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 							
 							log.debug("New Parent phone procedure return is " + error);
 						}
@@ -2476,7 +2499,11 @@ public class jdbcCamel {
 							in.addValue("p_peciUserId",userName);
 							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
-							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+							//in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+							in.addValue("p_peciPhoneCode",null);
+							in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+							in.addValue("p_banAddrCode","MA");
+							in.addValue("p_banAddrSeqno",1);
 							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
 							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
 							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
@@ -2486,6 +2513,7 @@ public class jdbcCamel {
 							out = p_phone_create_temp.execute(in);
 							
 							error = (String)out.get("p_errorCodeOut"); 
+							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 							
 							log.debug("New Parent Temp phone procedure return is " + error);
 						}
@@ -2533,11 +2561,11 @@ public class jdbcCamel {
 					in.addValue("p_parPpid",null);
 				}
 
-				in.addValue("p_emergPrefixName",WordUtils.capitalize(parent.get("EMERG_LEGAL_PREFIX_NAME").toString()));
-				in.addValue("p_emergFirstName",WordUtils.capitalize(parent.get("EMERG_PREF_FIRST_NAME").toString()));
-				in.addValue("p_emergMiddleName",WordUtils.capitalize(parent.get("EMERG_PREF_MIDDLE_NAME").toString()));
-				in.addValue("p_emergLastName",WordUtils.capitalize(parent.get("EMERG_PREF_LAST_NAME").toString()));
-				in.addValue("p_emergSuffixName",WordUtils.capitalize(parent.get("EMERG_LEGAL_SUFFIX_NAME").toString()));
+				in.addValue("p_emergPrefixName",capitalizeObj(parent.get("EMERG_LEGAL_PREFIX_NAME")));
+				in.addValue("p_emergFirstName",capitalizeObj(parent.get("EMERG_PREF_FIRST_NAME")));
+				in.addValue("p_emergMiddleName",capitalizeObj(parent.get("EMERG_PREF_MIDDLE_NAME")));
+				in.addValue("p_emergLastName",capitalizeObj(parent.get("EMERG_PREF_LAST_NAME")));
+				in.addValue("p_emergSuffixName",capitalizeObj(parent.get("EMERG_LEGAL_SUFFIX_NAME")));
 				in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
 				in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
 				in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
@@ -2552,6 +2580,7 @@ public class jdbcCamel {
 				int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
 				
 				error = (String)out.get("p_errorCodeOut"); 
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 				
 				log.debug("New Contact procedure return is " + error);
 
@@ -2561,7 +2590,7 @@ public class jdbcCamel {
 					//Contqct email Data
 					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
 							+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM "
-							+ "and PARENT_PPID = :PARENT_PPID and PECI_EMAIL_CODE='H'";
+							+ "and PARENT_PPID = :PARENT_PPID";
 					emailData = jdbcCAS.queryForMap(SQL,parentParameters);
 
 					//email
@@ -2576,6 +2605,7 @@ public class jdbcCamel {
 					
 					in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE"));
 					in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS"));
+					in.addValue("p_peciEmailAddrStatusInd","A");
 
 					out = p_email_main.execute(in);
 					
@@ -2592,7 +2622,7 @@ public class jdbcCamel {
 					SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE, "
 							+ "ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY, "
 							+ "ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t "
-							+ "where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID and PECI_ADDR_CODE='H'";
+							+ "where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
 					addressData = jdbcCAS.queryForMap(SQL,parentParameters);
 
 					//Address
@@ -2606,6 +2636,7 @@ public class jdbcCamel {
 					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
 					in.addValue("p_banAddrSeqno",null);
+					in.addValue("p_peciAddrStatus","A");
 					in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE"));
 					in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
 					in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
@@ -2618,6 +2649,7 @@ public class jdbcCamel {
 					out = p_address_main.execute(in);
 					
 					error = (String)out.get("p_errorCodeOut"); 
+					if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 					
 					log.debug("New contact adress procedure return is " + error);
 					
@@ -2646,7 +2678,13 @@ public class jdbcCamel {
 						in.addValue("p_peciUserId",userName);
 						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 
-						in.addValue("p_banTeleSeqno",1);
+						in.addValue("p_banTeleSeqno",null);
+						in.addValue("p_banAddrSeqno",null);
+						in.addValue("p_banAddrCode",null);
+						//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+						in.addValue("p_banTeleCode",null);
+						in.addValue("p_peciPhonePrimary",null);
+						in.addValue("p_peciPhoneStatus","A");
 						in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
 						in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
 						in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
@@ -2657,6 +2695,7 @@ public class jdbcCamel {
 						in.addValue("p_peciEmergPriority",null);
 						
 						out = p_phone_main.execute(in);
+						if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 						
 						error = (String)out.get("p_errorCodeOut"); 
 						
@@ -2671,8 +2710,15 @@ public class jdbcCamel {
 			log.debug("New Student contacts is empty");
 			// dataset empty no Emergency contacts
 		}
-		//Clear Student's data from CAS
-		SQL="call PECI_Clear_Student(:STUDENT_PIDM) ";
-		jdbcCAS.update(SQL, PECIParameters);
+		if (!bCRUDError) {
+			//Clear Student's data from CAS
+			log.debug("Clearing the student data from MySQL");
+			SQL="call PECI_Clear_Student(:STUDENT_PIDM) ";
+			//jdbcCAS.update(SQL, PECIParameters);
+		}
+	}
+	public String capitalizeObj(Object dbObj){
+		String sDbObj = ObjectUtils.toString(dbObj);
+		return StringUtils.capitalize(sDbObj);
 	}
 }
