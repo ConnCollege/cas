@@ -212,10 +212,27 @@
 	</div>
   </div> --%>
   
-  <div id="step3">
-  	<h3>Step 3 Parent/Guardian Information <small><span class="edit_link">Edit Parent/Guardian Info</span></small></h3>	
+<c:set var="duplicate" value="false" scope="page" />
+<c:forEach items="${StudentParents}" var="parent_status" varStatus="status">
+<c:if test="${not empty parent_status.DUPLICATE_STATUS}">
+	<c:set var="duplicate" value="true" />
+</c:if>
+</c:forEach>
+<c:forEach items="${StudentEMR}" var="emergency_status" varStatus="status">
+<c:if test="${not empty emergency_status.DUPLICATE_STATUS}">
+	<c:set var="duplicate" value="true" />
+</c:if>
+</c:forEach>
+	  
+	<c:if test="${duplicate}">
+		<p>&nbsp;</p>
+		<div role="alert" class="alert alert-warning" id="duplicate-processing"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Information:</span><span><strong>Your parent and emergency contact information is currently being processed</strong>. You will not be able to edit your information in steps 3, 4 and 5 until processing is complete. You can click Confirm at the bottom of the page to save your information.</span></div>
+ 	</c:if>
+  
+  <div id="step3"<c:if test="${duplicate}"> class="section_disabled"</c:if>>
+  	<h3>Step 3 Parent/Guardian Information<c:if test="${!duplicate}"> <small><span class="edit_link">Edit Parent/Guardian Info</span></small></c:if></h3>	
   	
-  	<div class="confirm_section"> 
+  	<div class="confirm_section" <c:if test="${duplicate}">style="display:none;"</c:if>> 
 		<c:set var="x" value="0" scope="page" />	    
 	    <c:forEach items="${StudentParents}" var="parents">
 	    	<c:set var="x" value="${x + 1}" scope="page" /> 
@@ -229,10 +246,10 @@
     </div>
   </div>
   
-    <div id="step4">
-  	<h3>Step 4 Emergency Contacts <small><span class="edit_link">Edit or Reorder Contacts</span></small></h3>
+    <div id="step4"<c:if test="${duplicate}"> class="section_disabled"</c:if>>
+  	<h3>Step 4 Emergency Contacts<c:if test="${!duplicate}"> <small><span class="edit_link">Edit or Reorder Contacts</span></small></c:if></h3>
   	<%-- ${StudentEMR} --%>
-  	<div class="confirm_section">
+  	<div class="confirm_section" <c:if test="${duplicate}">style="display:none;"</c:if>>
   		<c:set var="y" value="0" scope="page" />	
 	  	 <c:forEach items="${StudentEMR}" var="contacts">
 	  	 	<c:if test="${fn:length(contacts.PARENT_PPID) > 0 }">
@@ -248,10 +265,10 @@
     </div>
   </div>
  <%-- ${EmmrgPhones} --%>
-   <div id="step5">
-  	<h3>Step 5 Campus Alert Phone Numbers <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></h3>
+   <div id="step5"<c:if test="${duplicate}"> class="section_disabled"</c:if>>
+  	<h3>Step 5 Campus Alert Phone Numbers<c:if test="${!duplicate}"> <small><span class="edit_link">Edit Campus Alert Phone Numbers</span></small></c:if></h3>
   	<%-- EmmergPhones: ${EmmrgPhones} --%>
-  	<div class="confirm_section">
+  	<div class="confirm_section" <c:if test="${duplicate}">style="display:none;"</c:if>>
   	<p id="doc_message">These numbers will be contacted in the case of a campus emergency.</p>
   		<ul>
 		    <c:forEach items="${EmmrgPhones}" var="emmrg">
@@ -269,11 +286,12 @@
 		    </c:forEach>
 		</ul>
     </div>
-    <div class="row">
-    	<div class="col-sm-offset-4  col-xs-3">
-    		<button type="submit" id="confirm_button" class="btn btn-primary">Confirm</button>
-    	</div>
-    </div>
+  </div>
+  
+  <div class="row">
+  	<div class="col-sm-offset-4  col-xs-3">
+  		<button type="submit" id="confirm_button" class="btn btn-primary">Confirm</button>
+  	</div>
   </div>
 
 </div>

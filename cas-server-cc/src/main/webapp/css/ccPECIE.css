@@ -95,6 +95,12 @@ position: absolute;
 }
 
 body {  
-overflow-x: hidden;
+overflow-x: hidden; 
 overflow-y: scroll !important;
+}
+
+.section_disabled{
+	background: #ccc;
+	opacity: .5;
+	pointer-events:none;
 }

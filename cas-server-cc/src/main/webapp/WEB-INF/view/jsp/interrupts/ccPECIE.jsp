@@ -308,27 +308,26 @@
 			</div>
 		</div>
 	</div>
-<%-- 	<p class="q_check" id="paragraph_alert_home_email_check">If you do not wish to receive campus alerts beyond those to your campus email and voice mail, check the box below:</p>
-	<div style="display:none;" role="alert" class="alert alert-danger" id="alert_home_email_check_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
-	<div class="form-group" id="group_alert_home_email_check">
-		<div class="col-sm-offset-1 col-sm-9">
-			<div class="checkbox">
-				<label><input type="checkbox" class="" name="fields[19]" id="alert_home_email_check" <c:if test="${StudentBio['EMERG_AUTO_OPT_OUT'] == 'Y'}">checked="checked"</c:if> value="Y">Opt out of automated campus alerts to my home email and cell phone</label>
-			</div>
-		</div>
-	</div> --%>
-	
 
-	
-	<%
-			/*out.print(displayCheckbox(false,"I don't have a mobile phone",2,10, "student_mobile_phone_check", "", "", "",false,false,"",""));
-			out.print(displayInput(false,"","Emergency Phone",2,10,"student_emergency_phone","tel","",false,false));
-			out.print(displayCheckbox(false,"Yes send me a text message in the event of an emergency",2,10, "alert_text_check", "", "", "Connecticut College will contact this number in the case of a campus emergency. Do you wish to also receive a text message at this number in the case of a campus emergency?",false,false,"",""));
-			out.print(displayCheckbox(false,"This phone is a TTY device",2,10,"tty_device_check","","","If your mobile phone is a TTY device (for the hearing impaired) please indicate below:",false,false,"",""));
-			out.print(displayCheckbox(false,"Opt out of automated campus alerts to my home email and cell phone",2,10,"alert_home_email_check","","","If you do not wish to receive campus alerts beyond those to your campus email and voice mail, check the box below:",false,false,"",""));*/
-		%>
     </div>
-    <div id="step3" class="form_section">
+    
+<c:set var="duplicate" value="false" scope="page" />
+<c:forEach items="${StudentParents}" var="parent_status" varStatus="status">
+<c:if test="${not empty parent_status.DUPLICATE_STATUS}">
+	<c:set var="duplicate" value="true" />
+</c:if>
+</c:forEach>
+<c:forEach items="${StudentEMR}" var="emergency_status" varStatus="status">
+<c:if test="${not empty emergency_status.DUPLICATE_STATUS}">
+	<c:set var="duplicate" value="true" />
+</c:if>
+</c:forEach>
+  
+	<c:if test="${duplicate}">
+		<div role="alert" class="alert alert-warning" id="duplicate-processing"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Information:</span><span><strong>Your parent and emergency contact information is currently being processed</strong>. You will not be able to edit your information in steps 3, 4 and 5 until processing is complete. You can, however, update any information in steps 1 and 2 above and use the submit button at the bottom of the page to save your information.</span></div>
+ 	</c:if>
+ 	
+    <div id="step3" class="form_section <c:if test="${duplicate}">section_disabled</c:if>">
 	    <h3>Step 3 Parent/Guardian Information</h3>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_NUM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to enter at least one parent</span></div>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="PARENT_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to designate at least one parent or guardian as an emergency contact. Exceptions to this policy must be approved by the Dean of the College <a href="mailto:doc@conncoll.edu" target="_blank">doc@conncoll.edu</a></span></div>
@@ -342,49 +341,52 @@
 	    	</c:otherwise>
 	    </c:choose> 
 
-	<div id="PARENT_LIST">
+	<div id="PARENT_LIST" class=" <c:if test="${duplicate}">section_disabled</c:if>">
 	 	<c:forEach items="${StudentParents}" var="parents">
-			<div class="panel panel-default PARENT-LISTED" id="parent_${parents.PARENT_PPID}">
+			<div class="panel panel-default PARENT-LISTED" id="parent_${parents.PARENT_PPID}" <c:if test="${duplicate}">style="display:none;"</c:if>>
 			  <div class="panel-body">
-			    <span class="contact-name"><strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong></span><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></span>
+			    <span class="contact-name"><strong>${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME } </strong></span><c:if test="${duplicate == false}"><a href="#" title="Edit" class="showModal" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${parents.PARENT_PREF_FIRST_NAME } ${parents.PARENT_PREF_LAST_NAME }" data-ppid="${parents.PARENT_PPID}" data-modal-type="PARENT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a><span class="emergency_contact_switch">&nbsp;Emergency Contact: <input type="checkbox" name="PARENT" class="bootstrap-switch parent-bootstrap-switch" data-ppid="${parents.PARENT_PPID}" data-off-text="No" data-on-text="Yes"></c:if></span>
 			  </div>
 			</div>
 		</c:forEach>	
 	</div>
-	 
+	
+		<c:if test="${duplicate == false}">
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
 	        <button id="ADD_PARENT" type="button" class="btn btn-primary" data-toggle="modal" data-target="#PARENT_MODAL" data-parent-ppid="0">Add Parent</button>
 	        <span id="PARENT_MAX_ENTERED" style="display:none;">&nbsp;You have entered the maximum number of parents (5).</span>
 	      </div>
-	    </div>  
+	    </div> 
+		</c:if>
     </div>
 
-    <div id="step4" class="form_section">
+    <div id="step4" class="form_section <c:if test="${duplicate}">section_disabled</c:if>">
 	    <h3>Step 4 Emergency Contacts</h3>
 	    <div style="display:none;" role="alert" class="alert alert-danger" id="CONTACT_NUM_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You are required to enter at least one emergency contact</span></div>
 	    <p id="doc_message">You must have at least one emergency contact. Emergency contacts will be contacted in the order you specify below. Parent/Guardian contacts designated as Emergency Contacts above will appear automatically below. You may also add additional contacts.<br><strong>If Connecticut College is a long way from home, and there is someone who can be contacted nearby in the event of an emergency, please add that person as one of your contacts.</strong></p>
-		<ul id="CONTACT_LIST" class="draggablePanelList list-unstyled">
+		<ul id="CONTACT_LIST" class="<c:if test="${duplicate == false}">draggablePanelList</c:if> list-unstyled <c:if test="${duplicate}">section_disabled</c:if>">
 			<c:set var="emergency_contact_order" value="" scope="page" />
 			<c:forEach items="${StudentEMR}" var="emr" varStatus="status">
-				<li class="panel panel-info CONTACT-LISTED" id="emr_contact_${emr.PARENT_PPID}"> 
-		        	<div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div>
-		        	<div class="panel-body"><span class="contact-name"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong></span> &nbsp; <a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></div>
+				<li class="panel panel-info CONTACT-LISTED" id="emr_contact_${emr.PARENT_PPID}" <c:if test="${duplicate}">style="display:none;"</c:if>> 
+		        	<c:if test="${duplicate == false}"><div class="panel-heading"><span aria-hidden="true" class="glyphicon glyphicon-move" ></span> Emergency Contact - Drag to reorder</div></c:if>
+		        	<div class="panel-body"><span class="contact-name"><strong>${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}</strong></span> &nbsp; <c:if test="${duplicate == false}"><a href="#" title="Edit"  class="showModal" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-pencil" ></span></a>&nbsp;<a href="#" title="Delete" class="deleteModal" data-name="${emr.EMERG_PREF_FIRST_NAME}  ${emr.EMERG_PREF_LAST_NAME}" data-ppid="${emr.PARENT_PPID}" data-modal-type="CONTACT"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></a></c:if></div>
 		    	</li>
 		    	<c:set var="emergency_contact_order" value="${emergency_contact_order}${status.first ? '' : ','}${emr.PARENT_PPID}" scope="page" />		    	
 			</c:forEach>
 			<input name="fields[26]" type="hidden" id="emr_order" value="${emergency_contact_order}" />
 		</ul>	
-	    
+	    <c:if test="${duplicate == false}">
 	     <div class="form-group">        
 	      <div class="col-sm-offset-1 col-sm-9">
 	        <button id="ADD_CONTACT" type="button" class="btn btn-primary" data-toggle="modal" data-target="#CONTACT_MODAL">Add Contact</button>
 	        <span id="CONTACT_MAX_ENTERED" style="display:none;">&nbsp;You have entered the maximum number of contacts (6).</span>
 	      </div>
 	    </div>
+	    </c:if>
     </div>
-    <%-- ${EmmrgPhones} --%>
-    <div id="step5" class="form_section">
+
+    <div id="step5" class="form_section <c:if test="${duplicate}">section_disabled</c:if>">
 	    <h3>Step 5 Campus Alert Phone Numbers</h3>
 	    <p id="doc_message">Please choose up to five phone numbers that may be contacted in the case of a campus emergency (your mobile phone, if it is a U.S. number, will always be contacted).</p>
 	    
@@ -469,21 +471,21 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
 			  			<label for="text" class="control-label col-sm-4">Prefix</label>
 			  			<div class="col-sm-3">
-			  				<input type="text" placeholder="Rev., Dr., Atty" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
+			  				<input type="text" placeholder="Rev., Dr., Atty" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_LEGAL_PREFIX_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_FIRST_NAME">
 			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="First Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_FIRST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME">
+			  				<input type="text" placeholder="First Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_FIRST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_MIDDLE_NAME">
 			  			<label for="text" class="control-label col-sm-4">Middle Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="Middle Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME">
+			  				<input type="text" placeholder="Middle Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME">
 			  			</div>
 			  		</div>	  	
 			  		
@@ -491,14 +493,14 @@
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PREF_LAST_NAME">
 			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>Last Name</label>
 			  			<div class="col-sm-6">
-			  				<input type="text" placeholder="Last Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_LAST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_PREF_LAST_NAME">
+			  				<input type="text" placeholder="Last Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_LAST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_PREF_LAST_NAME">
 			  			</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			<label for="text" class="control-label col-sm-4">Suffix</label>
 			  			<div class="col-sm-3">
-			  				<input type="text" placeholder="Jr., Sr., IV" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
+			  				<input type="text" placeholder="Jr., Sr., IV" maxlength="20" name="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME" class="form-control <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_LEGAL_SUFFIX_NAME">
 			  			</div>
 			  		</div>
 			  		
@@ -877,7 +879,7 @@
 			  </div>
 			</div>
 			<div class="modal-footer">
- 				<button type="button" id="CONFIRMATION_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button>
+ 				<button type="button" id="CONFIRMATION_CLOSE_BUTTON" class="btn btn-default" data-dismiss="modal">Close</button> 
  			</div>
 		</div>
 	</div>
@@ -901,14 +903,7 @@
  			</div>
 		</div>
 	</div>
-</div> 	
-  	
-<%
-	/*out.print(displayEntryModal("parent","Enter Details","Save"));
-	out.print(displayEntryModal("emergency_contact","Enter Details","Save"));
-	out.print(displayDeleteModal("delete","Confirm Deletion","Yes, Delete"));*/
-
-%>
+</div> 	     	
 
 <script type="text/javascript" src="/clnaddr/js/clnaddr.js?ver=10098"></script>  
 <script type="text/javascript"> 
@@ -916,6 +911,7 @@
 	student_PIDM = "${StudentBio['STUDENT_PIDM']}";
 	student_name = "${StudentBio['PREFERRED_FIRST_NAME']} ${StudentBio['PREFERRED_LAST_NAME']}";
 	deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}"; 
+	duplicate = "${duplicate}";
 </script> 
 <script type="text/javascript" src="/cas/js/ccPECIE.js?ver=10098"></script>    
 
