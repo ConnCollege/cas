@@ -40,6 +40,19 @@ $(document).ready( function(){
 		emergencyNumberToggle(form_id, checked);
 	}); 
 	
+	$('.modal_mobile_phone_check').each(function(){
+		if(this.checked){
+			var form_id = $(this).closest('form').attr("id");
+			modalMobilePhoneWarning(form_id,1);
+		}		
+	});
+	
+	$('.modal_mobile_phone_check').change(function(){
+		var form_id = $(this).closest('form').attr("id");
+		var checked = this.checked ? 1 : 0;
+		modalMobilePhoneWarning(form_id,checked);
+	});	
+
 	/*switch to international phone*/
 	$('.intl_number_switch').click(function (){		
 		var form_id = $(this).closest('form').attr("id");
@@ -195,7 +208,7 @@ $(document).ready( function(){
 	 
 	/*hide all modal error messages if modal is closed */
 	$('#PARENT_MODAL, #CONTACT_MODAL, #DELETE_MODAL').on('hidden.bs.modal', function () {		
-	    $('#PARENT_MODAL .alert-danger, #CONTACT_MODAL .alert-danger, #DELETE_MODAL .alert-danger').hide();
+	    $('#PARENT_MODAL .alert-danger, #CONTACT_MODAL .alert-danger, #DELETE_MODAL .alert-danger, #PARENT_MODAL .alert-warning, #CONTACT_MODAL .alert-warning').hide();
 		$('#PARENT_MODAL .form-group, #CONTACT_MODAL .form-group, #DELETE_MODAL .form-group').removeClass('has-error');
 	});
  
@@ -389,14 +402,21 @@ if(value == 'United States' || value == "US"){
  
  function formValidate(form_id){
 	 showMainError = 0;
-	 $('.alert').hide();
+	 $('.alert').hide();	 
+ /*strip html tags*/
+ $("#" + form_id + " input").each(function(){
+	 var regex = /(<([^>]+)>)/ig;
+	 var thisVal = $(this).val();
+	 var thisInput = thisVal.replace(regex, "");
+	 $(this).val(thisInput);
+ });
  /*required fields*/
  $("#" + form_id + " .ccreq:visible").each(function(){
 	 var field_value = $(this).val();
 	 var field_id = $(this).attr("id");
 	 var field_type = $(this).attr("type");
 	 var field_label = $(this).attr("placeholder");
-	 if(field_value.length == 0){
+	 if(field_value.trim().length == 0){
 		 $("#" + field_id + "_ERROR" + " .custom-error").html('Please Enter ' + field_label);	
 		 $("#" + field_id + "_ERROR").show();		
 		 $("#group_" + field_id).addClass("has-error");		 
@@ -466,6 +486,68 @@ if(value == 'United States' || value == "US"){
 		 $('#CONTACT_NUM_ERROR').hide();
 		 }
  	}
+ 
+ 	/*home or business phone is required if no mobile phone*/
+ 	if(form_id =='PARENT' || form_id == 'CONTACT'){
+ 	 	var homePhoneCheck = 1;
+ 	 	var businessPhoneCheck = 1;
+ 		if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){
+ 			if($('#' + form_id + '_PHONE_MA_NUMBER_INTL').is(':visible')){
+ 				if($('#' + form_id + '_PHONE_MA_NUMBER_INTL').val().length == 0){
+ 					var homePhoneCheck = 0;
+ 				}
+ 			}else if($('#' + form_id + '_PHONE_MA_AREA_CODE').val().length == 0 || $('#' + form_id + '_PHONE_MA_NUMBER').val().length == 0){
+ 				var homePhoneCheck = 0; 				
+ 			}
+ 				
+ 			if($('#' + form_id + '_PHONE_BU_NUMBER_INTL').is(':visible')){
+ 				if($('#' + form_id + '_PHONE_BU_NUMBER_INTL').val().length == 0){
+ 					var businessPhoneCheck = 0;
+ 				}
+ 			}else if($('#' + form_id + '_PHONE_BU_AREA_CODE').val().length == 0 || $('#' + form_id + '_PHONE_BU_NUMBER').val().length == 0){
+ 				var businessPhoneCheck = 0;
+ 			} 	 		
+ 			
+ 			if(homePhoneCheck == 0 && businessPhoneCheck == 0){
+ 	 			showMainError = 1;
+ 	 			$('#' + form_id + '_HOME_PHONE_OFFICE_PHONE_ERROR').show();
+ 	 		}else{
+ 	 			$('#' + form_id + '_HOME_PHONE_OFFICE_PHONE_ERROR').hide();
+ 	 		}
+ 		}
+ 	 	/*check for Mr., Mrs., Ms. or all numbers in prefix*/
+ 	 	var prefixVal = $('#' + form_id + '_LEGAL_PREFIX_NAME').val();
+ 	 	var prefixRegex = /(?!^\d+$)^.+$/;
+ 	 	valid_prefix = prefixRegex.test(prefixVal);
+ 	 	if(prefixVal.toLowerCase().substring(0,2) == 'mr' || prefixVal.toLowerCase().substring(0,2) == 'ms'){
+ 	 		$("#" + form_id + "_LEGAL_PREFIX_NAME_ERROR" + " .custom-error").html('Please do not enter Mr., Mrs. or Ms. in the prefix field. Examples of valid prefixes include Attny., Rev., Dr. etc.');	
+ 			$("#" + form_id + "_LEGAL_PREFIX_NAME_ERROR").show();		
+ 			$("#group" + form_id + "_LEGAL_PREFIX_NAME").addClass("has-error");
+ 			showMainError = 1;
+ 	 	}else if(!valid_prefix && prefixVal.length != 0){
+ 	 		$("#" + form_id + "_LEGAL_PREFIX_NAME_ERROR" + " .custom-error").html('This is not a valid prefix. Examples of valid prefixes include Attny., Rev., Dr., etc.');	
+ 			$("#" + form_id + "_LEGAL_PREFIX_NAME_ERROR").show();		
+ 			$("#group" + form_id + "_LEGAL_PREFIX_NAME").addClass("has-error");
+ 			showMainError = 1;
+ 	 	}else{
+ 	 		$("#" + form_id + "_LEGAL_PREFIX_NAME_ERROR").hide();
+ 	 		$("#group" + form_id + "_LEGAL_PREFIX_NAME").removeClass("has-error");
+ 	 	}
+ 	 	/*check for valid suffix, don't allow all numbers*/
+ 	 	var suffixVal = $('#' + form_id + '_LEGAL_SUFFIX_NAME').val();
+ 	 	var suffixRegex = /(?!^\d+$)^.+$/;
+ 	 	valid_suffix = suffixRegex.test(suffixVal);
+ 	 	if(!valid_suffix && suffixVal.length != 0){
+ 	 		$("#" + form_id + "_LEGAL_SUFFIX_NAME_ERROR" + " .custom-error").html('This is not a valid suffix. Examples of valid suffixes include Jr., Sr., IV, etc.');	
+ 			$("#" + form_id + "_LEGAL_SUFFIX_NAME_ERROR").show();		
+ 			$("#group" + form_id + "_LEGAL_SUFFIX_NAME").addClass("has-error");
+ 			showMainError = 1;
+ 	 	}else{
+ 	 		$("#" + form_id + "_LEGAL_SUFFIX_NAME_ERROR").hide();
+ 	 		$("#group" + form_id + "_LEGAL_SUFFIX_NAME").removeClass("has-error");
+ 	 	}
+ 	}
+
 }
  
  /*save main form*/
@@ -503,6 +585,14 @@ if(value == 'United States' || value == "US"){
 	        				  var showEmerNumber = 1;
 	        				  emergencyNumberToggle(modal_type, 1);
 	        			  }
+	        		  }else if(index == 'PARENT_PIDM'){
+	        			  if($.isNumeric(element)){
+	        				  $('.' + modal_type + '_NAME_FIELD').prop('disabled',true);
+	        				  $('#' + modal_type + '_NAME_FIELD_NOTE').show();
+	        			  }
+	        		  }else{
+	        			  $('.' + modal_type + '_NAME_FIELD').prop('disabled',false);
+	        			  $('.' + modal_type + '_NAME_FIELD_NOTE').hide();
 	        		  }
 	        	  });
         	  }else{
@@ -516,6 +606,14 @@ if(value == 'United States' || value == "US"){
 	        				  var showEmerNumber = 1;
 	        				  emergencyNumberToggle(modal_type, 1);
 	        			  }
+	        		  }else if(index == 'PARENT_PIDM'){
+	        			  if($.isNumeric(element)){
+	        				  $('.' + modal_type + '_NAME_FIELD').prop('disabled',true);
+	        				  $('#' + modal_type + '_NAME_FIELD_NOTE').show();
+	        			  }
+	        		  }else{
+	        			  $('.' + modal_type + '_NAME_FIELD').prop('disabled',false);
+	        			  $('#' + modal_type + '_NAME_FIELD_NOTE').hide();
 	        		  }
   	        	  });
         	  }
@@ -540,16 +638,7 @@ if(value == 'United States' || value == "US"){
     	  	  if($('#STUDENT_ADDR_STREET_LINE1').val() == ''){	        		  
     	  		  $('form#' + modal_type + ' #GROUP_' + modal_type + '_ADDRESS_TO_USE').hide();
     	  	  }
-
-    	  	  /*disable parent name fields if parent has numeric ppid*/
-    	  	  if(modal_type == 'PARENT'){
-	    	  	  if($.isNumeric(ppid)){
-	    	  		$('.' + modal_type + '_NAME_FIELD').prop('disabled',true);
-	    	  	  }else{
-	    	  		$('.' + modal_type + '_NAME_FIELD').prop('disabled',false);
-	    	  	  }
-    	  	  }
-        	  
+       	  
     	  	  /*phones*/
         	  for(i=0;i<data.phones.length;i++){
         		  $('#' + modal_type + '_PHONE_' + data.phones[i].PHONE_CODE + '_CODE').val(data.phones[i].PHONE_CODE);
@@ -709,12 +798,13 @@ if(value == 'United States' || value == "US"){
 
 	/*loop phones separately as array*/
 	formData = formData + '"phones": [ {';
-	var phoneCodeArray = ["CP","EP","MA","BU"];			
+	var phoneCodeArray = ["CP","MA","BU"];			
 	 for (var j = 0; j < phoneCodeArray.length; j++) {
 		if(phoneCodeArray[j] != "CP"){
 			formData = formData + "},{";
 		}
 		var phone_sequence_no = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_SEQUENCE_NO').val();
+		console.log("phone_sequence_no: " + phone_sequence_no);
 		var phone_code = $('#' + form_id + '_PHONE_' + phoneCodeArray[j] + '_CODE').val();
 		if(phoneCodeArray[j] == "EP"){
 			if($('#' + form_id + '_EMERG_NO_CELL_PHONE').is(':checked')){		
@@ -1074,6 +1164,24 @@ function emergencySwitchToggle(ppid, name, event, state){
 					
 	}		
 	  
+}
+
+function modalMobilePhoneWarning(form_id,checked){
+	if(checked){
+		$('#' + form_id + '_PHONE_MOBILE_PHONE_WARNING').show();
+		/*remove requirement for mobile phone*/
+		$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').hide();
+		$('#GROUP_' + form_id + '_PHONE_CP_NUMBER_INTL .required').hide();
+		$('#' + form_id + '_PHONE_CP_AREA_CODE').removeClass('ccreq');
+		$('#' + form_id + '_PHONE_CP_NUMBER').removeClass('ccreq');
+		$('#' + form_id + '_PHONE_CP_NUMBER_INTL').removeClass('ccreq');
+	}else{
+		$('#' + form_id + '_PHONE_MOBILE_PHONE_WARNING').hide();
+		/*add requirement for mobile phone*/
+    	$('#GROUP_' + form_id + '_PHONE_CP_NUMBER .required').show();	
+    	$('#' + form_id + '_PHONE_CP_AREA_CODE').addClass('ccreq');
+    	$('#' + form_id + '_PHONE_CP_NUMBER').addClass('ccreq');
+	}
 }
 
 function promoteParent(ppid,name){

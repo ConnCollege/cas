@@ -196,7 +196,7 @@
 	<div style="<c:if test="${fn:length(StudentHomePhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_MA_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3">Home Phone</label>
 		<div class="col-sm-9">
-			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="45" class="form-control" id="STUDENT_PHONE_MA_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
+			<input type="text" placeholder="International Number" name="fields[28]" size="7" maxlength="16" class="form-control" id="STUDENT_PHONE_MA_NUMBER_INTL" value="${StudentHomePhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -234,7 +234,7 @@
 	<div style="<c:if test="${fn:length(StudentCellPhone['PHONE_NUMBER_INTL']) == 0}">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_CP_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Mobile Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="CP" data-phone-intl="1" placeholder="International Number" name="fields[24]" size="7" maxlength="45" class="form-control student_phone_field" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="CP" data-phone-intl="1" placeholder="International Number" name="fields[24]" size="7" maxlength="16" class="form-control student_phone_field" id="STUDENT_PHONE_CP_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>		
 	
@@ -283,7 +283,7 @@
 	<div style="<c:if test="${fn:length(StudentEmrPhone['PHONE_NUMBER_INTL']) == 0 || StudentBio['EMERG_NO_CELL_PHONE'] == 'N' }">display:none;</c:if>" class="form-group" id="GROUP_STUDENT_PHONE_EMERGENCY_NUMBER_INTL">
 		<label for="tel" class="control-label col-sm-3"><span class="required">* </span>Emergency Phone</label>
 		<div class="col-sm-9">
-			<input type="text" data-phone-type="EMERGENCY" data-phone-intl="1" placeholder="International Number" name="fields[30]" size="7" maxlength="45" class="form-control student_phone_field" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
+			<input type="text" data-phone-type="EMERGENCY" data-phone-intl="1" placeholder="International Number" name="fields[30]" size="7" maxlength="16" class="form-control student_phone_field" id="STUDENT_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentEmrPhone['PHONE_NUMBER_INTL']}">
 		</div>
 	</div>	
 	
@@ -479,7 +479,11 @@
 			  			<label for="text" class="control-label col-sm-4"><span class="required">* </span>First Name</label>
 			  			<div class="col-sm-6">
 			  				<input type="text" placeholder="First Name" maxlength="60" name="<c:out value="${modalType}"/>_PREF_FIRST_NAME" class="form-control ccreq <c:out value="${modalType}"/>_DEMO_FIELD <c:out value="${modalType}"/>_NAME_FIELD" id="<c:out value="${modalType}"/>_PREF_FIRST_NAME">
+			  				<p class="input_caption">Enter full first name (legal first name)</p>
 			  			</div>
+			  			<div id="<c:out value="${modalType}"/>_NAME_FIELD_NOTE" class="col-sm-1" style="display:none;">
+							<a data-content="If you need to update this contact's name, please email The Department of Advancement Services at &lt;a href='mailto:mis@conncoll.edu' target='_blank'&gt;mis@conncoll.edu&lt;/a&gt;." data-placement="right" data-title="Name Change Request" data-trigger="focus" data-toggle="popover" data-html="true" class="glyphicon glyphicon-question-sign" role="button" tabindex="0" aria-hidden="true" data-original-title="" title="" style="top:8px;right:10px;"></a>
+						</div>
 			  		</div>
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PREF_MIDDLE_NAME_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>
 			  		<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_MIDDLE_NAME">
@@ -523,7 +527,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="CP" id="GROUP_<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Mobile Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL" size="7" maxlength="16" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_CP_NUMBER_INTL">
 		  				</div>
 		  			</div>
 		  			
@@ -544,9 +548,12 @@
 						</div>
 					</div>
 					
-					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" value="Y" name="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" id="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" class="mobile_phone_check modal_mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>					
+					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE"><div class="col-sm-offset-1 col-sm-9"><div class="checkbox"><label><input type="checkbox" value="Y" name="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" id="<c:out value="${modalType}"/>_EMERG_NO_CELL_PHONE" class="modal_mobile_phone_check <c:out value="${modalType}"/>_DEMO_FIELD" data-mobile-type="<c:out value="${modalType}"/>">This person does not have a mobile phone</label></div></div></div>	
 					
-					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
+					<div style="display:none;" role="alert" class="alert alert-warning" id="<c:out value="${modalType}"/>_PHONE_MOBILE_PHONE_WARNING"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Warning:</span><span class="custom-error">You must enter either a home or office phone if this person does not have a mobile phone.</span></div>			
+					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_HOME_PHONE_OFFICE_PHONE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error">You must enter either a home or office phone if this person does not have a mobile phone. Please include both area code and number for domestic phone numbers.</span></div>	
+					
+					<%--<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>	
 					<div class="form-group" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER" style="display:none;">
 						<label for="Phone" class="control-label col-sm-4 address_field"><span class="required">* </span>Emergency Phone</label>		
@@ -565,13 +572,13 @@
 					<div style="display:none;" class="form-group modal_intl_form_group" data-type="EMERGENCY" id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL">
 						<label for="tel" class="control-label col-sm-4"><span class="required">* </span>Emergency Phone</label>
 						<div class="col-sm-6">
-							<input type="text" placeholder="International Number" name="fields[24]" size="7" maxlength="45" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
+							<input type="text" placeholder="International Number" name="fields[24]" size="7" maxlength="16" class="form-control" id="<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL" value="${StudentCellPhone['PHONE_NUMBER_INTL']}">
 						</div>
 					</div>	
 					
 					<div class="form-group"  id="GROUP_<c:out value="${modalType}"/>_PHONE_EMERGENCY_NUMBER_INTL_SWITCH" style="display:none;">
 						<label class="col-sm-5"></label><span style="cursor:pointer;color: #23527c;text-decoration: underline;" data-type="EMERGENCY" class="intl_number_switch modal_intl_number_switch col-sm-4">Enter International Number</span>							
-					</div>	
+					</div>	 --%>
 										
 					<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_AREA_CODE_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>			
 			  		<div style="display:none;" role="alert" class="alert alert-danger" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_ERROR"><span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span><span class="sr-only">Error:</span><span class="custom-error"></span></div>	
@@ -592,7 +599,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="MA" id="GROUP_<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Home Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL" size="7" maxlength="16" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_MA_NUMBER_INTL">
 		  				</div>
 		  			</div>	
 		  			
@@ -619,7 +626,7 @@
 			  		<div style="display:none;" class="form-group modal_intl_form_group" data-type="BU" id="GROUP_<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				<label for="tel" class="control-label col-sm-4">Office Phone</label>
 		  				<div class="col-sm-6">
-		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" maxlength="45" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
+		  					<input type="text" placeholder="International Number" name="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL" size="7" maxlength="16" class="form-control <c:out value="${modalType}"/>_PHONE_FIELD" id="<c:out value="${modalType}"/>_PHONE_BU_NUMBER_INTL">
 		  				</div>
 		  			</div>		
 		  			
@@ -905,7 +912,7 @@
 	</div>
 </div> 	     	
 
-<script type="text/javascript" src="/clnaddr/js/clnaddr.js?ver=10098"></script>  
+<script type="text/javascript" src="/clnaddr/js/clnaddr.js?ver=10114"></script>  
 <script type="text/javascript"> 
 	ajaxurl = "/cas/cas-rest-api/peci/";
 	student_PIDM = "${StudentBio['STUDENT_PIDM']}";
@@ -913,7 +920,7 @@
 	deanExceptionDate = "${StudentBio['DEAN_EXCEPTION_DATE']}"; 
 	duplicate = "${duplicate}";
 </script> 
-<script type="text/javascript" src="/cas/js/ccPECIE.js?ver=10098"></script>    
+<script type="text/javascript" src="/cas/js/ccPECIE.js?ver=10114"></script>    
 
 </body>
 </html>
