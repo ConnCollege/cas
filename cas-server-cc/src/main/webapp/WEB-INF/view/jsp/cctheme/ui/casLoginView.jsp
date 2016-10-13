@@ -14,7 +14,7 @@
     <header>
         <img src="https://www.conncoll.edu/media/website-media/login/logo.png" />
     </header>
-    <p>Enter your Camel Username only, for example: 'jsmith'. Do not use 'jsmith@conncoll.edu', 'joe.smith@conncoll.edu', or 'joe.smith'</p>
+    <p>Enter your Camel Username only. Do not enter @conncoll.edu</p>
     <form:form method="post" id="fm1" cssClass="fm-v clearfix" commandName="${commandName}" htmlEscape="true">
     <form:errors path="*" cssClass="errors" id="status" element="div" />
         <form:input cssClass="required" cssErrorClass="error" id="username" size="25" tabindex="1" accesskey="${userNameAccessKey}" path="username" autocomplete="false" htmlEscape="true" placeholder="Camel Username" />
@@ -25,8 +25,7 @@
         <input type="hidden" name="lt" value="${loginTicket}" />
         <input type="hidden" name="execution" value="${flowExecutionKey}" />
         <input type="hidden" name="_eventId" value="submit" />
-        <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?interrupt=RESET'; return false;">forgot password</a></p><br />
-        <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=initialize'; return false;">create new account</a></p><br />   
+        <p><a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?interrupt=RESET'; return false;">Forgot password?</a>&nbsp;&middot;&nbsp;<a href="javascript:void(0);" onclick="document.location.href='<c:url value="login"/>?execution=${flowExecutionKey}&_eventId=initialize'; return false;">Create new account</a></p>   
     </form:form>
     <p><a href="http://www.conncoll.edu">Connecticut College Homepage</a></p>
 </div>               
