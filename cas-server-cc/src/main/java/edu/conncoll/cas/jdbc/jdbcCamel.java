@@ -827,14 +827,19 @@ public class jdbcCamel {
 		}
 		if (flag.equals("PECIBATCH")) {
 			List<Map<String,Object>> studentTransList = new ArrayList<Map<String,Object>>();
-			SQL="SELECT STUDENT_PIDM FROM peci_trans_start";
+			SQL="SELECT STUDENT_PIDM FROM peci_trans_start inner join Class_2020 on STUDENT_PIDM = PIdM "
+					+ " order by STUDENT_PIDM desc limit 1,125";
+			
+			
 			studentTransList = jdbcCAS.queryForList(SQL,new HashMap<String,Object>());
 			for (int i=0; i< studentTransList.size();i++){
+				
 				String ccPIDM = studentTransList.get(i).get("STUDENT_PIDM").toString();
-				String vaultSearchFilter = LdapUtils.getFilterWithValues("ccPIDM", ccPIDM);
+				
+				log.debug("Searching vault for ccPIDM=" + ccPIDM);
 				
 				List vaultDN = this.vaultTemplate.search(
-					this.vaultSearchBase, vaultSearchFilter, 
+					this.vaultSearchBase, "ccPIdM=" + ccPIDM, 
 					new AbstractContextMapper(){
 						protected Object doMapFromContext(DirContextOperations ctx) {
 							return ctx.getNameInNamespace();
@@ -842,12 +847,25 @@ public class jdbcCamel {
 					}
 				);
 				
-				DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
-				
-				userName = vaultcontext.getStringAttribute("UID");
-				String eduPersonPrimaryAffiliation = vaultcontext.getStringAttribute("eduPersonPrimaryAffiliation");
-				if (eduPersonPrimaryAffiliation.equals("STUDENT")){
-					PECI2Banner(userName, ccPIDM, "C");
+				log.debug("Number of search results " + vaultDN.size());
+				if (vaultDN.size() > 0) {
+					DirContextOperations vaultcontext = vaultTemplate.lookupContext(vaultDN.get(0).toString());
+					
+					userName = vaultcontext.getStringAttribute("UID");
+					
+					log.debug("Username is " + userName);
+					//String eduPersonPrimaryAffiliation = vaultcontext.getStringAttribute("eduPersonPrimaryAffiliation");
+					//String deptName = vaultcontext.getStringAttribute("departmentNumber");
+					//log.debug ("eduPersonPrimaryAffiliation: "+ eduPersonPrimaryAffiliation + " departmentNumber: " + deptName);
+					
+					//if (eduPersonPrimaryAffiliation == null) {
+					//	log.error("User does not have a primary Affiliation PIDM: " + ccPIDM + " username: " + userName);
+					//} else {
+					//	if (eduPersonPrimaryAffiliation.equals("STUDENT") && deptName.equals("Class of 2020")){
+							PECI2Banner(userName, ccPIDM, "C");
+							//System.exit(0);
+					//	}
+					//}
 				}
 			}
 		}
@@ -2146,10 +2164,27 @@ public class jdbcCamel {
 		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='E' where PHONE_CODE='EP' and PECI_PHONE_CODE is null";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='O' where PHONE_CODE='BU' and PECI_PHONE_CODE is null";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
 		SQL="update cas.cc_gen_peci_phone_data_t set PHONE_SEQUENCE_NO=1 where PHONE_SEQUENCE_NO is null";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		SQL="update cc_adv_peci_parents_t set PARENT_LEGAL_PREFIX_NAME = null where PARENT_LEGAL_PREFIX_NAME like 'Mr%' "
+				+ "or PARENT_LEGAL_PREFIX_NAME like 'Ms%' or PARENT_LEGAL_PREFIX_NAME ='Miss'";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="update cas.cc_gen_peci_addr_data_t set ADDR_STAT_CODE = null where ADDR_STAT_CODE='FC'";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="Update cc_adv_peci_parents_t set PARENT_PREF_FIRST_NAME=TRIM(PARENT_PREF_FIRST_NAME), "
+				+ "PARENT_PREF_MIDDLE_NAME=TRIM(PARENT_PREF_MIDDLE_NAME), "
+				+ "PARENT_PREF_LAST_NAME=TRIM(PARENT_PREF_LAST_NAME)";
+		
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
 		boolean bCRUDError = false;
+		String firstPhone = "N";
 		
 		//Set the parent Emergency Priority
 		SQL="update cc_adv_peci_parents_t p"
@@ -2166,7 +2201,6 @@ public class jdbcCamel {
 		studentData = jdbcCAS.queryForMap(SQL,PECIParameters);	
 		
 		//Start with transaction ID
-		
 		in = new MapSqlParameterSource();
 		in.addValue("p_peciUserId", userName);
 		int transId = f_cc_generate_trans_id.executeFunction(Integer.class,in);
@@ -2324,7 +2358,7 @@ public class jdbcCamel {
 			log.debug("New Student phone is empty");
 			// dataset empty 
 		}
-		try {
+		try {			
 			//Parent Data
 			SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, "
 					+ "PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, "
@@ -2350,7 +2384,7 @@ public class jdbcCamel {
 				in.addValue("p_stuPidm",ccPDIM);
 				in.addValue("p_peciUserId",userName);
 				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-				in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+				in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
 
 				in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
 				in.addValue("p_peciParFirstName",capitalizeObj(parent.get("PARENT_PREF_FIRST_NAME")));
@@ -2410,8 +2444,8 @@ public class jdbcCamel {
 					in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
 					in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
 					in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-					in.addValue("p_peciEmergPriority",null);
 					log.debug ("Parent BCM insert returned " + error);
+					firstPhone = capitalizeObj(phone.get("PECI_PHONE_CODE"));
 				} catch (EmptyResultDataAccessException e){
 					log.debug("New parent phone is empty");
 					// dataset empty 
@@ -2434,43 +2468,45 @@ public class jdbcCamel {
 								+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
 								+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT, "
 								+ "EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID limit 1, 30";
+								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
 						phoneData = jdbcCAS.queryForList(SQL,parentParameters);
 						
-						for(int x=0; x<phoneData.size();x++){
+						for(int x=0; x<phoneData.size();x++) {
 							Map<String,Object> phone = phoneData.get(x);
-							//Phone
-							in = new MapSqlParameterSource();
-							in.addValue("p_changeType","C");
-							in.addValue("p_trans_id",transId);
-							in.addValue("p_ppid",p_ppid);
-							in.addValue("p_peciRole","PAR");
-							in.addValue("p_pidm",p_ppidm);
-							in.addValue("p_peciUserId",userName);
-							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-
-							in.addValue("p_banTeleSeqno",null);
-							in.addValue("p_banAddrSeqno",null);
-							in.addValue("p_peciPhonePrimary",null);
-							in.addValue("p_peciPhoneStatus","A");
-							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-							in.addValue("p_banTeleCode",null);
-							in.addValue("p_peciPhonePrimary",null);
-							in.addValue("p_banAddrCode",null);
-							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-							in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-							in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-							in.addValue("p_banComment",null);
-							in.addValue("p_peciEmergPriority",null);
-							
-							out = p_phone_main.execute(in);
-							
-							error = (String)out.get("p_errorCodeOut"); 
-							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-							
-							log.debug("New Parent phone procedure return is " + error);
+							if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
+								//Phone
+								in = new MapSqlParameterSource();
+								in.addValue("p_changeType","C");
+								in.addValue("p_trans_id",transId);
+								in.addValue("p_ppid",p_ppid);
+								in.addValue("p_peciRole","PAR");
+								in.addValue("p_pidm",p_ppidm);
+								in.addValue("p_peciUserId",userName);
+								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+	
+								in.addValue("p_banTeleSeqno",null);
+								in.addValue("p_banAddrSeqno",null);
+								in.addValue("p_peciPhonePrimary",null);
+								in.addValue("p_peciPhoneStatus","A");
+								in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+								in.addValue("p_banTeleCode",null);
+								in.addValue("p_peciPhonePrimary",null);
+								in.addValue("p_banAddrCode",null);
+								in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+								in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+								in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+								in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+								in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+								in.addValue("p_banComment",null);
+								in.addValue("p_peciEmergPriority",null);
+								
+								out = p_phone_main.execute(in);
+								
+								error = (String)out.get("p_errorCodeOut"); 
+								if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+								
+								log.debug("New Parent phone procedure return is " + error);
+							}
 						}
 					} catch (EmptyResultDataAccessException e){
 						log.debug("New parent additional phone is empty");
@@ -2483,39 +2519,41 @@ public class jdbcCamel {
 								+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
 								+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
 								+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID limit 1, 30";
+								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
 						phoneData = jdbcCAS.queryForList(SQL,parentParameters);
 						
 						for(int x=0; x<phoneData.size();x++){
 							Map<String,Object> phone = phoneData.get(x);
-							//Phone
-							in = new MapSqlParameterSource();
-							in.addValue("p_changeType","C");
-							in.addValue("p_trans_id",transId);
-							in.addValue("p_stuPpid",ppId);
-							in.addValue("p_peciRole","PAR");
-							in.addValue("p_stuPidm",ccPDIM);
-							in.addValue("p_parPpid",p_ppid);
-							in.addValue("p_peciUserId",userName);
-							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-
-							//in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-							in.addValue("p_peciPhoneCode",null);
-							in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
-							in.addValue("p_banAddrCode","MA");
-							in.addValue("p_banAddrSeqno",1);
-							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-							in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-							in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-							
-							out = p_phone_create_temp.execute(in);
-							
-							error = (String)out.get("p_errorCodeOut"); 
-							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-							
-							log.debug("New Parent Temp phone procedure return is " + error);
+							if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
+								//Phone
+								in = new MapSqlParameterSource();
+								in.addValue("p_changeType","C");
+								in.addValue("p_trans_id",transId);
+								in.addValue("p_stuPpid",ppId);
+								in.addValue("p_peciRole","PAR");
+								in.addValue("p_stuPidm",ccPDIM);
+								in.addValue("p_parPpid",p_ppid);
+								in.addValue("p_peciUserId",userName);
+								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+	
+								in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+								//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+								in.addValue("p_banTeleCode",null);
+								in.addValue("p_banAddrCode","MA");
+								in.addValue("p_banAddrSeqno",1);
+								in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+								in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+								in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+								in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+								in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+								
+								out = p_phone_create_temp.execute(in);
+								
+								error = (String)out.get("p_errorCodeOut"); 
+								if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+								
+								log.debug("New Parent Temp phone procedure return is " + error);
+							}
 						}
 					} catch (EmptyResultDataAccessException e){
 						log.debug("New parent additional phone is empty");
@@ -2637,7 +2675,7 @@ public class jdbcCamel {
 
 					in.addValue("p_banAddrSeqno",null);
 					in.addValue("p_peciAddrStatus","A");
-					in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE"));
+					in.addValue("p_peciAddCode","H");
 					in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
 					in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
 					in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
@@ -2714,7 +2752,7 @@ public class jdbcCamel {
 			//Clear Student's data from CAS
 			log.debug("Clearing the student data from MySQL");
 			SQL="call PECI_Clear_Student(:STUDENT_PIDM) ";
-			//jdbcCAS.update(SQL, PECIParameters);
+			jdbcCAS.update(SQL, PECIParameters);
 		}
 	}
 	public String capitalizeObj(Object dbObj){

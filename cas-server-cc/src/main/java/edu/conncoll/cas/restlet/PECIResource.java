@@ -189,7 +189,7 @@ public class PECIResource extends Resource
 									//Parent Data
 									SQL="select  PARENT_LEGAL_PREFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME,"
 											+ " PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER,"
-											+ " EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE  from cc_adv_peci_parents_t"
+											+ " EMERG_PHONE_TTY_DEVICE, DEPENDENT, PECI_ROLE, CONTACT_TYPE, PARENT_PIDM  from cc_adv_peci_parents_t"
 											+ " where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									parentData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
@@ -354,7 +354,7 @@ public class PECIResource extends Resource
 									//Contact Data
 									SQL="select EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_PREFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,"
 											+ "EMERG_LEGAL_SUFFIX_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,"
-											+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
+											+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE, PARENT_PIDM from cc_gen_peci_emergs_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 									emrgData = jdbcCAS.queryForMap(SQL,namedParameters);
 								} catch (EmptyResultDataAccessException e){
 									// dataset empty 
