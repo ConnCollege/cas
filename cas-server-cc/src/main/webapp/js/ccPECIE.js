@@ -150,6 +150,28 @@ $(document).ready( function(){
 		}
 	});
 	
+	/*don't allow foreign characters in any fields*/	
+	var CharRegex = /[\w\s\.\d\t\r\@\,x16\-\#\(\)\\\//]/;
+	$("input").keypress(function(e) {
+		if($(this).hasClass('.num_only')){
+			/*do nothing*/
+			console.log("has class num only");
+		}else{
+			thisID = $(this).attr("id");
+			if (CharRegex.test(e.key) ){
+				/*console.log("character accepted: " + e.key)*/
+				$('#' + thisID + '_foreign').remove();				
+			} else {				
+				if(!$('#' + thisID + '_foreign').length){
+					$(this).parent().append('<span id="' + thisID + '_foreign" class="text-danger">Please do not enter foreign or special characters</span>');
+				}
+				e.preventDefault();
+		        return false;
+			}		
+
+		}
+	});
+	
 	//jump to next form field
 	$(".area_code").on('input',function () {
 	    if($(this).val().length == $(this).attr('maxlength')) {
@@ -416,7 +438,7 @@ if(value == 'United States' || value == "US"){
 	 var field_id = $(this).attr("id");
 	 var field_type = $(this).attr("type");
 	 var field_label = $(this).attr("placeholder");
-	 if(field_value.trim().length == 0){
+	 if(field_value.trim().length == 0){		 
 		 $("#" + field_id + "_ERROR" + " .custom-error").html('Please Enter ' + field_label);	
 		 $("#" + field_id + "_ERROR").show();		
 		 $("#group_" + field_id).addClass("has-error");		 
@@ -461,9 +483,34 @@ if(value == 'United States' || value == "US"){
 		 showMainError = 1;
 	 }else{
 		 $("#" + field_id + "_ERROR").hide();
-		 $("#group_" + field_id).removeClass("has-error");
+		 $("#group_" + field_id).removeClass("has-error");  
 	 }
  });
+ /*foreign characters not allowed in any fields*/	
+ var CharRegex = /[^\w\s\.\d\t\r\@\,x16\-\#]/;  
+ $('#' + form_id + " input:visible").each(function(){
+	 var field_value = $(this).val();
+	 var field_id = $(this).attr("id");
+	 var field_label = $(this).attr("placeholder"); 
+	if (CharRegex.test(field_value)){
+		$("#" + field_id + "_ERROR" + " .custom-error").html("The" + field_label + ' you entered has foreign or special characters. Please enter Latin characters only.');	
+		 $("#" + field_id + "_ERROR").show();		
+		 $("#group_" + field_id).addClass("has-error");
+		 showMainError = 1;		
+	} else {
+		var errorString = $("#" + field_id + "_ERROR" + " .custom-error").html();	
+		console.log(errorString);
+		/*only remove error if it is a foreign character error*/
+		console.log(typeof(errorString));
+		if(typeof(errorString) != 'undefined'){
+			if(errorString.indexOf("foreign") >= 0){
+				$("#" + field_id + "_ERROR").hide();
+				$("#group_" + field_id).removeClass("has-error");
+			}
+		}		
+	}	 
+	 	 
+ })
  /*campus address check*/
  var addr_line1 = $('#' + form_id + '_ADDR_STREET_LINE1').val();
  var addr_city = $('#' + form_id + '_ADDR_CITY').val();
