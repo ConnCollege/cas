@@ -463,10 +463,24 @@ if(value == 'United States' || value == "US"){
 			 $("#group_" + field_id).addClass("has-error");
 			 showMainError = 1;
 		 }else{
-			 $("#group_" + field_id).removeClass("has-error");
+			 if(field_id == 'STUDENT_EMAIL_ADDRESS' && field_value.indexOf("@conncoll") >= 0){
+				 $("#" + field_id + "_ERROR" + " .custom-error").html('Please do not enter your @conncoll email address for your ' + field_label + '. Please use a non-college email account.');	
+				 $("#" + field_id + "_ERROR").show();		
+				 $("#group_" + field_id).addClass("has-error");
+				 showMainError = 1;
+			 }else{
+				 $("#group_" + field_id).removeClass("has-error");
+			 }
 		 }
 	 }else{
-		 $("#group_" + field_id).removeClass("has-error");
+		 if(field_id == 'STUDENT_EMAIL_ADDRESS' && field_value.indexOf("@conncoll") >= 0){
+			 $("#" + field_id + "_ERROR" + " .custom-error").html('Please do not enter your @conncoll email address for your ' + field_label + '. Please use a non-college email account.');	
+			 $("#" + field_id + "_ERROR").show();		
+			 $("#group_" + field_id).addClass("has-error");
+			 showMainError = 1;
+		 }else{
+			 $("#group_" + field_id).removeClass("has-error");
+		 }
 	 }
  });
  /*telephone validation*/
@@ -499,9 +513,7 @@ if(value == 'United States' || value == "US"){
 		 showMainError = 1;		
 	} else {
 		var errorString = $("#" + field_id + "_ERROR" + " .custom-error").html();	
-		console.log(errorString);
-		/*only remove error if it is a foreign character error*/
-		console.log(typeof(errorString));
+		/*only remove error if it is a foreign character error*/		
 		if(typeof(errorString) != 'undefined'){
 			if(errorString.indexOf("foreign") >= 0){
 				$("#" + field_id + "_ERROR").hide();
