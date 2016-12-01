@@ -136,7 +136,7 @@ public class jdbcCamel {
 	
 	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
-		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, PECIC, PECIE, PECIBATCH, NOVALUE;    
+		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, PECIC, PECIE, PECIBATCH, PECIULOCK, NOVALUE;    
 		public static Interrupts toInt(String str) {
 			try {
 				return valueOf(str);
@@ -351,6 +351,7 @@ public class jdbcCamel {
 			case PECI:
 			case PECIE:
 			case PECIC:	
+			case PECIULOCK:
 				//Get PDIM and Name from Vault
 				String vaultSearchFilter = LdapUtils.getFilterWithValues(this.vaultFilter, userName);
 				log.debug("Vault search filter: " + vaultSearchFilter);
@@ -406,6 +407,9 @@ public class jdbcCamel {
 					
 						//Pull PECI Data from Oracle and store in MySQL 
 						
+						context.getFlowScope().put("Flag", "PECIULOCK");
+						
+						/* Temporarily commented to not pull the data from Oracle/Banner
 						//Enter transaction data in trans table
 						SQL= "insert into peci_trans_start (STUDENT_PIDM, STUDENT_UUID, Trans_start) values ( :STUDENT_PIDM,uuid(), now())";
 						log.debug("inserting transaction start");
@@ -432,7 +436,7 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_addr_data_t",addressData);	
 						
 						//Email Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_v where (PECI_EMAIL_CODE='H' or PECI_EMAIL_CODE='P') and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS from cc_gen_peci_email_data_v where (PECI_EMAIL_CODE in ('H','P')  or (PECI_EMAIL_CODE = 'E' and PARENT_PPID is not null)) and STUDENT_PIDM=" + ccPDIM.toString();
 						emailData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_email_data_t",emailData);	
@@ -447,7 +451,8 @@ public class jdbcCamel {
 						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where PARENT_PPID >0 and STUDENT_PIDM=" + ccPDIM.toString();
 						emergData = jdbcCensus.queryForList(SQL);
 						
-						copy2MySQL("cc_gen_peci_emergs_t",emergData);	
+						copy2MySQL("cc_gen_peci_emergs_t",emergData);
+						*/	
 					} else {
 						//Brand new PECI record.		
 						log.debug("Brand new PECI Record starting MySQL Base record");			
@@ -520,7 +525,7 @@ public class jdbcCamel {
 					log.info("No Student data in MySQL");
 				}
 				
-				// Send to PECIC if flag is PECI and record is sufficently complete
+				// Send to PECIC if flag is PECI and record is sufficiently complete
 				log.debug ("Checking for PECIE complete");
 				log.debug ("Flag: " + flag);
 				log.debug ("emergData: " + emergData.size());
@@ -829,7 +834,9 @@ public class jdbcCamel {
 			List<Map<String,Object>> studentTransList = new ArrayList<Map<String,Object>>();
 			SQL="SELECT STUDENT_PIDM FROM peci_trans_start "
 					+ " inner join Class_2020 on STUDENT_PIDM = PIdM "
-					+ " order by RAND() limit 0,100";
+					//+ " where STUDENT_PIDM in (411326,412858,411178,412622,410752,404864,347520,411230,416513,411279,380836,413709) " //
+					//+ " Where STUDENT_PIDM in (416513,411279)"
+					+ " order by RAND() limit 0,250";
 			
 			
 			studentTransList = jdbcCAS.queryForList(SQL,new HashMap<String,Object>());
@@ -924,7 +931,7 @@ public class jdbcCamel {
 
 					log.debug("Performing Update to banner");
 					
-					//PECI2Banner(userName,ccPDIM,"U");
+					PECI2Banner(userName,ccPDIM,"U");
 				}
 				
 				context.getFlowScope().put("Flag","PECI");
@@ -1861,300 +1868,301 @@ public class jdbcCamel {
 		Map<String,Object> emailData = new HashMap<String,Object>();
 		List<Map<String,Object>> parentData = new ArrayList<Map<String,Object>>();
 		List<Map<String,Object>> phoneData = new ArrayList<Map<String,Object>>();
-		
-		SimpleJdbcCall f_cc_generate_trans_id = new SimpleJdbcCall(this.censusSource)
-			.withFunctionName("f_cc_generate_trans_id");
-		f_cc_generate_trans_id.setAccessCallParameterMetaData(false);
-		f_cc_generate_trans_id.declareParameters(
-			new SqlOutParameter("RETURN", Types.INTEGER),
-			new SqlParameter("p_peciUserId", Types.VARCHAR));
-		
-		SimpleJdbcCall p_student_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_student_pkg")
-			.withProcedureName("p_student_main");
-		p_student_main.setAccessCallParameterMetaData(false);
-		p_student_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),
-			new SqlParameter("p_peciRole", Types.VARCHAR),
-			new SqlParameter("p_pidm", Types.NUMERIC),
-			new SqlParameter("p_ppid", Types.NUMERIC),
-			new SqlParameter("p_peciLegalDisc", Types.DATE),
-			new SqlParameter("p_peciDeanExcept", Types.DATE),
-			new SqlParameter("p_noCellPhone", Types.VARCHAR),
-			new SqlParameter("p_emergAutoOptout", Types.VARCHAR),
-			new SqlParameter("p_emergSendText", Types.VARCHAR),
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-			new SqlOutParameter("p_peciStudentPpidOut", Types.INTEGER),
-			new SqlOutParameter("p_peciStudentPidmOut", Types.INTEGER),
-			new SqlOutParameter("p_peciLegalDiscOut", Types.DATE),
-			new SqlOutParameter("p_peciDeanExceptOut", Types.DATE),
-			new SqlOutParameter("p_noCellPhoneOut", Types.VARCHAR),
-			new SqlOutParameter("p_emergAutoOptoutOut", Types.VARCHAR),
-			new SqlOutParameter("p_emergSendTextOut", Types.VARCHAR),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));	
-		
-		SimpleJdbcCall p_email_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_email_pkg")
-			.withProcedureName("p_email_main");
-		p_email_main.setAccessCallParameterMetaData(false);
-		p_email_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),
-			new SqlParameter("p_peciRole", Types.VARCHAR),
-			
-			new SqlParameter("p_peciEmailCode", Types.VARCHAR),
-			
-			new SqlParameter("p_pidm", Types.NUMERIC),
-			new SqlParameter("p_ppid", Types.NUMERIC),
-			
-			new SqlParameter("p_peciEmailAddr", Types.VARCHAR),
-			new SqlParameter("p_peciEmailAddrStatusInd", Types.VARCHAR),
-			
-			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-			
-			new SqlOutParameter("p_peciEmailAddrOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciEmailAddrStatusOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciEmailAddrPrefOut", Types.VARCHAR),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-		
-		SimpleJdbcCall p_address_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_address_pkg")
-			.withProcedureName("p_address_main");
-		p_address_main.setAccessCallParameterMetaData(false);
-		p_address_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),
-			new SqlParameter("p_peciRole", Types.VARCHAR),
-			
-			new SqlParameter("p_peciAddCode", Types.VARCHAR),
-			
-			new SqlParameter("p_pidm", Types.NUMERIC),
-			new SqlParameter("p_ppid", Types.NUMERIC),
 
-			new SqlParameter("p_peciAddrStatus", Types.VARCHAR),
-			new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
-			new SqlParameter("p_peciAddrStreetLine1", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStreetLine2", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStreetLine3", Types.VARCHAR),
-			new SqlParameter("p_peciAddrCity", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStateCode", Types.VARCHAR),
-			new SqlParameter("p_peciAddrZipCode", Types.VARCHAR),
-			new SqlParameter("p_peciAddrNatnCode", Types.VARCHAR),
+	    //{{		
+			SimpleJdbcCall f_cc_generate_trans_id = new SimpleJdbcCall(this.censusSource)
+				.withFunctionName("f_cc_generate_trans_id");
+			f_cc_generate_trans_id.setAccessCallParameterMetaData(false);
+			f_cc_generate_trans_id.declareParameters(
+				new SqlOutParameter("RETURN", Types.INTEGER),
+				new SqlParameter("p_peciUserId", Types.VARCHAR));
 			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+			SimpleJdbcCall p_student_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_student_pkg")
+				.withProcedureName("p_student_main");
+			p_student_main.setAccessCallParameterMetaData(false);
+			p_student_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),
+				new SqlParameter("p_peciRole", Types.VARCHAR),
+				new SqlParameter("p_pidm", Types.NUMERIC),
+				new SqlParameter("p_ppid", Types.NUMERIC),
+				new SqlParameter("p_peciLegalDisc", Types.DATE),
+				new SqlParameter("p_peciDeanExcept", Types.DATE),
+				new SqlParameter("p_noCellPhone", Types.VARCHAR),
+				new SqlParameter("p_emergAutoOptout", Types.VARCHAR),
+				new SqlParameter("p_emergSendText", Types.VARCHAR),
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				new SqlOutParameter("p_peciStudentPpidOut", Types.INTEGER),
+				new SqlOutParameter("p_peciStudentPidmOut", Types.INTEGER),
+				new SqlOutParameter("p_peciLegalDiscOut", Types.DATE),
+				new SqlOutParameter("p_peciDeanExceptOut", Types.DATE),
+				new SqlOutParameter("p_noCellPhoneOut", Types.VARCHAR),
+				new SqlOutParameter("p_emergAutoOptoutOut", Types.VARCHAR),
+				new SqlOutParameter("p_emergSendTextOut", Types.VARCHAR),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));	
 			
-			new SqlOutParameter("p_peciAddrStreetLine1Out", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrStreetLine2Out", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrStreetLine3Out", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrCityOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrStateCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrZipCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrNatnCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciAddrStatusOut", Types.VARCHAR),
-			new SqlOutParameter("p_banAddrCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_banAddrSeqnoOut", Types.NUMERIC),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-
-		SimpleJdbcCall p_phone_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_phone_pkg")
-			.withProcedureName("p_phone_main");
-		p_phone_main.setAccessCallParameterMetaData(false);
-		p_phone_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),
-			new SqlParameter("p_peciRole", Types.VARCHAR),
+			SimpleJdbcCall p_email_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_email_pkg")
+				.withProcedureName("p_email_main");
+			p_email_main.setAccessCallParameterMetaData(false);
+			p_email_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),
+				new SqlParameter("p_peciRole", Types.VARCHAR),
+				
+				new SqlParameter("p_peciEmailCode", Types.VARCHAR),
+				
+				new SqlParameter("p_pidm", Types.NUMERIC),
+				new SqlParameter("p_ppid", Types.NUMERIC),
+				
+				new SqlParameter("p_peciEmailAddr", Types.VARCHAR),
+				new SqlParameter("p_peciEmailAddrStatusInd", Types.VARCHAR),
+				
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_peciEmailAddrOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciEmailAddrStatusOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciEmailAddrPrefOut", Types.VARCHAR),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
 			
-			new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
+			SimpleJdbcCall p_address_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_address_pkg")
+				.withProcedureName("p_address_main");
+			p_address_main.setAccessCallParameterMetaData(false);
+			p_address_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),
+				new SqlParameter("p_peciRole", Types.VARCHAR),
+				
+				new SqlParameter("p_peciAddCode", Types.VARCHAR),
+				
+				new SqlParameter("p_pidm", Types.NUMERIC),
+				new SqlParameter("p_ppid", Types.NUMERIC),
+	
+				new SqlParameter("p_peciAddrStatus", Types.VARCHAR),
+				new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
+				new SqlParameter("p_peciAddrStreetLine1", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStreetLine2", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStreetLine3", Types.VARCHAR),
+				new SqlParameter("p_peciAddrCity", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStateCode", Types.VARCHAR),
+				new SqlParameter("p_peciAddrZipCode", Types.VARCHAR),
+				new SqlParameter("p_peciAddrNatnCode", Types.VARCHAR),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_peciAddrStreetLine1Out", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrStreetLine2Out", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrStreetLine3Out", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrCityOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrStateCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrZipCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrNatnCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciAddrStatusOut", Types.VARCHAR),
+				new SqlOutParameter("p_banAddrCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_banAddrSeqnoOut", Types.NUMERIC),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
+	
+			SimpleJdbcCall p_phone_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_phone_pkg")
+				.withProcedureName("p_phone_main");
+			p_phone_main.setAccessCallParameterMetaData(false);
+			p_phone_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),
+				new SqlParameter("p_peciRole", Types.VARCHAR),
+				
+				new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
+				
+				new SqlParameter("p_pidm", Types.NUMERIC),
+				new SqlParameter("p_ppid", Types.NUMERIC),
+	
+				new SqlParameter("p_banTeleCode", Types.VARCHAR),
+				new SqlParameter("p_banTeleSeqno", Types.NUMERIC),
+				new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneStatus", Types.VARCHAR),
+				new SqlParameter("p_peciPhonePrimary", Types.VARCHAR),
+				new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
+				new SqlParameter("p_banComment", Types.VARCHAR),
+				new SqlParameter("p_peciEmergPriority", Types.NUMERIC),
+				new SqlParameter("p_banAddrCode", Types.VARCHAR),
+				new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_peciPhoneAreaOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneNumberOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneIntlOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneStatusOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhonePrimaryOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciCellPhoneCarrierOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneTtyDeviceOut", Types.VARCHAR),
+				new SqlOutParameter("p_banCommentOut", Types.VARCHAR),
+				new SqlOutParameter("p_banTeleCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_banTeleSeqnoOut", Types.NUMERIC),
+				new SqlOutParameter("p_banEmergTextEmailOut", Types.VARCHAR),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
 			
-			new SqlParameter("p_pidm", Types.NUMERIC),
-			new SqlParameter("p_ppid", Types.NUMERIC),
-
-			new SqlParameter("p_banTeleCode", Types.VARCHAR),
-			new SqlParameter("p_banTeleSeqno", Types.NUMERIC),
-			new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneStatus", Types.VARCHAR),
-			new SqlParameter("p_peciPhonePrimary", Types.VARCHAR),
-			new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
-			new SqlParameter("p_banComment", Types.VARCHAR),
-			new SqlParameter("p_peciEmergPriority", Types.NUMERIC),
-			new SqlParameter("p_banAddrCode", Types.VARCHAR),
-			new SqlParameter("p_banAddrSeqno", Types.NUMERIC),
+			SimpleJdbcCall p_parent_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_parent_pkg")
+				.withProcedureName("p_parent_main");
+			p_parent_main.setAccessCallParameterMetaData(false);
+			p_parent_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),								
+				new SqlParameter("p_duplicateStatus", Types.VARCHAR),
+				new SqlParameter("p_peciRole", Types.VARCHAR),								
+				new SqlParameter("p_stuPidm", Types.NUMERIC),
+				new SqlParameter("p_stuPpid", Types.NUMERIC),
+				
+				new SqlParameter("p_peciParLastName", Types.VARCHAR),
+				new SqlParameter("p_peciParFirstName", Types.VARCHAR),
+				new SqlParameter("p_peciParMiddleName", Types.VARCHAR),
+				new SqlParameter("p_peciParPrefixName", Types.VARCHAR),
+				new SqlParameter("p_peciParSuffixName", Types.VARCHAR),
+				new SqlParameter("p_parPidm", Types.NUMERIC),
+				new SqlParameter("p_parPpid", Types.NUMERIC),
+				new SqlParameter("p_parOrder", Types.NUMERIC),
+				new SqlParameter("p_reltCode", Types.VARCHAR),
+				new SqlParameter("p_emergPriority", Types.NUMERIC),
+				new SqlParameter("p_noCellPhone", Types.VARCHAR),
+				new SqlParameter("p_dependent", Types.VARCHAR),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_peciParentPpidOut", Types.NUMERIC),
+				new SqlOutParameter("p_peciParentPidmOut", Types.NUMERIC),
+				new SqlOutParameter("p_peciParentOrderOut", Types.NUMERIC),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
 			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+			SimpleJdbcCall p_exe_cm_singleparent = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_commonmatching_pkg")
+				.withProcedureName("p_exe_cm_singleparent");
+			p_exe_cm_singleparent.setAccessCallParameterMetaData(false);
+			p_exe_cm_singleparent.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),			
+				new SqlParameter("p_peciRole", Types.VARCHAR),								
+				new SqlParameter("p_stuPidm", Types.NUMERIC),
+				new SqlParameter("p_stuPpid", Types.NUMERIC),
+	
+				new SqlParameter("p_peciParPrefixName", Types.VARCHAR),
+				new SqlParameter("p_peciParFirstName", Types.VARCHAR),
+				new SqlParameter("p_peciParMiddleName", Types.VARCHAR),
+				new SqlParameter("p_peciParLastName", Types.VARCHAR),
+				new SqlParameter("p_peciParSuffixName", Types.VARCHAR),
+				new SqlParameter("p_reltCode", Types.VARCHAR),
+				new SqlParameter("p_dependent", Types.VARCHAR),
+				new SqlParameter("p_parEmailAddr", Types.VARCHAR),
+				new SqlParameter("p_peciAddCode", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStreetLine1", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStreetLine2", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStreetLine3", Types.VARCHAR),
+				new SqlParameter("p_peciAddrCity", Types.VARCHAR),
+				new SqlParameter("p_peciAddrStateCode", Types.VARCHAR),
+				new SqlParameter("p_peciAddrZipCode", Types.VARCHAR),
+				new SqlParameter("p_peciAddrNatnCode", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
+				new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
+				new SqlParameter("p_peciNoCellPhone", Types.VARCHAR),
+				new SqlParameter("p_peciEmergPriority", Types.NUMERIC),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_newPidmErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_new XrefErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_new CameldErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_new BioErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_new SorfolkErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_parEmailErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_parAddrICodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_newPhoneErrorCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_matchStatusOut", Types.VARCHAR),
+				new SqlOutParameter("p_parPidmOut", Types.NUMERIC),
+				new SqlOutParameter("p_parPpidOut", Types.NUMERIC),
+				new SqlOutParameter("p_parCamelIdOut", Types.VARCHAR),
+				new SqlOutParameter("p_parOrderOut", Types.NUMERIC),
+				new SqlOutParameter("p_parEmailAddrIOut", Types.VARCHAR));
 			
-			new SqlOutParameter("p_peciPhoneAreaOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneNumberOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneIntlOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneStatusOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhonePrimaryOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciCellPhoneCarrierOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneTtyDeviceOut", Types.VARCHAR),
-			new SqlOutParameter("p_banCommentOut", Types.VARCHAR),
-			new SqlOutParameter("p_banTeleCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_banTeleSeqnoOut", Types.NUMERIC),
-			new SqlOutParameter("p_banEmergTextEmailOut", Types.VARCHAR),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-		
-		SimpleJdbcCall p_parent_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_parent_pkg")
-			.withProcedureName("p_parent_main");
-		p_parent_main.setAccessCallParameterMetaData(false);
-		p_parent_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),								
-			new SqlParameter("p_duplicateStatus", Types.VARCHAR),
-			new SqlParameter("p_peciRole", Types.VARCHAR),								
-			new SqlParameter("p_stuPidm", Types.NUMERIC),
-			new SqlParameter("p_stuPpid", Types.NUMERIC),
-			
-			new SqlParameter("p_peciParLastName", Types.VARCHAR),
-			new SqlParameter("p_peciParFirstName", Types.VARCHAR),
-			new SqlParameter("p_peciParMiddleName", Types.VARCHAR),
-			new SqlParameter("p_peciParPrefixName", Types.VARCHAR),
-			new SqlParameter("p_peciParSuffixName", Types.VARCHAR),
-			new SqlParameter("p_parPidm", Types.NUMERIC),
-			new SqlParameter("p_parPpid", Types.NUMERIC),
-			new SqlParameter("p_parOrder", Types.NUMERIC),
-			new SqlParameter("p_reltCode", Types.VARCHAR),
-			new SqlParameter("p_emergPriority", Types.NUMERIC),
-			new SqlParameter("p_noCellPhone", Types.VARCHAR),
-			new SqlParameter("p_dependent", Types.VARCHAR),
-			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-			
-			new SqlOutParameter("p_peciParentPpidOut", Types.NUMERIC),
-			new SqlOutParameter("p_peciParentPidmOut", Types.NUMERIC),
-			new SqlOutParameter("p_peciParentOrderOut", Types.NUMERIC),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-		
-		SimpleJdbcCall p_exe_cm_singleparent = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_commonmatching_pkg")
-			.withProcedureName("p_exe_cm_singleparent");
-		p_exe_cm_singleparent.setAccessCallParameterMetaData(false);
-		p_exe_cm_singleparent.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),			
-			new SqlParameter("p_peciRole", Types.VARCHAR),								
-			new SqlParameter("p_stuPidm", Types.NUMERIC),
-			new SqlParameter("p_stuPpid", Types.NUMERIC),
-
-			new SqlParameter("p_peciParPrefixName", Types.VARCHAR),
-			new SqlParameter("p_peciParFirstName", Types.VARCHAR),
-			new SqlParameter("p_peciParMiddleName", Types.VARCHAR),
-			new SqlParameter("p_peciParLastName", Types.VARCHAR),
-			new SqlParameter("p_peciParSuffixName", Types.VARCHAR),
-			new SqlParameter("p_reltCode", Types.VARCHAR),
-			new SqlParameter("p_dependent", Types.VARCHAR),
-			new SqlParameter("p_parEmailAddr", Types.VARCHAR),
-			new SqlParameter("p_peciAddCode", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStreetLine1", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStreetLine2", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStreetLine3", Types.VARCHAR),
-			new SqlParameter("p_peciAddrCity", Types.VARCHAR),
-			new SqlParameter("p_peciAddrStateCode", Types.VARCHAR),
-			new SqlParameter("p_peciAddrZipCode", Types.VARCHAR),
-			new SqlParameter("p_peciAddrNatnCode", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
-			new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
-			new SqlParameter("p_peciNoCellPhone", Types.VARCHAR),
-			new SqlParameter("p_peciEmergPriority", Types.NUMERIC),
-			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-			
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_newPidmErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_new XrefErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_new CameldErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_new BioErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_new SorfolkErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_parEmailErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_parAddrICodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_newPhoneErrorCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_matchStatusOut", Types.VARCHAR),
-			new SqlOutParameter("p_parPidmOut", Types.NUMERIC),
-			new SqlOutParameter("p_parPpidOut", Types.NUMERIC),
-			new SqlOutParameter("p_parCamelIdOut", Types.VARCHAR),
-			new SqlOutParameter("p_parOrderOut", Types.NUMERIC),
-			new SqlOutParameter("p_parEmailAddrIOut", Types.VARCHAR));
-		
-		SimpleJdbcCall p_emerg_main = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_emerg_pkg")
-			.withProcedureName("p_emerg_main");
-		p_emerg_main.setAccessCallParameterMetaData(false);
-		p_emerg_main.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),			
-			new SqlParameter("p_peciRole", Types.VARCHAR),								
-			new SqlParameter("p_stuPidm", Types.NUMERIC),
-			new SqlParameter("p_stuPpid", Types.NUMERIC),
-			
-			new SqlParameter("p_parPidm", Types.NUMERIC),
-			new SqlParameter("p_parPpid", Types.NUMERIC),
-			new SqlParameter("p_reltCode", Types.VARCHAR),
-			
-			new SqlParameter("p_emergPrefixName", Types.VARCHAR),
-			new SqlParameter("p_emergFirstName", Types.VARCHAR),
-			new SqlParameter("p_emergMiddleName", Types.VARCHAR),
-			new SqlParameter("p_emergLastName", Types.VARCHAR),
-			new SqlParameter("p_emergSuffixName", Types.VARCHAR),
-			new SqlParameter("p_emergPriority", Types.NUMERIC),
-			new SqlParameter("p_noCellPhone", Types.VARCHAR),
-			new SqlParameter("p_dependent", Types.VARCHAR),
-			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-
-			new SqlOutParameter("p_peciParentPpidOut", Types.NUMERIC),
-			new SqlOutParameter("p_peciParentPidmOut", Types.NUMERIC),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-
-		SimpleJdbcCall p_phone_create_temp = new SimpleJdbcCall(this.censusSource)
-			.withCatalogName("cc_gen_peci_crud_phone_pkg")
-			.withProcedureName("p_phone_create_temp");
-		p_phone_create_temp.setAccessCallParameterMetaData(false);
-		p_phone_create_temp.declareParameters(
-			new SqlParameter("p_changeType", Types.VARCHAR),
-			new SqlParameter("p_trans_id", Types.NUMERIC),
-			new SqlParameter("p_peciRole", Types.VARCHAR),
-			
-			new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
-			
-			new SqlParameter("p_stuPidm", Types.NUMERIC),
-			new SqlParameter("p_stuPpid", Types.NUMERIC),
-			new SqlParameter("p_parPpid", Types.NUMERIC),
-			
-			new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
-			new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
-			new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
-			
-			new SqlParameter("p_peciUserId", Types.VARCHAR),
-			new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
-			
-			new SqlOutParameter("p_peciPhoneAreaOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneNumberOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneIntlOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciCellPhoneCarrierOut", Types.VARCHAR),
-			new SqlOutParameter("p_peciPhoneTtyDeviceOut", Types.VARCHAR),
-			new SqlOutParameter("p_banTeleCodeOut", Types.VARCHAR),
-			new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
-		
+			SimpleJdbcCall p_emerg_main = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_emerg_pkg")
+				.withProcedureName("p_emerg_main");
+			p_emerg_main.setAccessCallParameterMetaData(false);
+			p_emerg_main.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),			
+				new SqlParameter("p_peciRole", Types.VARCHAR),								
+				new SqlParameter("p_stuPidm", Types.NUMERIC),
+				new SqlParameter("p_stuPpid", Types.NUMERIC),
+				
+				new SqlParameter("p_parPidm", Types.NUMERIC),
+				new SqlParameter("p_parPpid", Types.NUMERIC),
+				new SqlParameter("p_reltCode", Types.VARCHAR),
+				
+				new SqlParameter("p_emergPrefixName", Types.VARCHAR),
+				new SqlParameter("p_emergFirstName", Types.VARCHAR),
+				new SqlParameter("p_emergMiddleName", Types.VARCHAR),
+				new SqlParameter("p_emergLastName", Types.VARCHAR),
+				new SqlParameter("p_emergSuffixName", Types.VARCHAR),
+				new SqlParameter("p_emergPriority", Types.NUMERIC),
+				new SqlParameter("p_noCellPhone", Types.VARCHAR),
+				new SqlParameter("p_dependent", Types.VARCHAR),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+	
+				new SqlOutParameter("p_peciParentPpidOut", Types.NUMERIC),
+				new SqlOutParameter("p_peciParentPidmOut", Types.NUMERIC),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
+	
+			SimpleJdbcCall p_phone_create_temp = new SimpleJdbcCall(this.censusSource)
+				.withCatalogName("cc_gen_peci_crud_phone_pkg")
+				.withProcedureName("p_phone_create_temp");
+			p_phone_create_temp.setAccessCallParameterMetaData(false);
+			p_phone_create_temp.declareParameters(
+				new SqlParameter("p_changeType", Types.VARCHAR),
+				new SqlParameter("p_trans_id", Types.NUMERIC),
+				new SqlParameter("p_peciRole", Types.VARCHAR),
+				
+				new SqlParameter("p_peciPhoneCode", Types.VARCHAR),
+				
+				new SqlParameter("p_stuPidm", Types.NUMERIC),
+				new SqlParameter("p_stuPpid", Types.NUMERIC),
+				new SqlParameter("p_parPpid", Types.NUMERIC),
+				
+				new SqlParameter("p_peciPhoneArea", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneNumber", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneIntl", Types.VARCHAR),
+				new SqlParameter("p_peciCellPhoneCarrier", Types.VARCHAR),
+				new SqlParameter("p_peciPhoneTtyDevice", Types.VARCHAR),
+				
+				new SqlParameter("p_peciUserId", Types.VARCHAR),
+				new SqlParameter("p_peciDataOrigin", Types.VARCHAR),
+				
+				new SqlOutParameter("p_peciPhoneAreaOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneNumberOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneIntlOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciCellPhoneCarrierOut", Types.VARCHAR),
+				new SqlOutParameter("p_peciPhoneTtyDeviceOut", Types.VARCHAR),
+				new SqlOutParameter("p_banTeleCodeOut", Types.VARCHAR),
+				new SqlOutParameter("p_errorCodeOut", Types.VARCHAR));
+		//}}
 		//Update the PECI Phone Codes to match banenr codes
 		SQL="update cas.cc_gen_peci_phone_data_t set PECI_PHONE_CODE='H' where PHONE_CODE='MA' and PECI_PHONE_CODE is null";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
@@ -2207,16 +2215,23 @@ public class jdbcCamel {
 		int transId = f_cc_generate_trans_id.executeFunction(Integer.class,in);
 		
 		log.debug("Transaction id is " + transId);
+		
 		//Save Student Record	
 		in = new MapSqlParameterSource();
-		in.addValue("p_changeType","C");
+		in.addValue("p_changeType",mode);
 		in.addValue("p_trans_id",transId);
 		in.addValue("p_peciRole","STU");
 		in.addValue("p_pidm",ccPDIM);
-		in.addValue("p_ppid",null);
-		
-		in.addValue("p_peciLegalDisc",new Date());
-		in.addValue("p_peciDeanExcept",null);
+		if (mode.equals("C")){
+			in.addValue("p_ppid",null);
+			in.addValue("p_peciLegalDisc",new Date());
+			in.addValue("p_peciDeanExcept",null);
+		}else {
+			in.addValue("p_ppid",studentData.get("STUDENT_PPID"));
+		}
+
+		in.addValue("p_peciLegalDisc",studentData.get("LEGAL_DISCLAIMER_DATE"));
+		in.addValue("p_peciDeanExcept",studentData.get("DEAN_EXCEPTION_DATE"));
 		in.addValue("p_noCellPhone",studentData.get("EMERG_NO_CELL_PHONE"));
 		in.addValue("p_emergAutoOptout",studentData.get("EMERG_AUTO_OPT_OUT"));
 		in.addValue("p_emergSendText",studentData.get("EMERG_SEND_TEXT"));
@@ -2224,10 +2239,13 @@ public class jdbcCamel {
 		in.addValue("p_peciUserId",userName);
 		in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 		
-		
+		int ppId;
 		out = p_student_main.execute(in);
-		
-		int ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
+		if (mode.equals("C")){
+			ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
+		} else {
+			ppId = Integer.parseInt(studentData.get("STUDENT_PPID").toString());
+		}
 		error = (String)out.get("p_errorCodeOut"); 
 		
 		if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
@@ -2242,25 +2260,27 @@ public class jdbcCamel {
 			emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
 			
 			//Studemt email
-			in = new MapSqlParameterSource();
-			in.addValue("p_changeType","C");
-			in.addValue("p_trans_id",transId);
-			in.addValue("p_ppid",ppId);
-			in.addValue("p_peciRole","STU");
-			in.addValue("p_pidm",ccPDIM);
-			in.addValue("p_peciUserId",userName);
-			in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-			
-			in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
-			in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
-			in.addValue("p_peciEmailAddrStatusInd","A");
-
-			out = p_email_main.execute(in);
-			
-			error = (String)out.get("p_errorCodeOut"); 
-			if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-			
-			log.debug("New Student email procedure return is " + error);
+			if ((mode.equals("U") && emailData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+				in = new MapSqlParameterSource();
+				in.addValue("p_changeType",mode);
+				in.addValue("p_trans_id",transId);
+				in.addValue("p_ppid",ppId);
+				in.addValue("p_peciRole","STU");
+				in.addValue("p_pidm",ccPDIM);
+				in.addValue("p_peciUserId",userName);
+				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+				
+				in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
+				in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
+				in.addValue("p_peciEmailAddrStatusInd","A");
+	
+				out = p_email_main.execute(in);
+				
+				error = (String)out.get("p_errorCodeOut"); 
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+				
+				log.debug("New Student email procedure return is " + error);
+			}
 			
 		} catch (EmptyResultDataAccessException e){
 			// dataset empty no email
@@ -2274,33 +2294,35 @@ public class jdbcCamel {
 			addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
 
 			//Studemt Address
-			in = new MapSqlParameterSource();
-			in.addValue("p_changeType","C");
-			in.addValue("p_trans_id",transId);
-			in.addValue("p_ppid",ppId);
-			in.addValue("p_peciRole","STU");
-			in.addValue("p_pidm",ccPDIM);
-			in.addValue("p_peciUserId",userName);
-			in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-			
-			in.addValue("p_banAddrSeqno",null);
-			in.addValue("p_peciAddrStatus","A");
-			in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
-			in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
-			in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
-			in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
-			in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
-			in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
-			in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
-			in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
-			
-			out = p_address_main.execute(in);
-			
-			error = (String)out.get("p_errorCodeOut"); 
-			if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-			
-			log.debug("New Student address procedure return is " + error);
-			
+			if ((mode.equals("U") && addressData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+				in = new MapSqlParameterSource();
+				in.addValue("p_changeType",mode);
+				in.addValue("p_trans_id",transId);
+				in.addValue("p_ppid",ppId);
+				in.addValue("p_peciRole","STU");
+				in.addValue("p_pidm",ccPDIM);
+				in.addValue("p_peciUserId",userName);
+				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+				
+				in.addValue("p_banAddrSeqno",null);
+				in.addValue("p_peciAddrStatus","A");
+				in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
+				in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
+				in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
+				in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
+				in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
+				in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
+				in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
+				in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
+				
+				out = p_address_main.execute(in);
+				
+				error = (String)out.get("p_errorCodeOut"); 
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+				
+				log.debug("New Student address procedure return is " + error);
+			}
+				
 		} catch (EmptyResultDataAccessException e){
 			// dataset empty no email
 		}
@@ -2318,41 +2340,46 @@ public class jdbcCamel {
 			for(int i=0; i<phoneData.size();i++){
 				Map<String,Object> phone = phoneData.get(i);
 				//Studemt Phone
-				in = new MapSqlParameterSource();
-				in.addValue("p_changeType","C");
-				in.addValue("p_trans_id",transId);
-				in.addValue("p_ppid",ppId);
-				in.addValue("p_peciRole","STU");
-				in.addValue("p_pidm",ccPDIM);
-				in.addValue("p_peciUserId",userName);
-				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-
-				in.addValue("p_banTeleSeqno",null);
-				in.addValue("p_banAddrSeqno",null);
-				//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
-				in.addValue("p_banTeleCode",null);
-				in.addValue("p_peciPhonePrimary",null);
-				in.addValue("p_banAddrCode",null);
-				in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-				in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-				in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-				in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-				in.addValue("p_peciPhoneStatus","A");
-				if (phone.get("PHONE_CODE").toString().length() == 3) {
-					in.addValue("p_peciEmergPriority",Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
-				}else{
-					in.addValue("p_peciEmergPriority",null);
+				if ((mode.equals("U") && addressData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+					in = new MapSqlParameterSource();
+					in.addValue("p_changeType",mode);
+					in.addValue("p_trans_id",transId);
+					in.addValue("p_ppid",ppId);
+					in.addValue("p_peciRole","STU");
+					in.addValue("p_pidm",ccPDIM);
+					in.addValue("p_peciUserId",userName);
+					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+					if  (mode.equals("C")){	
+						in.addValue("p_banTeleSeqno",null);
+						in.addValue("p_banAddrSeqno",null);
+					}else{
+						in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+						in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
+					}
+					in.addValue("p_banTeleCode",null);
+					in.addValue("p_peciPhonePrimary",null);
+					in.addValue("p_banAddrCode",null);
+					in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+					in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+					in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+					in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+					in.addValue("p_peciPhoneStatus","A");
+					if (phone.get("PHONE_CODE").toString().length() == 3) {
+						in.addValue("p_peciEmergPriority",Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
+					}else{
+						in.addValue("p_peciEmergPriority",null);
+					}
+					in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+					in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+					in.addValue("p_banComment",null);
+					
+					out = p_phone_main.execute(in);
+					
+					error = (String)out.get("p_errorCodeOut"); 
+					if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+					
+					log.debug("New Student phone procedure return is " + error);
 				}
-				in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-				in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-				in.addValue("p_banComment",null);
-				
-				out = p_phone_main.execute(in);
-				
-				error = (String)out.get("p_errorCodeOut"); 
-				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-				
-				log.debug("New Student phone procedure return is " + error);
 			}
 		} catch (EmptyResultDataAccessException e){
 			log.debug("New Student phone is empty");
@@ -2365,206 +2392,246 @@ public class jdbcCamel {
 					+ "PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, "
 					+ "PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, "
 					+ "EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, "
-					+ "PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM "
-					+ "and CHANGE_COLS not like '%DELETE%' ";
+					+ "PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND, CHANGE_COLS from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
+					//+ "and CHANGE_COLS not like '%DELETE%' ";
 			parentData = jdbcCAS.queryForList(SQL,PECIParameters);
 			
-			for(int i=0; i<parentData.size();i++){
+			for(int i=0; i<parentData.size();i++){				
 				Map<String,Object> parent = parentData.get(i);
 				String tp_ppid = parent.get("PARENT_PPID").toString();
-				Map<String,Object> parentParameters = new HashMap<String,Object>();
-				parentParameters.put("STUDENT_PIDM", ccPDIM);
-				parentParameters.put("PARENT_PPID", tp_ppid);
-				
-				//Parent
-				in = new MapSqlParameterSource();
-				in.addValue("p_changeType","C");
-				in.addValue("p_trans_id",transId);
-				in.addValue("p_stuPpid",ppId);
-				in.addValue("p_peciRole","PAR");
-				in.addValue("p_stuPidm",ccPDIM);
-				in.addValue("p_peciUserId",userName);
-				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-				in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+				String changeCols = "";
+				if (parent.get("CHANGE_COLS") != null) {
+					changeCols = parent.get("CHANGE_COLS").toString();
+				}
 
-				in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
-				in.addValue("p_peciParFirstName",capitalizeObj(parent.get("PARENT_PREF_FIRST_NAME")));
-				in.addValue("p_peciParMiddleName",capitalizeObj(parent.get("PARENT_PREF_MIDDLE_NAME")));
-				in.addValue("p_peciParLastName",capitalizeObj(parent.get("PARENT_PREF_LAST_NAME")));
-				in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
-				in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
-				in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
-				in.addValue("p_dependent",parent.get("DEPENDENT"));
-				
-				try {					
-					//parent email Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
-							+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
-					emailData = jdbcCAS.queryForMap(SQL,parentParameters);
-
-					//email
-					in.addValue("p_parEmailAddr",emailData.get("EMAIL_ADDRESS"));
+				if (mode.equals("U") && Integer.parseInt(parent.get("PARENT_PPID").toString())!=0 ){
+					// Update a parent record
+					//Parent
+					in = new MapSqlParameterSource();
+					in.addValue("p_changeType","U");
+					in.addValue("p_trans_id",transId);
+					in.addValue("p_stuPpid",ppId);
+					in.addValue("p_peciRole","PAR");
+					in.addValue("p_stuPidm",ccPDIM);
+					in.addValue("p_peciUserId",userName);
+					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+					in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+					if (changeCols.equals("DELETE")){
+						in.addValue("p_peciEmergPriority",0);
+					}else{
+						in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+					}
+					in.addValue("p_duplicateStatus",null);
+					in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
+					in.addValue("p_peciParFirstName",capitalizeObj(parent.get("PARENT_PREF_FIRST_NAME")));
+					in.addValue("p_peciParMiddleName",capitalizeObj(parent.get("PARENT_PREF_MIDDLE_NAME")));
+					in.addValue("p_peciParLastName",capitalizeObj(parent.get("PARENT_PREF_LAST_NAME")));
+					in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
+					in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
+					in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
+					in.addValue("p_dependent",parent.get("DEPENDENT"));
 					
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New parent email is empty");
-					// dataset empty no email
-					in.addValue("p_parEmailAddr",null);
-				}
-				try {					
-					//Parent Address Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO, "
-							+ "ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE, "
-							+ "ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
-					addressData = jdbcCAS.queryForMap(SQL,parentParameters);
-
-					//Address
-					in.addValue("p_peciAddCode","H");
-					in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
-					in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
-					in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
-					in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
-					in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
-					in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
-					in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New parent address is empty");
-					// dataset empty no address
-				}
-
-				try {					
-					//Parent Phone Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE, "
-							+ "PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
-							+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
-							+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-							+ "and CHANGE_COLS not like '%DELETE%' "
-							+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID limit 0,1";
-					Map<String,Object> phone = jdbcCAS.queryForMap(SQL,parentParameters);
-					in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-					in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-					in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-					in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-					in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-					in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-					log.debug ("Parent BCM insert returned " + error);
-					firstPhone = capitalizeObj(phone.get("PECI_PHONE_CODE"));
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New parent phone is empty");
-					// dataset empty 
-				}		
-				
-				out = p_exe_cm_singleparent.execute(in);
-				
-				int p_ppid = Integer.parseInt(out.get("p_parPpidOut").toString()); 
-				
-				error = (String)out.get("p_errorCodeOut");
-				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-				
-				log.debug("New Parent procedure return is " + error);
-				
-				if (out.get("p_parPidmOut") != null){
-					int p_ppidm = Integer.parseInt(out.get("p_parPidmOut").toString()); 
-					//Handle the rest of the Phone Records
-					try {
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
-								+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
-								+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT, "
-								+ "EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-								+ "and CHANGE_COLS not like '%DELETE%' "
-								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
-						phoneData = jdbcCAS.queryForList(SQL,parentParameters);
+					in.addValue("p_parPidm",parent.get("PARENT_PIDM"));
+					in.addValue("p_parPpid",parent.get("PARENT_PPID"));
+					
+					out = p_parent_main.execute(in);
+					
+				} else {
+					if (!changeCols.equals("DELETE")){
+						Map<String,Object> parentParameters = new HashMap<String,Object>();
+						parentParameters.put("STUDENT_PIDM", ccPDIM);
+						parentParameters.put("PARENT_PPID", tp_ppid);
 						
-						for(int x=0; x<phoneData.size();x++) {
-							Map<String,Object> phone = phoneData.get(x);
-							if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
-								//Phone
-								in = new MapSqlParameterSource();
-								in.addValue("p_changeType","C");
-								in.addValue("p_trans_id",transId);
-								in.addValue("p_ppid",p_ppid);
-								in.addValue("p_peciRole","PAR");
-								in.addValue("p_pidm",p_ppidm);
-								in.addValue("p_peciUserId",userName);
-								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-	
-								in.addValue("p_banTeleSeqno",null);
-								in.addValue("p_banAddrSeqno",null);
-								in.addValue("p_peciPhonePrimary",null);
-								in.addValue("p_peciPhoneStatus","A");
-								in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-								in.addValue("p_banTeleCode",null);
-								in.addValue("p_peciPhonePrimary",null);
-								in.addValue("p_banAddrCode",null);
-								in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-								in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-								in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-								in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-								in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-								in.addValue("p_banComment",null);
-								in.addValue("p_peciEmergPriority",null);
+						//Parent
+						in = new MapSqlParameterSource();
+						in.addValue("p_changeType","C");
+						in.addValue("p_trans_id",transId);
+						in.addValue("p_stuPpid",ppId);
+						in.addValue("p_peciRole","PAR");
+						in.addValue("p_stuPidm",ccPDIM);
+						in.addValue("p_peciUserId",userName);
+						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+						in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+		
+						in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
+						in.addValue("p_peciParFirstName",capitalizeObj(parent.get("PARENT_PREF_FIRST_NAME")));
+						in.addValue("p_peciParMiddleName",capitalizeObj(parent.get("PARENT_PREF_MIDDLE_NAME")));
+						in.addValue("p_peciParLastName",capitalizeObj(parent.get("PARENT_PREF_LAST_NAME")));
+						in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
+						in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
+						in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
+						in.addValue("p_dependent",parent.get("DEPENDENT"));
+						
+						try {					
+							//parent email Data
+							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
+									+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+							emailData = jdbcCAS.queryForMap(SQL,parentParameters);
+		
+							//email
+							in.addValue("p_parEmailAddr",emailData.get("EMAIL_ADDRESS"));
+							
+						} catch (EmptyResultDataAccessException e){
+							log.debug("New parent email is empty");
+							// dataset empty no email
+							in.addValue("p_parEmailAddr",null);
+						}
+						try {					
+							//Parent Address Data
+							SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE,ADDR_SEQUENCE_NO, "
+									+ "ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE, "
+									+ "ADDR_STATUS_IND from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+							addressData = jdbcCAS.queryForMap(SQL,parentParameters);
+		
+							//Address
+							in.addValue("p_peciAddCode","H");
+							in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
+							in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
+							in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
+							in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
+							in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
+							in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
+							in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
+						} catch (EmptyResultDataAccessException e){
+							log.debug("New parent address is empty");
+							// dataset empty no address
+						}
+		
+						try {					
+							//Parent Phone Data
+							SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE, "
+									+ "PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
+									+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
+									+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+									+ "and CHANGE_COLS not like '%DELETE%' "
+									+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID limit 0,1";
+							Map<String,Object> phone = jdbcCAS.queryForMap(SQL,parentParameters);
+							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+							in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+							in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+							log.debug ("Parent BCM insert returned " + error);
+							firstPhone = capitalizeObj(phone.get("PECI_PHONE_CODE"));
+						} catch (EmptyResultDataAccessException e){
+							log.debug("New parent phone is empty");
+							// dataset empty 
+						}		
+						
+						out = p_exe_cm_singleparent.execute(in);
+						
+						int p_ppid = Integer.parseInt(out.get("p_parPpidOut").toString()); 
+						
+						error = (String)out.get("p_errorCodeOut");
+						if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+						
+						log.debug("New Parent procedure return is " + error);
+						
+						if (out.get("p_parPidmOut") != null){
+							int p_ppidm = Integer.parseInt(out.get("p_parPidmOut").toString()); 
+							//Handle the rest of the Phone Records
+							try {
+								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
+										+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
+										+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT, "
+										+ "EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+										+ "and CHANGE_COLS not like '%DELETE%' "
+										+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
+								phoneData = jdbcCAS.queryForList(SQL,parentParameters);
 								
-								out = p_phone_main.execute(in);
+								for(int x=0; x<phoneData.size();x++) {
+									Map<String,Object> phone = phoneData.get(x);
+									if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
+										//Phone
+										in = new MapSqlParameterSource();
+										in.addValue("p_changeType","C");
+										in.addValue("p_trans_id",transId);
+										in.addValue("p_ppid",p_ppid);
+										in.addValue("p_peciRole","PAR");
+										in.addValue("p_pidm",p_ppidm);
+										in.addValue("p_peciUserId",userName);
+										in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+			
+										in.addValue("p_banTeleSeqno",null);
+										in.addValue("p_banAddrSeqno",null);
+										in.addValue("p_peciPhonePrimary",null);
+										in.addValue("p_peciPhoneStatus","A");
+										in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+										in.addValue("p_banTeleCode",null);
+										in.addValue("p_peciPhonePrimary",null);
+										in.addValue("p_banAddrCode",null);
+										in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+										in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+										in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+										in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+										in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+										in.addValue("p_banComment",null);
+										in.addValue("p_peciEmergPriority",null);
+										
+										out = p_phone_main.execute(in);
+										
+										error = (String)out.get("p_errorCodeOut"); 
+										if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+										
+										log.debug("New Parent phone procedure return is " + error);
+									}
+								}
+							} catch (EmptyResultDataAccessException e){
+								log.debug("New parent additional phone is empty");
+								// dataset empty No addition phones
+							}
+						}else{
+							//Handle the rest of the Phone Records
+							try {
+								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
+										+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
+										+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
+										+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+										+ "and CHANGE_COLS not like '%DELETE%' "
+										+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
+								phoneData = jdbcCAS.queryForList(SQL,parentParameters);
 								
-								error = (String)out.get("p_errorCodeOut"); 
-								if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-								
-								log.debug("New Parent phone procedure return is " + error);
+								for(int x=0; x<phoneData.size();x++){
+									Map<String,Object> phone = phoneData.get(x);
+									if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
+										//Phone
+										in = new MapSqlParameterSource();
+										in.addValue("p_changeType","C");
+										in.addValue("p_trans_id",transId);
+										in.addValue("p_stuPpid",ppId);
+										in.addValue("p_peciRole","PAR");
+										in.addValue("p_stuPidm",ccPDIM);
+										in.addValue("p_parPpid",p_ppid);
+										in.addValue("p_peciUserId",userName);
+										in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+			
+										in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+										//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+										in.addValue("p_banTeleCode",null);
+										in.addValue("p_banAddrCode","MA");
+										in.addValue("p_banAddrSeqno",1);
+										in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+										in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+										in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+										in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+										in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+										
+										out = p_phone_create_temp.execute(in);
+										
+										error = (String)out.get("p_errorCodeOut"); 
+										if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+										
+										log.debug("New Parent Temp phone procedure return is " + error);
+									}
+								}
+							} catch (EmptyResultDataAccessException e){
+								log.debug("New parent additional phone is empty");
+								// dataset empty No addition phones
 							}
 						}
-					} catch (EmptyResultDataAccessException e){
-						log.debug("New parent additional phone is empty");
-						// dataset empty No addition phones
-					}
-				}else{
-					//Handle the rest of the Phone Records
-					try {
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
-								+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
-								+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
-								+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-								+ "and CHANGE_COLS not like '%DELETE%' "
-								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
-						phoneData = jdbcCAS.queryForList(SQL,parentParameters);
-						
-						for(int x=0; x<phoneData.size();x++){
-							Map<String,Object> phone = phoneData.get(x);
-							if (!firstPhone.equals(capitalizeObj(phone.get("PECI_PHONE_CODE")))) {
-								//Phone
-								in = new MapSqlParameterSource();
-								in.addValue("p_changeType","C");
-								in.addValue("p_trans_id",transId);
-								in.addValue("p_stuPpid",ppId);
-								in.addValue("p_peciRole","PAR");
-								in.addValue("p_stuPidm",ccPDIM);
-								in.addValue("p_parPpid",p_ppid);
-								in.addValue("p_peciUserId",userName);
-								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-	
-								in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-								//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
-								in.addValue("p_banTeleCode",null);
-								in.addValue("p_banAddrCode","MA");
-								in.addValue("p_banAddrSeqno",1);
-								in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-								in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-								in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-								in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-								in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-								
-								out = p_phone_create_temp.execute(in);
-								
-								error = (String)out.get("p_errorCodeOut"); 
-								if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-								
-								log.debug("New Parent Temp phone procedure return is " + error);
-							}
-						}
-					} catch (EmptyResultDataAccessException e){
-						log.debug("New parent additional phone is empty");
-						// dataset empty No addition phones
 					}
 				}
-				
 			}
 		} catch (EmptyResultDataAccessException e){
 			log.debug("New student parents is empty");
@@ -2764,6 +2831,7 @@ public class jdbcCamel {
 			jdbcCAS.update(SQL, PECIParameters);
 		}
 	}
+	
 	public String capitalizeObj(Object dbObj){
 		String sDbObj = ObjectUtils.toString(dbObj);
 		return StringUtils.capitalize(sDbObj);
