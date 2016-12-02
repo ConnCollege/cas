@@ -22,7 +22,7 @@
 	<br>
 	Use of computer and information resources is governed by the <a href="http://www.conncoll.edu/information-services/technology-services/it-service-desk/policies/general/appropriate-use-policy/" target="_blank">Connecticut College Appropriate Use Policy</a>
 	&nbsp;|&nbsp;
-	<a href="http://www.conncoll.edu/information-services/libraries/research-services/for-faculty/copyright-resources/" target="_blank">Copyright &copy; <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %></a>
+	<a href="https://www.conncoll.edu/information-services/libraries/copyright-resources/" target="_blank">Copyright &copy; <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %></a>
 	<br> 
 	&copy; 2000 - <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %> Ellucian. All rights reserved<br> </p> 
 </footer>
