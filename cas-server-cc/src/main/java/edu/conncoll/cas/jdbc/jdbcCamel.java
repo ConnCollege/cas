@@ -343,10 +343,7 @@ public class jdbcCamel {
 				}
 			break;
 			case PECIBATCH:
-				Map<String,Object> studentTransCT = new HashMap<String,Object>();
-				SQL="SELECT COUNT(*) ct FROM peci_trans_start";
-				studentTransCT = jdbcCAS.queryForMap(SQL,new HashMap<String,Object>());
-				context.getFlowScope().put("Users", studentTransCT.get("ct"));
+				context.getFlowScope().put("Users", "");
 			break;
 			case PECI:
 			case PECIE:
@@ -836,7 +833,7 @@ public class jdbcCamel {
 					+ " inner join Class_2020 on STUDENT_PIDM = PIdM "
 					//+ " where STUDENT_PIDM in (411326,412858,411178,412622,410752,404864,347520,411230,416513,411279,380836,413709) " //
 					//+ " Where STUDENT_PIDM in (416513,411279)"
-					+ " order by RAND() limit 0,250";
+					+ " order by STUDENT_PIDM desc limit 0,250";
 			
 			
 			studentTransList = jdbcCAS.queryForList(SQL,new HashMap<String,Object>());
@@ -862,18 +859,18 @@ public class jdbcCamel {
 					userName = vaultcontext.getStringAttribute("UID");
 					
 					log.debug("Username is " + userName);
-					//String eduPersonPrimaryAffiliation = vaultcontext.getStringAttribute("eduPersonPrimaryAffiliation");
-					//String deptName = vaultcontext.getStringAttribute("departmentNumber");
-					//log.debug ("eduPersonPrimaryAffiliation: "+ eduPersonPrimaryAffiliation + " departmentNumber: " + deptName);
+					String eduPersonPrimaryAffiliation = vaultcontext.getStringAttribute("eduPersonPrimaryAffiliation");
+					String deptName = vaultcontext.getStringAttribute("departmentNumber");
+					log.debug ("eduPersonPrimaryAffiliation: "+ eduPersonPrimaryAffiliation + " departmentNumber: " + deptName);
 					
-					//if (eduPersonPrimaryAffiliation == null) {
-					//	log.error("User does not have a primary Affiliation PIDM: " + ccPIDM + " username: " + userName);
-					//} else {
-					//	if (eduPersonPrimaryAffiliation.equals("STUDENT") && deptName.equals("Class of 2020")){
+					if (eduPersonPrimaryAffiliation == null) {
+						log.error("User does not have a primary Affiliation PIDM: " + ccPIDM + " username: " + userName);
+					} else {
+						if (eduPersonPrimaryAffiliation.equals("STUDENT") && deptName.equals("Class of 2020")){
 							PECI2Banner(userName, ccPIDM, "C");
 							//System.exit(0);
-					//	}
-					//}
+						}
+					}
 				}
 			}
 		}
@@ -921,7 +918,7 @@ public class jdbcCamel {
 				
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
-				
+				/*
 				if (Integer.parseInt(studentData.get("STUDENT_PPID").toString())==0){
 					log.debug("Performing Create to banner");
 					PECI2Banner(userName,ccPDIM,"C");
@@ -933,7 +930,7 @@ public class jdbcCamel {
 					
 					PECI2Banner(userName,ccPDIM,"U");
 				}
-				
+				*/
 				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
