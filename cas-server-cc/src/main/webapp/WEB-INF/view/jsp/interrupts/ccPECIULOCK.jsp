@@ -1,4 +1,5 @@
 <jsp:directive.include file="includes/Top.jsp" />
+<c:set var="hasForm" value="1" scope="page" />
  <div class="info">
 <h1>Parent and Emergency Contact Information Updates</h1>
 
