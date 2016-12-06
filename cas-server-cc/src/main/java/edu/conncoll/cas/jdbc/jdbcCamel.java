@@ -833,7 +833,7 @@ public class jdbcCamel {
 		if (flag.equals("PECIBATCH")) {
 			List<Map<String,Object>> studentTransList = new ArrayList<Map<String,Object>>();
 			
-			SQL=intData.getField(1).toString();
+			SQL=intData.getField(1);
 			
 			studentTransList = jdbcCAS.queryForList(SQL,new HashMap<String,Object>());
 			for (int i=0; i< studentTransList.size();i++){
