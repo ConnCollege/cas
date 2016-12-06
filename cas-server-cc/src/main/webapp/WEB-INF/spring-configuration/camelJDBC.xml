@@ -33,9 +33,9 @@
 	    <property name="password" value="${vault.authentication.manager.password}"/>
 	    <property name="baseEnvironmentProperties">
 			<map>
-				<entry key="com.sun.jndi.ldap.connect.timeout" value="3000" />
-				<entry key="com.sun.jndi.ldap.read.timeout" value="3000" />
-				<entry key="java.naming.security.authentication" value="simple" />
+				<entry key="com.sun.jndi.ldap.connect.timeout" value="${vault.authentication.jndi.connect.timeout}" />
+				<entry key="com.sun.jndi.ldap.read.timeout" value="${vault.authentication.jndi.read.timeout}" />
+				<entry key="java.naming.security.authentication" value="${vault.authentication.jndi.security.level}" />
 			</map>
 	    </property>
 	</bean>  
@@ -52,6 +52,7 @@
 		p:CASSource-ref="dataSourceCAS"
 		p:filter="sAMAccountName=%u"
 		p:vaultFilter="UId=%u"
+		p:batchQuery="${batch.query}"
 		p:ldapTemplate-ref="ldapTemplate"
 		p:gmSync="${password.gmsync}"
 		p:vaultTemplate-ref="vaultTemplate"

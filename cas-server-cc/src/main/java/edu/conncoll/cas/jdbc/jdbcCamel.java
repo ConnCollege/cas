@@ -105,6 +105,9 @@ public class jdbcCamel {
     private String filter;	
 	
 	@NotNull
+	private String batchQuery;
+	
+	@NotNull
     private String vaultFilter;	
 	
 	@NotNull
@@ -343,7 +346,7 @@ public class jdbcCamel {
 				}
 			break;
 			case PECIBATCH:
-				context.getFlowScope().put("Users", "");
+				context.getFlowScope().put("Query", this.batchQuery);
 			break;
 			case PECI:
 			case PECIE:
@@ -829,12 +832,8 @@ public class jdbcCamel {
 		}
 		if (flag.equals("PECIBATCH")) {
 			List<Map<String,Object>> studentTransList = new ArrayList<Map<String,Object>>();
-			SQL="SELECT STUDENT_PIDM FROM peci_trans_start "
-					+ " inner join Class_2020 on STUDENT_PIDM = PIdM "
-					//+ " where STUDENT_PIDM in (411326,412858,411178,412622,410752,404864,347520,411230,416513,411279,380836,413709) " //
-					//+ " Where STUDENT_PIDM in (416513,411279)"
-					+ " order by STUDENT_PIDM desc limit 0,250";
 			
+			SQL=intData.getField(1).toString();
 			
 			studentTransList = jdbcCAS.queryForList(SQL,new HashMap<String,Object>());
 			for (int i=0; i< studentTransList.size();i++){
@@ -866,7 +865,7 @@ public class jdbcCamel {
 					if (eduPersonPrimaryAffiliation == null) {
 						log.error("User does not have a primary Affiliation PIDM: " + ccPIDM + " username: " + userName);
 					} else {
-						if (eduPersonPrimaryAffiliation.equals("STUDENT") && deptName.equals("Class of 2020")){
+						if (eduPersonPrimaryAffiliation.equals("STUDENT")){
 							PECI2Banner(userName, ccPIDM, "C");
 							//System.exit(0);
 						}
@@ -1582,6 +1581,10 @@ public class jdbcCamel {
 	
 	public void setFilter (final String filter) {
 		this.filter = filter;
+	}	
+	
+	public void setBatchQuery (final String batchQuery) {
+		this.batchQuery = batchQuery;
 	}
 	
 	public void setGmSync (final Boolean gmsync) {
