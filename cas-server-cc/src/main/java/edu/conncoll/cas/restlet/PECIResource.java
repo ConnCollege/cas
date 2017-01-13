@@ -342,7 +342,7 @@ public class PECIResource extends Resource
 							SQL="update cc_gen_peci_emergs_t set CHANGE_COLS='DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID";
 							jdbcCAS.update(SQL,namedParameters);
 							SQL="update cc_gen_peci_phone_data_t set CHANGE_COLS='DELETE' where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID=:PARENT_PPID"
-									+" and PARENT_PPID not in (Select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and CHANGE_COLS not like '%DELETE%')";
+									+" and PARENT_PPID not in (Select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM and (CHANGE_COLS not like '%DELETE%' or CHANGE_COLS is null))";
 							jdbcCAS.update(SQL,namedParameters);
 							
 						}else{
@@ -495,8 +495,7 @@ public class PECIResource extends Resource
 	public void writeUpdates (Map<String,Object> namedParameters, Map<String, Object> updates, String tableName) {
 		writeUpdates (namedParameters, updates,  tableName,  jdbcCAS);
 	}
-	
-	
+		
 	public static void writeUpdates (Map<String,Object> namedParameters, Map<String, Object> updates, String tableName, NamedParameterJdbcTemplate jdbcCAS) {
 		Map<String, Object> sourceData = new HashMap<String, Object>();
 		
@@ -589,7 +588,7 @@ public class PECIResource extends Resource
 	public char Parent_PPID (Map<String, Object> namedParameters){		
 		Map<String,Object> maxData = new HashMap<String, Object>();
 		String SQL;
-		char seqNo;
+		char seqNo = 'A';
 		try{
 			SQL="select max(PARENT_PPID)  seq from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM ";
 			maxData = jdbcCAS.queryForMap(SQL,namedParameters);

@@ -137,7 +137,6 @@ public class jdbcCamel {
 	@NotNull
     private Boolean gmSync;
 	
-	/* briley 7/20/2012 - added PIF to list */
 	public enum Interrupts {
 		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, PECIC, PECIE, PECIBATCH, PECIULOCK, NOVALUE;    
 		public static Interrupts toInt(String str) {
@@ -407,9 +406,6 @@ public class jdbcCamel {
 					
 						//Pull PECI Data from Oracle and store in MySQL 
 						
-						context.getFlowScope().put("Flag", "PECIULOCK");
-						
-						/* Temporarily commented to not pull the data from Oracle/Banner
 						//Enter transaction data in trans table
 						SQL= "insert into peci_trans_start (STUDENT_PIDM, STUDENT_UUID, Trans_start) values ( :STUDENT_PIDM,uuid(), now())";
 						log.debug("inserting transaction start");
@@ -417,20 +413,20 @@ public class jdbcCamel {
 						
 						
 						//Student Data
-						SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,LEGAL_SUFFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
+						SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,LEGAL_FIRST_NAME,LEGAL_MIDDLE_NAME,LEGAL_LAST_NAME,LEGAL_SUFFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,NVL(EMERG_PHONE_TTY_DEVICE,'N') EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_v where STUDENT_PIDM=" + ccPDIM.toString();
 						studentData = jdbcCensus.queryForMap(SQL);
 						
 						copy2MySQL("cc_stu_peci_students_t",studentData);
 						
 						
 						//Parent Data
-						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND, DUPLICATE_STATUS from cc_adv_peci_parents_v where PARENT_PPID > 0 and PARENT_ORDER >0 and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, PARENT_PREF_LAST_NAME, PARENT_RELT_CODE, EMERG_CONTACT_PRIORITY, EMERG_NO_CELL_PHONE, EMERG_PHONE_NUMBER_TYPE_CODE, EMERG_CELL_PHONE_CARRIER, NVL(EMERG_PHONE_TTY_DEVICE,'N') EMERG_PHONE_TTY_DEVICE, DEPENDENT, PARENT_GENDER, PARENT_DECEASED, PARENT_DECEASED_DATE, PECI_ROLE, CONTACT_TYPE, PARENT_CONFID_IND, DUPLICATE_STATUS from cc_adv_peci_parents_v where PARENT_PPID > 0 and PARENT_ORDER >0 and STUDENT_PIDM=" + ccPDIM.toString();
 						parentData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_adv_peci_parents_t",parentData);		
 												
 						//Address Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,case when ADDR_CODE is null then'MA' else ADDR_CODE end ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and PECI_ADDR_CODE='H' and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,NVL(ADDR_CODE,'MA') ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,NVL(ADDR_STREET_LINE2,'') ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,NVL(ADDR_NATN_CODE,'US') ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_v where (ADDR_STATUS_IND is null or  ADDR_STATUS_IND = 'A') and PECI_ADDR_CODE='H' and STUDENT_PIDM=" + ccPDIM.toString();
 						addressData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_addr_data_t",addressData);	
@@ -442,17 +438,17 @@ public class jdbcCamel {
 						copy2MySQL("cc_gen_peci_email_data_t",emailData);	
 						
 						//Phone Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,nvl(PHONE_SEQUENCE_NO,0) PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_v where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,nvl(PHONE_SEQUENCE_NO,0) PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE,ADDR_TYPE_CODE,ADDR_SEQNO from cc_gen_peci_phone_data_v where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') and STUDENT_PIDM=" + ccPDIM.toString();
 						phoneData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_phone_data_t",phoneData);	
 						
 						//Emergency Contact Data
-						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where PARENT_PPID >0 and STUDENT_PIDM=" + ccPDIM.toString();
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,EMERG_LEGAL_PREFIX_NAME,EMERG_LEGAL_FIRST_NAME,EMERG_LEGAL_MIDDLE_NAME,EMERG_LEGAL_LAST_NAME,EMERG_LEGAL_SUFFIX_NAME,EMERG_PREF_FIRST_NAME,EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME,EMERG_RELT_CODE,EMERG_CONTACT_PRIORITY,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,NVL(EMERG_PHONE_TTY_DEVICE,'N') EMERG_PHONE_TTY_DEVICE,DEPENDENT,PARENT_GENDER,PARENT_DECEASED,PARENT_DECEASED_DATE,PARENT_CONFID_IND from cc_gen_peci_emergs_v where PARENT_PPID >0 and STUDENT_PIDM=" + ccPDIM.toString();
 						emergData = jdbcCensus.queryForList(SQL);
 						
 						copy2MySQL("cc_gen_peci_emergs_t",emergData);
-						*/	
+						
 					} else {
 						//Brand new PECI record.		
 						log.debug("Brand new PECI Record starting MySQL Base record");			
@@ -1151,6 +1147,8 @@ public class jdbcCamel {
 				
 				String PHONE_ORDER = intData.getField(25);
 				
+				log.debug("Deleting connect-ed numbers");
+				
 				SQL= "DELETE FROM cc_gen_peci_phone_data_t where PHONE_CODE Like 'EP_' and STUDENT_PIDM=:STUDENT_PIDM";
 				jdbcCAS.update(SQL,PECIParameters);
 				
@@ -1159,8 +1157,9 @@ public class jdbcCamel {
 					for(int i=0; i< pOrder.length; i++) {
 						int e = i+1;
 						PECIParameters.put("Phone_Num", pOrder[i]);
+						log.debug("Adding connect-ed phone number: "+ e +" for: "+pOrder[i] );
 						SQL="insert into cas.cc_gen_peci_phone_data_t (STUDENT_PIDM, PARENT_PPID, PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL)"
-							+"	select distinct STUDENT_PIDM, '0' PARENT_PPID, 'E' PECI_PHONE_CODE, 'EP" + e + "' PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL from cc_gen_peci_phone_data_t phone"
+							+"	select distinct STUDENT_PIDM, '0' PARENT_PPID, 'E' PECI_PHONE_CODE, 'EP" + e + "' PHONE_CODE,PHONE_AREA_CODE,PHONE_NUMBER,ifnull(PHONE_NUMBER_INTL,'') PHONE_NUMBER_INTL from cc_gen_peci_phone_data_t phone"
 							+"	where concat_ws('', phone.PHONE_AREA_CODE, phone.PHONE_NUMBER, phone.PHONE_NUMBER_INTL)=:Phone_Num"
 							+"	and STUDENT_PIDM = :STUDENT_PIDM";
 						jdbcCAS.update(SQL,PECIParameters);
@@ -1856,9 +1855,9 @@ public class jdbcCamel {
 	
 	public void PECI2Banner(String userName, String ccPDIM, String mode){
 
-		Map out;
-		String error;
-		String SQL;
+		Map out = new HashMap<String,Object>();;
+		String error = "";
+		String SQL = "";
 		MapSqlParameterSource in;
 		
 		Map<String,Object> PECIParameters = new HashMap<String,Object>();
@@ -2206,7 +2205,13 @@ public class jdbcCamel {
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
 		PECIParameters.put("PARENT_PPID","0");
 		
-		SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+		SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME, "
+				+ "PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE, "
+				+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE, "
+				+ "DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE, ifnull(CHANGE_COLS,'') CHANGE_COLS "
+				+ "from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+		
+		
 		studentData = jdbcCAS.queryForMap(SQL,PECIParameters);	
 		
 		//Start with transaction ID
@@ -2215,52 +2220,58 @@ public class jdbcCamel {
 		int transId = f_cc_generate_trans_id.executeFunction(Integer.class,in);
 		
 		log.debug("Transaction id is " + transId);
-		
-		//Save Student Record	
-		in = new MapSqlParameterSource();
-		in.addValue("p_changeType",mode);
-		in.addValue("p_trans_id",transId);
-		in.addValue("p_peciRole","STU");
-		in.addValue("p_pidm",ccPDIM);
-		if (mode.equals("C")){
-			in.addValue("p_ppid",null);
-			in.addValue("p_peciLegalDisc",new Date());
-			in.addValue("p_peciDeanExcept",null);
-		}else {
-			in.addValue("p_ppid",studentData.get("STUDENT_PPID"));
+		if (mode.equals("C") || !studentData.get("CHANGE_COLS").equals("")) {
+			//Save Student Record	
+			in = new MapSqlParameterSource();
+			in.addValue("p_changeType",mode);
+			in.addValue("p_trans_id",transId);
+			in.addValue("p_peciRole","STU");
+			in.addValue("p_pidm",ccPDIM);
+			if (mode.equals("C")){
+				in.addValue("p_ppid",null);
+				in.addValue("p_peciLegalDisc",new Date());
+				in.addValue("p_peciDeanExcept",null);
+			}else {
+				in.addValue("p_ppid",studentData.get("STUDENT_PPID"));
+			}
+	
+			in.addValue("p_peciLegalDisc",studentData.get("LEGAL_DISCLAIMER_DATE"));
+			in.addValue("p_peciDeanExcept",studentData.get("DEAN_EXCEPTION_DATE"));
+			in.addValue("p_noCellPhone",studentData.get("EMERG_NO_CELL_PHONE"));
+			in.addValue("p_emergAutoOptout",studentData.get("EMERG_AUTO_OPT_OUT"));
+			in.addValue("p_emergSendText",studentData.get("EMERG_SEND_TEXT"));
+			
+			in.addValue("p_peciUserId",userName);
+			in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+			
+			
+			out = p_student_main.execute(in);
+			
+			log.debug ("Calling p_student_main input: " + in.getValues().toString());
+			log.debug ("Returning p_student_main output: " + out.toString());
+			
+			error = (String)out.get("p_errorCodeOut"); 
+			
+			if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+			
+			log.debug("Student procedure return is " + error);
 		}
-
-		in.addValue("p_peciLegalDisc",studentData.get("LEGAL_DISCLAIMER_DATE"));
-		in.addValue("p_peciDeanExcept",studentData.get("DEAN_EXCEPTION_DATE"));
-		in.addValue("p_noCellPhone",studentData.get("EMERG_NO_CELL_PHONE"));
-		in.addValue("p_emergAutoOptout",studentData.get("EMERG_AUTO_OPT_OUT"));
-		in.addValue("p_emergSendText",studentData.get("EMERG_SEND_TEXT"));
-		
-		in.addValue("p_peciUserId",userName);
-		in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-		
 		int ppId;
-		out = p_student_main.execute(in);
 		if (mode.equals("C")){
 			ppId = Integer.parseInt(out.get("p_peciStudentPpidOut").toString()); 
 		} else {
 			ppId = Integer.parseInt(studentData.get("STUDENT_PPID").toString());
 		}
-		error = (String)out.get("p_errorCodeOut"); 
-		
-		if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-		
-		log.debug("New Student procedure return is " + error);
 
-		log.debug("New Student PPID is " + ppId);
+		log.debug("Student PPID is " + ppId);
 		try {					
 			//Student email Data
-			SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
+			SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS, ifnull(CHANGE_COLS,'') CHANGE_COLS "
 					+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_EMAIL_CODE='H'";
 			emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
 			
 			//Studemt email
-			if ((mode.equals("U") && emailData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+			if (!emailData.get("CHANGE_COLS").equals("")  || mode.equals("C")){
 				in = new MapSqlParameterSource();
 				in.addValue("p_changeType",mode);
 				in.addValue("p_trans_id",transId);
@@ -2276,6 +2287,9 @@ public class jdbcCamel {
 	
 				out = p_email_main.execute(in);
 				
+				log.debug ("Calling p_email_main input: " + in.getValues().toString());
+				log.debug ("Returning p_email_main output: " + out.toString());
+				
 				error = (String)out.get("p_errorCodeOut"); 
 				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 				
@@ -2289,12 +2303,12 @@ public class jdbcCamel {
 			//Student Address Data
 			SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,"
 					+ "ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,"
-					+ "ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND "
+					+ "ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND, ifnull(CHANGE_COLS,'') CHANGE_COLS "
 					+ "from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0' and PECI_ADDR_CODE='H'";
 			addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
 
 			//Studemt Address
-			if ((mode.equals("U") && addressData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+			if (!addressData.get("CHANGE_COLS").equals("")  || mode.equals("C")){
 				in = new MapSqlParameterSource();
 				in.addValue("p_changeType",mode);
 				in.addValue("p_trans_id",transId);
@@ -2317,6 +2331,9 @@ public class jdbcCamel {
 				
 				out = p_address_main.execute(in);
 				
+				log.debug ("Calling p_address_main input: " + in.getValues().toString());
+				log.debug ("Returning p_address_main output: " + out.toString());
+				
 				error = (String)out.get("p_errorCodeOut"); 
 				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 				
@@ -2330,17 +2347,23 @@ public class jdbcCamel {
 			//Student Phone Data
 			SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,"
 					+ "PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
-					+"CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
+					+"CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE, "
+					+"ADDR_TYPE_CODE,ADDR_SEQNO, ifnull(CHANGE_COLS,'') CHANGE_COLS "
 					+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-					+ "and CHANGE_COLS not like '%DELETE%' "
+					+ "and (CHANGE_COLS not like '%DELETE%' or CHANGE_COLS is null) "
 					+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = '0'";
 			
 			phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
 			
 			for(int i=0; i<phoneData.size();i++){
 				Map<String,Object> phone = phoneData.get(i);
+				
+				log.debug("----------------------------------------------------------");
+				log.debug(phone.get("PHONE_CODE").toString());
+				log.debug(phone.get("PHONE_CODE").toString().length());
+				
 				//Studemt Phone
-				if ((mode.equals("U") && addressData.get("PECI_EMAIL_CODE") != null) || (mode.equals("C"))){
+				if (!phone.get("CHANGE_COLS").equals("") || mode.equals("C") || phone.get("PHONE_CODE").toString().length() == 3){
 					in = new MapSqlParameterSource();
 					in.addValue("p_changeType",mode);
 					in.addValue("p_trans_id",transId);
@@ -2349,14 +2372,16 @@ public class jdbcCamel {
 					in.addValue("p_pidm",ccPDIM);
 					in.addValue("p_peciUserId",userName);
 					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+					
 					if  (mode.equals("C")){	
+						in.addValue("p_banTeleCode",null);
 						in.addValue("p_banTeleSeqno",null);
 						in.addValue("p_banAddrSeqno",null);
 					}else{
 						in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
 						in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
+						in.addValue("p_banAddrSeqno",phone.get("ADDR_SEQNO"));
 					}
-					in.addValue("p_banTeleCode",null);
 					in.addValue("p_peciPhonePrimary",null);
 					in.addValue("p_banAddrCode",null);
 					in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
@@ -2364,8 +2389,15 @@ public class jdbcCamel {
 					in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
 					in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
 					in.addValue("p_peciPhoneStatus","A");
+					
 					if (phone.get("PHONE_CODE").toString().length() == 3) {
+						log.debug(phone.get("PHONE_CODE").toString().charAt(2));
+						log.debug(Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
 						in.addValue("p_peciEmergPriority",Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
+						in.addValue("p_changeType",'C');
+						in.addValue("p_banTeleCode",null);
+						in.addValue("p_banTeleSeqno",null);
+						in.addValue("p_banAddrSeqno",null);						
 					}else{
 						in.addValue("p_peciEmergPriority",null);
 					}
@@ -2373,7 +2405,11 @@ public class jdbcCamel {
 					in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
 					in.addValue("p_banComment",null);
 					
+					log.debug ("Calling p_phone_main input: " + in.getValues().toString());
+					
 					out = p_phone_main.execute(in);
+					
+					log.debug ("Returning p_phone_main output: " + out.toString());
 					
 					error = (String)out.get("p_errorCodeOut"); 
 					if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
@@ -2385,8 +2421,8 @@ public class jdbcCamel {
 			log.debug("New Student phone is empty");
 			// dataset empty 
 		}
+//----------------------- Parent Data ------------------------------------
 		try {			
-			//Parent Data
 			SQL="select STUDENT_PPID, PARENT_PPID, STUDENT_PIDM, PARENT_PIDM, PARENT_CAMEL_NUMBER, PARENT_CAMEL_ID, "
 					+ "PARENT_ORDER, PARENT_LEGAL_PREFIX_NAME, PARENT_LEGAL_FIRST_NAME, PARENT_LEGAL_MIDDLE_NAME, "
 					+ "PARENT_LEGAL_LAST_NAME, PARENT_LEGAL_SUFFIX_NAME, PARENT_PREF_FIRST_NAME, PARENT_PREF_MIDDLE_NAME, "
@@ -2399,12 +2435,15 @@ public class jdbcCamel {
 			for(int i=0; i<parentData.size();i++){				
 				Map<String,Object> parent = parentData.get(i);
 				String tp_ppid = parent.get("PARENT_PPID").toString();
+
+				PECIParameters.put("PARENT_PPID",tp_ppid);
+				
 				String changeCols = "";
 				if (parent.get("CHANGE_COLS") != null) {
 					changeCols = parent.get("CHANGE_COLS").toString();
 				}
 
-				if (mode.equals("U") && Integer.parseInt(parent.get("PARENT_PPID").toString())!=0 ){
+				if (mode.equals("U") && isInteger(parent.get("PARENT_PPID").toString())){
 					// Update a parent record
 					//Parent
 					in = new MapSqlParameterSource();
@@ -2417,9 +2456,11 @@ public class jdbcCamel {
 					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 					in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
 					if (changeCols.equals("DELETE")){
-						in.addValue("p_peciEmergPriority",0);
+						in.addValue("p_emergPriority",0);
+						in.addValue("p_parOrder",0);
 					}else{
-						in.addValue("p_peciEmergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+						in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+						in.addValue("p_parOrder",parent.get("PARENT_ORDER"));
 					}
 					in.addValue("p_duplicateStatus",null);
 					in.addValue("p_peciParPrefixName",parent.get("PARENT_LEGAL_PREFIX_NAME"));
@@ -2428,13 +2469,154 @@ public class jdbcCamel {
 					in.addValue("p_peciParLastName",capitalizeObj(parent.get("PARENT_PREF_LAST_NAME")));
 					in.addValue("p_peciParSuffixName",parent.get("PARENT_LEGAL_SUFFIX_NAME"));
 					in.addValue("p_reltCode",parent.get("PARENT_RELT_CODE"));
-					in.addValue("p_peciNoCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
+					in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
 					in.addValue("p_dependent",parent.get("DEPENDENT"));
 					
 					in.addValue("p_parPidm",parent.get("PARENT_PIDM"));
 					in.addValue("p_parPpid",parent.get("PARENT_PPID"));
 					
 					out = p_parent_main.execute(in);
+					
+					log.debug ("Calling p_parent_main input: " + in.getValues().toString());
+					log.debug ("Returning p_parent_main output: " + out.toString());
+					
+					try {					
+						//Update Parent email
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS, ifnull(CHANGE_COLS,'') CHANGE_COLS "
+								+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID and PECI_EMAIL_CODE='P'";
+						emailData = jdbcCAS.queryForMap(SQL,PECIParameters);
+						
+						if (!emailData.get("CHANGE_COLS").equals("")){
+							in = new MapSqlParameterSource();
+							in.addValue("p_changeType",mode);
+							in.addValue("p_trans_id",transId);
+							in.addValue("p_peciUserId",userName);
+							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+
+							in.addValue("p_peciRole","PAR");
+							in.addValue("p_pidm",emailData.get("PARENT_PIDM"));
+							in.addValue("p_ppid",emailData.get("PARENT_PPID"));
+							
+							in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE").toString());
+							in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS").toString());
+							in.addValue("p_peciEmailAddrStatusInd","A");
+							
+							out = p_email_main.execute(in);
+							
+							log.debug ("Calling p_email_main input: " + in.getValues().toString());
+							log.debug ("Returning p_email_main output: " + out.toString());
+							
+							error = (String)out.get("p_errorCodeOut"); 
+							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+							
+							log.debug("Update Parent email procedure return is " + error);
+						}
+						
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty no email
+					}
+					try {					
+						//parent Address Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PIDM,PARENT_PPID,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE, "
+								+ "ADDR_CODE,ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3, "
+								+ "ADDR_CITY,ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND, ifnull(CHANGE_COLS,'') CHANGE_COLS "
+								+ "from cc_gen_peci_addr_data_t where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID and PECI_ADDR_CODE='H'";
+						addressData = jdbcCAS.queryForMap(SQL,PECIParameters);
+
+						//Studemt Address
+						if (!addressData.get("CHANGE_COLS").equals("")){
+							in = new MapSqlParameterSource();
+							in.addValue("p_changeType",mode);
+							in.addValue("p_trans_id",transId);
+							in.addValue("p_peciUserId",userName);
+							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+							
+							in.addValue("p_peciRole","PAR");
+							in.addValue("p_pidm",addressData.get("PARENT_PIDM"));
+							in.addValue("p_ppid",addressData.get("PARENT_PPID"));
+							
+							in.addValue("p_banAddrSeqno",null);
+							in.addValue("p_peciAddrStatus","A");
+							in.addValue("p_peciAddCode",addressData.get("PECI_ADDR_CODE").toString());
+							in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
+							in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
+							in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
+							in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
+							in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
+							in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
+							in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
+							
+							out = p_address_main.execute(in);
+							
+							log.debug ("Calling p_address_main input: " + in.getValues().toString());
+							log.debug ("Returning p_address_main output: " + out.toString());
+							
+							error = (String)out.get("p_errorCodeOut"); 
+							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+							
+							log.debug("update parent address procedure return is " + error);
+						}
+							
+					} catch (EmptyResultDataAccessException e){
+						// dataset empty no email
+					}
+					try {					
+						//Parent Phone Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,"
+								+ "PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, ifnull(CHANGE_COLS,'') CHANGE_COLS, "
+								+"CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE, "
+								+"ADDR_TYPE_CODE,ADDR_SEQNO "
+								+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+						
+						phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+						
+						for(int x=0; x<phoneData.size();x++){
+							Map<String,Object> phone = phoneData.get(x);
+							//update parent Phone
+							if (!phone.get("CHANGE_COLS").equals("")){
+								in = new MapSqlParameterSource();
+								in.addValue("p_changeType",mode);
+								in.addValue("p_trans_id",transId);
+								in.addValue("p_peciUserId",userName);
+								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+								
+
+								in.addValue("p_peciRole","PAR");
+								in.addValue("p_pidm",phone.get("PARENT_PIDM"));
+								in.addValue("p_ppid",phone.get("PARENT_PPID"));
+								
+								in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+								in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
+								
+								in.addValue("p_peciPhonePrimary",phone.get("PHONE_PRIMARY_IND"));
+								in.addValue("p_banAddrCode",phone.get("ADDR_TYPE_CODE"));
+								in.addValue("p_banAddrSeqno",phone.get("ADDR_SEQNO"));
+								in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+								in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+								in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+								in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+								in.addValue("p_peciPhoneStatus","A");
+								in.addValue("p_peciEmergPriority",null);
+								in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+								in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+								in.addValue("p_banComment",null);
+								
+								out = p_phone_main.execute(in);
+								
+								log.debug ("Calling p_phone_main input: " + in.getValues().toString());
+								log.debug ("Returning p_phone_main output: " + out.toString());
+								
+								error = (String)out.get("p_errorCodeOut"); 
+								if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+								
+								log.debug("New Student phone procedure return is " + error);
+							}
+						}
+					} catch (EmptyResultDataAccessException e){
+						log.debug("New Student phone is empty");
+						// dataset empty 
+					}
 					
 				} else {
 					if (!changeCols.equals("DELETE")){
@@ -2521,6 +2703,9 @@ public class jdbcCamel {
 						
 						out = p_exe_cm_singleparent.execute(in);
 						
+						log.debug ("Calling p_exe_cm_singleparent input: " + in.getValues().toString());
+						log.debug ("Returning p_exe_cm_singleparent output: " + out.toString());
+						
 						int p_ppid = Integer.parseInt(out.get("p_parPpidOut").toString()); 
 						
 						error = (String)out.get("p_errorCodeOut");
@@ -2535,6 +2720,7 @@ public class jdbcCamel {
 								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
 										+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
 										+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT, "
+										+ "ADDR_TYPE_CODE,ADDR_SEQNO, "
 										+ "EMERG_NO_CELL_PHONE from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
 										+ "and CHANGE_COLS not like '%DELETE%' "
 										+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
@@ -2571,6 +2757,9 @@ public class jdbcCamel {
 										
 										out = p_phone_main.execute(in);
 										
+										log.debug ("Calling p_phone_main input: " + in.getValues().toString());
+										log.debug ("Returning p_phone_main output: " + out.toString());
+										
 										error = (String)out.get("p_errorCodeOut"); 
 										if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 										
@@ -2586,7 +2775,8 @@ public class jdbcCamel {
 							try {
 								SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
 										+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND, "
-										+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
+										+ "CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE, "
+										+ "ADDR_TYPE_CODE,ADDR_SEQNO "
 										+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
 										+ "and CHANGE_COLS not like '%DELETE%' "
 										+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID ";
@@ -2619,6 +2809,9 @@ public class jdbcCamel {
 										
 										out = p_phone_create_temp.execute(in);
 										
+										log.debug ("Calling p_phone_create_temp input: " + in.getValues().toString());
+										log.debug ("Returning p_phone_create_temp output: " + out.toString());
+										
 										error = (String)out.get("p_errorCodeOut"); 
 										if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 										
@@ -2637,7 +2830,7 @@ public class jdbcCamel {
 			log.debug("New student parents is empty");
 			// dataset empty No Parents
 		}
-		//Emergency Contacts
+//-------------------------- Emergency Contacts -----------------------------------
 		try {					
 			//Emergency Contacts
 			SQL="select PARENT_PPID, PARENT_PIDM, EMERG_CONTACT_PRIORITY, EMERG_LEGAL_PREFIX_NAME, EMERG_PREF_FIRST_NAME, "
@@ -2652,172 +2845,205 @@ public class jdbcCamel {
 			for(int i=0; i<parentData.size();i++){
 				Map<String,Object> parent = parentData.get(i);
 				String tp_ppid = parent.get("PARENT_PPID").toString();
+				
+				String changeCols = "";
+				if (parent.get("CHANGE_COLS") != null) {
+					changeCols = parent.get("CHANGE_COLS").toString();
+				}
+				
+				String eMode = mode;
+				if (mode.equals("U") && isInteger(parent.get("PARENT_PPID").toString()) ){
+					eMode = "C";
+				}
+				
 				Map<String,Object> parentParameters = new HashMap<String,Object>();
 				parentParameters.put("STUDENT_PIDM", ccPDIM);
 				parentParameters.put("PARENT_PPID", tp_ppid);
 				
-				//Contact
-				in = new MapSqlParameterSource();
-				in.addValue("p_changeType","C");
-				in.addValue("p_trans_id",transId);
-				in.addValue("p_peciRole","EMERG");
-				in.addValue("p_stuPidm",ccPDIM);
-				in.addValue("p_stuPpid",ppId);
-				in.addValue("p_parPidm",null);
-				in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
-				
-				
-				
-				if (isInteger(parent.get("PARENT_PPID").toString())){
-					in.addValue("p_parPpid",parent.get("PARENT_PPID"));
-				} else{
-					in.addValue("p_parPpid",null);
-				}
-
-				in.addValue("p_emergPrefixName",capitalizeObj(parent.get("EMERG_LEGAL_PREFIX_NAME")));
-				in.addValue("p_emergFirstName",capitalizeObj(parent.get("EMERG_PREF_FIRST_NAME")));
-				in.addValue("p_emergMiddleName",capitalizeObj(parent.get("EMERG_PREF_MIDDLE_NAME")));
-				in.addValue("p_emergLastName",capitalizeObj(parent.get("EMERG_PREF_LAST_NAME")));
-				in.addValue("p_emergSuffixName",capitalizeObj(parent.get("EMERG_LEGAL_SUFFIX_NAME")));
-				in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
-				in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
-				in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
-				in.addValue("p_dependent",parent.get("DEPENDENT"));
-				
-
-				in.addValue("p_peciUserId",userName);
-				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-				
-				out = p_emerg_main.execute(in);
-				
-				int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
-				
-				error = (String)out.get("p_errorCodeOut"); 
-				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
-				
-				log.debug("New Contact procedure return is " + error);
-
-				log.debug("New contact PPID is " + p_ppid);
-				
-				try {					
-					//Contqct email Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
-							+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM "
-							+ "and PARENT_PPID = :PARENT_PPID";
-					emailData = jdbcCAS.queryForMap(SQL,parentParameters);
-
-					//email
+				if ((!changeCols.equals("DELETE") && eMode.equals("C")) || !parent.get("CHANGE_COLS").equals("")){
+					
+					//Contact
 					in = new MapSqlParameterSource();
-					in.addValue("p_changeType","C");
+					in.addValue("p_changeType",eMode);
 					in.addValue("p_trans_id",transId);
-					in.addValue("p_ppid",p_ppid);
 					in.addValue("p_peciRole","EMERG");
-					in.addValue("p_pidm",null);
+					in.addValue("p_stuPidm",ccPDIM);
+					in.addValue("p_stuPpid",ppId);
+					in.addValue("p_parPidm",null);
+					in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
+					
+					
+					
+					if (isInteger(parent.get("PARENT_PPID").toString())){
+						in.addValue("p_parPpid",parent.get("PARENT_PPID"));
+					} else{
+						in.addValue("p_parPpid",null);
+					}
+					
+					if (changeCols.equals("DELETE")) {
+						in.addValue("p_emergPriority",0);
+					} else {
+						in.addValue("p_emergPriority",parent.get("EMERG_CONTACT_PRIORITY"));
+					}
+	
+					in.addValue("p_emergPrefixName",capitalizeObj(parent.get("EMERG_LEGAL_PREFIX_NAME")));
+					in.addValue("p_emergFirstName",capitalizeObj(parent.get("EMERG_PREF_FIRST_NAME")));
+					in.addValue("p_emergMiddleName",capitalizeObj(parent.get("EMERG_PREF_MIDDLE_NAME")));
+					in.addValue("p_emergLastName",capitalizeObj(parent.get("EMERG_PREF_LAST_NAME")));
+					in.addValue("p_emergSuffixName",capitalizeObj(parent.get("EMERG_LEGAL_SUFFIX_NAME")));
+					in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
+					in.addValue("p_noCellPhone",parent.get("EMERG_NO_CELL_PHONE"));
+					in.addValue("p_dependent",parent.get("DEPENDENT"));
+					
+	
 					in.addValue("p_peciUserId",userName);
 					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 					
-					in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE"));
-					in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS"));
-					in.addValue("p_peciEmailAddrStatusInd","A");
-
-					out = p_email_main.execute(in);
+					out = p_emerg_main.execute(in);
 					
-					error = (String)out.get("p_errorCodeOut"); 
+					log.debug ("Calling p_emerg_main input: " + in.getValues().toString());
+					log.debug ("Returning p_emerg_main output: " + out.toString());
 					
-					log.debug("New contact email procedure return is " + error);
-					
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New contact email is empty");
-					// dataset empty no email
-				}
-				try {					
-					//Contact Address Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE, "
-							+ "ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY, "
-							+ "ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t "
-							+ "where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
-					addressData = jdbcCAS.queryForMap(SQL,parentParameters);
-
-					//Address
-					in = new MapSqlParameterSource();
-					in.addValue("p_changeType","C");
-					in.addValue("p_trans_id",transId);
-					in.addValue("p_ppid",p_ppid);
-					in.addValue("p_peciRole","EMERG");
-					in.addValue("p_pidm",null);
-					in.addValue("p_peciUserId",userName);
-					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-
-					in.addValue("p_banAddrSeqno",null);
-					in.addValue("p_peciAddrStatus","A");
-					in.addValue("p_peciAddCode","H");
-					in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
-					in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
-					in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
-					in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
-					in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
-					in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
-					in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
-					
-					out = p_address_main.execute(in);
+					int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
 					
 					error = (String)out.get("p_errorCodeOut"); 
 					if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
 					
-					log.debug("New contact adress procedure return is " + error);
+					log.debug("New Contact procedure return is " + error);
+	
+					log.debug("New contact PPID is " + p_ppid);
 					
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New contact address is empty");
-					// dataset empty no address
-				}
-				try {					
-					//Contact Phone Data
-					SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
-							+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
-							+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE "
-							+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
-							+ "and CHANGE_COLS not like '%DELETE%' "
-							+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
-					phoneData = jdbcCAS.queryForList(SQL,parentParameters);
-					
-					for(int x=0; x<phoneData.size();x++){
-						Map<String,Object> phone = phoneData.get(x);
-						//Phone
+					try {					
+						//Contqct email Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
+								+ "from cc_gen_peci_email_data_t where STUDENT_PIDM=:STUDENT_PIDM "
+								+ "and PARENT_PPID = :PARENT_PPID";
+						emailData = jdbcCAS.queryForMap(SQL,parentParameters);
+	
+						//email
 						in = new MapSqlParameterSource();
-						in.addValue("p_changeType","C");
+						in.addValue("p_changeType",eMode);
 						in.addValue("p_trans_id",transId);
 						in.addValue("p_ppid",p_ppid);
 						in.addValue("p_peciRole","EMERG");
 						in.addValue("p_pidm",null);
 						in.addValue("p_peciUserId",userName);
 						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
-
-						in.addValue("p_banTeleSeqno",null);
-						in.addValue("p_banAddrSeqno",null);
-						in.addValue("p_banAddrCode",null);
-						//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
-						in.addValue("p_banTeleCode",null);
-						in.addValue("p_peciPhonePrimary",null);
-						in.addValue("p_peciPhoneStatus","A");
-						in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
-						in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
-						in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
-						in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
-						in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
-						in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
-						in.addValue("p_banComment",null);
-						in.addValue("p_peciEmergPriority",null);
 						
-						out = p_phone_main.execute(in);
-						if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+						in.addValue("p_peciEmailCode",emailData.get("PECI_EMAIL_CODE"));
+						in.addValue("p_peciEmailAddr",emailData.get("EMAIL_ADDRESS"));
+						in.addValue("p_peciEmailAddrStatusInd","A");
+	
+						out = p_email_main.execute(in);
+						
+						log.debug ("Calling p_email_main input: " + in.getValues().toString());
+						log.debug ("Returning p_email_main output: " + out.toString());
 						
 						error = (String)out.get("p_errorCodeOut"); 
 						
-						log.debug("New contact phone procedure return is " + error);
+						log.debug("New contact email procedure return is " + error);
+						
+					} catch (EmptyResultDataAccessException e){
+						log.debug("New contact email is empty");
+						// dataset empty no email
 					}
-				} catch (EmptyResultDataAccessException e){
-					log.debug("New contact phone is empty");
-					// dataset empty no Phone
+					try {					
+						//Contact Address Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE, "
+								+ "ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY, "
+								+ "ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t "
+								+ "where STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+						addressData = jdbcCAS.queryForMap(SQL,parentParameters);
+	
+						//Address
+						in = new MapSqlParameterSource();
+						in.addValue("p_changeType",eMode);
+						in.addValue("p_trans_id",transId);
+						in.addValue("p_ppid",p_ppid);
+						in.addValue("p_peciRole","EMERG");
+						in.addValue("p_pidm",null);
+						in.addValue("p_peciUserId",userName);
+						in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+	
+						in.addValue("p_banAddrSeqno",null);
+						in.addValue("p_peciAddrStatus","A");
+						in.addValue("p_peciAddCode","H");
+						in.addValue("p_peciAddrStreetLine1",addressData.get("ADDR_STREET_LINE1"));
+						in.addValue("p_peciAddrStreetLine2",addressData.get("ADDR_STREET_LINE2"));
+						in.addValue("p_peciAddrStreetLine3",addressData.get("ADDR_STREET_LINE3"));
+						in.addValue("p_peciAddrCity",addressData.get("ADDR_CITY"));
+						in.addValue("p_peciAddrStateCode",addressData.get("ADDR_STAT_CODE"));
+						in.addValue("p_peciAddrZipCode",addressData.get("ADDR_ZIP"));
+						in.addValue("p_peciAddrNatnCode",addressData.get("ADDR_NATN_CODE"));
+						
+						out = p_address_main.execute(in);
+						
+						log.debug ("Calling p_address_main input: " + in.getValues().toString());
+						log.debug ("Returning p_address_main output: " + out.toString());
+						
+						error = (String)out.get("p_errorCodeOut"); 
+						if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+						
+						log.debug("New contact adress procedure return is " + error);
+						
+					} catch (EmptyResultDataAccessException e){
+						log.debug("New contact address is empty");
+						// dataset empty no address
+					}
+					try {					
+						//Contact Phone Data
+						SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE, "
+								+ "PHONE_AREA_CODE,PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND, "
+								+ "PHONE_PRIMARY_IND,CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE, "
+								+ "ADDR_TYPE_CODE,ADDR_SEQNO "
+								+ "from cc_gen_peci_phone_data_t where (PHONE_STATUS_IND is null or  PHONE_STATUS_IND = 'A') "
+								+ "and CHANGE_COLS not like '%DELETE%' "
+								+ "and STUDENT_PIDM=:STUDENT_PIDM and PARENT_PPID = :PARENT_PPID";
+						phoneData = jdbcCAS.queryForList(SQL,parentParameters);
+						
+						for(int x=0; x<phoneData.size();x++){
+							Map<String,Object> phone = phoneData.get(x);
+							//Phone
+							in = new MapSqlParameterSource();
+							in.addValue("p_changeType",eMode);
+							in.addValue("p_trans_id",transId);
+							in.addValue("p_ppid",p_ppid);
+							in.addValue("p_peciRole","EMERG");
+							in.addValue("p_pidm",null);
+							in.addValue("p_peciUserId",userName);
+							in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+	
+							in.addValue("p_banTeleSeqno",null);
+							in.addValue("p_banAddrCode",phone.get("ADDR_TYPE_CODE"));
+							in.addValue("p_banAddrSeqno",phone.get("ADDR_SEQNO"));
+							//in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+							in.addValue("p_banTeleCode",null);
+							in.addValue("p_peciPhonePrimary",null);
+							in.addValue("p_peciPhoneStatus","A");
+							in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+							in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+							in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+							in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+							in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+							in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+							in.addValue("p_banComment",null);
+							in.addValue("p_peciEmergPriority",null);
+							
+							out = p_phone_main.execute(in);
+							
+							log.debug ("Calling p_phone_main input: " + in.getValues().toString());
+							log.debug ("Returning p_phone_main output: " + out.toString());
+							
+							if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+							
+							error = (String)out.get("p_errorCodeOut"); 
+							
+							log.debug("New contact phone procedure return is " + error);
+						}
+					} catch (EmptyResultDataAccessException e){
+						log.debug("New contact phone is empty");
+						// dataset empty no Phone
+					}
 				}
 			}
 		} catch (EmptyResultDataAccessException e){
@@ -2830,7 +3056,7 @@ public class jdbcCamel {
 			SQL="call PECI_Clear_Student(:STUDENT_PIDM) ";
 			jdbcCAS.update(SQL, PECIParameters);
 		}
-	}
+	} 
 	
 	public String capitalizeObj(Object dbObj){
 		String sDbObj = ObjectUtils.toString(dbObj);
