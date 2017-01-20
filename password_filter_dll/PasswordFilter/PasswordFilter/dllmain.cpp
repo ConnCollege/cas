@@ -113,7 +113,7 @@ INT writeDbRecord (LPWSTR *resetUuid)
 	rc = SQLDriverConnect(
 		hdbc,
 		NULL,
-		(SQLWCHAR*)L"DRIVER={SQL Server};SERVER=sumac.conncoll.edu,1433;DATABASE=camel2;UID=camel_web;PWD=!Camel09;",
+		(SQLWCHAR*)L"DRIVER={SQL Server};SERVER=sqlprd_listener.conncoll.edu,1433;DATABASE=camel2;UID=camel_web;PWD=!Camel09;",
 		SQL_NTS,
 		NULL,
 		0,
@@ -358,7 +358,7 @@ NTSTATUS PasswordChangeNotify(
 	switch (returnCode)
 	{
 	case DB_ERROR_CONNECTION:
-		//WriteToLog(L"Error creating a connection to Sumac.");
+		WriteToLog(L"Error creating a connection to Sumac.");
 		ntStatus = UNSUCCESSFUL;
 		break;
 
@@ -368,7 +368,7 @@ NTSTATUS PasswordChangeNotify(
 		break;
 
 	case DB_ERROR_QUERY:
-		//WriteToLog(L"Error executing insert query on Sumac.");
+		WriteToLog(L"Error executing insert query on Sumac.");
 		ntStatus = UNSUCCESSFUL;
 		break;
 
@@ -380,7 +380,7 @@ NTSTATUS PasswordChangeNotify(
 		wcscat(Message, messageText);
 		wcscat(Message, resetUuid);
 
-		//WriteToLog(Message);
+		WriteToLog(Message);
 		delete [] Message;
 
 		//create a curl request
@@ -388,7 +388,7 @@ NTSTATUS PasswordChangeNotify(
 
 		if (returnCode == CURL_ERROR)
 		{
-			//WriteToLog(L"Error sending restful request to CAS.");
+			WriteToLog(L"Error sending restful request to CAS.");
 			ntStatus = UNSUCCESSFUL;
 		}
 		else if (returnCode == CURL_SUCCESS)
@@ -404,7 +404,7 @@ NTSTATUS PasswordChangeNotify(
 			wcscat(Message, ConvertedNewPassword);
 			wcscat(Message, L")");
 
-			//WriteToLog(Message);
+			WriteToLog(Message);
 			delete [] Message;
 			ntStatus = SUCCESS;
 		}
