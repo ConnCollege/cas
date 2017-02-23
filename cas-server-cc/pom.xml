@@ -106,12 +106,6 @@
 		  <artifactId>jasypt</artifactId>
             <version>${jasypt.version}</version>
 		</dependency>
-		<!-- Encryption -->
-		<dependency>
-		  <groupId>org.jasypt</groupId>
-		  <artifactId>jasypt</artifactId>
-            <version>${jasypt.version}</version>
-		</dependency>
 		<!-- MS SQL JDBC -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver.jdbc</groupId>
