@@ -321,12 +321,12 @@ function totalAllowed(type){
 function entryCheck(){
    /*check num on both parents and contacts*/
    if(checkNum('PARENT') >= totalAllowed('PARENT')){
-   disableModalEnter('PARENT');
+	   disableModalEnter('PARENT');
    }else{
 	   enableModalEnter('PARENT');
    }
    if(checkNum('CONTACT') >= totalAllowed('CONTACT')){
-   disableModalEnter('CONTACT');
+	   disableModalEnter('CONTACT');
    }else{
 	   enableModalEnter('CONTACT');
    }	   
@@ -477,6 +477,7 @@ if(value == 'United States' || value == "US"){
 		 $("#" + field_id + "_ERROR").show();		
 		 $("#group_" + field_id).addClass("has-error");		 
 		 showMainError = 1
+		 console.log('1 error: ' + field_label);
 	 }else{
 		 $("#" + field_id + "_ERROR").hide();		
 		 $("#group_" + field_id).removeClass("has-error");
@@ -496,12 +497,14 @@ if(value == 'United States' || value == "US"){
 			 $("#" + field_id + "_ERROR").show();		
 			 $("#group_" + field_id).addClass("has-error");
 			 showMainError = 1;
+			 console.log('2 error: ' + field_label);
 		 }else{
 			 if(field_id == 'STUDENT_EMAIL_ADDRESS' && field_value.indexOf("@conncoll") >= 0){
 				 $("#" + field_id + "_ERROR" + " .custom-error").html('Please do not enter your @conncoll email address for your ' + field_label + '. Please use a non-college email account.');	
 				 $("#" + field_id + "_ERROR").show();		
 				 $("#group_" + field_id).addClass("has-error");
 				 showMainError = 1;
+				 console.log('3 error: ' + field_label);
 			 }else{
 				 $("#group_" + field_id).removeClass("has-error");
 			 }
@@ -512,6 +515,7 @@ if(value == 'United States' || value == "US"){
 			 $("#" + field_id + "_ERROR").show();		
 			 $("#group_" + field_id).addClass("has-error");
 			 showMainError = 1;
+			 console.log('4 error: ' + field_label);
 		 }else{
 			 $("#group_" + field_id).removeClass("has-error");
 		 }
@@ -528,6 +532,7 @@ if(value == 'United States' || value == "US"){
 		 $("#" + field_id + "_ERROR" + " .custom-error").html('The ' + field_label + ' you entered is the incorrect length. Please enter a valid ' + field_label);	
 		 $("#" + field_id + "_ERROR").show();		
 		 $("#group_" + field_id).addClass("has-error");
+		 console.log('5 error: ' + field_label);
 		 showMainError = 1;
 	 }else{
 		 $("#" + field_id + "_ERROR").hide();
@@ -552,6 +557,7 @@ if(value == 'United States' || value == "US"){
 				 $("#" + field_id + "_ERROR").show();		
 				 $("#group_" + field_id).addClass("has-error");
 				 showMainError = 1;		
+				 /*console.log('6 error: ' + field_label);*/
 			} else {
 				var errorString = $("#" + field_id + "_ERROR" + " .custom-error").html();	
 				/*only remove error if it is a foreign character error*/		
@@ -559,6 +565,7 @@ if(value == 'United States' || value == "US"){
 					if(errorString.indexOf("foreign") >= 0){
 						$("#" + field_id + "_ERROR").hide();
 						$("#group_" + field_id).removeClass("has-error");
+						/*console.log('7 error: ' + field_label);*/
 					}
 				}		
 			}	 
@@ -568,7 +575,7 @@ if(value == 'United States' || value == "US"){
 				 $("#" + field_id + "_ERROR").show();		
 				 $("#group_" + field_id).addClass("has-error");
 				 showMainError = 1;	
-				 console.log('8 error: field_label: ' + field_label + ', field_id: ' + field_id + ', field_value: ' + field_value);
+				 /*console.log('8 error: field_label: ' + field_label + ', field_id: ' + field_id + ', field_value: ' + field_value);*/
 			} else {
 				var errorString = $("#" + field_id + "_ERROR" + " .custom-error").html();	
 				/*only remove error if it is a foreign character error*/		
@@ -579,7 +586,8 @@ if(value == 'United States' || value == "US"){
 					}
 				}		
 			}	 
-	 }		 	 
+	 }	
+	 	 
  });
  
 
@@ -589,9 +597,9 @@ if(value == 'United States' || value == "US"){
  if(addr_line1.indexOf('270 Mohegan Ave') != -1 && addr_city.indexOf('New London') != -1){
 	$('#' + form_id + '_CAMPUS_ADDR_ERROR').html('Please do not enter your campus address').show();
  	showMainError = 1;
-}
+} 
  
- if(form_id == 'STUDENT' && duplicate == false){
+ if(form_id == 'STUDENT' && duplicate == "false"){
 	 if(checkNum('PARENT') == 0){
 		 $('#PARENT_NUM_ERROR').show();
 		 showMainError = 1;
@@ -675,10 +683,10 @@ if(value == 'United States' || value == "US"){
 	 if(showMainError){
 		 window.scrollTo(0,0);
 		 $('#' + form_id + '_MODAL').animate({ scrollTop: 0 }, 'fast'); 
-	 $('#STUDENT_FORM_ERROR').show();
-	 return false;	
- }else{
-	 $('#STUDENT_FORM_ERROR').hide();
+		 $('#STUDENT_FORM_ERROR').show();
+		 return false;	
+	 }else{
+		 $('#STUDENT_FORM_ERROR').hide();
 		 return true;
 	 }
  }
