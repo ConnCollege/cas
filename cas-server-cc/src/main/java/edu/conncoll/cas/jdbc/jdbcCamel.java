@@ -836,7 +836,7 @@ public class jdbcCamel {
 				
 				String ccPIDM = studentTransList.get(i).get("STUDENT_PIDM").toString();
 				
-				log.debug("Searching vault for ccPIDM=" + ccPIDM);
+				log.debug("Searching vault for ccPIDM='" + ccPIDM+"'");
 				
 				List vaultDN = this.vaultTemplate.search(
 					this.vaultSearchBase, "ccPIdM=" + ccPIDM, 
@@ -862,8 +862,17 @@ public class jdbcCamel {
 						log.error("User does not have a primary Affiliation PIDM: " + ccPIDM + " username: " + userName);
 					} else {
 						if (eduPersonPrimaryAffiliation.equals("STUDENT")){
-							PECI2Banner(userName, ccPIDM, "C");
-							//System.exit(0);
+							if (Integer.parseInt(studentTransList.get(i).get("STUDENT_PPID").toString())==0){
+								log.debug("Performing Create to banner");
+								PECI2Banner(userName,ccPIDM,"C");
+								
+							} else {
+								//Run PECI Update statements
+	
+								log.debug("Performing Update to banner");
+								
+								PECI2Banner(userName,ccPIDM,"U");
+							}
 						}
 					}
 				}
@@ -913,7 +922,7 @@ public class jdbcCamel {
 				
 				SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME,PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE,EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE,DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE  from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
 				studentData = jdbcCAS.queryForMap(SQL,PECIParameters);
-				/*
+				
 				if (Integer.parseInt(studentData.get("STUDENT_PPID").toString())==0){
 					log.debug("Performing Create to banner");
 					PECI2Banner(userName,ccPDIM,"C");
@@ -925,7 +934,6 @@ public class jdbcCamel {
 					
 					PECI2Banner(userName,ccPDIM,"U");
 				}
-				*/
 				context.getFlowScope().put("Flag","PECI");
 				return "Saved";
 			}
@@ -2185,6 +2193,15 @@ public class jdbcCamel {
 		SQL="update cas.cc_gen_peci_addr_data_t set ADDR_STAT_CODE = null where ADDR_STAT_CODE='FC'";
 		jdbcCAS.update(SQL, new HashMap<String,Object>());
 		
+		SQL="delete FROM cas.cc_gen_peci_emergs_t where EMERG_PREF_LAST_NAME is null and EMERG_PREF_FIRST_NAME is null ";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="delete FROM cas.cc_gen_peci_emergs_t where PARENT_PPID in ( select PARENT_PPID from cas.cc_adv_peci_parents_t where DUPLICATE_STATUS is not null and STUDENT_PIDM = " + ccPDIM + ")";
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
+		SQL="delete FROM cas.cc_adv_peci_parents_t where DUPLICATE_STATUS is not null and STUDENT_PIDM = " + ccPDIM;
+		jdbcCAS.update(SQL, new HashMap<String,Object>());
+		
 		SQL="Update cc_adv_peci_parents_t set PARENT_PREF_FIRST_NAME=TRIM(PARENT_PREF_FIRST_NAME), "
 				+ "PARENT_PREF_MIDDLE_NAME=TRIM(PARENT_PREF_MIDDLE_NAME), "
 				+ "PARENT_PREF_LAST_NAME=TRIM(PARENT_PREF_LAST_NAME)";
@@ -2204,22 +2221,21 @@ public class jdbcCamel {
 		
 		PECIParameters.put("STUDENT_PIDM",ccPDIM);
 		PECIParameters.put("PARENT_PPID","0");
-		
-		SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME, "
-				+ "PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE, "
-				+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE, "
-				+ "DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE, ifnull(CHANGE_COLS,'') CHANGE_COLS "
-				+ "from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
-		
-		
-		studentData = jdbcCAS.queryForMap(SQL,PECIParameters);	
-		
+
 		//Start with transaction ID
 		in = new MapSqlParameterSource();
 		in.addValue("p_peciUserId", userName);
 		int transId = f_cc_generate_trans_id.executeFunction(Integer.class,in);
 		
 		log.debug("Transaction id is " + transId);
+		
+		SQL = "select STUDENT_PPID,STUDENT_PIDM,CAMEL_NUMBER,CAMEL_ID,LEGAL_PREFIX_NAME,PREFERRED_FIRST_NAME, "
+				+ "PREFERRED_MIDDLE_NAME,PREFERRED_LAST_NAME,LEGAL_SUFFIX_NAME,EMERG_NO_CELL_PHONE,EMERG_PHONE_NUMBER_TYPE_CODE, "
+				+ "EMERG_CELL_PHONE_CARRIER,EMERG_PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,LEGAL_DISCLAIMER_DATE, "
+				+ "DEAN_EXCEPTION_DATE,GENDER,DECEASED,DECEASED_DATE, ifnull(CHANGE_COLS,'') CHANGE_COLS "
+				+ "from cc_stu_peci_students_t where STUDENT_PIDM=:STUDENT_PIDM";
+		studentData = jdbcCAS.queryForMap(SQL,PECIParameters);	
+		
 		if (mode.equals("C") || !studentData.get("CHANGE_COLS").equals("")) {
 			//Save Student Record	
 			in = new MapSqlParameterSource();
@@ -2262,7 +2278,171 @@ public class jdbcCamel {
 		} else {
 			ppId = Integer.parseInt(studentData.get("STUDENT_PPID").toString());
 		}
+//---------------------------------- Delete records --------------------------------------------
+		try {					
+			//emails to delete
+			SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_EMAIL_CODE,EMAIL_ADDRESS "
+					+ "from cc_gen_peci_email_data_t where  CHANGE_COLS like '%DELETE%' and  PARENT_PPID REGEXP '^-?[0-9]+$' "
+					+"and STUDENT_PPID REGEXP '^-?[0-9]+$' and STUDENT_PIDM=:STUDENT_PIDM ";
+			List<Map<String,Object>> emailDataDel = jdbcCAS.queryForList(SQL,PECIParameters);
+			for(int i=0; i<emailData.size();i++){
+				Map<String,Object> email = emailDataDel.get(i);
+				//email
+				in = new MapSqlParameterSource();
+				in.addValue("p_changeType","U");
+				in.addValue("p_trans_id",transId);
+				if (email.get("PARENT_PPID").equals("0")){
+					in.addValue("p_peciRole","STU");
+					in.addValue("p_pidm",ccPDIM);
+					in.addValue("p_ppid",ppId);
+				}else if (email.get("PARENT_PIDM")==null) {
+					in.addValue("p_peciRole","EMERG");
+					in.addValue("p_pidm",null);
+					in.addValue("p_ppid",email.get("PARENT_PPID"));
+				}else {
+					in.addValue("p_peciRole","PAR");
+					in.addValue("p_pidm",email.get("PARENT_PIDM"));
+					in.addValue("p_ppid",email.get("PARENT_PPID"));
+				}
+				
+				in.addValue("p_peciUserId",userName);
+				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+				
+				in.addValue("p_peciEmailCode",email.get("PECI_EMAIL_CODE"));
+				in.addValue("p_peciEmailAddr",email.get("EMAIL_ADDRESS"));
+				in.addValue("p_peciEmailAddrStatusInd","I");
+				
+	
+				log.debug ("Calling p_email_main for delete input: " + in.getValues().toString());
+				out = p_email_main.execute(in);
+				
+				log.debug ("Returning p_email_main for delete output: " + out.toString());
+				
+			} 
+				
+			
+		} catch (EmptyResultDataAccessException e){
+			log.debug("No emails to delete");
+			// dataset empty no email
+		}
+		try {					
+			//Contact Address Data
+			SQL="select STUDENT_PPID,STUDENT_PIDM,EMERG_CONTACT_PRIORITY,PERSON_ROLE,PECI_ADDR_CODE,ADDR_CODE, "
+					+ "ADDR_SEQUENCE_NO,ADDR_STREET_LINE1,ADDR_STREET_LINE2,ADDR_STREET_LINE3,ADDR_CITY, "
+					+ "ADDR_STAT_CODE,ADDR_ZIP,ADDR_NATN_CODE,ADDR_STATUS_IND from cc_gen_peci_addr_data_t "
+					+ "where  CHANGE_COLS like '%DELETE%' and  PARENT_PPID REGEXP '^-?[0-9]+$' "
+					+"and STUDENT_PPID REGEXP '^-?[0-9]+$' and STUDENT_PIDM=:STUDENT_PIDM ";
+			List<Map<String,Object>> addressDataDel = jdbcCAS.queryForList(SQL,PECIParameters);
+			for(int i=0; i<emailData.size();i++){
+				Map<String,Object> address = addressDataDel.get(i);
 
+				//Address
+				in = new MapSqlParameterSource();
+				in.addValue("p_changeType","U");
+				in.addValue("p_trans_id",transId);
+				in.addValue("p_peciUserId",userName);
+				if (address.get("PARENT_PPID").equals("0")){
+					in.addValue("p_peciRole","STU");
+					in.addValue("p_pidm",ccPDIM);
+					in.addValue("p_ppid",ppId);
+				}else if (address.get("PARENT_PIDM")==null) {
+					in.addValue("p_peciRole","EMERG");
+					in.addValue("p_pidm",null);
+					in.addValue("p_ppid",address.get("PARENT_PPID"));
+				}else {
+					in.addValue("p_peciRole","PAR");
+					in.addValue("p_pidm",address.get("PARENT_PIDM"));
+					in.addValue("p_ppid",address.get("PARENT_PPID"));
+				}
+				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+	
+				in.addValue("p_banAddrSeqno",null);
+				in.addValue("p_peciAddrStatus","I");
+				in.addValue("p_peciAddCode","H");
+				in.addValue("p_peciAddrStreetLine1",address.get("ADDR_STREET_LINE1"));
+				in.addValue("p_peciAddrStreetLine2",address.get("ADDR_STREET_LINE2"));
+				in.addValue("p_peciAddrStreetLine3",address.get("ADDR_STREET_LINE3"));
+				in.addValue("p_peciAddrCity",address.get("ADDR_CITY"));
+				in.addValue("p_peciAddrStateCode",address.get("ADDR_STAT_CODE"));
+				in.addValue("p_peciAddrZipCode",address.get("ADDR_ZIP"));
+				in.addValue("p_peciAddrNatnCode",address.get("ADDR_NATN_CODE"));
+				
+				out = p_address_main.execute(in);
+				
+				log.debug ("Calling p_address_main input: " + in.getValues().toString());
+				log.debug ("Returning p_address_main output: " + out.toString());
+			}
+			
+		} catch (EmptyResultDataAccessException e){
+			log.debug("No Addresses to delete");
+			// dataset empty no address
+		}
+		try {					
+			//Phones to be deleted
+			SQL="select STUDENT_PPID,STUDENT_PIDM,PARENT_PPID,PARENT_PIDM,PECI_PHONE_CODE,PHONE_CODE,PHONE_AREA_CODE,"
+					+ "PHONE_NUMBER,PHONE_NUMBER_INTL,PHONE_SEQUENCE_NO,PHONE_STATUS_IND,PHONE_PRIMARY_IND,"
+					+"CELL_PHONE_CARRIER,PHONE_TTY_DEVICE,EMERG_AUTO_OPT_OUT,EMERG_SEND_TEXT,EMERG_NO_CELL_PHONE, "
+					+"ADDR_TYPE_CODE,ADDR_SEQNO, ifnull(CHANGE_COLS,'') CHANGE_COLS "
+					+"from cc_gen_peci_phone_data_t where CHANGE_COLS like '%DELETE%' and  PARENT_PPID REGEXP '^-?[0-9]+$' "
+					+"and STUDENT_PPID REGEXP '^-?[0-9]+$' and STUDENT_PIDM=:STUDENT_PIDM ";
+			
+			phoneData = jdbcCAS.queryForList(SQL,PECIParameters);
+			
+			for(int i=0; i<phoneData.size();i++){
+				Map<String,Object> phone = phoneData.get(i);
+				in = new MapSqlParameterSource();
+				in.addValue("p_changeType","U");
+				in.addValue("p_trans_id",transId);
+				if (phone.get("PARENT_PPID").equals("0")){
+					in.addValue("p_peciRole","STU");
+					in.addValue("p_pidm",ccPDIM);
+					in.addValue("p_ppid",ppId);
+				}else if (phone.get("PARENT_PIDM")==null) {
+					in.addValue("p_peciRole","EMERG");
+					in.addValue("p_pidm",null);
+					in.addValue("p_ppid",phone.get("PARENT_PPID"));
+				}else {
+					in.addValue("p_peciRole","PAR");
+					in.addValue("p_pidm",phone.get("PARENT_PIDM"));
+					in.addValue("p_ppid",phone.get("PARENT_PPID"));
+				}
+				in.addValue("p_peciUserId",userName);
+				in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
+				in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
+				in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
+				in.addValue("p_banAddrSeqno",phone.get("ADDR_SEQNO"));
+				in.addValue("p_peciPhonePrimary",null);
+				in.addValue("p_banAddrCode",null);
+				in.addValue("p_peciPhoneCode",phone.get("PECI_PHONE_CODE"));
+				in.addValue("p_peciPhoneArea",phone.get("PHONE_AREA_CODE"));
+				in.addValue("p_peciPhoneNumber",phone.get("PHONE_NUMBER"));
+				in.addValue("p_peciPhoneIntl",phone.get("PHONE_NUMBER_INTL"));
+				in.addValue("p_peciPhoneStatus","I");
+				in.addValue("p_peciEmergPriority",null);
+				in.addValue("p_peciCellPhoneCarrier",phone.get("CELL_PHONE_CARRIER"));
+				in.addValue("p_peciPhoneTtyDevice",phone.get("PHONE_TTY_DEVICE"));
+				in.addValue("p_banComment",null);
+				
+				log.debug ("Calling p_phone_main for delete input: " + in.getValues().toString());
+				out = p_phone_main.execute(in);
+				
+				log.debug ("Returning p_phone_main for delete output: " + out.toString());
+				
+				error = (String)out.get("p_errorCodeOut"); 
+				if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
+					
+			}
+		} catch (EmptyResultDataAccessException e){
+			log.debug("No Phone records to delete");
+			// dataset empty 
+		}
+		
+		
+		
+
+		//---------------------------------- End Delete records --------------------------------------------	
+
+		//---------------------------------- Student details --------------------------------------------
 		log.debug("Student PPID is " + ppId);
 		try {					
 			//Student email Data
@@ -2358,14 +2538,14 @@ public class jdbcCamel {
 			for(int i=0; i<phoneData.size();i++){
 				Map<String,Object> phone = phoneData.get(i);
 				
-				log.debug("----------------------------------------------------------");
-				log.debug(phone.get("PHONE_CODE").toString());
-				log.debug(phone.get("PHONE_CODE").toString().length());
-				
 				//Studemt Phone
 				if (!phone.get("CHANGE_COLS").equals("") || mode.equals("C") || phone.get("PHONE_CODE").toString().length() == 3){
 					in = new MapSqlParameterSource();
-					in.addValue("p_changeType",mode);
+					if (isInteger(phone.get("PHONE_SEQUENCE_NO").toString())){
+						in.addValue("p_changeType",mode);
+					}else{
+						in.addValue("p_changeType","C");
+					}
 					in.addValue("p_trans_id",transId);
 					in.addValue("p_ppid",ppId);
 					in.addValue("p_peciRole","STU");
@@ -2373,7 +2553,7 @@ public class jdbcCamel {
 					in.addValue("p_peciUserId",userName);
 					in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
 					
-					if  (mode.equals("C")){	
+					if  (mode.equals("C") || !isInteger(phone.get("PHONE_SEQUENCE_NO").toString())){	
 						in.addValue("p_banTeleCode",null);
 						in.addValue("p_banTeleSeqno",null);
 						in.addValue("p_banAddrSeqno",null);
@@ -2391,8 +2571,6 @@ public class jdbcCamel {
 					in.addValue("p_peciPhoneStatus","A");
 					
 					if (phone.get("PHONE_CODE").toString().length() == 3) {
-						log.debug(phone.get("PHONE_CODE").toString().charAt(2));
-						log.debug(Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
 						in.addValue("p_peciEmergPriority",Character.getNumericValue(phone.get("PHONE_CODE").toString().charAt(2)));
 						in.addValue("p_changeType",'C');
 						in.addValue("p_banTeleCode",null);
@@ -2406,7 +2584,6 @@ public class jdbcCamel {
 					in.addValue("p_banComment",null);
 					
 					log.debug ("Calling p_phone_main input: " + in.getValues().toString());
-					
 					out = p_phone_main.execute(in);
 					
 					log.debug ("Returning p_phone_main output: " + out.toString());
@@ -2576,7 +2753,11 @@ public class jdbcCamel {
 							//update parent Phone
 							if (!phone.get("CHANGE_COLS").equals("")){
 								in = new MapSqlParameterSource();
-								in.addValue("p_changeType",mode);
+								if (isInteger(phone.get("PHONE_SEQUENCE_NO").toString())){
+									in.addValue("p_changeType",mode);
+								}else{
+									in.addValue("p_changeType","C");
+								}
 								in.addValue("p_trans_id",transId);
 								in.addValue("p_peciUserId",userName);
 								in.addValue("p_peciDataOrigin","PECI Entry Pt - Student data");
@@ -2587,8 +2768,11 @@ public class jdbcCamel {
 								in.addValue("p_ppid",phone.get("PARENT_PPID"));
 								
 								in.addValue("p_banTeleCode",phone.get("PHONE_CODE"));
-								in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
-								
+								if (isInteger(phone.get("PHONE_SEQUENCE_NO").toString())){
+									in.addValue("p_banTeleSeqno",phone.get("PHONE_SEQUENCE_NO"));
+								} else {
+									in.addValue("p_banTeleSeqno",null);
+								}
 								in.addValue("p_peciPhonePrimary",phone.get("PHONE_PRIMARY_IND"));
 								in.addValue("p_banAddrCode",phone.get("ADDR_TYPE_CODE"));
 								in.addValue("p_banAddrSeqno",phone.get("ADDR_SEQNO"));
@@ -2700,10 +2884,11 @@ public class jdbcCamel {
 							log.debug("New parent phone is empty");
 							// dataset empty 
 						}		
+
+						log.debug ("Calling p_exe_cm_singleparent input: " + in.getValues().toString());
 						
 						out = p_exe_cm_singleparent.execute(in);
 						
-						log.debug ("Calling p_exe_cm_singleparent input: " + in.getValues().toString());
 						log.debug ("Returning p_exe_cm_singleparent output: " + out.toString());
 						
 						int p_ppid = Integer.parseInt(out.get("p_parPpidOut").toString()); 
@@ -2834,7 +3019,7 @@ public class jdbcCamel {
 		try {					
 			//Emergency Contacts
 			SQL="select PARENT_PPID, PARENT_PIDM, EMERG_CONTACT_PRIORITY, EMERG_LEGAL_PREFIX_NAME, EMERG_PREF_FIRST_NAME, "
-					+ "EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME, EMERG_LEGAL_SUFFIX_NAME, EMERG_RELT_CODE "
+					+ "EMERG_PREF_MIDDLE_NAME,EMERG_PREF_LAST_NAME, EMERG_LEGAL_SUFFIX_NAME, EMERG_RELT_CODE,CHANGE_COLS "
 					+ "from cc_gen_peci_emergs_t where (CHANGE_COLS !='DELETE' or  CHANGE_COLS is null) "
 					+ "and STUDENT_PIDM=:STUDENT_PIDM "
 					+ "and PARENT_PPID not in (select PARENT_PPID from cc_adv_peci_parents_t where STUDENT_PIDM=:STUDENT_PIDM) "
@@ -2852,7 +3037,7 @@ public class jdbcCamel {
 				}
 				
 				String eMode = mode;
-				if (mode.equals("U") && isInteger(parent.get("PARENT_PPID").toString()) ){
+				if (mode.equals("U") && !isInteger(parent.get("PARENT_PPID").toString()) ){
 					eMode = "C";
 				}
 				
@@ -2871,8 +3056,6 @@ public class jdbcCamel {
 					in.addValue("p_stuPpid",ppId);
 					in.addValue("p_parPidm",null);
 					in.addValue("p_reltCode",parent.get("EMERG_RELT_CODE"));
-					
-					
 					
 					if (isInteger(parent.get("PARENT_PPID").toString())){
 						in.addValue("p_parPpid",parent.get("PARENT_PPID"));
@@ -2904,7 +3087,12 @@ public class jdbcCamel {
 					log.debug ("Calling p_emerg_main input: " + in.getValues().toString());
 					log.debug ("Returning p_emerg_main output: " + out.toString());
 					
-					int p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString());  
+					int p_ppid;
+					if (out.get("p_peciParentPpidOut") == null){
+						p_ppid = Integer.parseInt(parent.get("PARENT_PPID").toString()); 
+					}else{
+						p_ppid = Integer.parseInt(out.get("p_peciParentPpidOut").toString()); 
+					}
 					
 					error = (String)out.get("p_errorCodeOut"); 
 					if (!( (error == null) || (error.equals("G0")) )) bCRUDError = true;
