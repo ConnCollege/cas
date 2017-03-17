@@ -579,8 +579,7 @@ if(value == 'United States' || value == "US"){
 					}
 				}		
 			}	 
-	 }	
-	 	 
+	 }		 	 
  });
  
 
