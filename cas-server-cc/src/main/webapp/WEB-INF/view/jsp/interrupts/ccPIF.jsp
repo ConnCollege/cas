@@ -37,7 +37,7 @@
 		jQuery.ajax({
 		    url: "${pifUrl}",
 		    type: "POST",
-		    data: {username: "${cwUserName}"},
+		    data: JSON.stringify({username: "${cwUserName}"}),
 		    success: function(data) {
 	                jQuery("#pif").append(data);
 		    },
