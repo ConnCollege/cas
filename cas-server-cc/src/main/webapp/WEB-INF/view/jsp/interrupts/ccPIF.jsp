@@ -31,7 +31,7 @@
 
         <script type="text/javascript">
         	var auth = {};
-        	var auth['username'] = '${cwUserName}';
+        	auth.username = '${cwUserName}';
             jQuery(document).ready( function() {
                 hidePIF();
 
