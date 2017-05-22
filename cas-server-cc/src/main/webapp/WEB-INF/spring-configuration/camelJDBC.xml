@@ -68,6 +68,6 @@
 		p:recaptchaPublic="${recaptcha.key.public}"
 		p:recaptchaPrivate="${recaptcha.key.private}" 
 		p:adVersion="${ldap.adversion}"
-		p:basicTextEncryptor="basicEnc"
+		p:basicTextEncryptor-ref="basicEnc"
 		p:pifUrl="${pif.url}"/>
 </beans>
