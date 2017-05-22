@@ -30,14 +30,17 @@
         <c:set var="hasForm" value="1" scope="page" />
 
         <script type="text/javascript">
-        
+        	var auth = {};
+        	var auth['username'] = '${cwUserName}';
             jQuery(document).ready( function() {
                 hidePIF();
 
 		jQuery.ajax({
 		    url: "${pifUrl}",
 		    type: "POST",
-		    data: JSON.stringify({username: '${cwUserName}'}),
+		    headers : {'Content-Type' : 'application/json'},
+		    dataType : 'html',
+		    data: JSON.stringify(auth),
 		    success: function(data) {
 	                jQuery("#pif").append(data);
 		    },
