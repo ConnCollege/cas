@@ -35,7 +35,7 @@
                 hidePIF();
 
 		jQuery.ajax({
-		    url: '../../PersonalInformationForm/form/cas',
+		    url: "${pifUrl}",
 		    type: "POST",
 		    data: {username: "${cwUserName}"},
 		    success: function(data) {

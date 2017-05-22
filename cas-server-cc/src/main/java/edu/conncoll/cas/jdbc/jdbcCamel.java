@@ -69,6 +69,7 @@ import org.jasig.cas.web.support.IntData;
 
 import edu.conncoll.cas.restlet.PECIResource;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 
 public class jdbcCamel {
 	@NotNull
@@ -136,6 +137,12 @@ public class jdbcCamel {
 	
 	@NotNull
     private Boolean gmSync;
+	
+	@NotNull
+	private BasicTextEncryptor basicTextEncryptor;
+	
+	@NotNull
+	private String pifUrl;
 	
 	public enum Interrupts {
 		AUP, OEM, QNA, ACT, PWD, EMR, AAUP, PIF, CNS, CHANGE, INIT, RESET, RST2, PECI, PECIC, PECIE, PECIBATCH, PECIULOCK, NOVALUE;    
@@ -296,7 +303,8 @@ public class jdbcCamel {
 			
 			/* briley 7/20/12 - Added User Name to the scope so its available on form */
 			case PIF:
-				context.getFlowScope().put("cwUserName", userName);
+				context.getFlowScope().put("pifUrl", this.pifUrl);
+				context.getFlowScope().put("cwUserName", this.basicTextEncryptor.encrypt(userName));
 				
 			break;
 			
@@ -1605,6 +1613,14 @@ public class jdbcCamel {
 	
 	public void setVaultFilter (final String vaultFilter) {
 		this.vaultFilter = vaultFilter;
+	}
+	
+	public void setBasicTextEncryptor(BasicTextEncryptor basicTextEncryptor) {
+		this.basicTextEncryptor = basicTextEncryptor;
+	}
+	
+	public void setPifUrl(String pifUrl) {
+		this.pifUrl = pifUrl;
 	}
 	
 	/**

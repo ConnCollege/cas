@@ -43,7 +43,11 @@
 	<bean id="vaultTemplate" class="org.springframework.ldap.core.LdapTemplate">
         <constructor-arg ref="VaultSource" />
         <property name="ignorePartialResultException" value="true" />
-    </bean>    
+    </bean>
+    
+    <bean id="basicEnc" class="org.jasypt.util.text.BasicTextEncryptor">
+    	<property name="password" value="${pif.password}" />
+    </bean>
 	
 	<bean id="jdbcCamel" class="edu.conncoll.cas.jdbc.jdbcCamel" 
 		p:dataSource-ref="dataSourceCamel"
@@ -63,5 +67,7 @@
 		p:mainPassword="${main.gmail.password}"
 		p:recaptchaPublic="${recaptcha.key.public}"
 		p:recaptchaPrivate="${recaptcha.key.private}" 
-		p:adVersion="${ldap.adversion}"/>
+		p:adVersion="${ldap.adversion}"
+		p:basicTextEncryptor="basicEnc"
+		p:pifUrl="${pif.url}"/>
 </beans>
