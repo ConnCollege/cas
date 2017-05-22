@@ -30,14 +30,14 @@
         <c:set var="hasForm" value="1" scope="page" />
 
         <script type="text/javascript">
-	
+        
             jQuery(document).ready( function() {
                 hidePIF();
 
 		jQuery.ajax({
 		    url: "${pifUrl}",
 		    type: "POST",
-		    data: JSON.stringify({username: "${cwUserName}"}),
+		    data: JSON.stringify({username: '${cwUserName}'}),
 		    success: function(data) {
 	                jQuery("#pif").append(data);
 		    },
