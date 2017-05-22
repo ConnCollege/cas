@@ -304,7 +304,7 @@ public class jdbcCamel {
 			/* briley 7/20/12 - Added User Name to the scope so its available on form */
 			case PIF:
 				context.getFlowScope().put("pifUrl", this.pifUrl);
-				context.getFlowScope().put("cwUserName", this.basicTextEncryptor.encrypt(userName));
+				context.getFlowScope().put("cwUserName", this.basicTextEncryptor.encrypt(userName).trim());
 				
 			break;
 			
