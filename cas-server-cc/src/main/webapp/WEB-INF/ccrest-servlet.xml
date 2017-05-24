@@ -22,11 +22,15 @@
 	<bean id="camelWeb" class="java.lang.String">
 		<constructor-arg value="https://camelweb.conncoll.edu" />
 	</bean>
+	<bean id="cas" class="java.lang.String">
+		<constructor-arg value="https://cas.conncoll.edu" />
+	</bean>
 	<bean id="acceptedDomains" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
 				<ref bean="camelDev" />
 				<ref bean="camelWeb" />
+				<ref bean="cas" />
 			</list>
 		</constructor-arg>
 	</bean>
