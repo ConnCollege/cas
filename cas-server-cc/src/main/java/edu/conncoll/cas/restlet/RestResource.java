@@ -193,7 +193,7 @@ public class RestResource extends Resource
 							getResponse().setStatus( Status.SUCCESS_OK );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							
-							log.debug("Password changed successfully for " + uname + "( uname: " + uname + " )");
+							log.info("Password changed successfully for " + uname + "( uname: " + uname + " )");
 						} else {
 							restfulMessages = this.jdbc.getRestfulResponse().getMessages();
 							jsonResponse.put("result", "error");
@@ -203,9 +203,9 @@ public class RestResource extends Resource
 							getResponse().setStatus( Status.CLIENT_ERROR_NOT_FOUND, jsonResponse.toString() );
 							getResponse().setEntity( jsonResponse.toString(), MediaType.APPLICATION_JSON );
 							
-							log.debug("Password change failed for " + uname + " (uname: " + uname + " )");
+							log.warn("Password change failed for " + uname + " (uname: " + uname + " )");
 							for ( String message : restfulMessages ) {
-								log.debug("  Failure reason: " + message );
+								log.warn("  Failure reason: " + message );
 							}
 						}
 					}
